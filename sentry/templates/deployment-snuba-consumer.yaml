@@ -1,0 +1,63 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "sentry.prefix" . }}snuba-consumer
+  labels:
+    app: sentry
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
+    release: "{{ .Release.Name }}"
+    heritage: "{{ .Release.Service }}"
+spec:
+  selector:
+    matchLabels:
+        app: sentry
+        release: "{{ .Release.Name }}"
+        role: snuba-consumer
+  replicas: {{ .Values.snuba.consumer.replicas }}
+  template:
+    metadata:
+      annotations:
+        checksum/config.yaml: {{ include (print $.Template.BasePath "/configmap-snuba.yaml") . | sha256sum }}
+        {{- if .Values.snuba.consumer.annotations }}
+{{ toYaml .Values.snuba.consumer.annotations | indent 8 }}
+        {{- end }}
+      labels:
+        app: sentry
+        release: "{{ .Release.Name }}"
+        role: snuba-consumer
+        {{- if .Values.snuba.consumer.podLabels }}
+{{ toYaml .Values.snuba.consumer.podLabels | indent 8 }}
+        {{- end }}
+    spec:
+      affinity:
+      {{- if .Values.snuba.consumer.affinity }}
+{{ toYaml .Values.snuba.consumer.affinity | indent 8 }}
+      {{- end }}
+      {{- if .Values.snuba.consumer.nodeSelector }}
+      nodeSelector:
+{{ toYaml .Values.snuba.consumer.nodeSelector | indent 8 }}
+      {{- end }}
+      {{- if .Values.snuba.consumer.tolerations }}
+      tolerations:
+{{ toYaml .Values.snuba.consumer.tolerations | indent 8 }}
+      {{- end }}
+      {{- if .Values.images.snuba.imagePullSecrets }}
+      imagePullSecrets:
+{{ toYaml .Values.images.snuba.imagePullSecrets | indent 8 }}
+      {{- end }}
+      containers:
+      - name: {{ .Chart.Name }}-snuba
+        image: "{{ .Values.images.snuba.repository }}:{{ .Values.images.snuba.tag }}"
+        imagePullPolicy: {{ .Values.images.snuba.pullPolicy }}
+        command: ["snuba", "consumer", "--auto-offset-reset=latest", "--max-batch-time-ms", "750"]
+        ports:
+        - containerPort: {{ template "snuba.port" }}
+        envFrom:
+        - configMapRef:
+            name: {{ template "sentry.prefix" . }}snuba
+{{- if .Values.snuba.consumer.env }}
+        env:
+{{ toYaml .Values.snuba.consumer.env | indent 8 }}
+{{- end }}
+        resources:
+{{ toYaml .Values.snuba.consumer.resources | indent 12 }}
