@@ -1,0 +1,82 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "sentry.prefix" . }}snuba-api
+  labels:
+    app: sentry
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
+    release: "{{ .Release.Name }}"
+    heritage: "{{ .Release.Service }}"
+spec:
+  selector:
+    matchLabels:
+        app: sentry
+        release: "{{ .Release.Name }}"
+        role: snuba-api
+  replicas: {{ .Values.snuba.api.replicas }}
+  template:
+    metadata:
+      annotations:
+        checksum/config.yaml: {{ include (print $.Template.BasePath "/configmap-snuba.yaml") . | sha256sum }}
+        {{- if .Values.snuba.api.annotations }}
+{{ toYaml .Values.snuba.api.annotations | indent 8 }}
+        {{- end }}
+      labels:
+        app: sentry
+        release: "{{ .Release.Name }}"
+        role: snuba-api
+        {{- if .Values.snuba.api.podLabels }}
+{{ toYaml .Values.snuba.api.podLabels | indent 8 }}
+        {{- end }}
+    spec:
+      affinity:
+      {{- if .Values.snuba.api.affinity }}
+{{ toYaml .Values.snuba.api.affinity | indent 8 }}
+      {{- end }}
+      {{- if .Values.snuba.api.nodeSelector }}
+      nodeSelector:
+{{ toYaml .Values.snuba.api.nodeSelector | indent 8 }}
+      {{- end }}
+      {{- if .Values.snuba.api.tolerations }}
+      tolerations:
+{{ toYaml .Values.snuba.api.tolerations | indent 8 }}
+      {{- end }}
+      {{- if .Values.images.snuba.imagePullSecrets }}
+      imagePullSecrets:
+{{ toYaml .Values.images.snuba.imagePullSecrets | indent 8 }}
+      {{- end }}
+      containers:
+      - name: {{ .Chart.Name }}-snuba
+        image: "{{ .Values.images.snuba.repository }}:{{ .Values.images.snuba.tag }}"
+        imagePullPolicy: {{ .Values.images.snuba.pullPolicy }}
+        ports:
+        - containerPort: {{ template "snuba.port" }}
+        envFrom:
+        - configMapRef:
+            name: {{ template "sentry.prefix" . }}snuba
+{{- if .Values.snuba.api.env }}
+        env:
+{{ toYaml .Values.snuba.api.env | indent 8 }}
+{{- end }}
+        livenessProbe:
+          failureThreshold: 5
+          httpGet:
+            path: /
+            port: {{ template "snuba.port" }}
+            scheme: HTTP
+          initialDelaySeconds: {{ .Values.snuba.api.probeInitialDelaySeconds }}
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 2
+        readinessProbe:
+          failureThreshold: 10
+          httpGet:
+            path: /
+            port: {{ template "snuba.port" }}
+            scheme: HTTP
+          initialDelaySeconds: {{ .Values.snuba.api.probeInitialDelaySeconds }}
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 2
+        resources:
+{{ toYaml .Values.snuba.api.resources | indent 12 }}
