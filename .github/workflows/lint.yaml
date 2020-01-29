@@ -1,0 +1,28 @@
+name: Lint and Test Charts
+
+on: pull_request
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v1
+
+      - name: Run chart-testing (lint)
+        id: lint
+        uses: helm/chart-testing-action@v1.0.0-alpha.3
+        with:
+          command: lint
+
+      - name: Create kind cluster
+        uses:   @v1.0.0-alpha.3
+        with:
+          install_local_path_provisioner: true
+        # Only build a kind cluster if there are chart changes to test.
+        if: steps.lint.outputs.changed == 'true'
+
+      - name: Run chart-testing (install)
+        uses: helm/chart-testing-action@v1.0.0-alpha.3
+        with:
+          command: install
