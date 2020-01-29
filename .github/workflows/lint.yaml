@@ -2,19 +2,37 @@ name: Lint and Test Charts
 
 on: pull_request
 
+
+name: CI
+on:
+  push:
 jobs:
-  lint:
+jobs:
+  lint-helm:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v1
-
-      - name: Run chart-testing (lint)
-        id: lint
-        uses: helm/chart-testing-action@v1.0.0-alpha.3
+      - uses: actions/checkout@v1
+      - name: Lint Helm
+        uses: WyriHaximus/github-action-helm3@v1
         with:
-          command: list-changed
-          image: quay.io/helmpack/chart-testing:v3.0.0-beta.1
+          exec: helm lint ./sentry
+      - name: Lint Helm
+        uses: WyriHaximus/github-action-helm3@v1
+        with:
+          exec: helm lint ./sentry-db
+
+  # lint:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v1
+
+  #     - name: Run chart-testing (lint)
+  #       id: lint
+  #       uses: helm/chart-testing-action@v1.0.0-alpha.3
+  #       with:
+  #         command: list-changed
+  #         image: quay.io/helmpack/chart-testing:v3.0.0-beta.1
 
       # - name: Create kind cluster
       #   uses: helm/kind-action@v1.0.0-alpha.3
