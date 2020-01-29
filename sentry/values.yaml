@@ -1,15 +1,16 @@
 prefix:
 
+user:
+  create: true
+  email: admin@sentry.com
+  password: aaaa
+
 hooks:
   enabled: true
   dbInit:
     resources: {}
   snubaInit:
     resources: {}
-  initialUser:
-    create: true
-    email: admin@sentry.com
-    password: abcd
 
 images:
   sentry:
