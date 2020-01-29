@@ -13,7 +13,7 @@ jobs:
         id: lint
         uses: helm/chart-testing-action@v1.0.0-alpha.3
         with:
-          command: lint
+          command: list-changed
           image: quay.io/helmpack/chart-testing:v3.0.0-beta.1
 
       # - name: Create kind cluster
