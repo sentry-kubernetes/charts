@@ -11,16 +11,16 @@ jobs:
         uses: yeouchien/helm3-action@f3a7c239c5c60777210c8e631839edf5dd3fa29c
         with:
           command: lint ./sentry
-      - name: Create kind cluster
-        uses: helm/kind-action@v1.0.0-alpha.3
-        with:
-          install_local_path_provisioner: true
-        # Only build a kind cluster if there are chart changes to test.
-        if: steps.lint.outputs.changed == 'true'
-      - name: Run Chart
-        uses: yeouchien/helm3-action@f3a7c239c5c60777210c8e631839edf5dd3fa29c
-        with:
-          command: upgrade sentry --install ./sentry
+      # - name: Create kind cluster
+      #   uses: helm/kind-action@v1.0.0-alpha.3
+      #   with:
+      #     install_local_path_provisioner: true
+      #   # Only build a kind cluster if there are chart changes to test.
+      #   if: steps.lint.outputs.changed == 'true'
+      # - name: Run Chart
+      #   uses: yeouchien/helm3-action@f3a7c239c5c60777210c8e631839edf5dd3fa29c
+      #   with:
+      #     command: upgrade sentry --install ./sentry
 
   lint-db:
     runs-on: ubuntu-latest
