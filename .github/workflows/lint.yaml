@@ -13,7 +13,7 @@ jobs:
         id: lint
         uses: helm/chart-testing-action@v1.0.0-alpha.3
         with:
-          command: lint sentry sentry-db
+          command: lint
 
       # - name: Create kind cluster
       #   uses: @v1.0.0-alpha.3
