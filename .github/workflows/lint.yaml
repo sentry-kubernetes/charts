@@ -6,7 +6,7 @@ jobs:
   lint-app:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
       - name: Lint Helm
         uses: yeouchien/helm3-action@f3a7c239c5c60777210c8e631839edf5dd3fa29c
         with:
@@ -25,14 +25,8 @@ jobs:
   lint-db:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
       - name: Lint Helm
         uses: yeouchien/helm3-action@f3a7c239c5c60777210c8e631839edf5dd3fa29c
         with:
           command: lint ./sentry-db
-
-
-      # - name: Run chart-testing (install)
-      #   uses: helm/chart-testing-action@v1.0.0-alpha.3
-      #   with:
-      #     command: install

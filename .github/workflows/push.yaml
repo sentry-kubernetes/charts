@@ -1,0 +1,51 @@
+name: Build and push Chart
+
+on:
+  push:
+    # Sequence of patterns matched against refs/heads
+    branches:    
+      - branch
+
+jobs:
+  build-push:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: |
+          git fetch --no-tags --prune --depth=1 origin +refs/heads/*:refs/remotes/origin/*
+          git checkout gh-pages
+          git rebase origin/develop
+
+      - name: Build zips
+        uses: yeouchien/helm3-action@f3a7c239c5c60777210c8e631839edf5dd3fa29c
+        with:
+          command: package sentry-db sentry --destination charts
+
+      - name: Create index file
+        uses: yeouchien/helm3-action@f3a7c239c5c60777210c8e631839edf5dd3fa29c
+        with:
+          command: repo index --url https://sentry-kubernetes.github.io/charts/charts .
+
+      # - name: Stash and change branch
+      #   run: |
+      #     sudo git stash --include-untracked
+      #     git checkout gh-pages
+
+      # - name: Apply files
+      #   run: |
+      #     git checkout stash -- .
+      #     git diff
+      #     git status
+
+      - name: Commit files
+        run: |
+          git status
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git commit -m "Add changes" -a
+
+      # - name: Push changes
+      #   uses: ad-m/github-push-action@19caa5c351f47734055690f7d01aaaef2f9114d5
+      #   with:
+      #     github_token: ${{ secrets.GITHUB_TOKEN }}
+      #     branch: gh-pages
