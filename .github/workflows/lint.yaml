@@ -27,7 +27,7 @@ jobs:
         uses: yeouchien/helm3-action
         with:
           command: lint ./sentry-db
-yeouchien/helm3-action
+
   # lint:
   #   runs-on: ubuntu-latest
   #   steps:
