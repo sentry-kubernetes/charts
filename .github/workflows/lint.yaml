@@ -3,50 +3,34 @@ name: Lint and Test Charts
 on: pull_request
 
 jobs:
-  lint-helm:
+  lint-app:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
       - name: Lint Helm
-        uses: WyriHaximus/github-action-helm3@v1
-        with:
-          exec: helm lint ./sentry
-      - name: Lint Helm
-        uses: WyriHaximus/github-action-helm3@v1
-        with:
-          exec: helm lint ./sentry-db
-  lint-helm2:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v1
-      - name: Lint Helm
-        uses: yeouchien/helm3-action@master
+        uses: yeouchien/helm3-action@f3a7c239c5c60777210c8e631839edf5dd3fa29c
         with:
           command: lint ./sentry
+      - name: Create kind cluster
+        uses: helm/kind-action@v1.0.0-alpha.3
+        with:
+          install_local_path_provisioner: true
+        # Only build a kind cluster if there are chart changes to test.
+        if: steps.lint.outputs.changed == 'true'
+      - name: Run Chart
+        uses: yeouchien/helm3-action@f3a7c239c5c60777210c8e631839edf5dd3fa29c
+        with:
+          command: install ./sentry
+
+  lint-db:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
       - name: Lint Helm
-        uses: yeouchien/helm3-action@master
+        uses: yeouchien/helm3-action@f3a7c239c5c60777210c8e631839edf5dd3fa29c
         with:
           command: lint ./sentry-db
 
-  # lint:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Checkout
-  #       uses: actions/checkout@v1
-
-  #     - name: Run chart-testing (lint)
-  #       id: lint
-  #       uses: helm/chart-testing-action@v1.0.0-alpha.3
-  #       with:
-  #         command: list-changed
-  #         image: quay.io/helmpack/chart-testing:v3.0.0-beta.1
-
-      # - name: Create kind cluster
-      #   uses: helm/kind-action@v1.0.0-alpha.3
-      #   with:
-      #     install_local_path_provisioner: true
-      #   # Only build a kind cluster if there are chart changes to test.
-      #   if: steps.lint.outputs.changed == 'true'
 
       # - name: Run chart-testing (install)
       #   uses: helm/chart-testing-action@v1.0.0-alpha.3
