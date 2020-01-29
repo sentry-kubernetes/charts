@@ -20,11 +20,11 @@ jobs:
     steps:
       - uses: actions/checkout@v1
       - name: Lint Helm
-        uses: yeouchien/helm3-action
+        uses: yeouchien/helm3-action@master
         with:
           command: lint ./sentry
       - name: Lint Helm
-        uses: yeouchien/helm3-action
+        uses: yeouchien/helm3-action@master
         with:
           command: lint ./sentry-db
 
