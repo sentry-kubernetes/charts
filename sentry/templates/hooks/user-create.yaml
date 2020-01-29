@@ -1,4 +1,4 @@
-{{- if and .Values.hooks.initialUser.create .Values.hooks.enabled -}}
+{{- if and .Values.user.create .Values.hooks.enabled -}}
 apiVersion: batch/v1
 kind: Job
 metadata:
