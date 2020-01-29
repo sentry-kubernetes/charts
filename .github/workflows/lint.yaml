@@ -2,11 +2,6 @@ name: Lint and Test Charts
 
 on: pull_request
 
-
-name: CI
-on:
-  push:
-jobs:
 jobs:
   lint-helm:
     runs-on: ubuntu-latest
