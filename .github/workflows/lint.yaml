@@ -15,7 +15,19 @@ jobs:
         uses: WyriHaximus/github-action-helm3@v1
         with:
           exec: helm lint ./sentry-db
-
+  lint-helm2:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - name: Lint Helm
+        uses: yeouchien/helm3-action
+        with:
+          command: lint ./sentry
+      - name: Lint Helm
+        uses: yeouchien/helm3-action
+        with:
+          command: lint ./sentry-db
+yeouchien/helm3-action
   # lint:
   #   runs-on: ubuntu-latest
   #   steps:
