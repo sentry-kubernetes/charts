@@ -16,7 +16,7 @@ This repository contains 2 charts :
 
 ## Values
 
-For now the full list of values is not documented by you can get inspired by the values.yaml specific to each directory.
+For now the full list of values is not documented but you can get inspired by the values.yaml specific to each directory.
 
 ## Roadmap
 
