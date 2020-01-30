@@ -2,18 +2,13 @@ name: Build and push Chart
 
 on:
   push:
-    # Sequence of patterns matched against refs/heads
     branches:    
-      - build-push
+      - develop
 
 jobs:
   build-push:
     runs-on: ubuntu-latest
     steps:
-      # - name: Setup git user infos
-      #   run: |
-      #     git config --local user.email "action@github.com"
-      #     git config --local user.name "GitHub Action"
 
       - uses: actions/checkout@v2
         with:
