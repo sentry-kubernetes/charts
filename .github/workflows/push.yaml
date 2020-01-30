@@ -12,6 +12,8 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
           git fetch --no-tags --prune --depth=1 origin +refs/heads/*:refs/remotes/origin/*
           git checkout gh-pages
           git rebase origin/develop
@@ -40,8 +42,6 @@ jobs:
       - name: Commit files
         run: |
           git status
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
           git commit -m "Add changes" -a
 
       # - name: Push changes
