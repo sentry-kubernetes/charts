@@ -12,7 +12,7 @@ This repository contains 2 charts :
 - sentry, containing all the sentry services
 - sentry-db, containing all the (optional) databases
 
-`helm repo add sentry https://sentry-kubernetes.github.io/charts/charts`
+`helm repo add sentry https://sentry-kubernetes.github.io/charts`
 
 ## Values
 
