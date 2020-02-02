@@ -54,3 +54,5 @@ jobs:
           PERSONAL_TOKEN: ${{ secrets.PERSONAL_TOKEN }}
           PUBLISH_BRANCH: gh-pages
           PUBLISH_DIR: ./gh-pages/charts
+        with:
+          keepFiles: true
