@@ -2,7 +2,7 @@ apiVersion: v2
 name: sentry-db
 description: A Helm chart for Kubernetes
 type: application
-version: 0.1.0
+version: 0.2.0
 appVersion: 10.0.0
 dependencies:
   - name: redis
@@ -24,3 +24,8 @@ dependencies:
   - name: rabbitmq-ha
     repository: https://kubernetes-charts.storage.googleapis.com/
     version: 1.38.2
+    condition: rabbitmq-ha.enabled
+  - name: postgresql
+    repository: https://kubernetes-charts.storage.googleapis.com/
+    version: 8.2.1
+    condition: postgresql.enabled

@@ -23,7 +23,6 @@ For now the full list of values is not documented but you can get inspired by th
 - [X] Lint in Pull requests
 - [X] Public availability through Github Pages
 - [X] Automatic deployment through Github Actions
-- [ ] Postgres part of sentry-db
 - [ ] Symbolicator deployment
 - [ ] Testing the chart in a production environment
 - [ ] Improving the README
