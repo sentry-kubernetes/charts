@@ -38,6 +38,7 @@ jobs:
       - name: Commit files
         run: |
           cd gh-pages
+          git add .
           git commit -m "Add changes" -a
 
       - name: Push changes
