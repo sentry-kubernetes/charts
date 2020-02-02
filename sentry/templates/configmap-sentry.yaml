@@ -33,16 +33,20 @@ data:
     mail.host: {{ .Values.mail.host }}
     mail.from: {{ .Values.mail.from }}
 
+    {{ if .Values.github.appId }}
     github-app.id: {{ .Values.github.appId }}
     github-app.name: "{{ .Values.github.appName }}"
     # github-app.webhook-secret: ""
     # github-app.private-key: ""
     github-app.client-id: "{{ .Values.github.clientId }}"
     github-app.client-secret: "{{ .Values.github.clientSecret }}"
+    {{ end }}
 
+    {{ if .Values.slack.clientId }}
     slack.client-id: "{{ .Values.slack.clientId }}"
     slack.client-secret: "{{ .Values.slack.clientSecret }}"
     slack.verification-token: "{{ .Values.slack.verificationToken }}"
+    {{ end }}
 
     ################
     # File storage #

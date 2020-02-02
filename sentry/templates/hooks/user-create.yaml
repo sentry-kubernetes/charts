@@ -18,14 +18,14 @@ spec:
       name: {{ template "sentry.prefix" . }}user-create
       annotations:
         checksum/configmap.yaml: {{ include (print $.Template.BasePath "/configmap-sentry.yaml") . | sha256sum }}
-        {{- if .Values.worker.annotations }}
-{{ toYaml .Values.worker.annotations | indent 8 }}
+        {{- if .Values.sentry.worker.annotations }}
+{{ toYaml .Values.sentry.worker.annotations | indent 8 }}
         {{- end }}
       labels:
         app: sentry
         release: "{{ .Release.Name }}"
-        {{- if .Values.worker.podLabels }}
-{{ toYaml .Values.worker.podLabels | indent 8 }}
+        {{- if .Values.sentry.worker.podLabels }}
+{{ toYaml .Values.sentry.worker.podLabels | indent 8 }}
         {{- end }}
     spec:
       restartPolicy: Never
@@ -39,7 +39,7 @@ spec:
         command: ["/bin/bash"]
         args:
           - "-c"
-          - "export output=$(sentry createuser --no-input --email {{ .Values.hooks.initialUser.email }} --superuser --password {{ .Values.hooks.initialUser.password }}) || true"
+          - "export output=$(sentry createuser --no-input --email {{ .Values.user.email }} --superuser --password {{ .Values.user.password }}) || true"
         volumeMounts:
         - mountPath: /etc/sentry
           name: config

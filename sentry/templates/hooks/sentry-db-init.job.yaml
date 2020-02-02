@@ -20,14 +20,14 @@ spec:
       name: {{ template "sentry.prefix" . }}sentry-db-init
       annotations:
         checksum/configmap.yaml: {{ include (print $.Template.BasePath "/configmap-sentry.yaml") . | sha256sum }}
-        {{- if .Values.worker.annotations }}
-{{ toYaml .Values.worker.annotations | indent 8 }}
+        {{- if .Values.sentry.worker.annotations }}
+{{ toYaml .Values.sentry.worker.annotations | indent 8 }}
         {{- end }}
       labels:
         app: sentry
         release: "{{ .Release.Name }}"
-        {{- if .Values.worker.podLabels }}
-{{ toYaml .Values.worker.podLabels | indent 8 }}
+        {{- if .Values.sentry.worker.podLabels }}
+{{ toYaml .Values.sentry.worker.podLabels | indent 8 }}
         {{- end }}
     spec:
       restartPolicy: Never
