@@ -5,13 +5,6 @@ user:
   email: admin@sentry.com
   password: aaaa
 
-hooks:
-  enabled: true
-  dbInit:
-    resources: {}
-  snubaInit:
-    resources: {}
-
 images:
   sentry:
     repository: getsentry/sentry
@@ -20,7 +13,7 @@ images:
     # imagePullSecrets: []
   snuba:
     repository: getsentry/snuba
-    tag: f7beee32e2f179bcacdc3b2cff8a1d210b565c62
+    tag: f9e388782bf85e2ab0c879a08d3a59541ce093b2
     pullPolicy: IfNotPresent
     # imagePullSecrets: []
 
@@ -79,8 +72,22 @@ snuba:
 
 
 hooks:
+  enabled: true
   dbInit:
-    resources: {}
+    resources:
+      limits:
+        memory: 2048Mi
+      requests:
+        cpu: 300m
+        memory: 2048Mi
+  snubaInit:
+    resources:
+      limits:
+        cpu: 2000m
+        memory: 1Gi
+      requests:
+        cpu: 700m
+        memory: 1Gi
 
 system:
   url: ''
@@ -104,9 +111,10 @@ auth:
   register: true
 
 postgres:
+  enabled: true
   database: sentry
   user: postgres
-  password:
+  password: i@ZBAsFoU4gDz_qDJVX2W8
   host: postgres
   port: 5432
 
@@ -116,13 +124,13 @@ rabbitmq:
   host: rabbitmq-ha
 
 redis:
-  host: redis
+  host: redis-master
   password: ""
   port: 6379
   db: 0
 
 kafka:
-  host: kafka
+  host: kafka-confluent
   port: 9092
 
 service:
@@ -134,16 +142,16 @@ service:
   # - 192.168.0.1
   # loadBalancerSourceRanges: []
 
-github:
-  appId: 
-  appName:
-  clientId:
-  clientSecret: 
+# github:
+#   appId: 
+#   appName:
+#   clientId:
+#   clientSecret: 
 
-slack:
-  clientId:
-  clientSecret:
-  verificationToken:
+# slack:
+#   clientId:
+#   clientSecret:
+#   verificationToken:
 
 filestore:
   # Set to one of filesystem, gcs or s3 as supported by Sentry.

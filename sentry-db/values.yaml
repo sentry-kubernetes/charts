@@ -4,15 +4,15 @@ clickhouse:
     imageVersion: "19.16"
 
 kafka:
-  fullnameOverride: kafka
+  fullnameOverride: kafka-confluent
   image:
     repository: confluentinc/cp-kafka
-    tag: 5.1.2
+    tag: 5.4.0
   extraEnvVars:
     - name: KAFKA_ZOOKEEPER_CONNECT
       value: "zookeeper:2181"
     - name: KAFKA_ADVERTISED_LISTENERS
-      value: "PLAINTEXT://kafka:9092"
+      value: "PLAINTEXT://kafka-confluent:9092"
     - name: KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR
       value: "1"
     - name: CONFLUENT_SUPPORT_METRICS_ENABLE
@@ -60,8 +60,28 @@ redis:
 #     enabled: true
 #     size: 20Gi
 
+global:
+  postgresql:
+    postgresqlPassword: i@ZBAsFoU4gDz_qDJVX2W8
+    postgresqlDatabase: sentry
+
+postgresql:
+  enabled: true
+  fullnameOverride: postgres
+  password: i@ZBAsFoU4gDz_qDJVX2W8 
+  # postgresqlUsername: sentry
+  postgresqlPassword: i@ZBAsFoU4gDz_qDJVX2W8 
+  # password: i@ZBAsFoU4gDz_qDJVX2W8
+  postgresqlDatabase: sentry
+
+  replication:
+    enabled: true
+    slaveReplicas: 2
+    synchronousCommit: "on"
+    numSynchronousReplicas: 1
 
 rabbitmq-ha:
+  enabled: true
   forceBoot: true
   replicaCount: 3
   fullnameOverride: rabbitmq-ha
