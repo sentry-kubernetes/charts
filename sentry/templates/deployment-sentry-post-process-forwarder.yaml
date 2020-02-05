@@ -48,7 +48,7 @@ spec:
       - name: {{ .Chart.Name }}-post-process-forward
         image: "{{ .Values.images.sentry.repository }}:{{ .Values.images.sentry.tag }}"
         imagePullPolicy: {{ .Values.images.sentry.pullPolicy }}
-        command: ["sentry", "run", "post-process-forwarder", "--commit-batch-size 1"]
+        command: ["sentry", "run", "post-process-forwarder", "--commit-batch-size", "1"]
         env:
           - name: SNUBA
             value: http://{{ template "sentry.prefix" . }}snuba:{{ template "snuba.port" }}
@@ -69,29 +69,12 @@ spec:
         - name: sentry-google-cloud-key
           mountPath: /var/run/secrets/google
         {{ end }}
-        livenessProbe:
-          failureThreshold: 5
-          httpGet:
-            path: /_health/
-            port: {{ template "sentry.port" }}
-            scheme: HTTP
-          initialDelaySeconds: {{ .Values.sentry.postProcessForward.probeInitialDelaySeconds }}
-          periodSeconds: 10
-          successThreshold: 1
-          timeoutSeconds: 2
-        readinessProbe:
-          failureThreshold: 10
-          httpGet:
-            path: /_health/
-            port: {{ template "sentry.port" }}
-            scheme: HTTP
-          initialDelaySeconds: {{ .Values.sentry.postProcessForward.probeInitialDelaySeconds }}
-          periodSeconds: 10
-          successThreshold: 1
-          timeoutSeconds: 2
         resources:
 {{ toYaml .Values.sentry.postProcessForward.resources | indent 12 }}
       volumes:
+      - name: config
+        configMap:
+          name: {{ template "sentry.prefix" . }}sentry
       - name: sentry-data
       {{- if and (eq .Values.filestore.backend "filesystem") .Values.filestore.filesystem.persistence.enabled }}
         persistentVolumeClaim:
