@@ -1,4 +1,4 @@
-prefix:
+prefix: sentry
 
 user:
   create: true
@@ -144,10 +144,10 @@ service:
 
 github: {}
 # github:
-#   appId: 
+#   appId:
 #   appName:
 #   clientId:
-#   clientSecret: 
+#   clientSecret:
 
 slack: {}
 # slack:
@@ -203,7 +203,7 @@ filestore:
   #  endpointUrl:
   #  signature_version:
   #  region_name:
-  #  default_acl: 
+  #  default_acl:
 
 config:
   yaml: |
