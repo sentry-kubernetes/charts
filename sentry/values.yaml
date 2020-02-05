@@ -43,6 +43,14 @@ sentry:
     nodeSelector: {}
     # tolerations: []
     # podLabels: []
+  post_process_forward:
+    replicas: 1
+    env: {}
+    resources: {}
+    affinity: {}
+    nodeSelector: {}
+    # tolerations: []
+    # podLabels: []
 
 snuba:
   api:
