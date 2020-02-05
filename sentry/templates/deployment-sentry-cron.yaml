@@ -57,7 +57,7 @@ spec:
           - "cron"
         env:
           - name: SNUBA
-            value: http://{{ template "sentry.prefix" . }}snuba
+            value: http://{{ template "sentry.prefix" . }}snuba:{{ template "snuba.port" }}
           - name: C_FORCE_ROOT
             value: "true"
           - name: BROKER_URL
