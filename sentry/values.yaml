@@ -43,6 +43,14 @@ sentry:
     nodeSelector: {}
     # tolerations: []
     # podLabels: []
+  postProcessForward:
+    replicas: 1
+    env: {}
+    resources: {}
+    affinity: {}
+    nodeSelector: {}
+    # tolerations: []
+    # podLabels: []
 
 snuba:
   api:
@@ -144,10 +152,10 @@ service:
 
 github: {}
 # github:
-#   appId: 
+#   appId:
 #   appName:
 #   clientId:
-#   clientSecret: 
+#   clientSecret:
 
 slack: {}
 # slack:
@@ -203,7 +211,7 @@ filestore:
   #  endpointUrl:
   #  signature_version:
   #  region_name:
-  #  default_acl: 
+  #  default_acl:
 
 config:
   yaml: |
