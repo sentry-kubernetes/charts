@@ -1,4 +1,4 @@
-prefix: sentry
+prefix:
 
 user:
   create: true
@@ -43,7 +43,7 @@ sentry:
     nodeSelector: {}
     # tolerations: []
     # podLabels: []
-  post_process_forward:
+  postProcessForward:
     replicas: 1
     env: {}
     resources: {}

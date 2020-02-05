@@ -13,7 +13,7 @@ spec:
         app: sentry
         release: "{{ .Release.Name }}"
         role: sentry-post-process-forward
-  replicas: {{ .Values.sentry.post_process_forward.replicas }}
+  replicas: {{ .Values.sentry.postProcessForward.replicas }}
   template:
     metadata:
       annotations:
@@ -24,21 +24,21 @@ spec:
         app: sentry
         release: "{{ .Release.Name }}"
         role: sentry-post-process-forward
-        {{- if .Values.sentry.post_process_forward.podLabels }}
-{{ toYaml .Values.sentry.post_process_forward.podLabels | indent 8 }}
+        {{- if .Values.sentry.postProcessForward.podLabels }}
+{{ toYaml .Values.sentry.postProcessForward.podLabels | indent 8 }}
         {{- end }}
     spec:
       affinity:
-      {{- if .Values.sentry.post_process_forward.affinity }}
-{{ toYaml .Values.sentry.post_process_forward.affinity | indent 8 }}
+      {{- if .Values.sentry.postProcessForward.affinity }}
+{{ toYaml .Values.sentry.postProcessForward.affinity | indent 8 }}
       {{- end }}
-      {{- if .Values.sentry.post_process_forward.nodeSelector }}
+      {{- if .Values.sentry.postProcessForward.nodeSelector }}
       nodeSelector:
-{{ toYaml .Values.sentry.post_process_forward.nodeSelector | indent 8 }}
+{{ toYaml .Values.sentry.postProcessForward.nodeSelector | indent 8 }}
       {{- end }}
-      {{- if .Values.sentry.post_process_forward.tolerations }}
+      {{- if .Values.sentry.postProcessForward.tolerations }}
       tolerations:
-{{ toYaml .Values.sentry.post_process_forward.tolerations | indent 8 }}
+{{ toYaml .Values.sentry.postProcessForward.tolerations | indent 8 }}
       {{- end }}
       {{- if .Values.images.sentry.imagePullSecrets }}
       imagePullSecrets:
@@ -56,8 +56,8 @@ spec:
         - name: GOOGLE_APPLICATION_CREDENTIALS
           value: /var/run/secrets/google/{{ .Values.filestore.gcs.credentialsFile }}
         {{ end }}
-{{- if .Values.sentry.post_process_forward.env }}
-{{ toYaml .Values.sentry.post_process_forward.env | indent 8 }}
+{{- if .Values.sentry.postProcessForward.env }}
+{{ toYaml .Values.sentry.postProcessForward.env | indent 8 }}
 {{- end }}
         volumeMounts:
         - mountPath: /etc/sentry
@@ -75,7 +75,7 @@ spec:
             path: /_health/
             port: {{ template "sentry.port" }}
             scheme: HTTP
-          initialDelaySeconds: {{ .Values.sentry.post_process_forward.probeInitialDelaySeconds }}
+          initialDelaySeconds: {{ .Values.sentry.postProcessForward.probeInitialDelaySeconds }}
           periodSeconds: 10
           successThreshold: 1
           timeoutSeconds: 2
@@ -85,12 +85,12 @@ spec:
             path: /_health/
             port: {{ template "sentry.port" }}
             scheme: HTTP
-          initialDelaySeconds: {{ .Values.sentry.post_process_forward.probeInitialDelaySeconds }}
+          initialDelaySeconds: {{ .Values.sentry.postProcessForward.probeInitialDelaySeconds }}
           periodSeconds: 10
           successThreshold: 1
           timeoutSeconds: 2
         resources:
-{{ toYaml .Values.sentry.post_process_forward.resources | indent 12 }}
+{{ toYaml .Values.sentry.postProcessForward.resources | indent 12 }}
       volumes:
       - name: sentry-data
       {{- if and (eq .Values.filestore.backend "filesystem") .Values.filestore.filesystem.persistence.enabled }}
@@ -104,6 +104,6 @@ spec:
         secret:
           secretName: {{ .Values.filestore.gcs.secretName }}
       {{ end }}
-      {{- if .Values.sentry.post_process_forward.priorityClassName }}
-      priorityClassName: "{{ .Values.sentry.post_process_forward.priorityClassName }}"
+      {{- if .Values.sentry.postProcessForward.priorityClassName }}
+      priorityClassName: "{{ .Values.sentry.postProcessForward.priorityClassName }}"
       {{- end }}
