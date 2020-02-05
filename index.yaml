@@ -3,9 +3,9 @@ entries:
   sentry:
   - apiVersion: v2
     appVersion: 10.0.0
-    created: "2020-02-02T20:38:18.65443408Z"
+    created: "2020-02-05T21:48:15.483126372Z"
     description: A Helm chart for Kubernetes
-    digest: 82fd96095a506ca9cee471f9861e606617b994a653763486a659a89523645e35
+    digest: 476900c519773349f70e8d0171f870ba5ad7983c62fcc72ae3b7799948500f33
     name: sentry
     type: application
     urls:
@@ -13,7 +13,7 @@ entries:
     version: 0.5.0
   - apiVersion: v2
     appVersion: 10.0.0
-    created: "2020-02-02T20:38:18.652591972Z"
+    created: "2020-02-05T21:48:15.482051169Z"
     description: A Helm chart for Kubernetes
     digest: 0da209fcf559a3aa66ef7715cf6327da2337e3739fff89e06a25d2e6a1488765
     name: sentry
@@ -24,7 +24,7 @@ entries:
   sentry-db:
   - apiVersion: v2
     appVersion: 10.0.0
-    created: "2020-02-02T20:38:18.69024194Z"
+    created: "2020-02-05T21:48:15.514192662Z"
     dependencies:
     - condition: redis.enabled
       name: redis
@@ -47,7 +47,7 @@ entries:
       repository: https://kubernetes-charts.storage.googleapis.com/
       version: 8.2.1
     description: A Helm chart for Kubernetes
-    digest: 5793f915c525963bdaac8701e00815d5270fe0b00839e761d46b7fd30ea790e4
+    digest: 2bb4095a0774ccc5b418a1ca031889e1796ecf537bb1ff8e798b5b26a48f3b85
     name: sentry-db
     type: application
     urls:
@@ -55,7 +55,7 @@ entries:
     version: 0.5.0
   - apiVersion: v2
     appVersion: 10.0.0
-    created: "2020-02-02T20:38:18.673099163Z"
+    created: "2020-02-05T21:48:15.498766017Z"
     dependencies:
     - condition: redis.enabled
       name: redis
@@ -84,4 +84,4 @@ entries:
     urls:
     - https://sentry-kubernetes.github.io/charts/sentry-db-0.2.1.tgz
     version: 0.2.1
-generated: "2020-02-02T20:38:18.65008856Z"
+generated: "2020-02-05T21:48:15.480620764Z"
