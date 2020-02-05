@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ template "sentry.prefix" . }}sentry-web
+  name: {{ template "sentry.prefix" . }}post-process-forward
   labels:
     app: sentry
     chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
@@ -12,48 +12,43 @@ spec:
     matchLabels:
         app: sentry
         release: "{{ .Release.Name }}"
-        role: sentry-web
-  replicas: {{ .Values.sentry.web.replicas }}
+        role: sentry-post-process-forward
+  replicas: {{ .Values.sentry.postProcessForward.replicas }}
   template:
     metadata:
       annotations:
         checksum/configYml: {{ .Values.config.yaml | sha256sum }}
         checksum/sentryConfPy: {{ .Values.config.py | sha256sum }}
         checksum/config.yaml: {{ include (print $.Template.BasePath "/configmap-sentry.yaml") . | sha256sum }}
-        {{- if .Values.sentry.web.annotations }}
-{{ toYaml .Values.sentry.web.annotations | indent 8 }}
-        {{- end }}
       labels:
         app: sentry
         release: "{{ .Release.Name }}"
-        role: sentry-web
-        {{- if .Values.sentry.web.podLabels }}
-{{ toYaml .Values.sentry.web.podLabels | indent 8 }}
+        role: sentry-post-process-forward
+        {{- if .Values.sentry.postProcessForward.podLabels }}
+{{ toYaml .Values.sentry.postProcessForward.podLabels | indent 8 }}
         {{- end }}
     spec:
       affinity:
-      {{- if .Values.sentry.web.affinity }}
-{{ toYaml .Values.sentry.web.affinity | indent 8 }}
+      {{- if .Values.sentry.postProcessForward.affinity }}
+{{ toYaml .Values.sentry.postProcessForward.affinity | indent 8 }}
       {{- end }}
-      {{- if .Values.sentry.web.nodeSelector }}
+      {{- if .Values.sentry.postProcessForward.nodeSelector }}
       nodeSelector:
-{{ toYaml .Values.sentry.web.nodeSelector | indent 8 }}
+{{ toYaml .Values.sentry.postProcessForward.nodeSelector | indent 8 }}
       {{- end }}
-      {{- if .Values.sentry.web.tolerations }}
+      {{- if .Values.sentry.postProcessForward.tolerations }}
       tolerations:
-{{ toYaml .Values.sentry.web.tolerations | indent 8 }}
+{{ toYaml .Values.sentry.postProcessForward.tolerations | indent 8 }}
       {{- end }}
       {{- if .Values.images.sentry.imagePullSecrets }}
       imagePullSecrets:
 {{ toYaml .Values.images.sentry.imagePullSecrets | indent 8 }}
       {{- end }}
       containers:
-      - name: {{ .Chart.Name }}-web
+      - name: {{ .Chart.Name }}-post-process-forward
         image: "{{ .Values.images.sentry.repository }}:{{ .Values.images.sentry.tag }}"
         imagePullPolicy: {{ .Values.images.sentry.pullPolicy }}
-        command: ["sentry", "run", "web"]
-        ports:
-        - containerPort: {{ template "sentry.port" }}
+        command: ["sentry", "run", "post-process-forwarder", "--commit-batch-size", "1"]
         env:
           - name: SNUBA
             value: http://{{ template "sentry.prefix" . }}snuba:{{ template "snuba.port" }}
@@ -61,8 +56,8 @@ spec:
         - name: GOOGLE_APPLICATION_CREDENTIALS
           value: /var/run/secrets/google/{{ .Values.filestore.gcs.credentialsFile }}
         {{ end }}
-{{- if .Values.sentry.web.env }}
-{{ toYaml .Values.sentry.web.env | indent 8 }}
+{{- if .Values.sentry.postProcessForward.env }}
+{{ toYaml .Values.sentry.postProcessForward.env | indent 8 }}
 {{- end }}
         volumeMounts:
         - mountPath: /etc/sentry
@@ -74,28 +69,8 @@ spec:
         - name: sentry-google-cloud-key
           mountPath: /var/run/secrets/google
         {{ end }}
-        livenessProbe:
-          failureThreshold: 5
-          httpGet:
-            path: /_health/
-            port: {{ template "sentry.port" }}
-            scheme: HTTP
-          initialDelaySeconds: {{ .Values.sentry.web.probeInitialDelaySeconds }}
-          periodSeconds: 10
-          successThreshold: 1
-          timeoutSeconds: 2
-        readinessProbe:
-          failureThreshold: 10
-          httpGet:
-            path: /_health/
-            port: {{ template "sentry.port" }}
-            scheme: HTTP
-          initialDelaySeconds: {{ .Values.sentry.web.probeInitialDelaySeconds }}
-          periodSeconds: 10
-          successThreshold: 1
-          timeoutSeconds: 2
         resources:
-{{ toYaml .Values.sentry.web.resources | indent 12 }}
+{{ toYaml .Values.sentry.postProcessForward.resources | indent 12 }}
       volumes:
       - name: config
         configMap:
@@ -112,6 +87,6 @@ spec:
         secret:
           secretName: {{ .Values.filestore.gcs.secretName }}
       {{ end }}
-      {{- if .Values.sentry.web.priorityClassName }}
-      priorityClassName: "{{ .Values.sentry.web.priorityClassName }}"
+      {{- if .Values.sentry.postProcessForward.priorityClassName }}
+      priorityClassName: "{{ .Values.sentry.postProcessForward.priorityClassName }}"
       {{- end }}
