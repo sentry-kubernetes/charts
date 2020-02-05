@@ -1,4 +1,4 @@
-  
+
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -149,7 +149,7 @@ data:
     # See https://docs.getsentry.com/on-premise/server/queue/ for more
     # information on configuring your queue broker and workers. Sentry relies
     # on a Python framework called Celery to manage queues.
-    
+
     BROKER_URL = os.environ.get("BROKER_URL", "amqp://{{ .Values.rabbitmq.username }}:{{ .Values.rabbitmq.password }}@{{ .Values.rabbitmq.host }}:5672//")
     #########
     # Cache #
