@@ -99,7 +99,7 @@ spec:
       volumes:
       - name: config
         configMap:
-          name: {{ template "sentry.prefix" . }}-pvc
+          name: {{ template "sentry.prefix" . }}pvc
       - name: sentry-data
       {{- if and (eq .Values.filestore.backend "filesystem") .Values.filestore.filesystem.persistence.enabled }}
         persistentVolumeClaim:
