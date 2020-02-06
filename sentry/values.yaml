@@ -36,6 +36,15 @@ sentry:
     nodeSelector: {}
     # tolerations: []
     # podLabels: []
+  workerRedis:
+    replicas: 1
+    # concurrency: 4
+    env: {}
+    resources: {}
+    affinity: {}
+    nodeSelector: {}
+    # tolerations: []
+    # podLabels: []
   cron:
     env: {}
     resources: {}
