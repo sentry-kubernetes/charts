@@ -63,8 +63,8 @@ spec:
           - name: BROKER_URL
             value: amqp://{{ .Values.rabbitmq.username }}:{{ .Values.rabbitmq.password }}@{{ .Values.rabbitmq.host }}:5672
         {{ if eq .Values.filestore.backend "gcs" }}
-        - name: GOOGLE_APPLICATION_CREDENTIALS
-          value: /var/run/secrets/google/{{ .Values.filestore.gcs.credentialsFile }}
+          - name: GOOGLE_APPLICATION_CREDENTIALS
+            value: /var/run/secrets/google/{{ .Values.filestore.gcs.credentialsFile }}
         {{ end }}
 {{- if .Values.sentry.cron.env }}
 {{ toYaml .Values.sentry.cron.env | indent 8 }}

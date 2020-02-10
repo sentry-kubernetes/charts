@@ -67,8 +67,8 @@ spec:
           - name: BROKER_URL
             value: redis://redis-master:6379/0
         {{ if eq .Values.filestore.backend "gcs" }}
-        - name: GOOGLE_APPLICATION_CREDENTIALS
-          value: /var/run/secrets/google/{{ .Values.filestore.gcs.credentialsFile }}
+          - name: GOOGLE_APPLICATION_CREDENTIALS
+            value: /var/run/secrets/google/{{ .Values.filestore.gcs.credentialsFile }}
         {{ end }}
 {{- if .Values.sentry.workerRedis.env }}
 {{ toYaml .Values.sentry.workerRedis.env | indent 8 }}
