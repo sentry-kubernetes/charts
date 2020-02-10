@@ -35,10 +35,21 @@ data:
 
     {{ if .Values.github.appId }}
     github-app.id: {{ .Values.github.appId }}
+    {{ end }}
+    {{ if .Values.github.appName }}
     github-app.name: "{{ .Values.github.appName }}"
-    # github-app.webhook-secret: ""
-    # github-app.private-key: ""
+    {{ end }}
+    {{ if .Values.github.privateKey }}
+    github-app.private-key: |-
+      {{ .Values.github.privateKey | nindent 8 }}"
+    {{ end }}
+    {{ if .Values.github.webhookSecret }}
+    github-app.webhook-secret: "{{ .Values.github.webhookSecret }}"
+    {{ end }}
+    {{ if .Values.github.clientId }}
     github-app.client-id: "{{ .Values.github.clientId }}"
+    {{ end }}
+    {{ if .Values.github.clientSecret }}
     github-app.client-secret: "{{ .Values.github.clientSecret }}"
     {{ end }}
 
@@ -307,11 +318,8 @@ data:
     # GitHub Integration #
     #####################
 
-    GITHUB_APP_ID = '{{ .Values.github.appId }}'
-    GITHUB_API_SECRET = '{{ .Values.github.appSecret }}'
-    # GITHUB_APP_ID = 'YOUR_GITHUB_APP_ID'
-    # GITHUB_API_SECRET = 'YOUR_GITHUB_API_SECRET'
-    # GITHUB_EXTENDED_PERMISSIONS = ['repo']
+    GITHUB_APP_ID = '{{ .Values.githubSso.clientId }}'
+    GITHUB_API_SECRET = '{{ .Values.githubSso.clientSecret }}'
 
     #########################
     # Bitbucket Integration #
