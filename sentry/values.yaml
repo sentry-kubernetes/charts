@@ -159,12 +159,18 @@ service:
   # - 192.168.0.1
   # loadBalancerSourceRanges: []
 
-github: {}
+github: {} # https://github.com/settings/apps (Create a Github App)
 # github:
-#   appId:
-#   appName:
-#   clientId:
-#   clientSecret:
+#   appId: "xxxx"
+#   appName: MyAppName
+#   clientId: "xxxxx"
+#   clientSecret: "xxxxx"
+#   privateKey: "-----BEGIN RSA PRIVATE KEY-----\nMIIEpA" !!!! Don't forget a trailing \n
+#   webhookSecret:  "xxxxx`"
+
+githubSso: {} # https://github.com/settings/developers (Create a OAuth App)
+  # clientId: "xx"
+  # clientSecret: "xx"
 
 slack: {}
 # slack:
