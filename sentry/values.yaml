@@ -172,6 +172,9 @@ slack: {}
 #   clientSecret:
 #   verificationToken:
 
+ingress:
+  enabled: false
+
 filestore:
   # Set to one of filesystem, gcs or s3 as supported by Sentry.
   backend: filesystem
