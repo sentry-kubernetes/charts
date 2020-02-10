@@ -19,7 +19,7 @@ spec:
         paths:
           - path: {{ default "/" .Values.ingress.path | quote }}
             backend:
-              serviceName: {{ template "sentry.fullname" . }}
+              serviceName: {{ template "sentry.prefix" . }}sentry-web
               servicePort: {{ .Values.service.externalPort }}
 {{- if .Values.ingress.tls }}
   tls:
