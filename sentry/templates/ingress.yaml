@@ -2,7 +2,7 @@
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
- name: {{ template "sentry.prefix" . }}-sentry
+ name: {{ template "sentry.prefix" . }}sentry
  labels:
     app: {{ template "sentry.fullname" . }}
     chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
