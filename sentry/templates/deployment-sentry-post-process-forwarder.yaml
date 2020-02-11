@@ -53,8 +53,8 @@ spec:
           - name: SNUBA
             value: http://{{ template "sentry.prefix" . }}snuba:{{ template "snuba.port" }}
         {{ if eq .Values.filestore.backend "gcs" }}
-        - name: GOOGLE_APPLICATION_CREDENTIALS
-          value: /var/run/secrets/google/{{ .Values.filestore.gcs.credentialsFile }}
+          - name: GOOGLE_APPLICATION_CREDENTIALS
+            value: /var/run/secrets/google/{{ .Values.filestore.gcs.credentialsFile }}
         {{ end }}
 {{- if .Values.sentry.postProcessForward.env }}
 {{ toYaml .Values.sentry.postProcessForward.env | indent 8 }}
