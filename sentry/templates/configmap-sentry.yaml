@@ -25,13 +25,13 @@ data:
     symbolicator.options:
       url: "http://{{ template "sentry.prefix" . }}symbolicator:3021"
 
-    mail.backend: {{ .Values.mail.backend }}
+    mail.backend: "{{ .Values.mail.backend }}"
     mail.use-tls: {{ .Values.mail.useTls }}
-    mail.username: {{ .Values.mail.username }}
-    mail.password: {{ .Values.mail.password }}
+    mail.username: "{{ .Values.mail.username }}"
+    mail.password: "{{ .Values.mail.password }}"
     mail.port: {{ .Values.mail.port }}
-    mail.host: {{ .Values.mail.host }}
-    mail.from: {{ .Values.mail.from }}
+    mail.host: "{{ .Values.mail.host }}"
+    mail.from: "{{ .Values.mail.from }}"
 
     {{ if .Values.github.appId }}
     github-app.id: {{ .Values.github.appId }}
