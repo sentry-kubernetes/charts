@@ -1,3 +1,4 @@
+{{- if .Values.rabbitmq.enabled }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -104,3 +105,4 @@ spec:
       {{- if .Values.sentry.worker.priorityClassName }}
       priorityClassName: "{{ .Values.sentry.worker.priorityClassName }}"
       {{- end }}
+{{- end }}
