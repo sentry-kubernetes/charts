@@ -8,12 +8,12 @@ user:
 images:
   sentry:
     repository: getsentry/sentry
-    tag: 10.0.0
+    tag: e66278b9ce9493f96892ec6f7746d21d8fed6c82
     pullPolicy: IfNotPresent
     # imagePullSecrets: []
   snuba:
     repository: getsentry/snuba
-    tag: f9e388782bf85e2ab0c879a08d3a59541ce093b2
+    tag: b154aabd5093daa3c7f568645a9ac7b501c9f227
     pullPolicy: IfNotPresent
     # imagePullSecrets: []
 
