@@ -1,3 +1,4 @@
+{{- if not .Values.rabbitmq.enabled }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -65,7 +66,11 @@ spec:
           - name: C_FORCE_ROOT
             value: "true"
           - name: BROKER_URL
-            value: redis://redis-master:6379/0
+          {{ if .Values.redis.password }}
+            value: redis://:{{ .Values.redis.password }}@{{ .Values.redis.host }}:6379/0
+          {{ else }}
+            value: redis://{{ .Values.redis.host }}:6379/0
+          {{ end }}  
         {{ if eq .Values.filestore.backend "gcs" }}
           - name: GOOGLE_APPLICATION_CREDENTIALS
             value: /var/run/secrets/google/{{ .Values.filestore.gcs.credentialsFile }}
@@ -104,3 +109,4 @@ spec:
       {{- if .Values.sentry.workerRedis.priorityClassName }}
       priorityClassName: "{{ .Values.sentry.workerRedis.priorityClassName }}"
       {{- end }}
+{{- end }}
