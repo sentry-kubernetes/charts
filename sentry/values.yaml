@@ -136,6 +136,8 @@ postgres:
   port: 5432
 
 rabbitmq:
+  # either use RabbitMQ or Redis as broker
+  enabled: true
   username: guest
   password: guest
   host: rabbitmq-ha

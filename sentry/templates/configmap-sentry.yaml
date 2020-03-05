@@ -161,7 +161,14 @@ data:
     # information on configuring your queue broker and workers. Sentry relies
     # on a Python framework called Celery to manage queues.
     
+    {{- if .Values.rabbitmq.enabled }}
     BROKER_URL = os.environ.get("BROKER_URL", "amqp://{{ .Values.rabbitmq.username }}:{{ .Values.rabbitmq.password }}@{{ .Values.rabbitmq.host }}:5672//")
+    {{- else if .Values.redis.password }}
+    BROKER_URL = os.environ.get("BROKER_URL", "redis://:{{ .Values.redis.password }}@{{ .Values.redis.host }}:6379/0")
+    {{- else }}
+    BROKER_URL = os.environ.get("BROKER_URL", "redis://{{ .Values.redis.host }}:6379/0")
+    {{- end }}
+      
     #########
     # Cache #
     #########
