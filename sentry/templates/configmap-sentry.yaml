@@ -163,12 +163,10 @@ data:
     
     {{- if .Values.rabbitmq.enabled }}
     BROKER_URL = os.environ.get("BROKER_URL", "amqp://{{ .Values.rabbitmq.username }}:{{ .Values.rabbitmq.password }}@{{ .Values.rabbitmq.host }}:5672//")
-    {{- else if .Values.redis.enabled }}
-      {{- if .Values.redis.password }}
+    {{- else if .Values.redis.password }}
     BROKER_URL = os.environ.get("BROKER_URL", "redis://:{{ .Values.redis.password }}@{{ .Values.redis.host }}:6379/0")
-      {{- else }}
+    {{- else }}
     BROKER_URL = os.environ.get("BROKER_URL", "redis://{{ .Values.redis.host }}:6379/0")
-      {{- end }}
     {{- end }}
       
     #########

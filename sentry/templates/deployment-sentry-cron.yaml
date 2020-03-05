@@ -63,12 +63,10 @@ spec:
           - name: BROKER_URL
             {{- if .Values.rabbitmq.enabled }}
             value: amqp://{{ .Values.rabbitmq.username }}:{{ .Values.rabbitmq.password }}@{{ .Values.rabbitmq.host }}:5672
-            {{- else if .Values.redis.enabled }}
-              {{- if .Values.redis.password }}
+            {{- else if .Values.redis.password }}
             value: redis://:{{ .Values.redis.password }}@{{ .Values.redis.host }}:6379/0
-              {{- else }}
+            {{- else }}
             value: redis://{{ .Values.redis.host }}:6379/0
-              {{- end }}
             {{- end }}
         {{ if eq .Values.filestore.backend "gcs" }}
           - name: GOOGLE_APPLICATION_CREDENTIALS

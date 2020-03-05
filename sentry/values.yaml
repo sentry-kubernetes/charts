@@ -137,14 +137,12 @@ postgres:
 
 rabbitmq:
   # either use RabbitMQ or Redis as broker
-  enabled: true
+  enabled: false
   username: guest
   password: guest
   host: rabbitmq-ha
 
 redis:
-  # either use RabbitMQ or Redis as broker
-  enabled: false
   host: redis-master
   password: ""
   port: 6379
