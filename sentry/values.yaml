@@ -137,7 +137,7 @@ postgres:
 
 rabbitmq:
   # either use RabbitMQ or Redis as broker
-  enabled: false
+  enabled: true
   username: guest
   password: guest
   host: rabbitmq-ha
