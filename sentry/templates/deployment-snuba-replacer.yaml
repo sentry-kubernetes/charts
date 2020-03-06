@@ -55,8 +55,9 @@ spec:
         envFrom:
         - configMapRef:
             name: {{ template "sentry.prefix" . }}snuba
-{{- if .Values.snuba.replacer.env }}
         env:
+{{- template "redis.password.fromSecret" . }}
+{{- if .Values.snuba.replacer.env }}
 {{ toYaml .Values.snuba.replacer.env | indent 8 }}
 {{- end }}
         resources:

@@ -16,7 +16,7 @@ data:
   CLICKHOUSE_HOST: clickhouse
   CLICKHOUSE_PORT: "9000"
   REDIS_HOST: {{ .Values.redis.host }}
-  {{ if .Values.redis.password }}
+  {{- if and .Values.redis.password (not .Values.redis.existingPasswordSecret) }}
   REDIS_PASSWORD: {{ .Values.redis.password }}
-  {{ end }}
+  {{- end }}
   DEFAULT_BROKERS: 'kafka-confluent:9092'

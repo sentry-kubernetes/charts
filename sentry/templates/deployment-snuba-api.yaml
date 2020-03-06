@@ -54,8 +54,9 @@ spec:
         envFrom:
         - configMapRef:
             name: {{ template "sentry.prefix" . }}snuba
-{{- if .Values.snuba.api.env }}
         env:
+        {{- template "redis.password.fromSecret" . }}
+{{- if .Values.snuba.api.env }}
 {{ toYaml .Values.snuba.api.env | indent 8 }}
 {{- end }}
         livenessProbe:

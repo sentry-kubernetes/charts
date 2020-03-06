@@ -145,6 +145,9 @@ rabbitmq:
 redis:
   host: redis-master
   password: ""
+  # Use existing secret for Redis password (ignores previous password)
+  # existingPasswordSecret:
+  # existingPasswordSecretKey: redis-password
   port: 6379
   db: 0
 

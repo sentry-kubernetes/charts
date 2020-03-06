@@ -35,3 +35,14 @@
     redis://{{ .Values.redis.host }}:6379/0
     {{- end -}}
 {{- end -}}
+
+{{- define "redis.password.fromSecret" -}}
+{{- if and .Values.redis.existingPasswordSecret .Values.redis.existingPasswordSecretKey }}
+        - name: REDIS_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: {{ .Values.redis.existingPasswordSecret }}
+              name: {{ .Values.redis.existingPasswordSecretKey }}
+              optional: false
+{{- end }}
+{{- end -}}
