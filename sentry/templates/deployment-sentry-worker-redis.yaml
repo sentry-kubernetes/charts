@@ -66,11 +66,11 @@ spec:
           - name: C_FORCE_ROOT
             value: "true"
           - name: BROKER_URL
-          {{ if .Values.redis.password }}
-            value: redis://:{{ .Values.redis.password }}@{{ .Values.redis.host }}:6379/0
-          {{ else }}
-            value: redis://{{ .Values.redis.host }}:6379/0
-          {{ end }}  
+            valueFrom:
+              secretKeyRef:
+                key: broker-url
+                name: sentry
+                optional: false
         {{ if eq .Values.filestore.backend "gcs" }}
           - name: GOOGLE_APPLICATION_CREDENTIALS
             value: /var/run/secrets/google/{{ .Values.filestore.gcs.credentialsFile }}

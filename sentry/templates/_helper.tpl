@@ -25,3 +25,13 @@
 {{- end -}}
 {{- end -}}
 {{- end -}}
+
+{{- define "broker.url" -}}
+    {{- if .Values.rabbitmq.enabled -}}
+    amqp://{{ .Values.rabbitmq.username }}:{{ .Values.rabbitmq.password }}@{{ .Values.rabbitmq.host }}:5672//
+    {{- else if .Values.redis.password -}}
+    redis://:{{ .Values.redis.password }}@{{ .Values.redis.host }}:6379/0
+    {{- else -}}
+    redis://{{ .Values.redis.host }}:6379/0
+    {{- end -}}
+{{- end -}}
