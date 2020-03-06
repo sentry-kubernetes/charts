@@ -64,7 +64,7 @@ spec:
             valueFrom:
               secretKeyRef:
                 key: broker-url
-                name: sentry
+                name: sentry-broker
                 optional: false
         {{ if eq .Values.filestore.backend "gcs" }}
           - name: GOOGLE_APPLICATION_CREDENTIALS
