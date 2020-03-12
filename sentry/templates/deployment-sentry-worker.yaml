@@ -97,7 +97,7 @@ spec:
       - name: sentry-data
       {{- if and (eq .Values.filestore.backend "filesystem") .Values.filestore.filesystem.persistence.enabled (.Values.filestore.filesystem.persistence.persistentWorkers) }}
         persistentVolumeClaim:
-          claimName: {{ .Values.filestore.filesystem.persistence.existingClaim | default (include "sentry.fullname" .) }}
+          claimName: {{ template "sentry.prefix" . }}sentry-data
       {{- else }}
         emptyDir: {}
       {{ end }}
