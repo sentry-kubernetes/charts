@@ -1,0 +1,14 @@
+{{- $replicaCount := int .Values.replicaCount }}
+{{- if gt $replicaCount 1 }}
+apiVersion: policy/v1beta1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ template "zookeeper.fullname" . }}
+  labels: {{- include "zookeeper.labels" . | nindent 4 }}
+    app.kubernetes.io/component: zookeeper
+spec:
+  selector:
+    matchLabels: {{- include "zookeeper.matchLabels" . | nindent 6 }}
+      app.kubernetes.io/component: zookeeper
+  {{- toYaml .Values.podDisruptionBudget | nindent 2 }}
+{{- end }}

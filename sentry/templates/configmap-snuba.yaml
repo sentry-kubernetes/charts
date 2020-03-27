@@ -15,7 +15,7 @@ data:
   SNUBA_SETTINGS: docker
   CLICKHOUSE_HOST: clickhouse
   CLICKHOUSE_PORT: "9000"
-  REDIS_HOST: {{ .Values.redis.host }}
+  REDIS_HOST: {{ template "redis.fullname" . }}-master
   {{ if .Values.redis.password }}
   REDIS_PASSWORD: {{ .Values.redis.password }}
   {{ end }}
