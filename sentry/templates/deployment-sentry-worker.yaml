@@ -1,3 +1,6 @@
+# Vars
+{{- $redisHost := .Values.redis.hostOverride | default (printf "%s-master" (include "redis.fullname" .)) -}}
+
 {{- if .Values.rabbitmq.enabled }}
 apiVersion: apps/v1
 kind: Deployment
@@ -66,7 +69,11 @@ spec:
           - name: C_FORCE_ROOT
             value: "true"
           - name: BROKER_URL
-            value: amqp://{{ .Values.rabbitmq.username }}:{{ .Values.rabbitmq.password }}@{{ .Values.rabbitmq.host }}:5672
+          {{ if .Values.redis.password }}
+            value: redis://:{{ .Values.redis.password }}@{{ $redisHost }}:{{ .Values.redis.redisPort }}/0
+          {{ else }}
+            value: redis://{{ $redisHost }}:{{ .Values.redis.redisPort }}/0
+          {{ end }}  
         {{ if eq .Values.filestore.backend "gcs" }}
           - name: GOOGLE_APPLICATION_CREDENTIALS
             value: /var/run/secrets/google/{{ .Values.filestore.gcs.credentialsFile }}

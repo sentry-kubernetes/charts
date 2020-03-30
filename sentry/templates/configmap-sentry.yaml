@@ -1,4 +1,8 @@
-  
+## Vars 
+{{- $redisPort := .Values.redis.redisPort -}}
+{{- $redisHost := .Values.redis.hostOverride | default (printf "%s-master" (include "redis.fullname" .)) -}}
+{{- $redisPass := .Values.redis.password -}}
+
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -60,6 +64,19 @@ data:
     {{ end }}
 
     ################
+    #    Redis     #
+    ################
+    redis.clusters:
+      default:
+        hosts:
+          0:
+            host: {{ $redisHost }}
+            port: {{ $redisPort }}
+            {{- if .Values.redis.usePassword }}
+            password: {{ $redisPass }}
+            {{- end }}
+
+    ################
     # File storage #
     ################
     # Uploaded media uses these `filestore` settings. The available
@@ -99,7 +116,6 @@ data:
     {{ end }}
 {{ .Values.config.yaml | indent 4 }}
   sentry.conf.py: |-
-
     from sentry.conf.server import *  # NOQA
 
     DATABASES = {
@@ -117,9 +133,6 @@ data:
     # unless you have altered all schemas first
     SENTRY_USE_BIG_INTS = True
 
-    # If you're expecting any kind of real traffic on Sentry, we highly recommend
-    # configuring the CACHES and Redis settings
-
     ###########
     # General #
     ###########
@@ -131,29 +144,6 @@ data:
     SENTRY_OPTIONS["system.event-retention-days"] = env('SENTRY_EVENT_RETENTION_DAYS') or 90
 
     #########
-    # Redis #
-    #########
-
-    # Generic Redis configuration used as defaults for various things including:
-    # Buffers, Quotas, TSDB
-
-    # from redis.sentinel import Sentinel
-    # sentinel = Sentinel([
-    #                     ('redis-ha-announce-0', 26379),
-    #                     ('redis-ha-announce-1', 26379),
-    #                     ('redis-ha-announce-2', 26379),
-    #                     ], socket_timeout=15)
-    # redis_host = sentinel.discover_master('master')
-
-    SENTRY_OPTIONS["redis.clusters"] = {
-        "default": {
-            "hosts": {
-              0: {"host": "{{ .Values.redis.host }}", "password": "{{ .Values.redis.password }}", "port": "{{ .Values.redis.port }}", "db": "{{ .Values.redis.db }}"},
-            }
-        }
-    }
-
-    #########
     # Queue #
     #########
 
@@ -163,10 +153,10 @@ data:
     
     {{- if .Values.rabbitmq.enabled }}
     BROKER_URL = os.environ.get("BROKER_URL", "amqp://{{ .Values.rabbitmq.username }}:{{ .Values.rabbitmq.password }}@{{ .Values.rabbitmq.host }}:5672//")
-    {{- else if .Values.redis.password }}
-    BROKER_URL = os.environ.get("BROKER_URL", "redis://:{{ .Values.redis.password }}@{{ .Values.redis.host }}:6379/0")
+    {{- else if .Values.redis.usePassword }}
+    BROKER_URL = os.environ.get("BROKER_URL", "redis://:{{ $redisPass }}@{{ $redisHost }}:{{ $redisPort }}/0")
     {{- else }}
-    BROKER_URL = os.environ.get("BROKER_URL", "redis://{{ .Values.redis.host }}:6379/0")
+    BROKER_URL = os.environ.get("BROKER_URL", "redis://{{ $redisHost }}:{{ $redisPort }}/0")
     {{- end }}
       
     #########

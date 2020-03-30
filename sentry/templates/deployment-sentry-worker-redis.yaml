@@ -1,3 +1,6 @@
+# Vars
+{{- $redisHost := .Values.redis.hostOverride | default (printf "%s-master" (include "redis.fullname" .)) -}}
+
 {{- if not .Values.rabbitmq.enabled }}
 apiVersion: apps/v1
 kind: Deployment
@@ -67,9 +70,9 @@ spec:
             value: "true"
           - name: BROKER_URL
           {{ if .Values.redis.password }}
-            value: redis://:{{ .Values.redis.password }}@{{ .Values.redis.host }}:6379/0
+            value: redis://:{{ .Values.redis.password }}@{{ $redisHost}}:{{ .Values.redis.redisPort }}/0
           {{ else }}
-            value: redis://{{ .Values.redis.host }}:6379/0
+            value: redis://{{ $redisHost }}:{{ .Values.redis.redisPort }}/0
           {{ end }}  
         {{ if eq .Values.filestore.backend "gcs" }}
           - name: GOOGLE_APPLICATION_CREDENTIALS
