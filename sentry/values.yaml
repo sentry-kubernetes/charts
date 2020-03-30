@@ -127,13 +127,6 @@ symbolicator:
 auth:
   register: true
 
-rabbitmq:
-  # If enabled, rabbitmq will be used as the broker. Else, it will fallback to Redis.
-  enabled: true
-  username: guest
-  password: guest
-  host: rabbitmq-ha
-
 kafka:
   host: kafka-confluent
   port: 9092
@@ -280,7 +273,8 @@ postgresql:
     synchronousCommit: "on"
     numSynchronousReplicas: 1
 
-rabbitmq-ha:
+rabbitmq:
+  ## If disabled, Redis will be used instead as the broker. 
   enabled: true
   forceBoot: true
   replicaCount: 3

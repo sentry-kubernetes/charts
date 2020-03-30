@@ -63,7 +63,7 @@ spec:
             value: "true"
           - name: BROKER_URL
             {{- if .Values.rabbitmq.enabled }}
-            value: amqp://{{ .Values.rabbitmq.username }}:{{ .Values.rabbitmq.password }}@{{ .Values.rabbitmq.host }}:5672
+            value: amqp://{{ .Values.rabbitmq.rabbitmqUsername }}:{{ .Values.rabbitmq.rabbitmqPassword }}@rabbitmq-ha:5672
             {{- else if .Values.redis.usePassword }}
             value: redis://:{{ .Values.redis.password }}@{{ $redisHost }}:{{ .Values.redis.redisPort }}/0
             {{- else }}

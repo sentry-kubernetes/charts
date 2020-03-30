@@ -150,7 +150,7 @@ data:
     # on a Python framework called Celery to manage queues.
     
     {{- if .Values.rabbitmq.enabled }}
-    BROKER_URL = os.environ.get("BROKER_URL", "amqp://{{ .Values.rabbitmq.username }}:{{ .Values.rabbitmq.password }}@{{ .Values.rabbitmq.host }}:5672//")
+    BROKER_URL = os.environ.get("BROKER_URL", "amqp://{{ .Values.rabbitmq.rabbitmqUsername }}:{{ .Values.rabbitmq.rabbitmqPassword }}@rabbitmq-ha:5672//")
     {{- else if .Values.redis.usePassword }}
     BROKER_URL = os.environ.get("BROKER_URL", "redis://:{{ $redisPass }}@{{ $redisHost }}:{{ $redisPort }}/0")
     {{- else }}

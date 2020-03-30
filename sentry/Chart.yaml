@@ -20,7 +20,8 @@ dependencies:
   - name: rabbitmq-ha
     repository: https://kubernetes-charts.storage.googleapis.com/
     version: 1.38.2
-    condition: rabbitmq-ha.enabled
+    alias: rabbitmq
+    condition: rabbitmq.enabled
   - name: postgresql
     repository: https://kubernetes-charts.storage.googleapis.com/
     version: 8.2.1

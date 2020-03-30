@@ -67,7 +67,7 @@ spec:
           - name: C_FORCE_ROOT
             value: "true"
           - name: BROKER_URL
-            value: amqp://{{ .Values.rabbitmq.username }}:{{ .Values.rabbitmq.password }}@{{ .Values.rabbitmq.host }}:5672//
+            value: amqp://{{ .Values.rabbitmq.rabbitmqUsername }}:{{ .Values.rabbitmq.rabbitmqPassword }}@rabbitmq-ha:5672//
         {{ if eq .Values.filestore.backend "gcs" }}
           - name: GOOGLE_APPLICATION_CREDENTIALS
             value: /var/run/secrets/google/{{ .Values.filestore.gcs.credentialsFile }}
