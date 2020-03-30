@@ -1,8 +1,6 @@
-## Vars 
 {{- $redisPort := .Values.redis.redisPort -}}
-{{- $redisHost := .Values.redis.hostOverride | default (printf "%s-master" (include "redis.fullname" .)) -}}
+{{- $redisHost := .Values.redis.hostOverride | default "redis-master" -}}
 {{- $redisPass := .Values.redis.password -}}
-
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -121,11 +119,11 @@ data:
     DATABASES = {
         "default": {
             "ENGINE": "sentry.db.postgres",
-            "NAME": "{{ .Values.postgres.database }}",
-            "USER": "{{ .Values.postgres.user }}",
-            "PASSWORD": "{{ .Values.postgres.password }}",
-            "HOST": "{{ .Values.postgres.host }}",
-            "PORT": "",
+            "NAME": "{{ .Values.postgresql.postgresqlDatabase }}",
+            "USER": "{{ .Values.postgresql.postgresqlUsername }}",
+            "PASSWORD": "{{ .Values.postgresql.postgresqlPassword }}",
+            "HOST": "{{ .Values.postgresql.hostOverride | default "postgres" }}",
+            "PORT": {{ .Values.postgresql.service.port }},
         }
     }
 

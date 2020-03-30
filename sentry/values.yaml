@@ -28,7 +28,7 @@ sentry:
     # tolerations: []
     # podLabels: []
   worker:
-    replicas: 1
+    replicas: 3
     # concurrency: 4
     env: {}
     resources: {}
@@ -37,7 +37,7 @@ sentry:
     # tolerations: []
     # podLabels: []
   workerRedis:
-    replicas: 1
+    replicas: 3
     # concurrency: 4
     env: {}
     resources: {}
@@ -136,7 +136,7 @@ postgres:
   port: 5432
 
 rabbitmq:
-  # either use RabbitMQ or Redis as broker
+  # If enabled, rabbitmq will be used as the broker. Else, it will fallback to Redis.
   enabled: true
   username: guest
   password: guest
@@ -256,11 +256,11 @@ kafka:
     fullnameOverride: zookeeper
 
 redis:
-  enabled: true
-  fullnameOverride: redis
   ## Used if the Redis component of this chart is disabled.
   #
   hostOverride: ""
+  enabled: true
+  fullnameOverride: redis
   
   usePassword: false
   cluster:
@@ -274,10 +274,14 @@ redis:
     resources: {}
     # priorityClassName: 
 postgresql:
+  ## Used if the Redis component of this chart is disabled.
+  #
+  hostOverride: ""
   enabled: true
-  postgresqlUsername: sentry
+  postgresqlUsername: postgres
   postgresqlPassword: postgres 
   postgresqlDatabase: sentry
+  fullnameOverride: postgres
   replication:
     enabled: true
     slaveReplicas: 2

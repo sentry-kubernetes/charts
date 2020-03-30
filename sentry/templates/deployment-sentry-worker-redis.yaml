@@ -1,7 +1,5 @@
-# Vars
-{{- $redisHost := .Values.redis.hostOverride | default (printf "%s-master" (include "redis.fullname" .)) -}}
-
 {{- if not .Values.rabbitmq.enabled }}
+{{- $redisHost := .Values.redis.hostOverride | default "redis-master" -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
