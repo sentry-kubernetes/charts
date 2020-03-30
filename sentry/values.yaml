@@ -107,19 +107,19 @@ hooks:
         memory: 1Gi
 
 system:
-  url: ''
-  adminEmail: ''
+  url: ""
+  adminEmail: ""
   secretKey: 'icLq77rCyY_qrMMpXa6TQNjkDV6mU!c'
   public: false #  This should only be used if you’re installing Sentry behind your company’s firewall.
 
 mail:
   backend: dummy # smtp
   useTls: false
-  username: ''
-  password: ''
+  username: ""
+  password: ""
   port: 25
-  host: ''
-  from: ''
+  host: ""
+  from: ""
 
 symbolicator:
   enabled: false
@@ -133,7 +133,6 @@ kafka:
 
 service:
   name: sentry
-  # type: LoadBalancer
   type: ClusterIP
   externalPort: 9000
   annotations: {}
@@ -241,7 +240,7 @@ kafka:
     fullnameOverride: zookeeper
 
 redis:
-  ## Used if the Redis component of this chart is disabled.
+  ## If disabled, override is needed to point at existing Redis cluster
   #
   hostOverride: ""
   enabled: true
