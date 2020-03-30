@@ -240,7 +240,7 @@ kafka:
     fullnameOverride: zookeeper
 
 redis:
-  ## If disabled, override is needed to point at existing Redis cluster
+  ## Required if the Redis component of this chart is disabled. (Existing Redis)
   #
   hostOverride: ""
   enabled: true
@@ -258,7 +258,7 @@ redis:
     resources: {}
     # priorityClassName: 
 postgresql:
-  ## Used if the Redis component of this chart is disabled.
+  ## Required if the Postgresql component of this chart is disabled. (Existing Postgres)
   #
   hostOverride: ""
   enabled: true
