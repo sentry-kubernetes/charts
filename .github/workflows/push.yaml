@@ -28,7 +28,7 @@ jobs:
       - name: Build zips
         uses: yeouchien/helm3-action@f3a7c239c5c60777210c8e631839edf5dd3fa29c
         with:
-          command: package main/sentry-db main/sentry --destination gh-pages/charts
+          command: package main/sentry --destination gh-pages/charts
 
       - name: Create index file
         uses: yeouchien/helm3-action@f3a7c239c5c60777210c8e631839edf5dd3fa29c
