@@ -127,14 +127,6 @@ symbolicator:
 auth:
   register: true
 
-postgres:
-  enabled: true
-  database: sentry
-  user: postgres
-  password: postgres
-  host: postgres
-  port: 5432
-
 rabbitmq:
   # If enabled, rabbitmq will be used as the broker. Else, it will fallback to Redis.
   enabled: true
