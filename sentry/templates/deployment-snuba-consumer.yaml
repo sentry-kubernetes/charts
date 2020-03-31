@@ -1,16 +1,16 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ template "sentry.prefix" . }}snuba-consumer
+  name: {{ template "sentry.fullname" . }}-snuba-consumer
   labels:
-    app: sentry
+    app: {{ template "sentry.fullname" . }}
     chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
     release: "{{ .Release.Name }}"
     heritage: "{{ .Release.Service }}"
 spec:
   selector:
     matchLabels:
-        app: sentry
+        app: {{ template "sentry.fullname" . }}
         release: "{{ .Release.Name }}"
         role: snuba-consumer
   replicas: {{ .Values.snuba.consumer.replicas }}
@@ -22,7 +22,7 @@ spec:
 {{ toYaml .Values.snuba.consumer.annotations | indent 8 }}
         {{- end }}
       labels:
-        app: sentry
+        app: {{ template "sentry.fullname" . }}
         release: "{{ .Release.Name }}"
         role: snuba-consumer
         {{- if .Values.snuba.consumer.podLabels }}

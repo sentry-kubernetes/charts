@@ -39,29 +39,11 @@ Create a default fully qualified app name.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
 */}}
 {{- define "sentry.postgresql.fullname" -}}
-{{- if .Values.postgresql.fullnameOverride -}}
-{{- .Values.postgresql.fullnameOverride | trunc 63 | trimSuffix "-" -}}
-{{- else -}}
-{{- $name := default .Chart.Name .Values.postgresql.nameOverride -}}
-{{- if contains $name .Release.Name -}}
-{{- .Release.Name | trunc 63 | trimSuffix "-" -}}
-{{- else -}}
-{{- printf "%s-%s" .Release.Name "sentry-postgresql" | trunc 63 | trimSuffix "-" -}}
-{{- end -}}
-{{- end -}}
+{{- printf "%s-%s" .Release.Name "postgresql" | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 
 {{- define "sentry.redis.fullname" -}}
-{{- if .Values.redis.fullnameOverride -}}
-{{- .Values.redis.fullnameOverride | trunc 63 | trimSuffix "-" -}}
-{{- else -}}
-{{- $name := default .Chart.Name .Values.redis.nameOverride -}}
-{{- if contains $name .Release.Name -}}
-{{- .Release.Name | trunc 63 | trimSuffix "-" -}}
-{{- else -}}
-{{- printf "%s-%s" .Release.Name "sentry-redis" | trunc 63 | trimSuffix "-" -}}
-{{- end -}}
-{{- end -}}
+{{- printf "%s-%s" .Release.Name "redis" | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 
 {{- define "sentry.rabbitmq.fullname" -}}
@@ -69,34 +51,16 @@ We truncate at 63 chars because some Kubernetes name fields are limited to this 
 {{- if contains $name .Release.Name -}}
 {{- .Release.Name | trunc 63 | trimSuffix "-" -}}
 {{- else -}}
-{{- printf "%s-%s" .Release.Name "sentry-rabbitmq-ha" | trunc 63 | trimSuffix "-" -}}
+{{- printf "%s-%s" .Release.Name "rabbitmq" | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 {{- end -}}
 
 {{- define "sentry.clickhouse.fullname" -}}
-{{- if .Values.clickhouse.fullnameOverride -}}
-{{- .Values.clickhouse.fullnameOverride | trunc 63 | trimSuffix "-" -}}
-{{- else -}}
-{{- $name := default .Chart.Name .Values.clickhouse.nameOverride -}}
-{{- if contains $name .Release.Name -}}
-{{- .Release.Name | trunc 63 | trimSuffix "-" -}}
-{{- else -}}
-{{- printf "%s-%s" .Release.Name "sentry-clickhouse" | trunc 63 | trimSuffix "-" -}}
-{{- end -}}
-{{- end -}}
+{{- printf "%s-%s" .Release.Name "clickhouse" | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 
 {{- define "sentry.kafka.fullname" -}}
-{{- if .Values.kafka.fullnameOverride -}}
-{{- .Values.kafka.fullnameOverride | trunc 63 | trimSuffix "-" -}}
-{{- else -}}
-{{- $name := default .Chart.Name .Values.kafka.nameOverride -}}
-{{- if contains $name .Release.Name -}}
-{{- .Release.Name | trunc 63 | trimSuffix "-" -}}
-{{- else -}}
-{{- printf "%s-%s" .Release.Name "sentry-kafka" | trunc 63 | trimSuffix "-" -}}
-{{- end -}}
-{{- end -}}
+{{- printf "%s-%s" .Release.Name "kafka" | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 
 {{- define "sentry.zookeeper.fullname" -}}
@@ -107,14 +71,9 @@ We truncate at 63 chars because some Kubernetes name fields are limited to this 
 {{- if contains $name .Release.Name -}}
 {{- .Release.Name | trunc 63 | trimSuffix "-" -}}
 {{- else -}}
-{{- printf "%s-%s" .Release.Name "sentry-zookeeper" | trunc 63 | trimSuffix "-" -}}
+{{- printf "%s-%s" .Release.Name "zookeeper" | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 {{- end -}}
-{{- end -}}
-
-
-{{- define "sentry.smtp.fullname" -}}
-{{- printf "%s-%s" .Release.Name "sentry-smtp" | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 
 {{/*
@@ -155,13 +114,13 @@ Set redis host
 */}}
 {{- define "sentry.redis.host" -}}
 {{- if .Values.redis.enabled -}}
-{{- if .Values.redis.hostOverride -}}
-{{ .Values.redis.hostOverride}}
+    {{- if .Values.redis.hostOverride -}}
+        {{- .Values.redis.hostOverride -}}
+    {{- else -}}
+        {{- template "sentry.redis.fullname" . -}}-master
+    {{- end -}}
 {{- else -}}
-{{- template "sentry.redis.fullname" . -}}-master
-{{- end -}}
-{{- else -}}
-{{- .Values.redis.host | quote -}}
+    {{- .Values.redis.host -}}
 {{- end -}}
 {{- end -}}
 
@@ -202,22 +161,14 @@ Create the name of the service account to use
 Set Clickhouse host
 */}}
 {{- define "sentry.clickhouse.host" -}}
-{{- if .Values.clickhouse.enabled -}}
-    {{- template "sentry.clickhouse.fullname" . -}}
-{{- else -}}
-    "clickhouse"
-{{- end -}}
+    {{- default "clickhouse" (include "sentry.clickhouse.fullname" .) -}}
 {{- end -}}
 
 {{/*
 Set Clickhouse port
 */}}
 {{- define "sentry.clickhouse.port" -}}
-{{- if .Values.clickhouse.enabled -}}
-    {{- default "9000" .Values.clickhouse.clickhouse.tcp_port }}
-{{- else -}}
-    "9000"
-{{- end -}}
+    {{- default 9000 .Values.clickhouse.clickhouse.tcp_port }}
 {{- end -}}
 
 {{/*
@@ -259,7 +210,7 @@ Set Zookeeper port
 */}}
 {{- define "sentry.kafka.zookeeper.port" -}}
 {{- if .Values.kafka.zookeeper.enabled -}}
-    {{- default .Values.kafka.zookeeper.service.port "2181" }}
+    {{- default "2181" .Values.kafka.zookeeper.service.port }}
 {{- else -}}
     "2181"
 {{- end -}}
@@ -270,7 +221,7 @@ Set RabbitMQ host
 */}}
 {{- define "sentry.rabbitmq.host" -}}
 {{- if .Values.rabbitmq.enabled -}}
-    {{- default (include "sentry.rabbitmq.fullname" . ) "rabbitmq-ha" -}}
+    {{- default "rabbitmq-ha"  (include "sentry.rabbitmq.fullname" .) -}}
 {{- else -}}
     "rabbitmq-ha"
 {{- end -}}
