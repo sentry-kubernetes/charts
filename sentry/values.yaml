@@ -2,7 +2,7 @@ prefix:
 
 user:
   create: true
-  email: admin@local.cluster
+  email: admin@sentry.local
   password: aaaa
 
 images:
@@ -28,15 +28,6 @@ sentry:
     # tolerations: []
     # podLabels: []
   worker:
-    replicas: 3
-    # concurrency: 4
-    env: {}
-    resources: {}
-    affinity: {}
-    nodeSelector: {}
-    # tolerations: []
-    # podLabels: []
-  workerRedis:
     replicas: 3
     # concurrency: 4
     env: {}
@@ -230,21 +221,18 @@ config:
 
 
 clickhouse:
-  fullnameOverride: clickhouse
+  enabled: true
   clickhouse:
     imageVersion: "19.16"
 
 kafka:
-  fullnameOverride: kafka-confluent
-  zookeeper:
-    fullnameOverride: zookeeper
+  enabled: true
 
 redis:
   ## Required if the Redis component of this chart is disabled. (Existing Redis)
   #
   hostOverride: ""
   enabled: true
-  fullnameOverride: redis
   
   usePassword: false
   cluster:
@@ -265,7 +253,6 @@ postgresql:
   postgresqlUsername: postgres
   postgresqlPassword: postgres 
   postgresqlDatabase: sentry
-  fullnameOverride: postgres
   replication:
     enabled: true
     slaveReplicas: 2
@@ -277,10 +264,10 @@ rabbitmq:
   enabled: true
   forceBoot: true
   replicaCount: 3
-  fullnameOverride: rabbitmq-ha
   rabbitmqErlangCookie: pHgpy3Q6adTskzAT6bLHCFqFTF7lMxhA
   rabbitmqUsername: guest
   rabbitmqPassword: guest
+  nameOverride: ""
 
   podDisruptionBudget:
     minAvailable: 1

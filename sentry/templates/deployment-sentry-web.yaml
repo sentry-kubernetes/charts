@@ -3,16 +3,16 @@ kind: Deployment
 metadata:
   name: {{ template "sentry.prefix" . }}sentry-web
   labels:
-    app: sentry
+    app: {{ template "sentry.fullname" . }}
     chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
     release: "{{ .Release.Name }}"
     heritage: "{{ .Release.Service }}"
 spec:
   selector:
     matchLabels:
-        app: sentry
+        app: {{ template "sentry.fullname" . }}
         release: "{{ .Release.Name }}"
-        role: sentry-web
+        role: web
   replicas: {{ .Values.sentry.web.replicas }}
   template:
     metadata:
@@ -24,9 +24,9 @@ spec:
 {{ toYaml .Values.sentry.web.annotations | indent 8 }}
         {{- end }}
       labels:
-        app: sentry
+        app: {{ template "sentry.fullname" . }}
         release: "{{ .Release.Name }}"
-        role: sentry-web
+        role: web
         {{- if .Values.sentry.web.podLabels }}
 {{ toYaml .Values.sentry.web.podLabels | indent 8 }}
         {{- end }}

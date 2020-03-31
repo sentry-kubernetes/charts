@@ -1,5 +1,5 @@
 {{- $redisPort := .Values.redis.redisPort -}}
-{{- $redisHost := .Values.redis.hostOverride | default "redis-master" -}}
+{{- $redisHost := .Values.redis.hostOverride | default (include "sentry.redis.host" .) -}}
 {{- $redisPass := .Values.redis.password -}}
 apiVersion: v1
 kind: ConfigMap
@@ -122,7 +122,7 @@ data:
             "NAME": "{{ .Values.postgresql.postgresqlDatabase }}",
             "USER": "{{ .Values.postgresql.postgresqlUsername }}",
             "PASSWORD": "{{ .Values.postgresql.postgresqlPassword }}",
-            "HOST": "{{ .Values.postgresql.hostOverride | default "postgres" }}",
+            "HOST": "{{ .Values.postgresql.hostOverride | default ( include "sentry.postgresql.host" .) }}",
             "PORT": {{ .Values.postgresql.service.port }},
         }
     }
@@ -150,7 +150,7 @@ data:
     # on a Python framework called Celery to manage queues.
     
     {{- if .Values.rabbitmq.enabled }}
-    BROKER_URL = os.environ.get("BROKER_URL", "amqp://{{ .Values.rabbitmq.rabbitmqUsername }}:{{ .Values.rabbitmq.rabbitmqPassword }}@rabbitmq-ha:5672//")
+    BROKER_URL = os.environ.get("BROKER_URL", "amqp://{{ .Values.rabbitmq.rabbitmqUsername }}:{{ .Values.rabbitmq.rabbitmqPassword }}@{{ template "sentry.rabbitmq.fullname" . }}:5672//")
     {{- else if .Values.redis.usePassword }}
     BROKER_URL = os.environ.get("BROKER_URL", "redis://:{{ $redisPass }}@{{ $redisHost }}:{{ $redisPort }}/0")
     {{- else }}
@@ -176,7 +176,7 @@ data:
     SENTRY_CACHE = "sentry.cache.redis.RedisCache"
 
     DEFAULT_KAFKA_OPTIONS = {
-        "bootstrap.servers": "{{ .Values.kafka.host }}:{{ .Values.kafka.port }}",
+        "bootstrap.servers": "{{ printf "%s:%s" (include "sentry.kafka.host" .) (include "sentry.kafka.port" .) }}",
         "message.max.bytes": 50000000,
         "socket.timeout.ms": 1000,
     }
