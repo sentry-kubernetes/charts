@@ -53,7 +53,7 @@ spec:
         - containerPort: {{ template "snuba.port" }}
         envFrom:
         - configMapRef:
-            name: {{ template "sentry.prefix" . }}snuba
+            name: {{ template "sentry.fullname" . }}-snuba
 {{- if .Values.snuba.api.env }}
         env:
 {{ toYaml .Values.snuba.api.env | indent 8 }}

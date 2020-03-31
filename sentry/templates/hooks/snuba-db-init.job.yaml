@@ -2,7 +2,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: {{ template "sentry.prefix" . }}snuba-db-init
+  name: {{ template "sentry.fullname" . }}-snuba-db-init
   labels:
     app: sentry
     chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
@@ -17,7 +17,7 @@ metadata:
 spec:
   template:
     metadata:
-      name: {{ template "sentry.prefix" . }}snuba-db-init
+      name: {{ template "sentry.fullname" . }}-snuba-db-init
       annotations:
         checksum/config.yaml: {{ include (print $.Template.BasePath "/configmap-snuba.yaml") . | sha256sum }}
         {{- if .Values.snuba.annotations }}
@@ -43,7 +43,7 @@ spec:
         command: ["/bin/bash", "-c", "for i in {1..5};do (LOG_LEVEL=debug snuba bootstrap --force || true);done"]
         envFrom:
         - configMapRef:
-            name: {{ template "sentry.prefix" . }}snuba
+            name: {{ template "sentry.fullname" . }}-snuba
 {{- if .Values.snuba.env }}
         env:
 {{ toYaml .Values.snuba.env | indent 8 }}

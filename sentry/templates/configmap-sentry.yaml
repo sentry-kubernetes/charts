@@ -4,7 +4,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ template "sentry.prefix" . }}sentry
+  name: {{ template "sentry.fullname" . }}
   labels:
     app: sentry
     chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
@@ -25,7 +25,7 @@ data:
 
     symbolicator.enabled: {{ .Values.symbolicator.enabled }}
     symbolicator.options:
-      url: "http://{{ template "sentry.prefix" . }}symbolicator:3021"
+      url: "http://{{ template "sentry.fullname" . }}-symbolicator:3021"
 
     mail.backend: "{{ .Values.mail.backend }}"
     mail.use-tls: {{ .Values.mail.useTls }}

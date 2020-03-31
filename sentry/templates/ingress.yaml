@@ -2,7 +2,7 @@
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
- name: {{ template "sentry.prefix" . }}sentry
+ name: {{ template "sentry.fullname" . }}
  labels:
     app: {{ template "sentry.fullname" . }}
     chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
@@ -19,7 +19,7 @@ spec:
         paths:
           - path: {{ default "/" .Values.ingress.path | quote }}
             backend:
-              serviceName: {{ template "sentry.prefix" . }}sentry-web
+              serviceName: {{ template "sentry.fullname" . }}-web
               servicePort: {{ .Values.service.externalPort }}
 {{- if .Values.ingress.tls }}
   tls:

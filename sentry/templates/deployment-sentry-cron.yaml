@@ -2,7 +2,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ template "sentry.prefix" . }}sentry-cron
+  name: {{ template "sentry.fullname" . }}-cron
   labels:
     app: {{ template "sentry.fullname" . }}
     chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
@@ -58,7 +58,7 @@ spec:
           - "cron"
         env:
           - name: SNUBA
-            value: http://{{ template "sentry.prefix" . }}snuba:{{ template "snuba.port" }}
+            value: http://{{ template "sentry.fullname" . }}-snuba:{{ template "snuba.port" }}
           - name: C_FORCE_ROOT
             value: "true"
           - name: BROKER_URL
@@ -91,11 +91,11 @@ spec:
       volumes:
       - name: config
         configMap:
-          name: {{ template "sentry.prefix" . }}sentry
+          name: {{ template "sentry.fullname" . }}
       - name: sentry-data
       {{- if and (eq .Values.filestore.backend "filesystem") .Values.filestore.filesystem.persistence.enabled (.Values.filestore.filesystem.persistence.persistentWorkers) }}
         persistentVolumeClaim:
-          claimName: {{ template "sentry.prefix" . }}sentry-data
+          claimName: {{ template "sentry.fullname" . }}-data
       {{- else }}
         emptyDir: {}
       {{ end }}

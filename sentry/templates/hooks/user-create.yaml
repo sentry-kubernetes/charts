@@ -2,7 +2,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: {{ template "sentry.prefix" . }}user-create
+  name: {{ template "sentry.fullname" . }}-user-create
   labels:
     app: sentry
     chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
@@ -15,7 +15,7 @@ metadata:
 spec:
   template:
     metadata:
-      name: {{ template "sentry.prefix" . }}user-create
+      name: {{ template "sentry.fullname" . }}-user-create
       annotations:
         checksum/configmap.yaml: {{ include (print $.Template.BasePath "/configmap-sentry.yaml") . | sha256sum }}
         {{- if .Values.sentry.worker.annotations }}
@@ -49,5 +49,5 @@ spec:
       volumes:
       - name: config
         configMap:
-          name: {{ template "sentry.prefix" . }}sentry
+          name: {{ template "sentry.fullname" . }}
 {{- end -}}
