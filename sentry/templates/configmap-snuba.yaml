@@ -14,8 +14,8 @@ data:
   SNUBA_SETTINGS: docker
   CLICKHOUSE_HOST: "{{ template "sentry.clickhouse.host" . }}"
   CLICKHOUSE_PORT: "{{ template "sentry.clickhouse.port" . }}"
-  REDIS_HOST: "{{ default (include "sentry.redis.host" .) .Values.redis.hostOverride }}"
+  REDIS_HOST: "{{ default .Values.redis.hostOverride (include "sentry.redis.host" .) }}"
   {{ if .Values.redis.usePassword }}
   REDIS_PASSWORD: {{ .Values.redis.password }}
-  {{- end -}}
+  {{ end }}
   DEFAULT_BROKERS: "{{ printf "%s:%s" (include "sentry.kafka.host" .) (include "sentry.kafka.port" .) }}"

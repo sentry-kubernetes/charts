@@ -233,26 +233,29 @@ redis:
   #
   hostOverride: ""
   enabled: true
-  
+  nameOverride: sentry-redis
   usePassword: false
-  cluster:
-    slaveCount: 2
+  # Only used when internal redis is disabled
+  # host: redis
+  # Just omit the password field if your redis cluster doesn't use password
+  # password: redis
+  # port: 6379
   master:
-    nodeSelector: {}
-    resources: {}
-    # priorityClassName: 
-  slave:
-    nodeSelector: {}
-    resources: {}
-    # priorityClassName: 
+    persistence:
+      enabled: true
+
 postgresql:
   ## Required if the Postgresql component of this chart is disabled. (Existing Postgres)
   #
   hostOverride: ""
   enabled: true
+  nameOverride: sentry-postgresql
   postgresqlUsername: postgres
-  postgresqlPassword: postgres 
   postgresqlDatabase: sentry
+  # Only used when internal PG is disabled
+  # postgresqlHost: postgres
+  # postgresqlPassword: postgres
+  # postgresqlPort: 5432
   replication:
     enabled: true
     slaveReplicas: 2
