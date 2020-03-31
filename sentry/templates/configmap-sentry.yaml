@@ -122,8 +122,8 @@ data:
             "NAME": "{{ .Values.postgresql.postgresqlDatabase }}",
             "USER": "{{ .Values.postgresql.postgresqlUsername }}",
             "PASSWORD": "{{ .Values.postgresql.postgresqlPassword }}",
-            "HOST": "{{ .Values.postgresql.hostOverride | default ( include "sentry.postgresql.host" .) }}",
-            "PORT": {{ .Values.postgresql.service.port }},
+            "HOST": "{{ default ( include "sentry.postgresql.host" .) .Values.postgresql.hostOverride }}",
+            "PORT": {{ default "5432" .Values.postgresql.service.port }},
         }
     }
 
