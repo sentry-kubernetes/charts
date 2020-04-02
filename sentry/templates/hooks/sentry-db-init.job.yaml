@@ -48,5 +48,5 @@ spec:
       volumes:
       - name: config
         configMap:
-          name: {{ template "sentry.fullname" . }}
+          name: {{ template "sentry.fullname" . }}-sentry
 {{- end -}}

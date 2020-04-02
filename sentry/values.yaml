@@ -215,9 +215,9 @@ filestore:
 
 config:
   yaml: |
-    # YAML
+    # No YAML Extension Config Given
   py: |
-    # PYTHON CONFIG
+    # No Python Extension Config Given
 
 
 clickhouse:
@@ -257,7 +257,7 @@ postgresql:
   # postgresqlPassword: postgres
   # postgresqlPort: 5432
   replication:
-    enabled: true
+    enabled: false
     slaveReplicas: 2
     synchronousCommit: "on"
     numSynchronousReplicas: 1
