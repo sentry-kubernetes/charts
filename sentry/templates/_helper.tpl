@@ -158,9 +158,9 @@ Set redis port
 */}}
 {{- define "sentry.redis.port" -}}
 {{- if .Values.redis.enabled -}}
-    "6379"
+    6379
 {{- else -}}
-{{- default "6379" .Values.redis.port | quote -}}
+{{- default 6379 .Values.redis.port -}}
 {{- end -}}
 {{- end -}}
 
@@ -241,7 +241,7 @@ Set RabbitMQ host
 {{- if .Values.rabbitmq.enabled -}}
     {{- default "rabbitmq-ha"  (include "sentry.rabbitmq.fullname" .) -}}
 {{- else -}}
-    "rabbitmq-ha"
+    {{ .Values.rabbitmq.host }}
 {{- end -}}
 {{- end -}}
 

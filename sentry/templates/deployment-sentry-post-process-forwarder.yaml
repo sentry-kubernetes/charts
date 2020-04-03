@@ -17,8 +17,8 @@ spec:
   template:
     metadata:
       annotations:
-        checksum/configYml: {{ .Values.config.yaml | sha256sum }}
-        checksum/sentryConfPy: {{ .Values.config.py | sha256sum }}
+        checksum/configYml: {{ .Values.config.configYml | sha256sum }}
+        checksum/sentryConfPy: {{ .Values.config.sentryConfPy | sha256sum }}
         checksum/config.yaml: {{ include (print $.Template.BasePath "/configmap-sentry.yaml") . | sha256sum }}
       labels:
         app: sentry
