@@ -2,20 +2,20 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: {{ template "sentry.prefix" . }}user-create
+  name: {{ template "sentry.fullname" . }}-user-create
   labels:
     app: sentry
     chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
     release: "{{ .Release.Name }}"
     heritage: "{{ .Release.Service }}"
   annotations:
-    "helm.sh/hook": "pre-install,pre-upgrade"
+    "helm.sh/hook": "post-install,post-upgrade"
     "helm.sh/hook-delete-policy": "hook-succeeded,before-hook-creation"
     "helm.sh/hook-weight": "10"
 spec:
   template:
     metadata:
-      name: {{ template "sentry.prefix" . }}user-create
+      name: {{ template "sentry.fullname" . }}-user-create
       annotations:
         checksum/configmap.yaml: {{ include (print $.Template.BasePath "/configmap-sentry.yaml") . | sha256sum }}
         {{- if .Values.sentry.worker.annotations }}
@@ -49,5 +49,5 @@ spec:
       volumes:
       - name: config
         configMap:
-          name: {{ template "sentry.prefix" . }}sentry
+          name: {{ template "sentry.fullname" . }}-sentry
 {{- end -}}

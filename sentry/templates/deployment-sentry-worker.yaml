@@ -1,19 +1,20 @@
 {{- if .Values.rabbitmq.enabled }}
+{{- $redisHost := .Values.redis.hostOverride | default (include "sentry.redis.host" .) -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ template "sentry.prefix" . }}sentry-worker
+  name: {{ template "sentry.fullname" . }}-worker
   labels:
-    app: sentry
+    app: {{ template "sentry.fullname" . }}
     chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
     release: "{{ .Release.Name }}"
     heritage: "{{ .Release.Service }}"
 spec:
   selector:
     matchLabels:
-        app: sentry
+        app: {{ template "sentry.fullname" . }}
         release: "{{ .Release.Name }}"
-        role: sentry-worker
+        role: worker
   replicas: {{ .Values.sentry.worker.replicas }}
   template:
     metadata:
@@ -25,9 +26,9 @@ spec:
 {{ toYaml .Values.sentry.worker.annotations | indent 8 }}
         {{- end }}
       labels:
-        app: sentry
+        app: {{ template "sentry.fullname" . }}
         release: "{{ .Release.Name }}"
-        role: sentry-worker
+        role: worker
         {{- if .Values.sentry.worker.podLabels }}
 {{ toYaml .Values.sentry.worker.podLabels | indent 8 }}
         {{- end }}
@@ -62,11 +63,19 @@ spec:
           {{- end }}
         env:
           - name: SNUBA
-            value: http://{{ template "sentry.prefix" . }}snuba:{{ template "snuba.port" }}
+            value: http://{{ template "sentry.fullname" . }}-snuba:{{ template "snuba.port" }}
           - name: C_FORCE_ROOT
             value: "true"
           - name: BROKER_URL
-            value: amqp://{{ .Values.rabbitmq.username }}:{{ .Values.rabbitmq.password }}@{{ .Values.rabbitmq.host }}:5672
+          {{- if .Values.rabbitmq.enabled }}
+            value: amqp://{{ .Values.rabbitmq.rabbitmqUsername }}:{{ .Values.rabbitmq.rabbitmqPassword }}@{{ template "sentry.rabbitmq.fullname" . }}:5672//
+          {{ else }}
+            {{ if .Values.redis.usePassword }}
+            value: redis://:{{ .Values.redis.password }}@{{ $redisHost}}:{{ .Values.redis.redisPort }}/0
+            {{ else }}
+            value: redis://{{ $redisHost }}:{{ .Values.redis.redisPort }}/0
+            {{ end }}  
+          {{- end }}
         {{ if eq .Values.filestore.backend "gcs" }}
           - name: GOOGLE_APPLICATION_CREDENTIALS
             value: /var/run/secrets/google/{{ .Values.filestore.gcs.credentialsFile }}
@@ -89,11 +98,11 @@ spec:
       volumes:
       - name: config
         configMap:
-          name: {{ template "sentry.prefix" . }}sentry
+          name: {{ template "sentry.fullname" . }}-sentry
       - name: sentry-data
       {{- if and (eq .Values.filestore.backend "filesystem") .Values.filestore.filesystem.persistence.enabled (.Values.filestore.filesystem.persistence.persistentWorkers) }}
         persistentVolumeClaim:
-          claimName: {{ template "sentry.prefix" . }}sentry-data
+          claimName: {{ template "sentry.fullname" . }}-data
       {{- else }}
         emptyDir: {}
       {{ end }}

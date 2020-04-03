@@ -2,7 +2,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: {{ template "sentry.prefix" . }}snuba-db-init
+  name: {{ template "sentry.fullname" . }}-snuba-db-init
   labels:
     app: sentry
     chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
@@ -11,13 +11,13 @@ metadata:
   annotations:
     # This is what defines this resource as a hook. Without this line, the
     # job is considered part of the release.
-    "helm.sh/hook": "pre-install,pre-upgrade"
+    "helm.sh/hook": "post-install,post-upgrade"
     "helm.sh/hook-delete-policy": "hook-succeeded,before-hook-creation"
     "helm.sh/hook-weight": "3"
 spec:
   template:
     metadata:
-      name: {{ template "sentry.prefix" . }}snuba-db-init
+      name: {{ template "sentry.fullname" . }}-snuba-db-init
       annotations:
         checksum/config.yaml: {{ include (print $.Template.BasePath "/configmap-snuba.yaml") . | sha256sum }}
         {{- if .Values.snuba.annotations }}
@@ -43,7 +43,7 @@ spec:
         command: ["/bin/bash", "-c", "for i in {1..5};do (LOG_LEVEL=debug snuba bootstrap --force || true);done"]
         envFrom:
         - configMapRef:
-            name: {{ template "sentry.prefix" . }}snuba
+            name: {{ template "sentry.fullname" . }}-snuba
 {{- if .Values.snuba.env }}
         env:
 {{ toYaml .Values.snuba.env | indent 8 }}

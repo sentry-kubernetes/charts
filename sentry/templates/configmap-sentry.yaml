@@ -1,29 +1,28 @@
-  
+{{- $redisPort := .Values.redis.redisPort -}}
+{{- $redisHost := .Values.redis.hostOverride | default (include "sentry.redis.host" .) -}}
+{{- $redisPass := .Values.redis.password -}}
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ template "sentry.prefix" . }}sentry
+  name: {{ template "sentry.fullname" . }}-sentry
   labels:
     app: sentry
     chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
     release: "{{ .Release.Name }}"
     heritage: "{{ .Release.Service }}"
-  annotations:
-    "helm.sh/hook": "pre-install,pre-upgrade"
-    "helm.sh/hook-weight": "-5"
 data:
   config.yml: |-
-    {{ if .Values.system.adminEmail }}
+    {{- if .Values.system.adminEmail }}
     system.admin-email: {{ .Values.system.adminEmail }}
-    {{ end }}
+    {{- end }}
     system.secret-key: {{ .Values.system.secretKey }}
-    {{ if .Values.system.url }}
+    {{- if .Values.system.url }}
     system.url-prefix: {{ .Values.system.url }}
-    {{ end }}
+    {{- end }}
 
     symbolicator.enabled: {{ .Values.symbolicator.enabled }}
     symbolicator.options:
-      url: "http://{{ template "sentry.prefix" . }}symbolicator:3021"
+      url: "http://{{ template "sentry.fullname" . }}-symbolicator:3021"
 
     mail.backend: "{{ .Values.mail.backend }}"
     mail.use-tls: {{ .Values.mail.useTls }}
@@ -58,6 +57,19 @@ data:
     slack.client-secret: "{{ .Values.slack.clientSecret }}"
     slack.verification-token: "{{ .Values.slack.verificationToken }}"
     {{ end }}
+
+    ################
+    #    Redis     #
+    ################
+    redis.clusters:
+      default:
+        hosts:
+          0:
+            host: {{ $redisHost }}
+            port: {{ $redisPort }}
+            {{- if .Values.redis.usePassword }}
+            password: {{ $redisPass }}
+            {{- end }}
 
     ################
     # File storage #
@@ -97,28 +109,25 @@ data:
       default_acl: '{{ .Values.filestore.s3.default_acl }}'
       {{- end }}
     {{ end }}
-{{ .Values.config.yaml | indent 4 }}
-  sentry.conf.py: |-
 
+    {{ .Values.config.yaml }}
+  sentry.conf.py: |-
     from sentry.conf.server import *  # NOQA
 
     DATABASES = {
         "default": {
             "ENGINE": "sentry.db.postgres",
-            "NAME": "{{ .Values.postgres.database }}",
-            "USER": "{{ .Values.postgres.user }}",
-            "PASSWORD": "{{ .Values.postgres.password }}",
-            "HOST": "{{ .Values.postgres.host }}",
-            "PORT": "",
+            "NAME": "{{ .Values.postgresql.postgresqlDatabase }}",
+            "USER": "{{ .Values.postgresql.postgresqlUsername }}",
+            "PASSWORD": "{{ .Values.postgresql.postgresqlPassword }}",
+            "HOST": "{{ default ( include "sentry.postgresql.host" .) .Values.postgresql.hostOverride }}",
+            "PORT": {{ default "5432" .Values.postgresql.service.port }},
         }
     }
 
     # You should not change this setting after your database has been created
     # unless you have altered all schemas first
     SENTRY_USE_BIG_INTS = True
-
-    # If you're expecting any kind of real traffic on Sentry, we highly recommend
-    # configuring the CACHES and Redis settings
 
     ###########
     # General #
@@ -131,29 +140,6 @@ data:
     SENTRY_OPTIONS["system.event-retention-days"] = env('SENTRY_EVENT_RETENTION_DAYS') or 90
 
     #########
-    # Redis #
-    #########
-
-    # Generic Redis configuration used as defaults for various things including:
-    # Buffers, Quotas, TSDB
-
-    # from redis.sentinel import Sentinel
-    # sentinel = Sentinel([
-    #                     ('redis-ha-announce-0', 26379),
-    #                     ('redis-ha-announce-1', 26379),
-    #                     ('redis-ha-announce-2', 26379),
-    #                     ], socket_timeout=15)
-    # redis_host = sentinel.discover_master('master')
-
-    SENTRY_OPTIONS["redis.clusters"] = {
-        "default": {
-            "hosts": {
-              0: {"host": "{{ .Values.redis.host }}", "password": "{{ .Values.redis.password }}", "port": "{{ .Values.redis.port }}", "db": "{{ .Values.redis.db }}"},
-            }
-        }
-    }
-
-    #########
     # Queue #
     #########
 
@@ -162,11 +148,11 @@ data:
     # on a Python framework called Celery to manage queues.
     
     {{- if .Values.rabbitmq.enabled }}
-    BROKER_URL = os.environ.get("BROKER_URL", "amqp://{{ .Values.rabbitmq.username }}:{{ .Values.rabbitmq.password }}@{{ .Values.rabbitmq.host }}:5672//")
-    {{- else if .Values.redis.password }}
-    BROKER_URL = os.environ.get("BROKER_URL", "redis://:{{ .Values.redis.password }}@{{ .Values.redis.host }}:6379/0")
+    BROKER_URL = os.environ.get("BROKER_URL", "amqp://{{ .Values.rabbitmq.rabbitmqUsername }}:{{ .Values.rabbitmq.rabbitmqPassword }}@{{ template "sentry.rabbitmq.fullname" . }}:5672//")
+    {{- else if .Values.redis.usePassword }}
+    BROKER_URL = os.environ.get("BROKER_URL", "redis://:{{ $redisPass }}@{{ $redisHost }}:{{ $redisPort }}/0")
     {{- else }}
-    BROKER_URL = os.environ.get("BROKER_URL", "redis://{{ .Values.redis.host }}:6379/0")
+    BROKER_URL = os.environ.get("BROKER_URL", "redis://{{ $redisHost }}:{{ $redisPort }}/0")
     {{- end }}
       
     #########
@@ -188,7 +174,7 @@ data:
     SENTRY_CACHE = "sentry.cache.redis.RedisCache"
 
     DEFAULT_KAFKA_OPTIONS = {
-        "bootstrap.servers": "{{ .Values.kafka.host }}:{{ .Values.kafka.port }}",
+        "bootstrap.servers": "{{ printf "%s:%s" (include "sentry.kafka.host" .) (include "sentry.kafka.port" .) }}",
         "message.max.bytes": 50000000,
         "socket.timeout.ms": 1000,
     }
@@ -335,4 +321,4 @@ data:
     # BITBUCKET_CONSUMER_KEY = 'YOUR_BITBUCKET_CONSUMER_KEY'
     # BITBUCKET_CONSUMER_SECRET = 'YOUR_BITBUCKET_CONSUMER_SECRET'
 
-    {{ .Values.config.py | indent 4 }}
+    {{ .Values.config.py }}
