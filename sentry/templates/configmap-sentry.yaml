@@ -65,10 +65,10 @@ data:
       default:
         hosts:
           0:
-            host: {{ $redisHost }}
+            host: "{{ $redisHost }}"
             port: {{ $redisPort }}
-            {{- if .Values.redis.usePassword }}
-            password: {{ $redisPass }}
+            {{- if $redisPass }}
+            password: "{{ $redisPass }}"
             {{- end }}
 
     ################
@@ -110,7 +110,7 @@ data:
       {{- end }}
     {{ end }}
 
-    {{ .Values.config.yaml }}
+    {{ .Values.config.configYml }}
   sentry.conf.py: |-
     from sentry.conf.server import *  # NOQA
 
@@ -120,8 +120,13 @@ data:
             "NAME": "{{ .Values.postgresql.postgresqlDatabase }}",
             "USER": "{{ .Values.postgresql.postgresqlUsername }}",
             "PASSWORD": "{{ .Values.postgresql.postgresqlPassword }}",
-            "HOST": "{{ default ( include "sentry.postgresql.host" .) .Values.postgresql.hostOverride }}",
-            "PORT": {{ default "5432" .Values.postgresql.service.port }},
+            "HOST": {{ default ( include "sentry.postgresql.host" .) .Values.postgresql.hostOverride }},
+            "PORT": {{ template "sentry.postgresql.port" . }},
+            {{- if .Values.postgresql.postgresSslMode }}
+            'OPTIONS': {
+                'sslmode': '{{ .Values.postgresql.postgresSslMode }}',
+            },
+            {{- end }}
         }
     }
 
@@ -147,8 +152,8 @@ data:
     # information on configuring your queue broker and workers. Sentry relies
     # on a Python framework called Celery to manage queues.
     
-    {{- if .Values.rabbitmq.enabled }}
-    BROKER_URL = os.environ.get("BROKER_URL", "amqp://{{ .Values.rabbitmq.rabbitmqUsername }}:{{ .Values.rabbitmq.rabbitmqPassword }}@{{ template "sentry.rabbitmq.fullname" . }}:5672//")
+    {{- if or (.Values.rabbitmq.enabled) (.Values.rabbitmq.host) }}
+    BROKER_URL = os.environ.get("BROKER_URL", "amqp://{{ .Values.rabbitmq.rabbitmqUsername }}:{{ .Values.rabbitmq.rabbitmqPassword }}@{{ template "sentry.rabbitmq.host" . }}:5672//")
     {{- else if .Values.redis.usePassword }}
     BROKER_URL = os.environ.get("BROKER_URL", "redis://:{{ $redisPass }}@{{ $redisHost }}:{{ $redisPort }}/0")
     {{- else }}
@@ -321,4 +326,4 @@ data:
     # BITBUCKET_CONSUMER_KEY = 'YOUR_BITBUCKET_CONSUMER_KEY'
     # BITBUCKET_CONSUMER_SECRET = 'YOUR_BITBUCKET_CONSUMER_SECRET'
 
-    {{ .Values.config.py }}
+    {{ .Values.config.sentryConfPy }}

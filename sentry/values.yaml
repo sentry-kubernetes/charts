@@ -8,12 +8,12 @@ user:
 images:
   sentry:
     repository: getsentry/sentry
-    tag: 10.0.0
+    tag: b15b1512a59051c84775e5eb7186a4da505e0ac4
     pullPolicy: IfNotPresent
     # imagePullSecrets: []
   snuba:
     repository: getsentry/snuba
-    tag: f9e388782bf85e2ab0c879a08d3a59541ce093b2
+    tag: 9d678c2551045a696e5701d845a83c77dc528bd0
     pullPolicy: IfNotPresent
     # imagePullSecrets: []
 
@@ -214,9 +214,9 @@ filestore:
   #  default_acl:
 
 config:
-  yaml: |
+  configYml: |
     # No YAML Extension Config Given
-  py: |
+  sentryConfPy: |
     # No Python Extension Config Given
 
 
@@ -227,6 +227,9 @@ clickhouse:
 
 kafka:
   enabled: true
+
+  service:
+    port: 9092
 
 redis:
   ## Required if the Redis component of this chart is disabled. (Existing Redis)
@@ -256,6 +259,7 @@ postgresql:
   # postgresqlHost: postgres
   # postgresqlPassword: postgres
   # postgresqlPort: 5432
+  # postgresSslMode: require
   replication:
     enabled: false
     slaveReplicas: 2
