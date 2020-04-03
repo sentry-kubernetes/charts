@@ -1,4 +1,4 @@
-{{- if .Values.rabbitmq.enabled }}
+{{- if or (.Values.rabbitmq.enabled) (.Values.rabbitmq.host) }}
 {{- $redisHost := .Values.redis.hostOverride | default (include "sentry.redis.host" .) -}}
 apiVersion: apps/v1
 kind: Deployment
@@ -66,15 +66,15 @@ spec:
             value: http://{{ template "sentry.fullname" . }}-snuba:{{ template "snuba.port" }}
           - name: C_FORCE_ROOT
             value: "true"
-          - name: BROKER_URL
-          {{- if .Values.rabbitmq.enabled }}
-            value: amqp://{{ .Values.rabbitmq.rabbitmqUsername }}:{{ .Values.rabbitmq.rabbitmqPassword }}@{{ template "sentry.rabbitmq.fullname" . }}:5672//
-          {{ else }}
-            {{ if .Values.redis.usePassword }}
-            value: redis://:{{ .Values.redis.password }}@{{ $redisHost}}:{{ .Values.redis.redisPort }}/0
-            {{ else }}
-            value: redis://{{ $redisHost }}:{{ .Values.redis.redisPort }}/0
-            {{ end }}  
+          # - name: BROKER_URL
+          # {{- if or (.Values.rabbitmq.enabled) (.Values.rabbitmq.host) }}
+          #   value: amqp://{{ .Values.rabbitmq.rabbitmqUsername }}:{{ .Values.rabbitmq.rabbitmqPassword }}@{{ template "sentry.rabbitmq.fullname" . }}:5672//
+          # {{ else }}
+          #   {{ if .Values.redis.usePassword }}
+          #   value: redis://:{{ .Values.redis.password }}@{{ $redisHost}}:{{ .Values.redis.redisPort }}/0
+          #   {{ else }}
+          #   value: redis://{{ $redisHost }}:{{ .Values.redis.redisPort }}/0
+          #   {{ end }}  
           {{- end }}
         {{ if eq .Values.filestore.backend "gcs" }}
           - name: GOOGLE_APPLICATION_CREDENTIALS
