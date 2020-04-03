@@ -25,6 +25,11 @@ jobs:
           git fetch --no-tags --prune --depth=1 origin +refs/heads/*:refs/remotes/origin/*
           git checkout gh-pages
 
+      # - name: Build zips
+      #   uses: yeouchien/helm3-action@f3a7c239c5c60777210c8e631839edf5dd3fa29c
+      #   with:
+      #     command: dep update main/sentry
+
       - name: Build zips
         uses: yeouchien/helm3-action@f3a7c239c5c60777210c8e631839edf5dd3fa29c
         with:

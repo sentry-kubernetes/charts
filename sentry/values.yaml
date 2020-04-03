@@ -118,17 +118,6 @@ symbolicator:
 auth:
   register: true
 
-kafka:
-  host: kafka-confluent
-  port: 9092
-
-  replicaCount: 3
-  allowPlaintextListener: true
-  defaultReplicationFactor: 3
-  offsetsTopicReplicationFactor: 3
-  transactionStateLogReplicationFactor: 3
-  transactionStateLogMinIsr: 3
-
 service:
   name: sentry
   type: ClusterIP
@@ -234,6 +223,12 @@ clickhouse:
 
 kafka:
   enabled: true
+  replicaCount: 3
+  allowPlaintextListener: true
+  defaultReplicationFactor: 3
+  offsetsTopicReplicationFactor: 3
+  transactionStateLogReplicationFactor: 3
+  transactionStateLogMinIsr: 3
 
   service:
     port: 9092
