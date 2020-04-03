@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ template "sentry.prefix" . }}post-process-forward
+  name: {{ template "sentry.fullname" . }}-post-process-forward
   labels:
     app: sentry
     chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
@@ -51,7 +51,7 @@ spec:
         command: ["sentry", "run", "post-process-forwarder", "--commit-batch-size", "1"]
         env:
           - name: SNUBA
-            value: http://{{ template "sentry.prefix" . }}snuba:{{ template "snuba.port" }}
+            value: http://{{ template "sentry.fullname" . }}-snuba:{{ template "snuba.port" }}
         {{ if eq .Values.filestore.backend "gcs" }}
           - name: GOOGLE_APPLICATION_CREDENTIALS
             value: /var/run/secrets/google/{{ .Values.filestore.gcs.credentialsFile }}
@@ -74,11 +74,11 @@ spec:
       volumes:
       - name: config
         configMap:
-          name: {{ template "sentry.prefix" . }}sentry
+          name: {{ template "sentry.fullname" . }}-sentry
       - name: sentry-data
       {{- if and (eq .Values.filestore.backend "filesystem") .Values.filestore.filesystem.persistence.enabled (.Values.filestore.filesystem.persistence.persistentWorkers) }}
         persistentVolumeClaim:
-          claimName: {{ template "sentry.prefix" . }}sentry-data
+          claimName: {{ template "sentry.fullname" . }}-data
       {{- else }}
         emptyDir: {}
       {{ end }}

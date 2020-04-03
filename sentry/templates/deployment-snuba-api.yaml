@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ template "sentry.prefix" . }}snuba-api
+  name: {{ template "sentry.fullname" . }}-snuba-api
   labels:
     app: sentry
     chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
@@ -10,9 +10,9 @@ metadata:
 spec:
   selector:
     matchLabels:
-        app: sentry
-        release: "{{ .Release.Name }}"
-        role: snuba-api
+      app: {{ template "sentry.fullname" . }}
+      release: "{{ .Release.Name }}"
+      role: snuba-api
   replicas: {{ .Values.snuba.api.replicas }}
   template:
     metadata:
@@ -22,7 +22,7 @@ spec:
 {{ toYaml .Values.snuba.api.annotations | indent 8 }}
         {{- end }}
       labels:
-        app: sentry
+        app: {{ template "sentry.fullname" . }}
         release: "{{ .Release.Name }}"
         role: snuba-api
         {{- if .Values.snuba.api.podLabels }}
@@ -53,7 +53,7 @@ spec:
         - containerPort: {{ template "snuba.port" }}
         envFrom:
         - configMapRef:
-            name: {{ template "sentry.prefix" . }}snuba
+            name: {{ template "sentry.fullname" . }}-snuba
 {{- if .Values.snuba.api.env }}
         env:
 {{ toYaml .Values.snuba.api.env | indent 8 }}
