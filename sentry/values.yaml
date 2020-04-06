@@ -69,6 +69,13 @@ snuba:
     nodeSelector: {}
     # tolerations: []
     # podLabels: []
+
+    autoscaling:
+      enabled: false
+      minReplicas: 2
+      maxReplicas: 5
+      targetCPUUtilizationPercentage: 50
+
   consumer:
     replicas: 1
     env: {}
