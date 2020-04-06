@@ -234,7 +234,7 @@ Set RabbitMQ host
 */}}
 {{- define "sentry.rabbitmq.host" -}}
 {{- if .Values.rabbitmq.enabled -}}
-    {{- default "rabbitmq-ha"  (include "sentry.rabbitmq.fullname" .) -}}
+    {{- default "rabbitmq"  (include "sentry.rabbitmq.fullname" .) -}}
 {{- else -}}
     {{ .Values.rabbitmq.host }}
 {{- end -}}
