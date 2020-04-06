@@ -62,13 +62,13 @@ spec:
           - "{{ .Values.sentry.worker.concurrency }}"
           {{- end }}
         env:
-          - name: SNUBA
-            value: http://{{ template "sentry.fullname" . }}-snuba:{{ template "snuba.port" }}
-          - name: C_FORCE_ROOT
-            value: "true"
+        - name: SNUBA
+          value: http://{{ template "sentry.fullname" . }}-snuba:{{ template "snuba.port" }}
+        - name: C_FORCE_ROOT
+          value: "true"
         {{ if eq .Values.filestore.backend "gcs" }}
-          - name: GOOGLE_APPLICATION_CREDENTIALS
-            value: /var/run/secrets/google/{{ .Values.filestore.gcs.credentialsFile }}
+        - name: GOOGLE_APPLICATION_CREDENTIALS
+          value: /var/run/secrets/google/{{ .Values.filestore.gcs.credentialsFile }}
         {{ end }}
 {{- if .Values.sentry.worker.env }}
 {{ toYaml .Values.sentry.worker.env | indent 8 }}
