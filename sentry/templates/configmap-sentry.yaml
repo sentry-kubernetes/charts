@@ -110,7 +110,7 @@ data:
       {{- end }}
     {{ end }}
 
-    {{ .Values.config.configYml }}
+{{ .Values.config.configYml | indent 4 }}
   sentry.conf.py: |-
     from sentry.conf.server import *  # NOQA
 
@@ -326,4 +326,4 @@ data:
     # BITBUCKET_CONSUMER_KEY = 'YOUR_BITBUCKET_CONSUMER_KEY'
     # BITBUCKET_CONSUMER_SECRET = 'YOUR_BITBUCKET_CONSUMER_SECRET'
 
-    {{ .Values.config.sentryConfPy }}
+{{ .Values.config.sentryConfPy | indent 4 }}

@@ -55,11 +55,11 @@ spec:
         ports:
         - containerPort: {{ template "sentry.port" }}
         env:
-          - name: SNUBA
-            value: http://{{ template "sentry.fullname" . }}-snuba:{{ template "snuba.port" }}
+        - name: SNUBA
+          value: http://{{ template "sentry.fullname" . }}-snuba:{{ template "snuba.port" }}
         {{ if eq .Values.filestore.backend "gcs" }}
-          - name: GOOGLE_APPLICATION_CREDENTIALS
-            value: /var/run/secrets/google/{{ .Values.filestore.gcs.credentialsFile }}
+        - name: GOOGLE_APPLICATION_CREDENTIALS
+          value: /var/run/secrets/google/{{ .Values.filestore.gcs.credentialsFile }}
         {{ end }}
 {{- if .Values.sentry.web.env }}
 {{ toYaml .Values.sentry.web.env | indent 8 }}

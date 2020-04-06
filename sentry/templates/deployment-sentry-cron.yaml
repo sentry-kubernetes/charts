@@ -57,13 +57,13 @@ spec:
           - "run"
           - "cron"
         env:
-          - name: SNUBA
-            value: http://{{ template "sentry.fullname" . }}-snuba:{{ template "snuba.port" }}
-          - name: C_FORCE_ROOT
-            value: "true"
+        - name: SNUBA
+          value: http://{{ template "sentry.fullname" . }}-snuba:{{ template "snuba.port" }}
+        - name: C_FORCE_ROOT
+          value: "true"
         {{ if eq .Values.filestore.backend "gcs" }}
-          - name: GOOGLE_APPLICATION_CREDENTIALS
-            value: /var/run/secrets/google/{{ .Values.filestore.gcs.credentialsFile }}
+        - name: GOOGLE_APPLICATION_CREDENTIALS
+          value: /var/run/secrets/google/{{ .Values.filestore.gcs.credentialsFile }}
         {{ end }}
 {{- if .Values.sentry.cron.env }}
 {{ toYaml .Values.sentry.cron.env | indent 8 }}
