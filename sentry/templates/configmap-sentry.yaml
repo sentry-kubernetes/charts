@@ -120,7 +120,7 @@ data:
             "NAME": "{{ .Values.postgresql.postgresqlDatabase }}",
             "USER": "{{ .Values.postgresql.postgresqlUsername }}",
             "PASSWORD": "{{ .Values.postgresql.postgresqlPassword }}",
-            "HOST": {{ default ( include "sentry.postgresql.host" .) .Values.postgresql.hostOverride }},
+            "HOST": "{{ default ( include "sentry.postgresql.host" .) .Values.postgresql.hostOverride }}",
             "PORT": {{ template "sentry.postgresql.port" . }},
             {{- if .Values.postgresql.postgresSslMode }}
             'OPTIONS': {
