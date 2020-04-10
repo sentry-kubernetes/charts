@@ -19,7 +19,7 @@ Finally, it's just a case of upgrading and ensuring the correct params are used:
 
 If Redis auth enabled:
 
-> helm upgrade -n <Sentry namespace> <Sentry Release> . --set redis.usePassword=true --set redis.password=<Redis Password> --set postgresql.postgresqlPassword=<Postgresql Password>
+> helm upgrade -n <Sentry namespace> <Sentry Release> . --set redis.usePassword=true --set redis.password=<Redis Password>
 
 If Redis auth is disabled:
-> helm upgrade -n <Sentry namespace> <Sentry Release> . --set postgresql.postgresqlPassword=<Postgresql Password>
+> helm upgrade -n <Sentry namespace> <Sentry Release> .
