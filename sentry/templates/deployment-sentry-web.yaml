@@ -57,6 +57,13 @@ spec:
         env:
         - name: SNUBA
           value: http://{{ template "sentry.fullname" . }}-snuba:{{ template "snuba.port" }}
+        {{- if .Values.postgresql.enabled }}
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ include "sentry.postgresql.fullname" . }}
+              key: postgresql-password
+        {{- end }}
         {{ if eq .Values.filestore.backend "gcs" }}
         - name: GOOGLE_APPLICATION_CREDENTIALS
           value: /var/run/secrets/google/{{ .Values.filestore.gcs.credentialsFile }}
