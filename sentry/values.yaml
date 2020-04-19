@@ -102,6 +102,9 @@ hooks:
       requests:
         cpu: 300m
         memory: 2048Mi
+    affinity: {}
+    nodeSelector: {}
+    tolerations: []
   snubaInit:
     resources:
       limits:
@@ -110,6 +113,10 @@ hooks:
       requests:
         cpu: 700m
         memory: 1Gi
+    affinity: {}
+    nodeSelector: {}
+    tolerations: []
+
 
 system:
   url: ""

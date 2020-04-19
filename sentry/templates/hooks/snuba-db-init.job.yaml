@@ -48,6 +48,18 @@ spec:
         env:
 {{ toYaml .Values.snuba.env | indent 8 }}
 {{- end }}
+      {{- with .Values.hooks.dbInit.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.hooks.dbInit.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.hooks.dbInit.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
         resources:
 {{ toYaml .Values.hooks.snubaInit.resources | indent 10 }}
 {{- end }}

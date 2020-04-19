@@ -47,6 +47,18 @@ spec:
         env:
 {{ toYaml .Values.snuba.env | indent 8 }}
 {{- end }}
+      {{- with .Values.hooks.snubaInit.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.hooks.snubaInit.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.hooks.snubaInit.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
         resources:
 {{ toYaml .Values.hooks.snubaInit.resources | indent 10 }}
 {{- end }}

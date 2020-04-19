@@ -52,6 +52,18 @@ spec:
           name: config
           readOnly: true
         resources:
+      {{- with .Values.hooks.dbInit.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.hooks.dbInit.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.hooks.dbInit.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
 {{ toYaml .Values.hooks.dbInit.resources | indent 10 }}
       volumes:
       - name: config
