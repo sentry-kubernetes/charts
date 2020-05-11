@@ -1,4 +1,4 @@
-{{- $redisHost := .Values.redis.hostOverride | default (include "sentry.redis.host" .) -}}
+{{- $redisHost := include "sentry.redis.host" . -}}
 {{- $redisPass := .Values.redis.password -}}
 apiVersion: v1
 kind: ConfigMap
@@ -17,6 +17,4 @@ data:
   {{- if $redisPass }}
   REDIS_PASSWORD: "{{ $redisPass }}"
   {{- end }}
-  {{- if .Values.kafka.enabled }}
   DEFAULT_BROKERS: "{{ printf "%s:%s" (include "sentry.kafka.host" .) (include "sentry.kafka.port" .) }}"
-  {{- end }}
