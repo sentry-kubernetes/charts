@@ -191,7 +191,7 @@ Set Kafka Confluent host
 {{- if .Values.kafka.enabled -}}
     {{- template "sentry.kafka.fullname" . -}}
 {{- else -}}
-    "kafka-confluent"
+    kafka-confluent
 {{- end -}}
 {{- end -}}
 
@@ -199,10 +199,10 @@ Set Kafka Confluent host
 Set Kafka Confluent port
 */}}
 {{- define "sentry.kafka.port" -}}
-{{- if .Values.kafka.enabled -}}
-    {{- default "9092" .Values.kafka.service.port }}
+{{- if and (.Values.kafka.enabled) (.Values.kafka.service.port) -}}
+    {{- .Values.kafka.service.port }}
 {{- else -}}
-    "9092"
+    9092
 {{- end -}}
 {{- end -}}
 
