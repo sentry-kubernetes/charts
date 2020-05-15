@@ -16,7 +16,7 @@ data:
     DEBUG = env("DEBUG", "0").lower() in ("1", "true")
 
     {{- if .Values.kafka.enabled }}
-    DEFAULT_BROKERS = "{{ printf "%s:%s" (include "sentry.kafka.host" .) (include "sentry.kafka.port" .) }}"
+    DEFAULT_BROKERS = [{{ printf "%s:%s" (include "sentry.kafka.host" .) (include "sentry.kafka.port" .) | quote }}]
     {{- end }}
 
     REDIS_HOST = {{ include "sentry.redis.host" . | quote }}
