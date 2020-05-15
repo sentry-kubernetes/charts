@@ -1,5 +1,4 @@
 {{- $redisHost := .Values.redis.hostOverride | default (include "sentry.redis.host" .) -}}
-{{- $redisPort := .Values.redis.redisPort | default (include "sentry.redis.port" .) -}}
 {{- $redisPass := .Values.redis.password -}}
 apiVersion: v1
 kind: ConfigMap
@@ -23,7 +22,7 @@ data:
     {{- end }}
 
     REDIS_HOST = {{ $redisHost | quote }}
-    REDIS_PORT = {{ $redisPort | default 6379 }}
+    REDIS_PORT = {{ include "sentry.redis.port" . }}
     REDIS_PASSWORD = {{ $redisPass | quote }}
     REDIS_DB = int(env("REDIS_DB", 1))
     USE_REDIS_CLUSTER = False
