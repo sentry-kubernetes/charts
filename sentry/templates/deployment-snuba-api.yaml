@@ -51,9 +51,6 @@ spec:
         imagePullPolicy: {{ .Values.images.snuba.pullPolicy }}
         ports:
         - containerPort: {{ template "snuba.port" }}
-        envFrom:
-        - configMapRef:
-            name: {{ template "sentry.fullname" . }}-snuba
         env:
           - name: SNUBA_SETTINGS
             value: /etc/snuba/settings.py

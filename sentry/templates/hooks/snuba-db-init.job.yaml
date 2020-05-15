@@ -41,9 +41,6 @@ spec:
         # command: ["./docker_entrypoint.sh", "replacer","--auto-offset-reset=latest","--max-batch-size", "3"]
         # We need to run this job a lot of times until it works... until https://github.com/getsentry/snuba/issues/671 is fixed
         command: ["/bin/bash", "-c", "for i in {1..5};do (LOG_LEVEL=debug snuba bootstrap --force || true);done"]
-        envFrom:
-        - configMapRef:
-            name: {{ template "sentry.fullname" . }}-snuba
         env:
           - name: SNUBA_SETTINGS
             value: /etc/snuba/settings.py

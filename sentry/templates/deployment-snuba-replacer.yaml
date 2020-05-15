@@ -52,9 +52,6 @@ spec:
         command: ["snuba", "replacer", "--auto-offset-reset=latest", "--max-batch-size",  "3"]
         ports:
         - containerPort: {{ template "snuba.port" }}
-        envFrom:
-        - configMapRef:
-            name: {{ template "sentry.fullname" . }}-snuba
         env:
           - name: SNUBA_SETTINGS
             value: /etc/snuba/settings.py

@@ -40,9 +40,6 @@ spec:
         image: "{{ .Values.images.snuba.repository }}:{{ .Values.images.snuba.tag }}"
         # command: ["./docker_entrypoint.sh", "replacer","--auto-offset-reset=latest","--max-batch-size", "3"]
         command: ["/bin/bash", "-c", "for i in {1..10};do (LOG_LEVEL=debug snuba migrate || true);done"]
-        envFrom:
-        - configMapRef:
-            name: {{ template "sentry.fullname" . }}-snuba
         env:
           - name: SNUBA_SETTINGS
             value: /etc/snuba/settings.py
