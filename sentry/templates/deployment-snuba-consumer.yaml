@@ -17,6 +17,7 @@ spec:
   template:
     metadata:
       annotations:
+        checksum/snubaSettingsPy: {{ .Values.config.snubaSettingsPy | sha256sum }}
         checksum/config.yaml: {{ include (print $.Template.BasePath "/configmap-snuba.yaml") . | sha256sum }}
         {{- if .Values.snuba.consumer.annotations }}
 {{ toYaml .Values.snuba.consumer.annotations | indent 8 }}
