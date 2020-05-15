@@ -1,4 +1,5 @@
 {{- $redisHost := .Values.redis.hostOverride | default (include "sentry.redis.host" .) -}}
+{{- $redisPort := .Values.redis.redisPort | default (include "sentry.redis.port" .) -}}
 {{- $redisPass := .Values.redis.password -}}
 apiVersion: v1
 kind: ConfigMap
@@ -10,13 +11,29 @@ metadata:
     release: "{{ .Release.Name }}"
     heritage: "{{ .Release.Service }}"
 data:
-  SNUBA_SETTINGS: docker
-  CLICKHOUSE_HOST: "{{ template "sentry.clickhouse.host" . }}"
-  CLICKHOUSE_PORT: "{{ template "sentry.clickhouse.port" . }}"
-  REDIS_HOST: "{{ $redisHost }}"
-  {{- if $redisPass }}
-  REDIS_PASSWORD: "{{ $redisPass }}"
-  {{- end }}
-  {{- if .Values.kafka.enabled }}
-  DEFAULT_BROKERS: "{{ printf "%s:%s" (include "sentry.kafka.host" .) (include "sentry.kafka.port" .) }}"
-  {{- end }}
+  settings.py: |
+    import os
+
+    env = os.environ.get
+
+    DEBUG = env("DEBUG", "0").lower() in ("1", "true")
+
+    {{- if .Values.kafka.enabled }}
+    DEFAULT_BROKERS = "{{ printf "%s:%s" (include "sentry.kafka.host" .) (include "sentry.kafka.port" .) }}"
+    {{- end }}
+
+    REDIS_HOST = {{ $redisHost | quote }}
+    REDIS_PORT = {{ $redisPort | default 6379 }}
+    REDIS_PASSWORD = {{ $redisPass | quote }}
+    REDIS_DB = int(env("REDIS_DB", 1))
+    USE_REDIS_CLUSTER = False
+
+    # Dogstatsd Options
+    DOGSTATSD_HOST = None
+    DOGSTATSD_PORT = None
+
+    # Clickhouse Options
+    CLICKHOUSE_HOST = {{ include "sentry.clickhouse.host" . | quote }}
+    CLICKHOUSE_PORT = {{ include "sentry.clickhouse.port" . }}
+
+{{ .Values.config.snubaSettingsPy | indent 4 }}

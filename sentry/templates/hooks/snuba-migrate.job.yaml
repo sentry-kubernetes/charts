@@ -43,10 +43,20 @@ spec:
         envFrom:
         - configMapRef:
             name: {{ template "sentry.fullname" . }}-snuba
-{{- if .Values.snuba.env }}
         env:
+          - name: SNUBA_SETTINGS
+            value: /etc/snuba/settings.py
+{{- if .Values.snuba.env }}
 {{ toYaml .Values.snuba.env | indent 8 }}
 {{- end }}
+        volumeMounts:
+        - mountPath: /etc/snuba
+          name: config
+          readOnly: true
         resources:
 {{ toYaml .Values.hooks.snubaInit.resources | indent 10 }}
 {{- end }}
+      volumes:
+        - name: config
+          configMap:
+            name: {{ template "sentry.fullname" . }}-snuba
