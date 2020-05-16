@@ -92,6 +92,12 @@ snuba:
     # tolerations: []
     # podLabels: []
 
+  dbInitJob:
+    env: {}
+
+  migrateJob:
+    env: {}
+
 
 hooks:
   enabled: true

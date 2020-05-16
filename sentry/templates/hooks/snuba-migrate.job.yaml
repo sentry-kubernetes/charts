@@ -44,8 +44,8 @@ spec:
         env:
           - name: SNUBA_SETTINGS
             value: /etc/snuba/settings.py
-{{- if .Values.snuba.env }}
-{{ toYaml .Values.snuba.env | indent 8 }}
+{{- if .Values.snuba.migrateJob.env }}
+{{ toYaml .Values.snuba.migrateJob.env | indent 8 }}
 {{- end }}
         volumeMounts:
         - mountPath: /etc/snuba
