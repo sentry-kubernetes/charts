@@ -46,7 +46,7 @@ spec:
           - name: SNUBA_SETTINGS
             value: /etc/snuba/settings.py
 {{- if .Values.snuba.dbInitJob.env }}
-{{ toYaml .Values.snuba.dbInitJob.env | indent 8 }}
+{{ toYaml .Values.snuba.dbInitJob.env | indent 10 }}
 {{- end }}
         volumeMounts:
         - mountPath: /etc/snuba
