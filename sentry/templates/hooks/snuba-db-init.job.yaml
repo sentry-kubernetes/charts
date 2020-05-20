@@ -1,4 +1,5 @@
 {{- if .Values.hooks.enabled -}}
+{{- $clickhouseHost := include "sentry.clickhouse.host" . -}}
 apiVersion: batch/v1
 kind: Job
 metadata:
@@ -40,11 +41,23 @@ spec:
       - name: snuba-init
         image: "{{ .Values.images.snuba.repository }}:{{ .Values.images.snuba.tag }}"
         # command: ["./docker_entrypoint.sh", "replacer","--auto-offset-reset=latest","--max-batch-size", "3"]
-        # We need to run this job a lot of times until it works... until https://github.com/getsentry/snuba/issues/671 is fixed
-        command: ["/bin/bash", "-c", "for i in {1..5};do (LOG_LEVEL=debug snuba bootstrap --force || true);done"]
+        command: [
+          "/bin/bash",
+          "-ec",
+          "for ((i=0;i<{{ .Values.clickhouse.clickhouse.replicas }};i++)); do
+            export CLICKHOUSE_HOST={{ $clickhouseHost }}-$i.{{ $clickhouseHost }}-headless;
+            snuba bootstrap --force;
+            export CLICKHOUSE_HOST={{ $clickhouseHost }}-replica-$i.{{ $clickhouseHost }}-replica-headless;
+            snuba bootstrap --force;
+          done"
+        ]
         env:
+          - name: LOG_LEVEL
+            value: debug
           - name: SNUBA_SETTINGS
             value: /etc/snuba/settings.py
+          - name: DATASET_MODE
+            value: local
 {{- if .Values.snuba.dbInitJob.env }}
 {{ toYaml .Values.snuba.dbInitJob.env | indent 10 }}
 {{- end }}

@@ -32,7 +32,9 @@ data:
     DOGSTATSD_PORT = None
 
     # Clickhouse Options
-    CLICKHOUSE_HOST = {{ include "sentry.clickhouse.host" . | quote }}
+    CLICKHOUSE_HOST = env("CLICKHOUSE_HOST", {{ include "sentry.clickhouse.host" . | quote }})
     CLICKHOUSE_PORT = {{ include "sentry.clickhouse.port" . }}
+
+    DATASET_MODE = env("DATASET_MODE", "distributed")
 
 {{ .Values.config.snubaSettingsPy | indent 4 }}
