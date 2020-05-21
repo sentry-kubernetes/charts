@@ -1,5 +1,6 @@
 {{- if .Values.hooks.enabled -}}
 {{- $clickhouseHost := include "sentry.clickhouse.host" . -}}
+{{- $clickhousePort := include "sentry.clickhouse.port" . -}}
 {{- $createQuery := .Release.Name | printf "CREATE TABLE IF NOT EXISTS sentry_dist AS sentry_local ENGINE = Distributed(%s-clickhouse, default, sentry_local, rand())" -}}
 apiVersion: batch/v1
 kind: Job
@@ -37,9 +38,9 @@ spec:
           "-ec",
           "for ((i=0;i<{{ .Values.clickhouse.clickhouse.replicas }};i++)); do
             export CLICKHOUSE_HOST={{ $clickhouseHost }}-$i.{{ $clickhouseHost }}-headless;
-            clickhouse-client --database=default --host=$CLICKHOUSE_HOST --query='{{ $createQuery }}';
+            clickhouse-client --database=default --host=$CLICKHOUSE_HOST --port={{ $clickhousePort }} --query='{{ $createQuery }}';
             export CLICKHOUSE_HOST={{ $clickhouseHost }}-replica-$i.{{ $clickhouseHost }}-replica-headless;
-            clickhouse-client --database=default --host=$CLICKHOUSE_HOST --query='{{ $createQuery }}';
+            clickhouse-client --database=default --host=$CLICKHOUSE_HOST --port={{ $clickhousePort }} --query='{{ $createQuery }}';
           done"
         ]
 {{- end }}
