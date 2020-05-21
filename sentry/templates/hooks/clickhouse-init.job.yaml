@@ -33,12 +33,12 @@ spec:
       containers:
       - name: clickhouse-init
         image: "{{ .Values.clickhouse.clickhouse.image }}:{{ .Values.clickhouse.clickhouse.imageVersion }}"
-        command: [
-          "/bin/bash",
-          "-ec",
-          "for ((i=0;i<{{ .Values.clickhouse.clickhouse.replicas }};i++)); do
-            clickhouse-client --database=default --host={{ $clickhouseHost }}-$i.{{ $clickhouseHost }}-headless --port={{ $clickhousePort }} --query='{{ $createQuery }}';
-            clickhouse-client --database=default --host={{ $clickhouseHost }}-replica-$i.{{ $clickhouseHost }}-replica-headless --port={{ $clickhousePort }} --query='{{ $createQuery }}';
-          done"
-        ]
+        command:
+          - /bin/bash
+          - -ec
+          - >-
+            for ((i=0;i<{{ .Values.clickhouse.clickhouse.replicas }};i++)); do
+              clickhouse-client --database=default --host={{ $clickhouseHost }}-$i.{{ $clickhouseHost }}-headless --port={{ $clickhousePort }} --query='{{ $createQuery }}';
+              clickhouse-client --database=default --host={{ $clickhouseHost }}-replica-$i.{{ $clickhouseHost }}-replica-headless --port={{ $clickhousePort }} --query='{{ $createQuery }}';
+            done
 {{- end }}
