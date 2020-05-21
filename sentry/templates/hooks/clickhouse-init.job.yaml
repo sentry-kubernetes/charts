@@ -1,0 +1,45 @@
+{{- if .Values.hooks.enabled -}}
+{{- $clickhouseHost := include "sentry.clickhouse.host" . -}}
+{{- $createQuery := .Release.Name | printf "CREATE TABLE IF NOT EXISTS sentry_dist AS sentry_local ENGINE = Distributed(%s-clickhouse, default, sentry_local, rand())" -}}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ template "sentry.fullname" . }}-clickhouse-init
+  labels:
+    app: sentry
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
+    release: "{{ .Release.Name }}"
+    heritage: "{{ .Release.Service }}"
+  annotations:
+    # This is what defines this resource as a hook. Without this line, the
+    # job is considered part of the release.
+    "helm.sh/hook": "post-install,post-upgrade"
+    "helm.sh/hook-delete-policy": "hook-succeeded,before-hook-creation"
+    "helm.sh/hook-weight": "4"
+spec:
+  template:
+    metadata:
+      name: {{ template "sentry.fullname" . }}-clickhouse-init
+      labels:
+        app: sentry
+        release: "{{ .Release.Name }}"
+    spec:
+      restartPolicy: Never
+      {{- if .Values.clickhouse.clickhouse.imagePullSecrets }}
+      imagePullSecrets:
+{{ toYaml .Values.clickhouse.clickhouse.imagePullSecrets | indent 8 }}
+      {{- end }}
+      containers:
+      - name: clickhouse-init
+        image: "{{ .Values.clickhouse.clickhouse.image }}:{{ .Values.clickhouse.clickhouse.imageVersion }}"
+        command: [
+          "/bin/bash",
+          "-ec",
+          "for ((i=0;i<{{ .Values.clickhouse.clickhouse.replicas }};i++)); do
+            export CLICKHOUSE_HOST={{ $clickhouseHost }}-$i.{{ $clickhouseHost }}-headless;
+            clickhouse-client --database=default --host=$CLICKHOUSE_HOST --query='{{ $createQuery }}';
+            export CLICKHOUSE_HOST={{ $clickhouseHost }}-replica-$i.{{ $clickhouseHost }}-replica-headless;
+            clickhouse-client --database=default --host=$CLICKHOUSE_HOST --query='{{ $createQuery }}';
+          done"
+        ]
+{{- end }}
