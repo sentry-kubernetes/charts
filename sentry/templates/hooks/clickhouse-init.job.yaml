@@ -37,10 +37,8 @@ spec:
           "/bin/bash",
           "-ec",
           "for ((i=0;i<{{ .Values.clickhouse.clickhouse.replicas }};i++)); do
-            export CLICKHOUSE_HOST={{ $clickhouseHost }}-$i.{{ $clickhouseHost }}-headless;
-            clickhouse-client --database=default --host=$CLICKHOUSE_HOST --port={{ $clickhousePort }} --query='{{ $createQuery }}';
-            export CLICKHOUSE_HOST={{ $clickhouseHost }}-replica-$i.{{ $clickhouseHost }}-replica-headless;
-            clickhouse-client --database=default --host=$CLICKHOUSE_HOST --port={{ $clickhousePort }} --query='{{ $createQuery }}';
+            clickhouse-client --database=default --host={{ $clickhouseHost }}-$i.{{ $clickhouseHost }}-headless --port={{ $clickhousePort }} --query='{{ $createQuery }}';
+            clickhouse-client --database=default --host={{ $clickhouseHost }}-replica-$i.{{ $clickhouseHost }}-replica-headless --port={{ $clickhousePort }} --query='{{ $createQuery }}';
           done"
         ]
 {{- end }}
