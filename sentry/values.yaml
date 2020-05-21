@@ -241,6 +241,9 @@ clickhouse:
   enabled: true
   clickhouse:
     imageVersion: "19.16"
+    configmap:
+      remote_servers:
+        internal_replication: true
 
 kafka:
   enabled: true
