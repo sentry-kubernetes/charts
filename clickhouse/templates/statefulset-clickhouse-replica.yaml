@@ -1,0 +1,184 @@
+{{- if .Values.clickhouse.configmap.remote_servers.replica.backup.enabled }}
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "clickhouse.fullname" . }}-replica
+  labels:
+    app.kubernetes.io/name: {{ include "clickhouse.name" . }}-replica
+    app.kubernetes.io/instance: {{ .Release.Name }}-replica
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+spec:
+  replicas: {{ .Values.clickhouse.replicas }}
+  podManagementPolicy: {{ .Values.clickhouse.podManagementPolicy }}
+  updateStrategy:
+    type: {{ .Values.clickhouse.updateStrategy }}
+    {{- if (eq "Recreate" .Values.clickhouse.updateStrategy) }}
+    rollingUpdate: null
+    {{- else if .Values.clickhouse.rollingUpdatePartition }}
+    rollingUpdate:
+      partition: {{ .Values.clickhouse.rollingUpdatePartition }}
+    {{- end }}
+  serviceName: {{ include "clickhouse.fullname" . }}-replica-headless
+  selector: 
+    matchLabels: 
+      app.kubernetes.io/name: {{ include "clickhouse.name" . }}-replica
+      app.kubernetes.io/instance: {{ .Release.Name }}-replica
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ include "clickhouse.name" . }}-replica
+        app.kubernetes.io/instance: {{ .Release.Name }}-replica
+    spec:
+    {{- if .Values.affinity }}
+      affinity:
+{{ toYaml .Values.affinity | indent 8 }}
+    {{- end }}
+    {{- if .Values.clickhouse.imagePullSecrets }}
+      imagePullSecrets:
+    {{- range .Values.clickhouse.imagePullSecrets }}
+      - name: {{ . | quote }}
+    {{- end }}
+    {{- end }}
+      initContainers:
+      - name: init
+        image: busybox:1.31.0
+        imagePullPolicy: IfNotPresent
+        args:
+        - /bin/sh
+        - -c
+        - |
+          mkdir -p /etc/clickhouse-server/metrica.d
+      containers:
+      - name: {{ include "clickhouse.fullname" . }}-replica
+        image: {{ .Values.clickhouse.image }}:{{ .Values.clickhouse.imageVersion }}
+        imagePullPolicy: {{ .Values.clickhouse.imagePullPolicy }}
+        ports:
+        - name: http-port
+          containerPort: {{ .Values.clickhouse.http_port | default "8123" }} 
+        - name: tcp-port
+          containerPort: {{ .Values.clickhouse.tcp_port | default "9000" }}
+        - name: inter-http-port
+          containerPort: {{ .Values.clickhouse.interserver_http_port | default "9009" }}
+      {{- if .Values.clickhouse.livenessProbe.enabled }}
+        livenessProbe: 
+          tcpSocket:
+            port: {{ .Values.clickhouse.tcp_port }}
+          initialDelaySeconds: {{ .Values.clickhouse.livenessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.clickhouse.livenessProbe.periodSeconds }}
+          timeoutSeconds: {{ .Values.clickhouse.livenessProbe.timeoutSeconds }}
+          failureThreshold: {{ .Values.clickhouse.livenessProbe.failureThreshold }}
+          successThreshold: {{ .Values.clickhouse.livenessProbe.successThreshold }}
+      {{- end }}
+      {{- if .Values.clickhouse.readinessProbe.enabled }}
+        readinessProbe:
+          tcpSocket:
+            port: {{ .Values.clickhouse.tcp_port }}
+          initialDelaySeconds: {{ .Values.clickhouse.readinessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.clickhouse.readinessProbe.periodSeconds }}
+          timeoutSeconds: {{ .Values.clickhouse.readinessProbe.timeoutSeconds }}
+          failureThreshold: {{ .Values.clickhouse.readinessProbe.failureThreshold }}
+          successThreshold: {{ .Values.clickhouse.readinessProbe.successThreshold }}
+      {{- end }}
+        volumeMounts:
+        - name: {{ include "clickhouse.fullname" . }}-replica-data
+          mountPath: {{ include "clickhouse.fullpath" . }}
+        - name: {{ include "clickhouse.fullname" . }}-replica-logs
+          mountPath: {{ include "clickhouse.logpath" . }}
+        - name: {{ include "clickhouse.fullname" . }}-config
+          mountPath: /etc/clickhouse-server/config.d
+        - name: {{ include "clickhouse.fullname" . }}-metrica
+          mountPath: /etc/clickhouse-server/metrica.d
+        - name: {{ include "clickhouse.fullname" . }}-users
+          mountPath: /etc/clickhouse-server/users.d
+        securityContext:
+          privileged: true
+          runAsUser: 0
+    {{- if .Values.clickhouse.imagePullSecrets }}
+      imagePullSecrets: 
+      - name: {{ .Values.clickhouse.imagePullSecrets }}
+    {{- end }}
+    {{- if .Values.clickhouse.nodeSelector }}
+      nodeSelector:
+{{ toYaml .Values.clickhouse.nodeSelector | indent 8 }}
+    {{- end }}
+      volumes: 
+      - name: {{ include "clickhouse.fullname" . }}-replica-data
+      {{- if .Values.clickhouse.persistentVolumeClaim.dataPersistentVolume.enabled }}
+        persistentVolumeClaim:
+          claimName: {{ include "clickhouse.fullname" . }}-replica-data
+      {{- else }}
+        emptyDir: {}
+      {{- end }}
+      - name: {{ include "clickhouse.fullname" . }}-replica-logs
+      {{- if .Values.clickhouse.persistentVolumeClaim.logsPersistentVolume.enabled }}
+        persistentVolumeClaim:
+          claimName: {{ include "clickhouse.fullname" . }}-replica-logs
+      {{- else }}
+        emptyDir: {}
+      {{- end }}
+      {{- if .Values.clickhouse.configmap.enabled }}
+      - name: {{ include "clickhouse.fullname" . }}-config
+        configMap:
+          name: {{ include "clickhouse.fullname" . }}-config
+          items:
+          - key: config.xml
+            path: config.xml
+      - name: {{ include "clickhouse.fullname" . }}-metrica
+        configMap:
+          name: {{ include "clickhouse.fullname" . }}-metrica
+          items:
+          - key: metrica.xml
+            path: metrica.xml
+      - name: {{ include "clickhouse.fullname" . }}-users
+        configMap:
+          name: {{ include "clickhouse.fullname" . }}-users
+          items:
+          - key: users.xml
+            path: users.xml
+      {{- end }}
+{{- if .Values.clickhouse.persistentVolumeClaim.enabled }}
+  volumeClaimTemplates:
+{{- if .Values.clickhouse.persistentVolumeClaim.dataPersistentVolume.enabled }}
+  - metadata:
+      name: {{ include "clickhouse.fullname" . }}-replica-data
+      labels:
+        app.kubernetes.io/name: {{ include "clickhouse.name" . }}-replica-data
+        app.kubernetes.io/instance: {{ .Release.Name }}-replica-data
+        app.kubernetes.io/managed-by: {{ .Release.Service }}
+    spec:
+      accessModes: 
+    {{- range .Values.clickhouse.persistentVolumeClaim.dataPersistentVolume.accessModes }}
+      - {{ . | quote }}
+    {{- end }}
+    {{- if (eq "-" .Values.clickhouse.persistentVolumeClaim.dataPersistentVolume.storageClassName) }}
+      storageClassName: ""
+    {{- else }}
+      storageClassName: {{ .Values.clickhouse.persistentVolumeClaim.dataPersistentVolume.storageClassName }}
+    {{- end }}
+      resources:
+        requests:
+          storage: {{ .Values.clickhouse.persistentVolumeClaim.dataPersistentVolume.storage }}
+{{- end }}
+{{- if .Values.clickhouse.persistentVolumeClaim.logsPersistentVolume.enabled }}
+  - metadata:
+      name: {{ include "clickhouse.fullname" . }}-replica-logs
+      labels:
+        app.kubernetes.io/name: {{ include "clickhouse.name" . }}-replica-logs
+        app.kubernetes.io/instance: {{ .Release.Name }}-replica-logs
+        app.kubernetes.io/managed-by: {{ .Release.Service }}
+    spec:
+      accessModes: 
+    {{- range .Values.clickhouse.persistentVolumeClaim.logsPersistentVolume.accessModes }}
+      - {{ . | quote }}
+    {{- end }}
+    {{- if (eq "-" .Values.clickhouse.persistentVolumeClaim.logsPersistentVolume.storageClassName) }}
+      storageClassName: ""
+    {{- else }}
+      storageClassName: {{ .Values.clickhouse.persistentVolumeClaim.logsPersistentVolume.storageClassName }}
+    {{- end }}
+      resources:
+        requests:
+          storage: {{ .Values.clickhouse.persistentVolumeClaim.logsPersistentVolume.storage }}
+{{- end }}
+{{- end }}
+{{- end }}
