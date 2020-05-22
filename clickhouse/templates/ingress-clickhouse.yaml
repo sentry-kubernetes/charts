@@ -1,0 +1,27 @@
+{{- if .Values.clickhouse.ingress.enabled}}
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata: 
+  name: {{ include "clickhouse.fullname" . }}
+  labels:
+    app.kubernetes.io/name: {{ include "clickhouse.name" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+spec:
+  rules: 
+    host: {{ .Values.clickhouse.ingress.host }}
+    http: 
+      paths: 
+      - path: {{ .Values.clickhouse.ingress.path }}
+        backend: 
+          serviceName: {{ include "clickhouse.fullname" . }}
+          servicePort: http
+{{- if .Values.clickhouse.ingress.tls.enabled }}
+  tls: 
+    hosts: 
+    {{- range .Values.clickhouse.ingress.tls.hosts }}
+    - {{ . | quote }}
+    {{- end }}
+    secretName: {{ .Values.clickhouse.ingress.tls.secretName }}
+{{- end }}
+{{- end }}

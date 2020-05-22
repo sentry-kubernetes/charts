@@ -1,0 +1,68 @@
+{{- if .Values.clickhouse.configmap.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "clickhouse.fullname" . }}-users
+  labels:
+    app.kubernetes.io/name: {{ include "clickhouse.name" . }}-users
+    app.kubernetes.io/instance: {{ .Release.Name }}-users
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+data:
+  users.xml: |-
+    <?xml version="1.0"?>
+    <yandex>
+    {{- if .Values.clickhouse.configmap.profiles.enabled }}
+        <profiles>
+        {{- range .Values.clickhouse.configmap.profiles.profile }}
+        {{- with . }}
+            <{{ .name }}>
+            {{- range $k_1, $v_1 := .config }}
+                <{{ $k_1 }}>{{ $v_1 }}</{{ $k_1 }}>
+            {{- end }}
+            </{{ .name }}>
+        {{- end }}
+        {{- end }}
+        </profiles>
+    {{- end }}
+
+    {{- if .Values.clickhouse.configmap.users.enabled }}
+        <users>
+        {{- range $key, $value := .Values.clickhouse.configmap.users.user }}
+        {{- with . }}
+            <{{ .name }}>
+            {{- range $k_1, $v_1 := .config }}
+            {{- if (eq "networks" $k_1) }}
+                <networks incl="networks" replace="replace">
+                {{- range $v_1 }}
+                {{- with .}}
+                    <ip>{{ . }}</ip>
+                {{- end }}
+                {{- end }}
+                </networks>
+            {{- else }}
+                <{{ $k_1 }}>{{ $v_1 }}</{{ $k_1 }}>
+            {{- end }}
+            {{- end }}
+            </{{ .name }}>
+        {{- end }}
+        {{- end }}
+        </users>
+    {{- end }}
+
+    {{- if .Values.clickhouse.configmap.quotas.enabled }}
+        <quotas>
+        {{- range $key, $value := .Values.clickhouse.configmap.quotas.quota }}
+        {{- with . }}
+            <{{ .name }}>
+            {{- range $val := .config }}
+            {{- range $k_1, $v_1 := $val }}
+                <{{ $k_1 }}>{{ $v_1 }}</{{ $k_1 }}>
+            {{- end }}
+            {{- end }}
+            </{{ .name }}>
+        {{- end }}
+        {{- end }}
+        </quotas>
+    {{- end }}
+    </yandex>
+{{- end }}

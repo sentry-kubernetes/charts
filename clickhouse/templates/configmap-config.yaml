@@ -1,0 +1,112 @@
+{{- if .Values.clickhouse.configmap.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "clickhouse.fullname" . }}-config
+  labels:
+    app.kubernetes.io/name: {{ include "clickhouse.name" . }}-config
+    app.kubernetes.io/instance: {{ .Release.Name }}-config
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+data:
+  config.xml: |-
+    <?xml version="1.0"?>
+    <yandex>
+        <path>{{ include "clickhouse.fullpath" . }}/</path>
+        <tmp_path>{{ printf "%s/tmp/" (include "clickhouse.fullpath" .) }}</tmp_path>
+        <user_files_path>{{ printf "%s/user_files/" (include "clickhouse.fullpath" .) }}</user_files_path>
+        <format_schema_path>{{ printf "%s/format_schemas/" (include "clickhouse.fullpath" .) }}</format_schema_path>
+        
+        <include_from>/etc/clickhouse-server/metrica.d/metrica.xml</include_from>
+
+        <users_config>users.xml</users_config>
+        
+        <display_name>{{ template "clickhouse.fullname" . }}</display_name>
+        <listen_host>0.0.0.0</listen_host>
+        <http_port>{{ .Values.clickhouse.http_port | default "8123" }}</http_port>
+        <tcp_port>{{ .Values.clickhouse.tcp_port | default "9000" }}</tcp_port>
+        <interserver_http_port>{{ .Values.clickhouse.interserver_http_port | default "9009" }}</interserver_http_port>
+        <max_connections>{{ .Values.clickhouse.configmap.max_connections | default "4096" }}</max_connections>
+        <keep_alive_timeout>{{ .Values.clickhouse.configmap.keep_alive_timeout | default "3" }}</keep_alive_timeout>
+        <max_concurrent_queries>{{ .Values.clickhouse.configmap.max_concurrent_queries | default "100" }}</max_concurrent_queries>
+        <uncompressed_cache_size>{{ .Values.clickhouse.configmap.uncompressed_cache_size | default "8589934592" }}</uncompressed_cache_size>
+        <mark_cache_size>{{ .Values.clickhouse.configmap.mark_cache_size | default "5368709120" }}</mark_cache_size>
+        <timezone>{{ .Values.timezone | default "Asia/Shanghai" }}</timezone>
+        <umask>{{ .Values.clickhouse.configmap.umask | default "027" }}</umask>
+        <mlock_executable>{{ .Values.clickhouse.configmap.mlock_executable | default "false" }}</mlock_executable>
+        <remote_servers incl="clickhouse_remote_servers" optional="true" />
+        <zookeeper incl="zookeeper-servers" optional="true" />
+        <macros incl="macros" optional="true" />
+        <builtin_dictionaries_reload_interval>{{ .Values.clickhouse.configmap.builtin_dictionaries_reload_interval | default "3600" }}</builtin_dictionaries_reload_interval>
+        <max_session_timeout>{{ .Values.clickhouse.configmap.max_session_timeout | default "3600" }}</max_session_timeout>
+        <default_session_timeout>{{ .Values.clickhouse.configmap.default_session_timeout | default "60" }}</default_session_timeout>
+        <disable_internal_dns_cache>{{ .Values.clickhouse.configmap.disable_internal_dns_cache | default "1" }}</disable_internal_dns_cache>
+
+        <query_log>
+            <database>system</database>
+            <table>query_log</table>
+            <partition_by>toYYYYMM(event_date)</partition_by>
+            <flush_interval_milliseconds>7500</flush_interval_milliseconds>
+        </query_log>
+
+        <query_thread_log>
+            <database>system</database>
+            <table>query_thread_log</table>
+            <partition_by>toYYYYMM(event_date)</partition_by>
+            <flush_interval_milliseconds>7500</flush_interval_milliseconds>
+        </query_thread_log>
+
+        <distributed_ddl>
+            <path>/clickhouse/task_queue/ddl</path>
+        </distributed_ddl>
+
+        {{- if .Values.clickhouse.configmap.logger }}
+        <logger>
+            <level>{{ .Values.clickhouse.configmap.logger.level | default "trace" }}</level>
+            <log>{{ printf "%s/%s" (include "clickhouse.logpath" .) "clickhouse-server.log" }}</log>
+            <errorlog>{{ printf "%s/%s" (include "clickhouse.logpath" .) "clickhouse-server.err.log" }}</errorlog>
+            <size>{{ .Values.clickhouse.configmap.logger.size | default "1000M" }}</size>
+            <count>{{ .Values.clickhouse.configmap.logger.count | default "10" }}</count>
+        </logger>
+        {{- end }}
+
+        {{- if .Values.clickhouse.configmap.compression.enabled }}
+        <compression incl="clickhouse_compression">
+            {{- range .Values.clickhouse.configmap.compression.cases }}
+            {{- with . }}
+            <case>
+                <min_part_size>{{ .min_part_size }}</min_part_size>
+                <min_part_size_ratio>{{ .min_part_size_ratio }}</min_part_size_ratio>
+                <method>{{ .method }}</method>
+            </case>
+            {{- end }}
+            {{- end }}
+        </compression>
+        {{- end }}
+
+        {{- if .Values.clickhouse.configmap.graphite.enabled }}
+        {{- range .Values.clickhouse.configmap.graphite.config }}
+        {{- with . }}
+        <graphite>
+            <host>{{ template "clickhouse.fullname" $ }}-graphite.{{ $.Release.Namespace }}.svc.{{ $.Values.clusterDomain }}</host>
+            <port>{{ $.Values.clickhouse.graphite.service.port }}</port>
+            <timeout>{{ .timeout | default "0.1" }}</timeout>
+            <interval>{{ .interval | default "60" }}</interval>
+            <root_path>{{ .root_path | default "one_min" }}</root_path>
+            <metrics>{{ .metrics | default "true" }}</metrics>
+            <events>{{ .events | default "true" }}</events>
+            <events_cumulative>{{ .events_cumulative | default "true" }}</events_cumulative>
+            <asynchronous_metrics>{{ .asynchronous_metrics | default "true" }}</asynchronous_metrics>
+        </graphite>
+        {{- end }}
+        {{- end }}
+        {{- end }}
+
+        {{- if .Values.clickhouse.configmap.max_open_files }}
+        <max_open_files>{{ .Values.clickhouse.configmap.max_open_files }}</max_open_files>
+        {{- end }}
+
+        {{- if .Values.clickhouse.configmap.interserver_http_host }}
+        <interserver_http_host>{{ .Values.clickhouse.configmap.interserver_http_host }}</interserver_http_host>
+        {{- end }}
+    </yandex>
+{{- end }}
