@@ -24,6 +24,8 @@ spec:
       labels:
         app: sentry
         release: "{{ .Release.Name }}"
+      annotations:
+        unique-id: {{ .Values.hooks.uniqueId }}
     spec:
       restartPolicy: Never
       {{- if .Values.clickhouse.clickhouse.imagePullSecrets }}

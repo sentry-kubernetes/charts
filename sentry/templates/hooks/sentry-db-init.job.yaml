@@ -23,6 +23,7 @@ spec:
         {{- if .Values.sentry.worker.annotations }}
 {{ toYaml .Values.sentry.worker.annotations | indent 8 }}
         {{- end }}
+        unique-id: {{ .Values.hooks.uniqueId }}
       labels:
         app: sentry
         release: "{{ .Release.Name }}"
