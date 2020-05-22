@@ -150,10 +150,8 @@ spec:
     {{- range .Values.clickhouse.persistentVolumeClaim.dataPersistentVolume.accessModes }}
       - {{ . | quote }}
     {{- end }}
-    {{- if (eq "-" .Values.clickhouse.persistentVolumeClaim.dataPersistentVolume.storageClassName) }}
-      storageClassName: ""
-    {{- else }}
-      storageClassName: {{ .Values.clickhouse.persistentVolumeClaim.dataPersistentVolume.storageClassName }}
+    {{- if .Values.clickhouse.persistentVolumeClaim.dataPersistentVolume.storageClassName }}
+      storageClassName: {{ .Values.clickhouse.persistentVolumeClaim.dataPersistentVolume.storageClassName | quote }}
     {{- end }}
       resources:
         requests:
