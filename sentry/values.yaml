@@ -92,6 +92,12 @@ snuba:
     # tolerations: []
     # podLabels: []
 
+  dbInitJob:
+    env: {}
+
+  migrateJob:
+    env: {}
+
 
 hooks:
   enabled: true
@@ -110,7 +116,6 @@ hooks:
       requests:
         cpu: 700m
         memory: 1Gi
-
 system:
   url: ""
   adminEmail: ""
@@ -228,12 +233,17 @@ config:
     # No YAML Extension Config Given
   sentryConfPy: |
     # No Python Extension Config Given
+  snubaSettingsPy: |
+    # No Python Extension Config Given
 
 
 clickhouse:
   enabled: true
   clickhouse:
     imageVersion: "19.16"
+    configmap:
+      remote_servers:
+        internal_replication: true
 
 kafka:
   enabled: true
