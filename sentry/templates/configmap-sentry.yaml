@@ -1,5 +1,5 @@
-{{- $redisPort := include "sentry.redis.port" . -}}
 {{- $redisHost := include "sentry.redis.host" . -}}
+{{- $redisPort := include "sentry.redis.port" . -}}
 {{- $redisPass := .Values.redis.password -}}
 apiVersion: v1
 kind: ConfigMap

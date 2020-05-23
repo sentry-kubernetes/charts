@@ -2,7 +2,7 @@ apiVersion: v2
 name: sentry
 description: A Helm chart for Kubernetes
 type: application
-version: 0.12.3
+version: 1.2.0
 appVersion: 10.0.0
 dependencies:
   - name: redis
@@ -14,7 +14,7 @@ dependencies:
     version: 9.0.4
     condition: kafka.enabled
   - name: clickhouse
-    repository: https://liwenhe1993.github.io/charts/
+    repository: https://sentry-kubernetes.github.io/charts
     version: 1.0.1
     condition: clickhouse.enabled
   - name: rabbitmq-ha
