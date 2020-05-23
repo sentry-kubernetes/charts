@@ -1,4 +1,5 @@
 {{- if .Values.hooks.enabled -}}
+{{- $clickhouseHost := include "sentry.clickhouse.host" . -}}
 apiVersion: batch/v1
 kind: Job
 metadata:
@@ -19,6 +20,7 @@ spec:
     metadata:
       name: {{ template "sentry.fullname" . }}-snuba-migrate
       annotations:
+        checksum/snubaSettingsPy: {{ .Values.config.snubaSettingsPy | sha256sum }}
         checksum/config.yaml: {{ include (print $.Template.BasePath "/configmap-snuba.yaml") . | sha256sum }}
         {{- if .Values.snuba.annotations }}
 {{ toYaml .Values.snuba.annotations | indent 8 }}
@@ -39,14 +41,34 @@ spec:
       - name: snuba-migrate
         image: "{{ .Values.images.snuba.repository }}:{{ .Values.images.snuba.tag }}"
         # command: ["./docker_entrypoint.sh", "replacer","--auto-offset-reset=latest","--max-batch-size", "3"]
-        command: ["/bin/bash", "-c", "for i in {1..10};do (LOG_LEVEL=debug snuba migrate || true);done"]
-        envFrom:
-        - configMapRef:
-            name: {{ template "sentry.fullname" . }}-snuba
-{{- if .Values.snuba.env }}
+        command:
+          - /bin/bash
+          - -ec
+          - >-
+            for ((i=0;i<{{ .Values.clickhouse.clickhouse.replicas }};i++)); do
+              export CLICKHOUSE_HOST={{ $clickhouseHost }}-$i.{{ $clickhouseHost }}-headless;
+              snuba migrate;
+              export CLICKHOUSE_HOST={{ $clickhouseHost }}-replica-$i.{{ $clickhouseHost }}-replica-headless;
+              snuba migrate;
+            done
         env:
-{{ toYaml .Values.snuba.env | indent 8 }}
+          - name: LOG_LEVEL
+            value: debug
+          - name: SNUBA_SETTINGS
+            value: /etc/snuba/settings.py
+          - name: DATASET_MODE
+            value: local
+{{- if .Values.snuba.migrateJob.env }}
+{{ toYaml .Values.snuba.migrateJob.env | indent 10 }}
 {{- end }}
+        volumeMounts:
+        - mountPath: /etc/snuba
+          name: config
+          readOnly: true
         resources:
 {{ toYaml .Values.hooks.snubaInit.resources | indent 10 }}
 {{- end }}
+      volumes:
+        - name: config
+          configMap:
+            name: {{ template "sentry.fullname" . }}-snuba

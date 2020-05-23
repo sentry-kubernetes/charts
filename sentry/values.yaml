@@ -8,12 +8,12 @@ user:
 images:
   sentry:
     repository: getsentry/sentry
-    tag: 6e6ed914e24d9121619ccc754325fbba611ad6be
+    tag: 17788bdb1924b8a12950e4b78fe69e733b75f1c6
     pullPolicy: IfNotPresent
     # imagePullSecrets: []
   snuba:
     repository: getsentry/snuba
-    tag: fdcc3229b24b659a48b4934e4ffc0ccaa6364a37
+    tag: 03a341d731d205a8418e4207d0cf5bcae4b93ae1
     pullPolicy: IfNotPresent
     # imagePullSecrets: []
 
@@ -92,6 +92,12 @@ snuba:
     # tolerations: []
     # podLabels: []
 
+  dbInitJob:
+    env: {}
+
+  migrateJob:
+    env: {}
+
 
 hooks:
   enabled: true
@@ -110,7 +116,6 @@ hooks:
       requests:
         cpu: 700m
         memory: 1Gi
-
 system:
   url: ""
   adminEmail: ""
@@ -228,12 +233,24 @@ config:
     # No YAML Extension Config Given
   sentryConfPy: |
     # No Python Extension Config Given
+  snubaSettingsPy: |
+    # No Python Extension Config Given
 
 
 clickhouse:
   enabled: true
   clickhouse:
     imageVersion: "19.16"
+    configmap:
+      remote_servers:
+        internal_replication: true
+    persistentVolumeClaim:
+      enabled: true
+      dataPersistentVolume: 
+        enabled: true
+        accessModes: 
+        - "ReadWriteOnce"
+        storage: "30Gi"
 
 ## This value is only used when clickhouse.enabled is set to false
 ##

@@ -1,0 +1,85 @@
+{{- if .Values.tabix.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "clickhouse.fullname" . }}-tabix
+  labels:
+    app.kubernetes.io/name: {{ include "clickhouse.name" . }}-tabix
+    app.kubernetes.io/instance: {{ .Release.Name }}-tabix
+    app.kubernetes.io/managed-by: {{ .Release.Service }} 
+spec: 
+  replicas: {{ .Values.tabix.replicas }}
+  selector:
+    matchLabels: 
+      app.kubernetes.io/name: {{ include "clickhouse.name" . }}-tabix
+      app.kubernetes.io/instance: {{ .Release.Name }}-tabix
+{{- if .Values.tabix.updateStrategy }}
+  strategy: 
+    type: {{ .Values.tabix.updateStrategy.type }}
+    rollingUpdate: 
+      maxSurge: {{ .Values.tabix.updateStrategy.maxSurge }}
+      maxUnavailable: {{ .Values.tabix.updateStrategy.maxUnavailable }}
+{{- end }}
+  template: 
+    metadata: 
+      labels: 
+        app.kubernetes.io/name: {{ include "clickhouse.name" . }}-tabix
+        app.kubernetes.io/instance: {{ .Release.Name }}-tabix
+    spec: 
+    {{- if .Values.affinity }}
+      affinity:
+{{ toYaml .Values.affinity | indent 8 }}
+    {{- end }}
+    {{- if .Values.tabix.imagePullSecrets }}
+      imagePullSecrets:
+    {{- range .Values.tabix.imagePullSecrets }}
+      - name: {{ . | quote }}
+    {{- end }}
+    {{- end }}
+      containers: 
+      - name: {{ include "clickhouse.name" . }}-tabix
+        image: {{ .Values.tabix.image }}:{{ .Values.tabix.imageVersion }}
+        imagePullPolicy: {{ .Values.tabix.imagePullPolicy }}
+        ports:
+        - name: http
+          containerPort: 80
+        env: 
+        {{- if .Values.tabix.security }}
+        - name: USER
+          value: {{ .Values.tabix.security.user }}
+        - name: PASSWORD
+          value: {{ .Values.tabix.security.password }}
+        {{- end }}
+        {{- if .Values.tabix.automaticConnection }}
+        - name: CH_NAME
+          value: {{ .Values.tabix.automaticConnection.chName }}
+        - name: CH_HOST
+          value: {{ .Values.tabix.automaticConnection.chHost }}
+        - name: CH_LOGIN
+          value: {{ .Values.tabix.automaticConnection.chLogin }}
+        - name: CH_PASSWORD
+          value: {{ .Values.tabix.automaticConnection.chPassword }}
+        - name: CH_PARAMS
+          value: {{ .Values.tabix.automaticConnection.chParams }}
+        {{- end }}
+      {{- if .Values.tabix.livenessProbe.enabled }}
+        livenessProbe:
+          tcpSocket:
+            port: 80
+          initialDelaySeconds: {{ .Values.tabix.livenessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.tabix.livenessProbe.periodSeconds }}
+          timeoutSeconds: {{ .Values.tabix.livenessProbe.timeoutSeconds }}
+          failureThreshold: {{ .Values.tabix.livenessProbe.failureThreshold }}
+          successThreshold: {{ .Values.tabix.livenessProbe.successThreshold }}
+      {{- end }}
+      {{- if .Values.tabix.readinessProbe.enabled }}
+        readinessProbe:
+          tcpSocket:
+            port: 80
+          initialDelaySeconds: {{ .Values.tabix.readinessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.tabix.readinessProbe.periodSeconds }}
+          timeoutSeconds: {{ .Values.tabix.readinessProbe.timeoutSeconds }}
+          failureThreshold: {{ .Values.tabix.readinessProbe.failureThreshold }}
+          successThreshold: {{ .Values.tabix.readinessProbe.successThreshold }}
+      {{- end }}
+{{- end }}

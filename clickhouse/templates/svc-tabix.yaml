@@ -1,0 +1,19 @@
+{{- if .Values.tabix.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "clickhouse.fullname" . }}-tabix
+  labels:
+    app.kubernetes.io/name: {{ include "clickhouse.name" . }}-tabix
+    app.kubernetes.io/instance: {{ .Release.Name }}-tabix
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+spec:
+  ports:
+  - port: 80
+    targetPort: http
+    protocol: TCP
+    name: http
+  selector:
+    app.kubernetes.io/name: {{ include "clickhouse.name" . }}-tabix
+    app.kubernetes.io/instance: {{ .Release.Name }}-tabix
+{{- end }}

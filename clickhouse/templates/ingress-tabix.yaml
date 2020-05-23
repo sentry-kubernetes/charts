@@ -1,0 +1,29 @@
+{{- if .Values.tabix.enabled }}
+{{- if .Values.tabix.ingress.enabled}}
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata: 
+  name: {{ include "clickhouse.fullname" . }}-tabix
+  labels:
+    app.kubernetes.io/name: {{ include "clickhouse.name" . }}-tabix
+    app.kubernetes.io/instance: {{ .Release.Name }}-tabix
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+spec:
+  rules: 
+    host: {{ .Values.tabix.ingress.host }}
+    http: 
+      paths: 
+      - path: {{ .Values.tabix.ingress.path }}
+        backend: 
+          serviceName: {{ include "clickhouse.fullname" . }}-tabix
+          servicePort: http
+{{- if .Values.tabix.ingress.tls.enabled }}
+  tls: 
+    hosts: 
+    {{- range .Values.tabix.ingress.tls.hosts }}
+    - {{ . | quote }}
+    {{- end }}
+    secretName: {{ .Values.tabix.ingress.tls.secretName }}
+{{- end }}
+{{- end }}
+{{- end }}

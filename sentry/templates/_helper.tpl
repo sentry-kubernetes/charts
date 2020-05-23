@@ -276,3 +276,4 @@ Set RabbitMQ host
 {{ .Values.rabbitmq.host }}
 {{- end -}}
 {{- end -}}
+
