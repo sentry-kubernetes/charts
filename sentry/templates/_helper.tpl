@@ -203,7 +203,7 @@ Create the name of the service account to use
 Set Clickhouse host
 */}}
 {{- define "sentry.clickhouse.host" -}}
-{{- if .Values.kafka.enabled -}}
+{{- if .Values.clickhouse.enabled -}}
 {{- template "sentry.clickhouse.fullname" . -}}
 {{- else -}}
 {{ default "clickhouse" .Values.externalClickhouse.host }}
@@ -276,4 +276,3 @@ Set RabbitMQ host
 {{ .Values.rabbitmq.host }}
 {{- end -}}
 {{- end -}}
-

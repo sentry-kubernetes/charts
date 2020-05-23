@@ -37,8 +37,12 @@ spec:
           - /bin/bash
           - -ec
           - >-
+            {{- if .Values.clickhouse.enabled }}
             for ((i=0;i<{{ .Values.clickhouse.clickhouse.replicas }};i++)); do
               clickhouse-client --database=default --host={{ $clickhouseHost }}-$i.{{ $clickhouseHost }}-headless --port={{ $clickhousePort }} --query='{{ $createQuery }}';
               clickhouse-client --database=default --host={{ $clickhouseHost }}-replica-$i.{{ $clickhouseHost }}-replica-headless --port={{ $clickhousePort }} --query='{{ $createQuery }}';
             done
+            {{- else }}
+            clickhouse-client --database=default --host={{ $clickhouseHost }} --port={{ $clickhousePort }} --query='{{ $createQuery }}';
+            {{- end }}
 {{- end }}
