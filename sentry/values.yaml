@@ -2,18 +2,18 @@ prefix:
 
 user:
   create: true
-  email: admin@sentry.com
+  email: admin@sentry.local
   password: aaaa
 
 images:
   sentry:
     repository: getsentry/sentry
-    tag: 10.0.0
+    tag: 17788bdb1924b8a12950e4b78fe69e733b75f1c6
     pullPolicy: IfNotPresent
     # imagePullSecrets: []
   snuba:
     repository: getsentry/snuba
-    tag: f9e388782bf85e2ab0c879a08d3a59541ce093b2
+    tag: 03a341d731d205a8418e4207d0cf5bcae4b93ae1
     pullPolicy: IfNotPresent
     # imagePullSecrets: []
 
@@ -27,17 +27,15 @@ sentry:
     nodeSelector: {}
     # tolerations: []
     # podLabels: []
+
+    autoscaling:
+      enabled: false
+      minReplicas: 2
+      maxReplicas: 5
+      targetCPUUtilizationPercentage: 50
+
   worker:
-    replicas: 1
-    # concurrency: 4
-    env: {}
-    resources: {}
-    affinity: {}
-    nodeSelector: {}
-    # tolerations: []
-    # podLabels: []
-  workerRedis:
-    replicas: 1
+    replicas: 3
     # concurrency: 4
     env: {}
     resources: {}
@@ -71,6 +69,13 @@ snuba:
     nodeSelector: {}
     # tolerations: []
     # podLabels: []
+
+    autoscaling:
+      enabled: false
+      minReplicas: 2
+      maxReplicas: 5
+      targetCPUUtilizationPercentage: 50
+
   consumer:
     replicas: 1
     env: {}
@@ -86,6 +91,12 @@ snuba:
     nodeSelector: {}
     # tolerations: []
     # podLabels: []
+
+  dbInitJob:
+    env: {}
+
+  migrateJob:
+    env: {}
 
 
 hooks:
@@ -105,21 +116,20 @@ hooks:
       requests:
         cpu: 700m
         memory: 1Gi
-
 system:
-  url: ''
-  adminEmail: ''
+  url: ""
+  adminEmail: ""
   secretKey: 'icLq77rCyY_qrMMpXa6TQNjkDV6mU!c'
   public: false #  This should only be used if you’re installing Sentry behind your company’s firewall.
 
 mail:
   backend: dummy # smtp
   useTls: false
-  username: ''
-  password: ''
+  username: ""
+  password: ""
   port: 25
-  host: ''
-  from: ''
+  host: ""
+  from: ""
 
 symbolicator:
   enabled: false
@@ -127,37 +137,9 @@ symbolicator:
 auth:
   register: true
 
-postgres:
-  enabled: true
-  database: sentry
-  user: postgres
-  password: i@ZBAsFoU4gDz_qDJVX2W8
-  host: postgres
-  port: 5432
-
-rabbitmq:
-  # either use RabbitMQ or Redis as broker
-  enabled: true
-  username: guest
-  password: guest
-  host: rabbitmq-ha
-
-redis:
-  host: redis-master
-  password: ""
-  # Use existing secret for Redis password (ignores previous password)
-  # existingPasswordSecret:
-  # existingPasswordSecretKey: redis-password
-  port: 6379
-  db: 0
-
-kafka:
-  host: kafka-confluent
-  port: 9092
-
 service:
   name: sentry
-  type: LoadBalancer
+  type: ClusterIP
   externalPort: 9000
   annotations: {}
   # externalIPs:
@@ -232,9 +214,9 @@ filestore:
   ## Point this at a pre-configured secret containing a service account. The resulting
   ## secret will be mounted at /var/run/secrets/google
   gcs:
-    credentialsFile: credentials.json
-  #  secretName:
-  #  bucketName:
+    # credentialsFile: credentials.json
+    #  secretName:
+    #  bucketName:
 
   ## Currently unconfigured and changing this has no impact on the template configuration.
   s3: {}
@@ -247,7 +229,104 @@ filestore:
   #  default_acl:
 
 config:
-  yaml: |
-    # YAML
-  py: |
-    # PYTHON CONFIG
+  configYml: |
+    # No YAML Extension Config Given
+  sentryConfPy: |
+    # No Python Extension Config Given
+  snubaSettingsPy: |
+    # No Python Extension Config Given
+
+
+clickhouse:
+  enabled: true
+  clickhouse:
+    imageVersion: "19.16"
+    configmap:
+      remote_servers:
+        internal_replication: true
+    persistentVolumeClaim:
+      enabled: true
+      dataPersistentVolume: 
+        enabled: true
+        accessModes: 
+        - "ReadWriteOnce"
+        storage: "30Gi"
+
+kafka:
+  enabled: true
+  replicaCount: 3
+  allowPlaintextListener: true
+  defaultReplicationFactor: 3
+  offsetsTopicReplicationFactor: 3
+  transactionStateLogReplicationFactor: 3
+  transactionStateLogMinIsr: 3
+
+  service:
+    port: 9092
+
+redis:
+  ## Required if the Redis component of this chart is disabled. (Existing Redis)
+  #
+  hostOverride: ""
+  enabled: true
+  nameOverride: sentry-redis
+  usePassword: false
+  # Only used when internal redis is disabled
+  # host: redis
+  # Just omit the password field if your redis cluster doesn't use password
+  # password: redis
+  # port: 6379
+  master:
+    persistence:
+      enabled: true
+
+postgresql:
+  ## Required if the Postgresql component of this chart is disabled. (Existing Postgres)
+  #
+  hostOverride: ""
+  enabled: true
+  nameOverride: sentry-postgresql
+  postgresqlUsername: postgres
+  postgresqlDatabase: sentry
+  # Only used when internal PG is disabled
+  # postgresqlHost: postgres
+  # postgresqlPassword: postgres
+  # postgresqlPort: 5432
+  # postgresSslMode: require
+  replication:
+    enabled: false
+    slaveReplicas: 2
+    synchronousCommit: "on"
+    numSynchronousReplicas: 1
+
+rabbitmq:
+  ## If disabled, Redis will be used instead as the broker. 
+  enabled: true
+  forceBoot: true
+  replicaCount: 3
+  rabbitmqErlangCookie: pHgpy3Q6adTskzAT6bLHCFqFTF7lMxhA
+  rabbitmqUsername: guest
+  rabbitmqPassword: guest
+  nameOverride: ""
+
+  podDisruptionBudget:
+    minAvailable: 1
+  
+  persistentVolume:
+    enabled: true
+  resources: {}
+  # rabbitmqMemoryHighWatermark: 600MB
+  # rabbitmqMemoryHighWatermarkType: absolute
+
+  definitions:
+    policies: |-
+     {
+       "name": "ha-all",
+       "pattern": "^((?!celeryev.*).)*$",
+       "vhost": "/",
+       "definition": {
+         "ha-mode": "all",
+         "ha-sync-mode": "automatic",
+         "ha-sync-batch-size": 1
+       }
+     }

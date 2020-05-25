@@ -2,20 +2,20 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: {{ template "sentry.prefix" . }}user-create
+  name: {{ template "sentry.fullname" . }}-user-create
   labels:
     app: sentry
     chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
     release: "{{ .Release.Name }}"
     heritage: "{{ .Release.Service }}"
   annotations:
-    "helm.sh/hook": "pre-install,pre-upgrade"
+    "helm.sh/hook": "post-install,post-upgrade"
     "helm.sh/hook-delete-policy": "hook-succeeded,before-hook-creation"
     "helm.sh/hook-weight": "10"
 spec:
   template:
     metadata:
-      name: {{ template "sentry.prefix" . }}user-create
+      name: {{ template "sentry.fullname" . }}-user-create
       annotations:
         checksum/configmap.yaml: {{ include (print $.Template.BasePath "/configmap-sentry.yaml") . | sha256sum }}
         {{- if .Values.sentry.worker.annotations }}
@@ -36,10 +36,29 @@ spec:
       containers:
       - name: user-create-job
         image: "{{ .Values.images.sentry.repository }}:{{ .Values.images.sentry.tag }}"
-        command: ["/bin/bash"]
+        command: ["/bin/bash", "-c"]
+        # Create user but do not exit 1 when user already exists (exit code 3 from createuser command)
+        # https://docs.sentry.io/server/cli/createuser/
         args:
-          - "-c"
-          - "export output=$(sentry createuser --no-input --email {{ .Values.user.email }} --superuser --password {{ .Values.user.password }}) || true"
+          - >
+            sentry createuser \
+              --no-input \
+              --superuser \
+              --email {{ .Values.user.email }} \
+              --password {{ .Values.user.password }} || true; \
+            if [ $? -eq 0 ] || [ $? -eq 3 ]; then \
+              exit 0; \
+            else \
+              exit 1; \
+            fi
+        {{- if .Values.postgresql.enabled }}
+        env:
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ include "sentry.postgresql.fullname" . }}
+              key: postgresql-password
+        {{- end }}
         volumeMounts:
         - mountPath: /etc/sentry
           name: config
@@ -49,5 +68,5 @@ spec:
       volumes:
       - name: config
         configMap:
-          name: {{ template "sentry.prefix" . }}sentry
+          name: {{ template "sentry.fullname" . }}-sentry
 {{- end -}}

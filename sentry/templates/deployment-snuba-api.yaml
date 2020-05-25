@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ template "sentry.prefix" . }}snuba-api
+  name: {{ template "sentry.fullname" . }}-snuba-api
   labels:
     app: sentry
     chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
@@ -10,19 +10,20 @@ metadata:
 spec:
   selector:
     matchLabels:
-        app: sentry
-        release: "{{ .Release.Name }}"
-        role: snuba-api
+      app: {{ template "sentry.fullname" . }}
+      release: "{{ .Release.Name }}"
+      role: snuba-api
   replicas: {{ .Values.snuba.api.replicas }}
   template:
     metadata:
       annotations:
+        checksum/snubaSettingsPy: {{ .Values.config.snubaSettingsPy | sha256sum }}
         checksum/config.yaml: {{ include (print $.Template.BasePath "/configmap-snuba.yaml") . | sha256sum }}
         {{- if .Values.snuba.api.annotations }}
 {{ toYaml .Values.snuba.api.annotations | indent 8 }}
         {{- end }}
       labels:
-        app: sentry
+        app: {{ template "sentry.fullname" . }}
         release: "{{ .Release.Name }}"
         role: snuba-api
         {{- if .Values.snuba.api.podLabels }}
@@ -51,14 +52,16 @@ spec:
         imagePullPolicy: {{ .Values.images.snuba.pullPolicy }}
         ports:
         - containerPort: {{ template "snuba.port" }}
-        envFrom:
-        - configMapRef:
-            name: {{ template "sentry.prefix" . }}snuba
         env:
-        {{- template "redis.password.fromSecret" . }}
+          - name: SNUBA_SETTINGS
+            value: /etc/snuba/settings.py
 {{- if .Values.snuba.api.env }}
 {{ toYaml .Values.snuba.api.env | indent 8 }}
 {{- end }}
+        volumeMounts:
+        - mountPath: /etc/snuba
+          name: config
+          readOnly: true
         livenessProbe:
           failureThreshold: 5
           httpGet:
@@ -81,3 +84,7 @@ spec:
           timeoutSeconds: 2
         resources:
 {{ toYaml .Values.snuba.api.resources | indent 12 }}
+      volumes:
+        - name: config
+          configMap:
+            name: {{ template "sentry.fullname" . }}-snuba

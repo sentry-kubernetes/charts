@@ -1,32 +1,32 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ template "sentry.prefix" . }}sentry-web
+  name: {{ template "sentry.fullname" . }}-web
   labels:
-    app: sentry
+    app: {{ template "sentry.fullname" . }}
     chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
     release: "{{ .Release.Name }}"
     heritage: "{{ .Release.Service }}"
 spec:
   selector:
     matchLabels:
-        app: sentry
+        app: {{ template "sentry.fullname" . }}
         release: "{{ .Release.Name }}"
-        role: sentry-web
+        role: web
   replicas: {{ .Values.sentry.web.replicas }}
   template:
     metadata:
       annotations:
-        checksum/configYml: {{ .Values.config.yaml | sha256sum }}
-        checksum/sentryConfPy: {{ .Values.config.py | sha256sum }}
+        checksum/configYml: {{ .Values.config.configYml | sha256sum }}
+        checksum/sentryConfPy: {{ .Values.config.sentryConfPy | sha256sum }}
         checksum/config.yaml: {{ include (print $.Template.BasePath "/configmap-sentry.yaml") . | sha256sum }}
         {{- if .Values.sentry.web.annotations }}
 {{ toYaml .Values.sentry.web.annotations | indent 8 }}
         {{- end }}
       labels:
-        app: sentry
+        app: {{ template "sentry.fullname" . }}
         release: "{{ .Release.Name }}"
-        role: sentry-web
+        role: web
         {{- if .Values.sentry.web.podLabels }}
 {{ toYaml .Values.sentry.web.podLabels | indent 8 }}
         {{- end }}
@@ -55,11 +55,18 @@ spec:
         ports:
         - containerPort: {{ template "sentry.port" }}
         env:
-          - name: SNUBA
-            value: http://{{ template "sentry.prefix" . }}snuba:{{ template "snuba.port" }}
+        - name: SNUBA
+          value: http://{{ template "sentry.fullname" . }}-snuba:{{ template "snuba.port" }}
+        {{- if .Values.postgresql.enabled }}
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ include "sentry.postgresql.fullname" . }}
+              key: postgresql-password
+        {{- end }}
         {{ if eq .Values.filestore.backend "gcs" }}
-          - name: GOOGLE_APPLICATION_CREDENTIALS
-            value: /var/run/secrets/google/{{ .Values.filestore.gcs.credentialsFile }}
+        - name: GOOGLE_APPLICATION_CREDENTIALS
+          value: /var/run/secrets/google/{{ .Values.filestore.gcs.credentialsFile }}
         {{ end }}
 {{- if .Values.sentry.web.env }}
 {{ toYaml .Values.sentry.web.env | indent 8 }}
@@ -99,11 +106,11 @@ spec:
       volumes:
       - name: config
         configMap:
-          name: {{ template "sentry.prefix" . }}sentry
+          name: {{ template "sentry.fullname" . }}-sentry
       - name: sentry-data
       {{- if and (eq .Values.filestore.backend "filesystem") .Values.filestore.filesystem.persistence.enabled }}
         persistentVolumeClaim:
-          claimName: {{ template "sentry.prefix" . }}sentry-data
+          claimName: {{ template "sentry.fullname" . }}-data
       {{- else }}
         emptyDir: {}
       {{ end }}

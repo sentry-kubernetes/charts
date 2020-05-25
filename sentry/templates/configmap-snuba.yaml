@@ -1,22 +1,40 @@
-  
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ template "sentry.prefix" . }}snuba
+  name: {{ template "sentry.fullname" . }}-snuba
   labels:
     app: sentry
     chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
     release: "{{ .Release.Name }}"
     heritage: "{{ .Release.Service }}"
-  annotations:
-    "helm.sh/hook": "pre-install,pre-upgrade"
-    "helm.sh/hook-weight": "-5"
 data:
-  SNUBA_SETTINGS: docker
-  CLICKHOUSE_HOST: clickhouse
-  CLICKHOUSE_PORT: "9000"
-  REDIS_HOST: {{ .Values.redis.host }}
-  {{- if and .Values.redis.password (not .Values.redis.existingPasswordSecret) }}
-  REDIS_PASSWORD: {{ .Values.redis.password }}
-  {{- end }}
-  DEFAULT_BROKERS: 'kafka-confluent:9092'
+  settings.py: |
+    import os
+
+    env = os.environ.get
+
+    DEBUG = env("DEBUG", "0").lower() in ("1", "true")
+
+    {{- if .Values.kafka.enabled }}
+    DEFAULT_BROKERS = [{{ printf "%s:%s" (include "sentry.kafka.host" .) (include "sentry.kafka.port" .) | quote }}]
+    {{- end }}
+
+    REDIS_HOST = {{ include "sentry.redis.host" . | quote }}
+    REDIS_PORT = {{ include "sentry.redis.port" . }}
+    {{- if .Values.redis.password }}
+    REDIS_PASSWORD = {{ .Values.redis.password | quote }}
+    {{- end }}
+    REDIS_DB = int(env("REDIS_DB", 1))
+    USE_REDIS_CLUSTER = False
+
+    # Dogstatsd Options
+    DOGSTATSD_HOST = None
+    DOGSTATSD_PORT = None
+
+    # Clickhouse Options
+    CLICKHOUSE_HOST = env("CLICKHOUSE_HOST", {{ include "sentry.clickhouse.host" . | quote }})
+    CLICKHOUSE_PORT = {{ include "sentry.clickhouse.port" . }}
+
+    DATASET_MODE = env("DATASET_MODE", "distributed")
+
+{{ .Values.config.snubaSettingsPy | indent 4 }}
