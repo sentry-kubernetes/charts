@@ -13,7 +13,9 @@ spec:
         app: {{ template "sentry.fullname" . }}
         release: "{{ .Release.Name }}"
         role: web
+{{- if not .Values.sentry.web.autoscaling.enabled }}
   replicas: {{ .Values.sentry.web.replicas }}
+{{- end }}
   template:
     metadata:
       annotations:

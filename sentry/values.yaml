@@ -43,6 +43,15 @@ sentry:
     nodeSelector: {}
     # tolerations: []
     # podLabels: []
+
+    # it's better to use prometheus adapter and scale based on
+    # the size of the rabbitmq queue
+    autoscaling:
+      enabled: false
+      minReplicas: 2
+      maxReplicas: 5
+      targetCPUUtilizationPercentage: 50
+
   cron:
     env: {}
     resources: {}
