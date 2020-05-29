@@ -10,6 +10,7 @@ metadata:
 data:
   settings.py: |
     import os
+    from typing import Any, Mapping, Sequence
 
     env = os.environ.get
 
