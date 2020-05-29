@@ -32,8 +32,8 @@ data:
     DOGSTATSD_PORT = None
 
     # Clickhouse Options
-    CLICKHOUSE_HOST = env("CLICKHOUSE_HOST", {{ include "sentry.clickhouse.host" . | quote }})
-    CLICKHOUSE_PORT = {{ include "sentry.clickhouse.port" . }}
+    CLUSTERS[0]["host"] = env("CLICKHOUSE_HOST", {{ include "sentry.clickhouse.host" . | quote }})
+    CLUSTERS[0]["port"] = int(os.environ.get("CLICKHOUSE_PORT", {{ include "sentry.clickhouse.port" . }}))
 
     DATASET_MODE = env("DATASET_MODE", "distributed")
 
