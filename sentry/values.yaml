@@ -255,9 +255,9 @@ clickhouse:
         internal_replication: true
     persistentVolumeClaim:
       enabled: true
-      dataPersistentVolume: 
+      dataPersistentVolume:
         enabled: true
-        accessModes: 
+        accessModes:
         - "ReadWriteOnce"
         storage: "30Gi"
 
