@@ -32,8 +32,14 @@ data:
     DOGSTATSD_PORT = None
 
     # Clickhouse Options
-    CLUSTERS[0]["host"] = env("CLICKHOUSE_HOST", {{ include "sentry.clickhouse.host" . | quote }})
-    CLUSTERS[0]["port"] = int(os.environ.get("CLICKHOUSE_PORT", {{ include "sentry.clickhouse.port" . }}))
+    CLUSTERS: Sequence[Mapping[str, Any]] = [
+        {
+            "host": env("CLICKHOUSE_HOST", {{ include "sentry.clickhouse.host" . | quote }}),
+            "port": int(env("CLICKHOUSE_PORT", {{ include "sentry.clickhouse.port" . }})),
+            "http_port": int(env("CLICKHOUSE_HTTP_PORT", 8123)),
+            "storage_sets": {"events", "outcomes", "querylog", "sessions", "transactions"},
+        },
+    ]
 
     DATASET_MODE = env("DATASET_MODE", "distributed")
 
