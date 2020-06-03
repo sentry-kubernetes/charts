@@ -39,10 +39,9 @@ data:
             "port": int(env("CLICKHOUSE_PORT", {{ include "sentry.clickhouse.port" . }})),
             "http_port": int(env("CLICKHOUSE_HTTP_PORT", 8123)),
             "storage_sets": {"events", "outcomes", "querylog", "sessions", "transactions"},
-            "single_node": False
+            # FIXME: Snuba will be able to migrate multi node clusters in the future
+            "single_node": env("CLICKHOUSE_SINGLE_NODE", "false").lower() == "true"
         },
     ]
-
-    DATASET_MODE = env("DATASET_MODE", "distributed")
 
 {{ .Values.config.snubaSettingsPy | indent 4 }}

@@ -56,8 +56,8 @@ spec:
             value: debug
           - name: SNUBA_SETTINGS
             value: /etc/snuba/settings.py
-          - name: DATASET_MODE
-            value: local
+          - name: CLICKHOUSE_SINGLE_NODE
+            value: "true"
 {{- if .Values.snuba.migrateJob.env }}
 {{ toYaml .Values.snuba.migrateJob.env | indent 10 }}
 {{- end }}
