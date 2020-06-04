@@ -67,8 +67,8 @@ spec:
           readOnly: true
         resources:
 {{ toYaml .Values.hooks.snubaInit.resources | indent 10 }}
-{{- end }}
       volumes:
         - name: config
           configMap:
             name: {{ template "sentry.fullname" . }}-snuba
+{{- end }}
