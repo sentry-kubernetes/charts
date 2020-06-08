@@ -56,9 +56,9 @@ spec:
         env:
           - name: SNUBA_SETTINGS
             value: /etc/snuba/settings.py
-{{- if .Values.snuba.replacer.env }}
-{{ toYaml .Values.snuba.replacer.env | indent 8 }}
-{{- end }}
+          {{- if .Values.snuba.replacer.env }}
+          {{- toYaml .Values.snuba.replacer.env | nindent 10 }}
+          {{- end }}
         volumeMounts:
         - mountPath: /etc/snuba
           name: config
