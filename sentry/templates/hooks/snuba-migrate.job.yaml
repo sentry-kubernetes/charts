@@ -58,9 +58,9 @@ spec:
             value: /etc/snuba/settings.py
           - name: DATASET_MODE
             value: local
-{{- if .Values.snuba.migrateJob.env }}
-{{ toYaml .Values.snuba.migrateJob.env | indent 10 }}
-{{- end }}
+          {{- if .Values.snuba.migrateJob.env }}
+          {{- toYaml .Values.snuba.migrateJob.env | nindent 10 }}
+          {{- end }}
         volumeMounts:
         - mountPath: /etc/snuba
           name: config
