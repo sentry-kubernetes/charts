@@ -25,6 +25,8 @@ spec:
       app.kubernetes.io/instance: {{ .Release.Name }}-replica
   template:
     metadata:
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/configmap-config.yaml") . | sha256sum }}
       labels:
         app.kubernetes.io/name: {{ include "clickhouse.name" . }}-replica
         app.kubernetes.io/instance: {{ .Release.Name }}-replica

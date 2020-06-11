@@ -23,7 +23,9 @@ spec:
       app.kubernetes.io/name: {{ include "clickhouse.name" . }}
       app.kubernetes.io/instance: {{ .Release.Name }}
   template:
-    metadata: 
+    metadata:
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/configmap-config.yaml") . | sha256sum }}
       labels: 
         app.kubernetes.io/name: {{ include "clickhouse.name" . }}
         app.kubernetes.io/instance: {{ .Release.Name }}
