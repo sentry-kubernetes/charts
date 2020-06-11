@@ -10,6 +10,7 @@ metadata:
 data:
   settings.py: |
     import os
+    from typing import Any, Mapping, Sequence
 
     env = os.environ.get
 
@@ -32,9 +33,15 @@ data:
     DOGSTATSD_PORT = None
 
     # Clickhouse Options
-    CLICKHOUSE_HOST = env("CLICKHOUSE_HOST", {{ include "sentry.clickhouse.host" . | quote }})
-    CLICKHOUSE_PORT = {{ include "sentry.clickhouse.port" . }}
-
-    DATASET_MODE = env("DATASET_MODE", "distributed")
+    CLUSTERS: Sequence[Mapping[str, Any]] = [
+        {
+            "host": env("CLICKHOUSE_HOST", {{ include "sentry.clickhouse.host" . | quote }}),
+            "port": int(env("CLICKHOUSE_PORT", {{ include "sentry.clickhouse.port" . }})),
+            "http_port": int(env("CLICKHOUSE_HTTP_PORT", 8123)),
+            "storage_sets": {"events", "outcomes", "querylog", "sessions", "transactions"},
+            # FIXME: Snuba will be able to migrate multi node clusters in the future
+            "single_node": env("CLICKHOUSE_SINGLE_NODE", "false").lower() == "true"
+        },
+    ]
 
 {{ .Values.config.snubaSettingsPy | indent 4 }}

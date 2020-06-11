@@ -54,8 +54,8 @@ spec:
         ports:
         - containerPort: {{ template "snuba.port" }}
         env:
-          - name: SNUBA_SETTINGS
-            value: /etc/snuba/settings.py
+        - name: SNUBA_SETTINGS
+          value: /etc/snuba/settings.py
 {{- if .Values.snuba.consumer.env }}
 {{ toYaml .Values.snuba.consumer.env | indent 8 }}
 {{- end }}

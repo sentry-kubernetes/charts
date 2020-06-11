@@ -8,12 +8,12 @@ user:
 images:
   sentry:
     repository: getsentry/sentry
-    tag: 6e6ed914e24d9121619ccc754325fbba611ad6be
+    tag: 3674be2
     pullPolicy: IfNotPresent
     # imagePullSecrets: []
   snuba:
     repository: getsentry/snuba
-    tag: fdcc3229b24b659a48b4934e4ffc0ccaa6364a37
+    tag: 3fd2e7d6e8825c0b09f47b4d427d532b6c24ca08
     pullPolicy: IfNotPresent
     # imagePullSecrets: []
 
@@ -255,9 +255,9 @@ clickhouse:
         internal_replication: true
     persistentVolumeClaim:
       enabled: true
-      dataPersistentVolume: 
+      dataPersistentVolume:
         enabled: true
-        accessModes: 
+        accessModes:
         - "ReadWriteOnce"
         storage: "30Gi"
 
