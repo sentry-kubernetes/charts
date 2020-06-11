@@ -25,7 +25,7 @@ spec:
       labels:
         app: {{ template "sentry.fullname" . }}
         release: "{{ .Release.Name }}"
-        role: snuba-replacer
+        role: snuba-outcomes-consumer
         {{- if .Values.snuba.outcomesConsumer.podLabels }}
 {{ toYaml .Values.snuba.outcomesConsumer.podLabels | indent 8 }}
         {{- end }}
