@@ -151,7 +151,7 @@ data:
     # See https://docs.getsentry.com/on-premise/server/queue/ for more
     # information on configuring your queue broker and workers. Sentry relies
     # on a Python framework called Celery to manage queues.
-    
+
     {{- if or (.Values.rabbitmq.enabled) (.Values.rabbitmq.host) }}
     BROKER_URL = os.environ.get("BROKER_URL", "amqp://{{ .Values.rabbitmq.rabbitmqUsername }}:{{ .Values.rabbitmq.rabbitmqPassword }}@{{ template "sentry.rabbitmq.host" . }}:5672//")
     {{- else if .Values.redis.usePassword }}
@@ -159,7 +159,7 @@ data:
     {{- else }}
     BROKER_URL = os.environ.get("BROKER_URL", "redis://{{ $redisHost }}:{{ $redisPort }}/0")
     {{- end }}
-      
+
     #########
     # Cache #
     #########
@@ -325,5 +325,13 @@ data:
 
     # BITBUCKET_CONSUMER_KEY = 'YOUR_BITBUCKET_CONSUMER_KEY'
     # BITBUCKET_CONSUMER_SECRET = 'YOUR_BITBUCKET_CONSUMER_SECRET'
+
+{{- if .Values.metrics.enabled }}
+    SENTRY_METRICS_BACKEND = 'sentry.metrics.statsd.StatsdMetricsBackend'
+    SENTRY_METRICS_OPTIONS = {
+        'host': '{{ template "fullname" . }}-metrics',
+        'port': 9125,
+    }
+{{- end }}
 
 {{ .Values.config.sentryConfPy | indent 4 }}

@@ -309,7 +309,7 @@ postgresql:
     numSynchronousReplicas: 1
 
 rabbitmq:
-  ## If disabled, Redis will be used instead as the broker. 
+  ## If disabled, Redis will be used instead as the broker.
   enabled: true
   forceBoot: true
   replicaCount: 3
@@ -320,7 +320,7 @@ rabbitmq:
 
   podDisruptionBudget:
     minAvailable: 1
-  
+
   persistentVolume:
     enabled: true
   resources: {}
@@ -339,3 +339,63 @@ rabbitmq:
          "ha-sync-batch-size": 1
        }
      }
+
+## Prometheus Exporter / Metrics
+##
+metrics:
+  enabled: false
+
+  ## Configure extra options for liveness and readiness probes
+  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/#configure-probes)
+  livenessProbe:
+    enabled: true
+    initialDelaySeconds: 30
+    periodSeconds: 5
+    timeoutSeconds: 2
+    failureThreshold: 3
+    successThreshold: 1
+  readinessProbe:
+    enabled: true
+    initialDelaySeconds: 30
+    periodSeconds: 5
+    timeoutSeconds: 2
+    failureThreshold: 3
+    successThreshold: 1
+
+  ## Metrics exporter resource requests and limits
+  ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
+  resources: {}
+  #   limits:
+  #     cpu: 100m
+  #     memory: 100Mi
+  #   requests:
+  #     cpu: 100m
+  #     memory: 100Mi
+
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+  # schedulerName:
+  # Optional extra labels for pod, i.e. redis-client: "true"
+  # podLabels: []
+  service:
+    type: ClusterIP
+    labels: {}
+
+  image:
+    repository: prom/statsd-exporter
+    tag: v0.10.5
+    pullPolicy: IfNotPresent
+
+  # Enable this if you're using https://github.com/coreos/prometheus-operator
+  serviceMonitor:
+    enabled: false
+    additionalLabels: {}
+    namespace: ""
+    namespaceSelector: {}
+    # Default: scrape .Release.Namespace only
+    # To scrape all, use the following:
+    # namespaceSelector:
+    #   any: true
+    scrapeInterval: 30s
+    # honorLabels: true
