@@ -93,6 +93,25 @@ snuba:
     nodeSelector: {}
     # tolerations: []
     # podLabels: []
+
+  outcomesConsumer:
+    replicas: 1
+    env: {}
+    resources: {}
+    affinity: {}
+    nodeSelector: {}
+    # tolerations: []
+    # podLabels: []
+
+  sessionsConsumer:
+    replicas: 1
+    env: {}
+    resources: {}
+    affinity: {}
+    nodeSelector: {}
+    # tolerations: []
+    # podLabels: []
+
   replacer:
     env: {}
     resources: {}
