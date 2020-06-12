@@ -155,5 +155,5 @@ Replace REPLACE_ME with the time Sentry was upgraded at in UTC (it should suffic
 - [X] Public availability through Github Pages
 - [X] Automatic deployment through Github Actions
 - [ ] Symbolicator deployment
-- [ ] Testing the chart in a production environment
+- [X] Testing the chart in a production environment
 - [ ] Improving the README
