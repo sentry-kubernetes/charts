@@ -39,6 +39,7 @@ relay:
     targetCPUUtilizationPercentage: 50
 
 sentry:
+  singleOrganization: true
   web:
     replicas: 1
     env: []
