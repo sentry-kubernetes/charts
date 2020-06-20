@@ -38,7 +38,7 @@ data:
             "host": env("CLICKHOUSE_HOST", {{ include "sentry.clickhouse.host" . | quote }}),
             "port": int(env("CLICKHOUSE_PORT", {{ include "sentry.clickhouse.port" . }})),
             "http_port": int(env("CLICKHOUSE_HTTP_PORT", 8123)),
-            "storage_sets": {"events", "outcomes", "querylog", "sessions", "transactions"},
+            "storage_sets": {"events", "migrations", "outcomes", "querylog", "sessions", "transactions"},
             # FIXME: Snuba will be able to migrate multi node clusters in the future
             "single_node": env("CLICKHOUSE_SINGLE_NODE", "false").lower() == "true"
         },
