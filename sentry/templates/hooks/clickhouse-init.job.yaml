@@ -1,7 +1,7 @@
 {{- if .Values.hooks.enabled -}}
 {{- $clickhouseHost := include "sentry.clickhouse.host" . -}}
 {{- $clickhousePort := include "sentry.clickhouse.port" . -}}
-{{- $tables := "errors groupassignee groupedmessage migrations outcomes_hourly outcomes_mv_hourly outcomes_raw sentry sessions_hourly sessions_hourly_mv sessions_raw transactions" -}}
+{{- $tables := "errors groupassignee groupedmessage outcomes_hourly outcomes_mv_hourly outcomes_raw sentry sessions_hourly sessions_hourly_mv sessions_raw transactions" -}}
 {{- $dropQuery := "DROP TABLE IF EXISTS ${tbl}_dist" -}}
 {{- $createQuery := .Release.Name | printf "CREATE TABLE ${tbl}_dist AS ${tbl}_local ENGINE = Distributed(%s-clickhouse, default, ${tbl}_local, rand())" -}}
 apiVersion: batch/v1
