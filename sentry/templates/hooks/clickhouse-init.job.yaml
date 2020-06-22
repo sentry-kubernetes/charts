@@ -49,7 +49,9 @@ spec:
               done
             done
             {{- else }}
-            clickhouse-client --database=default --host={{ $clickhouseHost }} --port={{ $clickhousePort }} --query='{{ $dropQuery }}';
-            clickhouse-client --database=default --host={{ $clickhouseHost }} --port={{ $clickhousePort }} --query='{{ $createQuery }}';
+            for tbl in {{ $tables }}; do
+              clickhouse-client --database=default --host={{ $clickhouseHost }} --port={{ $clickhousePort }} --query="{{ $dropQuery }}";
+              clickhouse-client --database=default --host={{ $clickhouseHost }} --port={{ $clickhousePort }} --query="{{ $createQuery }}";
+            done
             {{- end }}
 {{- end }}
