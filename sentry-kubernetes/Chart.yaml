@@ -1,15 +1,14 @@
-apiVersion: v1
-appVersion: latest
+apiVersion: v2
+name: sentry-kubernetes
 description: A Helm chart for sentry-kubernetes (https://github.com/getsentry/sentry-kubernetes)
+type: application
+version: 0.3.0
+appVersion: latest
 home: https://github.com/getsentry/sentry-kubernetes
 icon: https://sentry-brand.storage.googleapis.com/sentry-glyph-white.png
 keywords:
 - sentry
 - report kubernetes events
-maintainers:
-- email: ctadeu@gmail.com
-  name: cpanato
-name: sentry-kubernetes
 sources:
 - https://github.com/getsentry/sentry-kubernetes
-version: 0.2.3
+- https://github.com/sentry-kubernetes/charts
