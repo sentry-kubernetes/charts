@@ -57,14 +57,14 @@ spec:
             snuba bootstrap --force;
             {{- end }}
         env:
-          - name: LOG_LEVEL
-            value: debug
-          - name: SNUBA_SETTINGS
-            value: /etc/snuba/settings.py
-          - name: DATASET_MODE
-            value: local
+        - name: LOG_LEVEL
+          value: debug
+        - name: SNUBA_SETTINGS
+          value: /etc/snuba/settings.py
+        - name: CLICKHOUSE_SINGLE_NODE
+          value: "true"
 {{- if .Values.snuba.dbInitJob.env }}
-{{ toYaml .Values.snuba.dbInitJob.env | indent 10 }}
+{{ toYaml .Values.snuba.dbInitJob.env | indent 8 }}
 {{- end }}
         volumeMounts:
         - mountPath: /etc/snuba
@@ -72,8 +72,8 @@ spec:
           readOnly: true
         resources:
 {{ toYaml .Values.hooks.snubaInit.resources | indent 10 }}
-{{- end }}
       volumes:
         - name: config
           configMap:
             name: {{ template "sentry.fullname" . }}-snuba
+{{- end }}

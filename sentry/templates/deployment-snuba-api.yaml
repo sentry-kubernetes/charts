@@ -13,7 +13,9 @@ spec:
       app: {{ template "sentry.fullname" . }}
       release: "{{ .Release.Name }}"
       role: snuba-api
+{{- if not .Values.snuba.api.autoscaling.enabled }}
   replicas: {{ .Values.snuba.api.replicas }}
+{{- end }}
   template:
     metadata:
       annotations:
@@ -53,8 +55,8 @@ spec:
         ports:
         - containerPort: {{ template "snuba.port" }}
         env:
-          - name: SNUBA_SETTINGS
-            value: /etc/snuba/settings.py
+        - name: SNUBA_SETTINGS
+          value: /etc/snuba/settings.py
 {{- if .Values.snuba.api.env }}
 {{ toYaml .Values.snuba.api.env | indent 8 }}
 {{- end }}

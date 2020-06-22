@@ -8,12 +8,12 @@ user:
 images:
   sentry:
     repository: getsentry/sentry
-    tag: 17788bdb1924b8a12950e4b78fe69e733b75f1c6
+    tag: cc9f7d1
     pullPolicy: IfNotPresent
     # imagePullSecrets: []
   snuba:
     repository: getsentry/snuba
-    tag: 03a341d731d205a8418e4207d0cf5bcae4b93ae1
+    tag: 882be95ba0d462a29759a49b2e9aad0c1ce111a9
     pullPolicy: IfNotPresent
     # imagePullSecrets: []
 
@@ -43,6 +43,15 @@ sentry:
     nodeSelector: {}
     # tolerations: []
     # podLabels: []
+
+    # it's better to use prometheus adapter and scale based on
+    # the size of the rabbitmq queue
+    autoscaling:
+      enabled: false
+      minReplicas: 2
+      maxReplicas: 5
+      targetCPUUtilizationPercentage: 50
+
   cron:
     env: {}
     resources: {}
@@ -84,6 +93,25 @@ snuba:
     nodeSelector: {}
     # tolerations: []
     # podLabels: []
+
+  outcomesConsumer:
+    replicas: 1
+    env: {}
+    resources: {}
+    affinity: {}
+    nodeSelector: {}
+    # tolerations: []
+    # podLabels: []
+
+  sessionsConsumer:
+    replicas: 1
+    env: {}
+    resources: {}
+    affinity: {}
+    nodeSelector: {}
+    # tolerations: []
+    # podLabels: []
+
   replacer:
     env: {}
     resources: {}
@@ -246,9 +274,9 @@ clickhouse:
         internal_replication: true
     persistentVolumeClaim:
       enabled: true
-      dataPersistentVolume: 
+      dataPersistentVolume:
         enabled: true
-        accessModes: 
+        accessModes:
         - "ReadWriteOnce"
         storage: "30Gi"
 
