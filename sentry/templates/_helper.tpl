@@ -96,7 +96,7 @@ Set postgres host
 {{- if .Values.postgresql.enabled -}}
 {{- template "sentry.postgresql.fullname" . -}}
 {{- else -}}
-{{ default "postgres" .Values.externalPostgresql.host }}
+{{ required "A valid .Values.externalPostgresql.host is required" .Values.externalPostgresql.host }}
 {{- end -}}
 {{- end -}}
 
@@ -118,7 +118,7 @@ Set postgres port
 {{- if .Values.postgresql.enabled -}}
 {{- default 5432 .Values.postgresql.service.port }}
 {{- else -}}
-{{- default 5432 .Values.externalPostgresql.port -}}
+{{- required "A valid .Values.externalPostgresql.port is required" .Values.externalPostgresql.port -}}
 {{- end -}}
 {{- end -}}
 
@@ -129,7 +129,7 @@ Set postgresql username
 {{- if .Values.postgresql.enabled -}}
 {{- default "postgres" .Values.postgresql.postgresqlUsername }}
 {{- else -}}
-{{ default "postgres" .Values.externalPostgresql.username }}
+{{ required "A valid .Values.externalPostgresql.username is required" .Values.externalPostgresql.username }}
 {{- end -}}
 {{- end -}}
 
@@ -140,7 +140,7 @@ Set postgresql password
 {{- if .Values.postgresql.enabled -}}
 {{- default "" .Values.postgresql.postgresqlPassword }}
 {{- else -}}
-{{ default "" .Values.externalPostgresql.password }}
+{{ required "A valid .Values.externalPostgresql.password is required" .Values.externalPostgresql.password }}
 {{- end -}}
 {{- end -}}
 
@@ -151,7 +151,7 @@ Set postgresql database
 {{- if .Values.postgresql.enabled -}}
 {{- default "sentry" .Values.postgresql.postgresqlDatabase }}
 {{- else -}}
-{{ default "sentry" .Values.externalPostgresql.database }}
+{{ required "A valid .Values.externalPostgresql.database is required" .Values.externalPostgresql.database }}
 {{- end -}}
 {{- end -}}
 
@@ -162,7 +162,7 @@ Set redis host
 {{- if .Values.redis.enabled -}}
 {{- template "sentry.redis.fullname" . -}}-master
 {{- else -}}
-{{ default "redis" .Values.externalRedis.host }}
+{{ required "A valid .Values.externalRedis.host is required" .Values.externalRedis.host }}
 {{- end -}}
 {{- end -}}
 
@@ -184,7 +184,7 @@ Set redis port
 {{- if .Values.redis.enabled -}}
 {{- default 6379 .Values.redis.redisPort }}
 {{- else -}}
-{{ default 6379 .Values.externalRedis.port }}
+{{ required "A valid .Values.externalRedis.port is required" .Values.externalRedis.port }}
 {{- end -}}
 {{- end -}}
 
@@ -206,7 +206,7 @@ Set Clickhouse host
 {{- if .Values.clickhouse.enabled -}}
 {{- template "sentry.clickhouse.fullname" . -}}
 {{- else -}}
-{{ default "clickhouse" .Values.externalClickhouse.host }}
+{{ required "A valid .Values.externalClickhouse.host is required" .Values.externalClickhouse.host }}
 {{- end -}}
 {{- end -}}
 
@@ -217,7 +217,7 @@ Set Clickhouse port
 {{- if .Values.clickhouse.enabled -}}
 {{- default 9000 .Values.clickhouse.clickhouse.tcp_port }}
 {{- else -}}
-{{ default 9000 .Values.externalClickhouse.tcpPort }}
+{{ required "A valid .Values.externalClickhouse.tcpPort is required" .Values.externalClickhouse.tcpPort }}
 {{- end -}}
 {{- end -}}
 
@@ -228,7 +228,7 @@ Set Kafka Confluent host
 {{- if .Values.kafka.enabled -}}
 {{- template "sentry.kafka.fullname" . -}}
 {{- else -}}
-{{ default "kafka-confluent" .Values.externalKafka.host }}
+{{ required "A valid .Values.externalKafka.host is required" .Values.externalKafka.host }}
 {{- end -}}
 {{- end -}}
 
@@ -239,7 +239,7 @@ Set Kafka Confluent port
 {{- if and (.Values.kafka.enabled) (.Values.kafka.service.port) -}}
 {{- .Values.kafka.service.port }}
 {{- else -}}
-{{ default 9092 .Values.externalKafka.port }}
+{{ required "A valid .Values.externalKafka.port is required" .Values.externalKafka.port }}
 {{- end -}}
 {{- end -}}
 
@@ -251,7 +251,7 @@ Set Zookeeper host
 {{- if .Values.kafka.zookeeper.enabled -}}
 {{- template "sentry.kafka.zookeeper.fullname" . -}}
 {{- else -}}
-"zookeeper"
+{{ required "A valid .Values.externalKafka.port is required" .Values.externalKafka.port }}
 {{- end -}}
 {{- end -}}
 
@@ -262,7 +262,7 @@ Set Zookeeper port
 {{- if .Values.kafka.zookeeper.enabled -}}
 {{- default "2181" .Values.kafka.zookeeper.service.port }}
 {{- else -}}
-"2181"
+{{ required "A valid .Values.externalKafka.port is required" .Values.externalKafka.port }}
 {{- end -}}
 {{- end -}}
 
