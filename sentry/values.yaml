@@ -331,7 +331,6 @@ postgresql:
   nameOverride: sentry-postgresql
   postgresqlUsername: postgres
   postgresqlDatabase: sentry
-  # postgresSslMode: require
   replication:
     enabled: false
     slaveReplicas: 2
@@ -346,6 +345,7 @@ externalPostgresql:
   username: postgres
   # password: postgres
   database: sentry
+  # postgresSslMode: require
 
 rabbitmq:
   ## If disabled, Redis will be used instead as the broker. 

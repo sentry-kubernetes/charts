@@ -115,9 +115,9 @@ data:
             "PASSWORD": os.environ.get("POSTGRES_PASSWORD", "{{ include "sentry.postgresql.password" . }}"),
             "HOST": "{{ include "sentry.postgresql.host" . }}",
             "PORT": {{ template "sentry.postgresql.port" . }},
-            {{- if .Values.postgresql.postgresSslMode }}
+            {{- if .Values.externalPostgresql.postgresSslMode }}
             'OPTIONS': {
-                'sslmode': '{{ .Values.postgresql.postgresSslMode }}',
+                'sslmode': '{{ .Values.externalPostgresql.postgresSslMode }}',
             },
             {{- end }}
         }
