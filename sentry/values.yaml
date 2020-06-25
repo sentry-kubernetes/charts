@@ -19,6 +19,8 @@ images:
 
 sentry:
   web:
+    command: ["sentry", "run", "web"]
+
     replicas: 1
     env: {}
     probeInitialDelaySeconds: 10
