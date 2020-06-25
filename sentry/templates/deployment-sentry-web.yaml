@@ -53,7 +53,7 @@ spec:
       - name: {{ .Chart.Name }}-web
         image: "{{ .Values.images.sentry.repository }}:{{ .Values.images.sentry.tag }}"
         imagePullPolicy: {{ .Values.images.sentry.pullPolicy }}
-        command: {{ .Values.sentry.web.comamnd }}
+        command: {{ .Values.sentry.web.command }}
         ports:
         - containerPort: {{ template "sentry.port" }}
         env:
