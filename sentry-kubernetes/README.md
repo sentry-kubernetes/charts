@@ -5,7 +5,7 @@
 # Installation:
 
 ```console
-$ helm install incubator/sentry-kubernetes --name my-release --set sentry.dsn=<your-dsn>
+$ helm install sentry/sentry-kubernetes --name my-release --set sentry.dsn=<your-dsn>
 ```
 
 ## Configuration
