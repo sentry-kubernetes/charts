@@ -290,7 +290,16 @@ kafka:
   transactionStateLogMinIsr: 3
 
   service:
+    # Only used when internal kafka is disabled
+    # host: kafka-confluent
     port: 9092
+
+  zookeeper:
+    enabled: true
+    service:
+      # Only used when internal zookeper is disabled
+      # host: zookeeper
+      port: 2181
 
 redis:
   ## Required if the Redis component of this chart is disabled. (Existing Redis)
@@ -328,7 +337,7 @@ postgresql:
     numSynchronousReplicas: 1
 
 rabbitmq:
-  ## If disabled, Redis will be used instead as the broker. 
+  ## If disabled, Redis will be used instead as the broker.
   enabled: true
   forceBoot: true
   replicaCount: 3
@@ -339,7 +348,7 @@ rabbitmq:
 
   podDisruptionBudget:
     minAvailable: 1
-  
+
   persistentVolume:
     enabled: true
   resources: {}

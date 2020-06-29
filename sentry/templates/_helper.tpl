@@ -191,7 +191,7 @@ Set Kafka Confluent host
 {{- if .Values.kafka.enabled -}}
     {{- template "sentry.kafka.fullname" . -}}
 {{- else -}}
-    kafka-confluent
+    {{- .Values.kafka.service.host }}
 {{- end -}}
 {{- end -}}
 
@@ -206,7 +206,6 @@ Set Kafka Confluent port
 {{- end -}}
 {{- end -}}
 
-
 {{/*
 Set Zookeeper host
 */}}
@@ -214,9 +213,10 @@ Set Zookeeper host
 {{- if .Values.kafka.zookeeper.enabled -}}
     {{- template "sentry.kafka.zookeeper.fullname" . -}}
 {{- else -}}
-    "zookeeper"
+    {{ - . Values.kafka.zookeeper.service.host }}
 {{- end -}}
 {{- end -}}
+
 
 {{/*
 Set Zookeeper port

@@ -15,11 +15,11 @@ Big thanks from the maintainers of the [deprecated chart](https://github.com/hel
 For now the full list of values is not documented but you can get inspired by the values.yaml specific to each directory.
 
 ## Upgrading from deprecated 9.0 -> 10.0 Chart
-As this chart runs in helm 3 and also tries its best to follow on from the original Sentry chart. There are some steps that needs to be taken in order to correctly upgrade. 
+As this chart runs in helm 3 and also tries its best to follow on from the original Sentry chart. There are some steps that needs to be taken in order to correctly upgrade.
 
 From the previous upgrade, make sure to get the following from your previous installation:
  - Redis Password (If Redis auth was enabled)
- - Postgresql Password 
+ - Postgresql Password
 Both should be in the `secrets` of your original 9.0 release. Make a note of both of these values.
 
 #### Upgrade Steps
@@ -42,9 +42,13 @@ If Redis auth is disabled:
 
 ## PostgresSQL
 
-By default, PostgreSQL is installed as part of the chart. To use an external PostgreSQL server set `postgresql.enabled` to `false` and then set `postgresql.postgresHost` and `postgresql.postgresqlPassword`. The other options (`postgresql.postgresqlDatabase`, `postgresql.postgresqlUsername` and `postgresql.postgresqlPort`) may also want changing from their default values.
+By default, PostgreSQL is installed as part of the chart. To use an external PostgreSQL server set `postgresql.enabled` to `false` and then set `postgresql.postgresqlHost` and `postgresql.postgresqlPassword`. The other options (`postgresql.postgresqlDatabase`, `postgresql.postgresqlUsername` and `postgresql.postgresqlPort`) may also want changing from their default values.
 
 To avoid issues when upgrade this chart, provide `postgresql.postgresqlPassword` for subsequent upgrades. This is due to an issue in the PostgreSQL chart where password will be overwritten with randomly generated passwords otherwise. See https://github.com/helm/charts/tree/master/stable/postgresql#upgrade for more detail.
+
+## Kafka
+
+By default, Kafka is installed as part of the chart. To use an external Kafka and zookeeper set `kafka.enabled` and `kafka.zookeeper.enabled` to `false` and then set `kafka.service.host` and `kafka.zookeeper.service.host`. The other options (`kafka.service.port` and `kafka.zookeeper.service.host`) may also want changing from their default values.
 
 ## Persistence
 
