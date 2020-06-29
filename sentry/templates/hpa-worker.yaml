@@ -1,0 +1,14 @@
+{{- if .Values.sentry.worker.autoscaling.enabled }}
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ template "sentry.fullname" . }}-sentry-worker
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ template "sentry.fullname" . }}-worker
+  minReplicas: {{ .Values.sentry.worker.autoscaling.minReplicas }}
+  maxReplicas: {{ .Values.sentry.worker.autoscaling.maxReplicas }}
+  targetCPUUtilizationPercentage: {{ .Values.sentry.worker.autoscaling.targetCPUUtilizationPercentage }}
+{{- end }}

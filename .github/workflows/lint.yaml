@@ -11,6 +11,10 @@ jobs:
         uses: yeouchien/helm3-action@f3a7c239c5c60777210c8e631839edf5dd3fa29c
         with:
           command: lint ./sentry
+      - name: Lint Helm
+        uses: yeouchien/helm3-action@f3a7c239c5c60777210c8e631839edf5dd3fa29c
+        with:
+          command: lint ./sentry-kubernetes
       # - name: Create kind cluster
       #   uses: helm/kind-action@v1.0.0-alpha.3
       #   with:

@@ -1,0 +1,372 @@
+## Timezone
+timezone: "UTC"
+
+## Cluster domain
+clusterDomain: "cluster.local"
+
+##
+## Clickhouse Node selectors and tolerations for pod assignment
+## ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#nodeselector
+## ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#taints-and-tolerations-beta-feature
+##
+# nodeSelector: {"beta.kubernetes.io/arch": "amd64"}
+# tolerations: []
+## Clickhouse pod/node affinity/anti-affinity
+## 
+#affinity:
+#  nodeAffinity:
+#    requiredDuringSchedulingIgnoredDuringExecution:
+#      nodeSelectorTerms:
+#      - matchExpressions:
+#        - key: "application/clickhouse"
+#          operator: In
+#          values:
+#          - "true"
+
+clickhouse:
+  ## StatefulSet controller supports relax its ordering guarantees while preserving its uniqueness and identity guarantees. There are two valid pod management policies: OrderedReady and Parallel
+  ## ref: https://kubernetes.io/docs/tutorials/stateful-application/basic-stateful-set/#pod-management-policy
+  ##
+  podManagementPolicy: "Parallel"
+
+  ## StatefulSet controller supports automated updates. There are two valid update strategies: RollingUpdate and OnDelete
+  ## ref: https://kubernetes.io/docs/tutorials/stateful-application/basic-stateful-set/#updating-statefulsets
+  ##
+  updateStrategy: "RollingUpdate"
+
+  ## Partition update strategy
+  ## https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/#partitions
+  ##
+  # rollingUpdatePartition:
+
+  ##
+  ## The path to the directory containing data.
+  ## Default value: /var/lib/clickhouse
+  path: "/var/lib/clickhouse"
+  ##
+  ## The port for connecting to the server over HTTP
+  http_port: "8123"
+  ##
+  ## Port for communicating with clients over the TCP protocol.
+  tcp_port: "9000"
+  ##
+  ## Port for exchanging data between ClickHouse servers.
+  interserver_http_port: "9009"
+  ## 
+  ## The instance number of Clickhouse
+  replicas: "3"
+  ## Clickhouse image configuration.
+  image: "yandex/clickhouse-server"
+  imageVersion: "19.14"
+  imagePullPolicy: "IfNotPresent"
+  #imagePullSecrets: 
+  ## Periodic probe of container liveness. Container will be restarted if the probe fails. Cannot be updated. 
+  ## More info: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle#container-probes
+  livenessProbe:
+    enabled: true
+    initialDelaySeconds: "30"
+    periodSeconds: "30"
+    timeoutSeconds: "5"
+    failureThreshold: "3"
+    successThreshold: "1"
+  ## Periodic probe of container service readiness. Container will be removed from service endpoints if the probe fails. Cannot be updated. 
+  ## More info: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle#container-probes
+  readinessProbe:
+    enabled: true
+    initialDelaySeconds: "30"
+    periodSeconds: "30"
+    timeoutSeconds: "5"
+    failureThreshold: "3"
+    successThreshold: "1"
+  ## volumeClaimTemplates is a list of claims that pods are allowed to reference. 
+  ## The StatefulSet controller is responsible for mapping network identities to claims in a way that maintains the identity of a pod. 
+  ## Every claim in this list must have at least one matching (by name) volumeMount in one container in the template. 
+  ## A claim in this list takes precedence over any volumes in the template, with the same name.
+  persistentVolumeClaim:
+    enabled: false
+    ## Clickhouse data volume
+    dataPersistentVolume: 
+      enabled: false
+      accessModes: 
+      - "ReadWriteOnce"
+      storage: "500Gi"
+    ## Clickhouse logs volume
+    logsPersistentVolume:
+      enabled: false
+      accessModes: 
+      - "ReadWriteOnce"
+      storage: "50Gi"
+  ##
+  ## An API object that manages external access to the services in a cluster, typically HTTP.
+  ## Ingress can provide load balancing, SSL termination and name-based virtual hosting.
+  ingress: 
+    enabled: false
+  #  host: "clickhouse.domain.com"
+  #  path: "/"
+  #  tls: 
+  #    enabled: false
+  #    hosts: 
+  #    - "clickhouse.domain.com"
+  #    - "clickhouse.domain1.com"
+  #    secretName: "clickhouse-secret"
+  ## 
+  ## Clickhouse config.xml and metrica.xml
+  configmap:
+    ##
+    ## If Configmap's enabled is `true`, Custom config.xml and metrica.xml
+    enabled: true
+    ##
+    ## The maximum number of inbound connections.
+    max_connections: "4096"
+    ##
+    ## The number of seconds that ClickHouse waits for incoming requests before closing the connection.
+    keep_alive_timeout: "3"
+    ##
+    ## The maximum number of simultaneously processed requests.
+    max_concurrent_queries: "100"
+    ##
+    ## Cache size (in bytes) for uncompressed data used by table engines from the MergeTree.
+    ## There is one shared cache for the server. Memory is allocated on demand. The cache is used if the option use_uncompressed_cache is enabled.
+    ## The uncompressed cache is advantageous for very short queries in individual cases.
+    uncompressed_cache_size: "8589934592"
+    ##
+    ## Approximate size (in bytes) of the cache of "marks" used by MergeTree.
+    ## The cache is shared for the server and memory is allocated as needed. The cache size must be at least 5368709120.
+    mark_cache_size: "5368709120"
+    ##
+    ## You can specify umask here (see "man umask"). Server will apply it on startup.
+    ## Number is always parsed as octal. Default umask is 027 (other users cannot read logs, data files, etc; group can only read).
+    umask: "022"
+    ##
+    ## Perform mlockall after startup to lower first queries latency and to prevent clickhouse executable from being paged out under high IO load.
+    ## Enabling this option is recommended but will lead to increased startup time for up to a few seconds.
+    mlock_executable: false
+    ##
+    ## The interval in seconds before reloading built-in dictionaries.
+    ## ClickHouse reloads built-in dictionaries every x seconds. This makes it possible to edit dictionaries "on the fly" without restarting the server.
+    builtin_dictionaries_reload_interval: "3600"
+    ##
+    ## Maximum session timeout, in seconds.
+    max_session_timeout: "3600"
+    ##
+    ## Default session timeout, in seconds.
+    default_session_timeout: "60"
+    ##
+    ## Uncomment to disable ClickHouse internal DNS caching.
+    disable_internal_dns_cache: "1"
+    ##
+    ## The maximum number of open files.
+    ## We recommend using this option in Mac OS X, since the getrlimit() function returns an incorrect value.
+    #max_open_files:
+    ##
+    ## The host name that can be used by other servers to access this server.
+    ## If omitted, it is defined in the same way as the hostname-f command.
+    ## Useful for breaking away from a specific network interface.
+    #interserver_http_host: 
+    ##
+    ## Logging settings.
+    # path – The log path. Default value: /var/log/clickhouse-server.
+    # level – Logging level. Acceptable values: trace, debug, information, warning, error. Default value: /var/log/clickhouse-server
+    # size – Size of the file. Applies to loganderrorlog. Once the file reaches size, ClickHouse archives and renames it, and creates a new log file in its place.
+    # count – The number of archived log files that ClickHouse stores.
+    logger:
+      path: "/var/log/clickhouse-server"
+      level: "trace"
+      size: "1000M"
+      count: "10"
+    ##
+    ## Data compression settings.
+    # min_part_size – The minimum size of a table part.
+    # min_part_size_ratio – The ratio of the minimum size of a table part to the full size of the table.
+    # method – Compression method. Acceptable values ​: lz4 or zstd(experimental).
+    compression:
+      enabled: false
+      cases:
+      - min_part_size: "10000000000"
+        min_part_size_ratio: "0.01"
+        method: "zstd"
+    ##
+    ## Contains settings that allow ClickHouse to interact with a ZooKeeper cluster.
+    ## ClickHouse uses ZooKeeper for storing metadata of replicas when using replicated tables. If replicated tables are not used, this section of parameters can be omitted.
+    # node — ZooKeeper endpoint. You can set multiple endpoints.
+    # session_timeout — Maximum timeout for the client session in milliseconds.
+    # root — The znode that is used as the root for znodes used by the ClickHouse server. Optional.
+    # identity — User and password, that can be required by ZooKeeper to give access to requested znodes. Optional.
+    zookeeper_servers:
+      enabled: false
+      session_timeout_ms: "30000"
+      operation_timeout_ms: "10000"
+      #root: "/path/to/zookeeper/node"
+      #identity: "user:password"
+      config:
+      - index: ""
+        host: ""
+        port: ""
+    ##
+    ## Configuration of clusters used by the Distributed table engine.
+    ## The parameters host, port, and optionally user, password, secure, compression are specified for each server:
+    # host – The address of the remote server.
+    # port – The TCP port for messenger activity ('tcp_port' in the config, usually set to 9000).
+    # user – Name of the user for connecting to a remote server. Access is configured in the users.xml file. For more information, see the section "Access rights".
+    # password – The password for connecting to a remote server (not masked).
+    # secure - Use ssl for connection, usually you also should define port = 9440. Server should listen on 9440 and have correct certificates.
+    # compression - Use data compression. Default value: true.
+    remote_servers:
+      enabled: true
+      internal_replication: false
+      replica: 
+        user: "default"
+        #password: ""
+        compression: true
+        backup:
+          enabled: true
+    ##
+    ## Sending data to Graphite.
+    # interval – The interval for sending, in seconds.
+    # timeout – The timeout for sending data, in seconds.
+    # root_path – Prefix for keys.
+    # metrics – Sending data from a :ref:system_tables-system.metrics table.
+    # events – Sending data from a :ref:system_tables-system.events table.
+    # asynchronous_metrics – Sending data from a :ref:system_tables-system.asynchronous_metrics table.
+    ## You can configure multiple <graphite> clauses. For instance, you can use this for sending different data at different intervals.
+    graphite:
+      enabled: false
+      config:
+      - timeout: "0.1"
+        interval: "60"
+        root_path: "one_min"
+        metrics: true
+        events: true
+        events_cumulative: true
+        asynchronous_metrics: true
+    ##
+    ## A settings profile is a collection of settings grouped under the same name. 
+    ## Each ClickHouse user has a profile.
+    ## To apply all the settings in a profile, set the profile setting.
+    ## More info: https://clickhouse.yandex/docs/en/operations/settings/settings_profiles/
+    profiles: 
+      enabled: false
+      profile: 
+      - name: "default"
+        config: 
+          max_memory_usage: "10000000000"
+          use_uncompressed_cache: "0"
+          load_balancing: "random"
+    ##
+    ## The users section of the user.xml configuration file contains user settings.
+    ## More info: https://clickhouse.yandex/docs/en/operations/settings/settings_users/
+    users: 
+      enabled: false
+      user: 
+      - name: "default"
+        config:
+          #password: ""
+          networks: 
+          - "::/0"
+          profile: "default"
+          quota: "default"
+    ##
+    ## Quotas allow you to limit resource usage over a period of time, or simply track the use of resources.
+    ## Quotas are set up in the user config. This is usually 'users.xml'.
+    ## More info: https://clickhouse.yandex/docs/en/operations/quotas/
+    quotas: 
+      enabled: false
+      quota: 
+      - name: "default"
+        config: 
+        - duration: "3600"
+          queries: "0"
+          errors: "0"
+          result_rows: "0"
+          read_rows: "0"
+          execution_time: "0"
+
+##
+## Web interface for ClickHouse in the Tabix project.
+## Features:
+# Works with ClickHouse directly from the browser, without the need to install additional software.
+# Query editor with syntax highlighting.
+# Auto-completion of commands.
+# Tools for graphical analysis of query execution.
+# Color scheme options.
+tabix: 
+  ##
+  ## Enable Tabix
+  enabled: true
+  ##
+  ## ## The instance number of Tabix
+  replicas: "1"
+  ##
+  ## The deployment strategy to use to replace existing pods with new ones.
+  updateStrategy: 
+    ##
+    ## Type of deployment. Can be "Recreate" or "RollingUpdate". Default is RollingUpdate.
+    type: "RollingUpdate"
+    ##
+    ## The maximum number of pods that can be scheduled above the desired number of pods.
+    maxSurge: 3
+    ## 
+    ## The maximum number of pods that can be unavailable during the update.
+    maxUnavailable: 1
+  ##
+  ## Docker image name. 
+  image: "spoonest/clickhouse-tabix-web-client"
+  ##
+  ## Docker image version
+  imageVersion: "stable"
+  ##
+  ## Image pull policy. One of Always, Never, IfNotPresent. 
+  ## Defaults to Always if :latest tag is specified, or IfNotPresent otherwise. Cannot be updated.
+  ## More info: https://kubernetes.io/docs/concepts/containers/images#updating-images
+  imagePullPolicy: "IfNotPresent"
+  ## Periodic probe of container liveness. Container will be restarted if the probe fails. Cannot be updated. 
+  ## More info: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle#container-probes
+  livenessProbe:
+    enabled: true
+    initialDelaySeconds: "30"
+    periodSeconds: "30"
+    timeoutSeconds: "5"
+    failureThreshold: "3"
+    successThreshold: "1"
+  ## Periodic probe of container service readiness. Container will be removed from service endpoints if the probe fails. Cannot be updated. 
+  ## More info: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle#container-probes
+  readinessProbe:
+    enabled: true
+    initialDelaySeconds: "30"
+    periodSeconds: "30"
+    timeoutSeconds: "5"
+    failureThreshold: "3"
+    successThreshold: "1"
+  ##
+  ## ImagePullSecrets is an optional list of references to secrets in the same namespace to use for pulling any of the images used by this PodSpec. 
+  ## If specified, these secrets will be passed to individual puller implementations for them to use.
+  ## For example, in the case of docker, only DockerConfig type secrets are honored. 
+  ## More info: https://kubernetes.io/docs/concepts/containers/images#specifying-imagepullsecrets-on-a-pod
+  #imagePullSecrets: 
+  ##
+  ## You can limit access to your tabix.ui application on the proxy level.
+  ## User and Password parameters to restrict access only for specified user. 
+  security: 
+    user: "admin"
+    password: "admin"
+  ##
+  ## You can automatically connect to a Clickhouse server by specifying chName, chHost, chHost, chPassword and/or chParams environment variables.
+  #automaticConnection: 
+  #  chName: "test"
+  #  chHost: "test"
+  #  chLogin: "test"
+  #  chPassword: "test"
+  #  chParams: ""
+  ##
+  ## An API object that manages external access to the services in a cluster, typically HTTP.
+  ## Ingress can provide load balancing, SSL termination and name-based virtual hosting.
+  ingress: 
+    enabled: false
+  #  host: "tabix.domain.com"
+  #  path: "/"
+  #  tls: 
+  #    enabled: false
+  #    hosts: 
+  #    - "tabix.domain.com"
+  #    - "tabix.domain1.com"
+  #    secretName: "tabix-secret"

@@ -65,12 +65,7 @@ We truncate at 63 chars because some Kubernetes name fields are limited to this 
 {{- end -}}
 
 {{- define "sentry.rabbitmq.fullname" -}}
-{{- $name := default .Chart.Name .Values.rabbitmq.nameOverride -}}
-{{- if contains $name .Release.Name -}}
-{{- .Release.Name | trunc 63 | trimSuffix "-" -}}
-{{- else -}}
 {{- printf "%s-%s" .Release.Name "rabbitmq" | trunc 63 | trimSuffix "-" -}}
-{{- end -}}
 {{- end -}}
 
 {{- define "sentry.clickhouse.fullname" -}}
@@ -101,7 +96,7 @@ Set postgres host
 {{- if .Values.postgresql.enabled -}}
 {{- template "sentry.postgresql.fullname" . -}}
 {{- else -}}
-{{- .Values.postgresql.postgresqlHost | quote -}}
+{{- .Values.postgresql.postgresqlHost -}}
 {{- end -}}
 {{- end -}}
 
@@ -158,9 +153,9 @@ Set redis port
 */}}
 {{- define "sentry.redis.port" -}}
 {{- if .Values.redis.enabled -}}
-    "6379"
+    6379
 {{- else -}}
-{{- default "6379" .Values.redis.port | quote -}}
+{{- default 6379 .Values.redis.port -}}
 {{- end -}}
 {{- end -}}
 
@@ -196,7 +191,7 @@ Set Kafka Confluent host
 {{- if .Values.kafka.enabled -}}
     {{- template "sentry.kafka.fullname" . -}}
 {{- else -}}
-    "kafka-confluent"
+    kafka-confluent
 {{- end -}}
 {{- end -}}
 
@@ -204,10 +199,10 @@ Set Kafka Confluent host
 Set Kafka Confluent port
 */}}
 {{- define "sentry.kafka.port" -}}
-{{- if .Values.kafka.enabled -}}
-    {{- default "9092" .Values.kafka.service.port }}
+{{- if and (.Values.kafka.enabled) (.Values.kafka.service.port) -}}
+    {{- .Values.kafka.service.port }}
 {{- else -}}
-    "9092"
+    9092
 {{- end -}}
 {{- end -}}
 
@@ -239,9 +234,9 @@ Set RabbitMQ host
 */}}
 {{- define "sentry.rabbitmq.host" -}}
 {{- if .Values.rabbitmq.enabled -}}
-    {{- default "rabbitmq-ha"  (include "sentry.rabbitmq.fullname" .) -}}
+    {{- default "sentry-rabbitmq-ha"  (include "sentry.rabbitmq.fullname" .) -}}
 {{- else -}}
-    "rabbitmq-ha"
+    {{ .Values.rabbitmq.host }}
 {{- end -}}
 {{- end -}}
 

@@ -1,0 +1,31 @@
+** Please be patient while the chart is being deployed **
+
+1. Get the Clickhouse URL by running:
+
+{{- if .Values.clickhouse.ingress.enabled }}
+
+  export HOSTNAME=$(kubectl get ingress --namespace {{ .Release.Namespace }} {{ template "clickhouse.fullname" . }} -o jsonpath='{.spec.rules[0].host}')
+  echo "Clickhouse URL: http://$HOSTNAME/"
+
+{{- else }}
+
+  echo URL            : http://127.0.0.1:8080/
+  echo Management URL : http://127.0.0.1:8080/manager
+  kubectl port-forward --namespace {{ .Release.Namespace }} svc/{{ template "clickhouse.fullname" . }} 8123:{{ .Values.clickhouse.http_port }}
+  kubectl port-forward --namespace {{ .Release.Namespace }} svc/{{ template "clickhouse.fullname" . }} 9000:{{ .Values.clickhouse.tcp_port }}
+  kubectl port-forward --namespace {{ .Release.Namespace }} svc/{{ template "clickhouse.fullname" . }} 9009:{{ .Values.clickhouse.interserver_http_port }}
+
+{{- end }}
+
+2. Get the Tabix URL by running:
+
+{{- if .Values.tabix.ingress.enabled }}
+
+  export HOSTNAME=$(kubectl get ingress --namespace {{ .Release.Namespace }} {{ template "clickhouse.fullname" . }}-tabix -o jsonpath='{.spec.rules[0].host}')
+  echo "Tabix URL: http://$HOSTNAME/"
+  
+{{- else }}
+
+  kubectl port-forward --namespace {{ .Release.Namespace }} svc/{{ template "clickhouse.fullname" . }}-tabix 80
+  
+{{- end }}

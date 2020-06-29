@@ -17,6 +17,7 @@ spec:
   template:
     metadata:
       annotations:
+        checksum/snubaSettingsPy: {{ .Values.config.snubaSettingsPy | sha256sum }}
         checksum/config.yaml: {{ include (print $.Template.BasePath "/configmap-snuba.yaml") . | sha256sum }}
         {{- if .Values.snuba.replacer.annotations }}
 {{ toYaml .Values.snuba.replacer.annotations | indent 8 }}
@@ -49,15 +50,22 @@ spec:
       - name: {{ .Chart.Name }}-snuba
         image: "{{ .Values.images.snuba.repository }}:{{ .Values.images.snuba.tag }}"
         imagePullPolicy: {{ .Values.images.snuba.pullPolicy }}
-        command: ["snuba", "replacer", "--auto-offset-reset=latest", "--max-batch-size",  "3"]
+        command: ["snuba", "replacer", "--storage", "events", "--auto-offset-reset=latest", "--max-batch-size",  "3"]
         ports:
         - containerPort: {{ template "snuba.port" }}
-        envFrom:
-        - configMapRef:
-            name: {{ template "sentry.fullname" . }}-snuba
-{{- if .Values.snuba.replacer.env }}
         env:
+        - name: SNUBA_SETTINGS
+          value: /etc/snuba/settings.py
+{{- if .Values.snuba.replacer.env }}
 {{ toYaml .Values.snuba.replacer.env | indent 8 }}
 {{- end }}
+        volumeMounts:
+        - mountPath: /etc/snuba
+          name: config
+          readOnly: true
         resources:
 {{ toYaml .Values.snuba.replacer.resources | indent 12 }}
+      volumes:
+        - name: config
+          configMap:
+            name: {{ template "sentry.fullname" . }}-snuba

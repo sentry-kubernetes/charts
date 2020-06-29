@@ -13,10 +13,13 @@ spec:
       app: {{ template "sentry.fullname" . }}
       release: "{{ .Release.Name }}"
       role: snuba-api
+{{- if not .Values.snuba.api.autoscaling.enabled }}
   replicas: {{ .Values.snuba.api.replicas }}
+{{- end }}
   template:
     metadata:
       annotations:
+        checksum/snubaSettingsPy: {{ .Values.config.snubaSettingsPy | sha256sum }}
         checksum/config.yaml: {{ include (print $.Template.BasePath "/configmap-snuba.yaml") . | sha256sum }}
         {{- if .Values.snuba.api.annotations }}
 {{ toYaml .Values.snuba.api.annotations | indent 8 }}
@@ -51,13 +54,16 @@ spec:
         imagePullPolicy: {{ .Values.images.snuba.pullPolicy }}
         ports:
         - containerPort: {{ template "snuba.port" }}
-        envFrom:
-        - configMapRef:
-            name: {{ template "sentry.fullname" . }}-snuba
-{{- if .Values.snuba.api.env }}
         env:
+        - name: SNUBA_SETTINGS
+          value: /etc/snuba/settings.py
+{{- if .Values.snuba.api.env }}
 {{ toYaml .Values.snuba.api.env | indent 8 }}
 {{- end }}
+        volumeMounts:
+        - mountPath: /etc/snuba
+          name: config
+          readOnly: true
         livenessProbe:
           failureThreshold: 5
           httpGet:
@@ -80,3 +86,7 @@ spec:
           timeoutSeconds: 2
         resources:
 {{ toYaml .Values.snuba.api.resources | indent 12 }}
+      volumes:
+        - name: config
+          configMap:
+            name: {{ template "sentry.fullname" . }}-snuba
