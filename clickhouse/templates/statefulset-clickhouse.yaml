@@ -46,8 +46,8 @@ spec:
     {{- end }}
       initContainers:
       - name: init
-        image: busybox:1.31.0
-        imagePullPolicy: IfNotPresent
+        image: {{ .Values.clickhouse.init.image }}:{{ .Values.clickhouse.init.imageVersion }}
+        imagePullPolicy: {{ .Values.clickhouse.init.imagePullPolicy }}
         args:
         - /bin/sh
         - -c
