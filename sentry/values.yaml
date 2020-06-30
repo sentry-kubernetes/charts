@@ -8,12 +8,12 @@ user:
 images:
   sentry:
     repository: getsentry/sentry
-    tag: 3674be2
+    tag: cc9f7d1
     pullPolicy: IfNotPresent
     # imagePullSecrets: []
   snuba:
     repository: getsentry/snuba
-    tag: 3fd2e7d6e8825c0b09f47b4d427d532b6c24ca08
+    tag: 882be95ba0d462a29759a49b2e9aad0c1ce111a9
     pullPolicy: IfNotPresent
     # imagePullSecrets: []
 
@@ -93,6 +93,25 @@ snuba:
     nodeSelector: {}
     # tolerations: []
     # podLabels: []
+
+  outcomesConsumer:
+    replicas: 1
+    env: {}
+    resources: {}
+    affinity: {}
+    nodeSelector: {}
+    # tolerations: []
+    # podLabels: []
+
+  sessionsConsumer:
+    replicas: 1
+    env: {}
+    resources: {}
+    affinity: {}
+    nodeSelector: {}
+    # tolerations: []
+    # podLabels: []
+
   replacer:
     env: {}
     resources: {}

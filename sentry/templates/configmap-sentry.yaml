@@ -24,14 +24,6 @@ data:
     symbolicator.options:
       url: "http://{{ template "sentry.fullname" . }}-symbolicator:3021"
 
-    mail.backend: "{{ .Values.mail.backend }}"
-    mail.use-tls: {{ .Values.mail.useTls }}
-    mail.username: "{{ .Values.mail.username }}"
-    mail.password: "{{ .Values.mail.password }}"
-    mail.port: {{ .Values.mail.port }}
-    mail.host: "{{ .Values.mail.host }}"
-    mail.from: "{{ .Values.mail.from }}"
-
     {{- if .Values.github.appId }}
     github-app.id: {{ .Values.github.appId }}
     {{ end }}
@@ -113,6 +105,7 @@ data:
 {{ .Values.config.configYml | indent 4 }}
   sentry.conf.py: |-
     from sentry.conf.server import *  # NOQA
+    from distutils.util import strtobool
 
     DATABASES = {
         "default": {
@@ -311,6 +304,16 @@ data:
         }
     )
 
+    #######################
+    # Email Configuration #
+    #######################
+    SENTRY_OPTIONS['mail.backend'] = os.getenv("SENTRY_EMAIL_BACKEND", "{{ .Values.mail.backend }}")
+    SENTRY_OPTIONS['mail.use-tls'] = bool(strtobool(os.getenv("SENTRY_EMAIL_USE_TLS", "{{ .Values.mail.useTls }}")))
+    SENTRY_OPTIONS['mail.username'] = os.getenv("SENTRY_EMAIL_USERNAME", "{{ .Values.mail.username }}")
+    SENTRY_OPTIONS['mail.password'] = os.getenv("SENTRY_EMAIL_PASSWORD", "{{ .Values.mail.password }}")
+    SENTRY_OPTIONS['mail.port'] = int(os.getenv("SENTRY_EMAIL_PORT", {{ .Values.mail.port }}))
+    SENTRY_OPTIONS['mail.host'] = os.getenv("SENTRY_EMAIL_HOST", "{{ .Values.mail.host }}")
+    SENTRY_OPTIONS['mail.from'] = os.getenv("SENTRY_EMAIL_FROM", "{{ .Values.mail.from }}")
 
     ######################
     # GitHub Integration #
