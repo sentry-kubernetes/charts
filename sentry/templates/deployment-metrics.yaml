@@ -4,16 +4,10 @@ kind: Deployment
 metadata:
   name: {{ template "sentry.fullname" . }}-metrics
   labels:
-    app: sentry
+    app: {{ template "sentry.fullname" . }}
     chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
     release: "{{ .Release.Name }}"
     heritage: "{{ .Release.Service }}"
-spec:
-  selector:
-    matchLabels:
-      app: {{ template "sentry.fullname" . }}
-      release: "{{ .Release.Name }}"
-      role: sentry-metrics
 spec:
   selector:
     matchLabels:
@@ -33,10 +27,7 @@ spec:
       labels:
         app: {{ template "sentry.fullname" . }}
         release: "{{ .Release.Name }}"
-        role: web
-        {{- if .Values.sentry.web.podLabels }}
-{{ toYaml .Values.sentry.web.podLabels | indent 8 }}
-        {{- end }}
+        role: sentry-metrics
     spec:
       {{- if .Values.metrics.affinity }}
       affinity:

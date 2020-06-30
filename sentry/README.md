@@ -34,6 +34,13 @@ Parameter                          | Description                                
 `user.email` | Admin user email | `admin@sentry.local`
 `user.password` | Admin user password| `aaaa`
 `metrics.enabled`| if `true`, enable Prometheus metrics | `false`
+`metrics.image.repository`         | Metrics exporter image repository                                                                          | `prom/statsd-exporter`
+`metrics.image.tag`                | Metrics exporter image tag                                                                                 | `v0.10.5`
+`metrics.image.PullPolicy`         | Metrics exporter image pull policy                                                                         | `IfNotPresent`
+`metrics.nodeSelector`| Node labels for metrics pod assignment| `{}`
+`metrics.tolerations` | Toleration labels for metrics pod assignment| `[]`
+`metrics.affinity` | Affinity settings for metrics | `{}`
+`metrics.resources`| Metrics resource requests/limit| `{}`
 `metrics.service.annotations` | annotations for Prometheus metrics service | `{}`
 `metrics.service.clusterIP` | cluster IP address to assign to service (set to `"-"` to pass an empty value) | `nil`
 `metrics.service.omitClusterIP` | (Deprecated) To omit the `clusterIP` from the metrics service | `false`

@@ -329,7 +329,7 @@ data:
 {{- if .Values.metrics.enabled }}
     SENTRY_METRICS_BACKEND = 'sentry.metrics.statsd.StatsdMetricsBackend'
     SENTRY_METRICS_OPTIONS = {
-        'host': '{{ template "fullname" . }}-metrics',
+        'host': '{{ template "sentry.fullname" . }}-metrics',
         'port': 9125,
     }
 {{- end }}

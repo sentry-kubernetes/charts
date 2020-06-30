@@ -23,7 +23,7 @@ spec:
     protocol: UDP
     name: statsd
   selector:
-    app: {{ template "sentry.fullname" . }}
+    app: {{ template "sentry.fullname" . }}-metrics
     release: {{ .Release.Name }}
     role: metrics
 {{- end }}
