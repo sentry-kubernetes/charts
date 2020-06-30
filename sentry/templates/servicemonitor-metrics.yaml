@@ -31,7 +31,7 @@ spec:
   {{- end }}
   selector:
     matchLabels:
-      app: {{ template "sentry.fullname" . }}
+      app: {{ template "sentry.fullname" . }}-metrics
       release: "{{ .Release.Name }}"
-      role: sentry-metrics
+      role: metrics
 {{- end }}

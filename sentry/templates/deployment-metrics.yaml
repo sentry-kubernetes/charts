@@ -11,9 +11,9 @@ metadata:
 spec:
   selector:
     matchLabels:
-      app: {{ template "sentry.fullname" . }}
+      app: {{ template "sentry.fullname" . }}-metrics
       release: "{{ .Release.Name }}"
-      role: sentry-metrics
+      role: metrics
   replicas: 1
   template:
     metadata:
@@ -25,9 +25,9 @@ spec:
 {{ toYaml .Values.sentry.web.annotations | indent 8 }}
         {{- end }}
       labels:
-        app: {{ template "sentry.fullname" . }}
+        app: {{ template "sentry.fullname" . }}-metrics
         release: "{{ .Release.Name }}"
-        role: sentry-metrics
+        role: metrics
     spec:
       {{- if .Values.metrics.affinity }}
       affinity:

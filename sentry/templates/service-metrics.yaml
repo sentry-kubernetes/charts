@@ -4,10 +4,11 @@ kind: Service
 metadata:
  name: {{ template "sentry.fullname" . }}-metrics
  labels:
-    app: {{ template "sentry.fullname" . }}
+    app: {{ template "sentry.fullname" . }}-metrics
     chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
     release: "{{ .Release.Name }}"
     heritage: "{{ .Release.Service }}"
+    role: metrics
     {{- if .Values.metrics.service.additionalLabels }}
 {{ toYaml .Values.metrics.service.additionalLabels | indent 4 }}
     {{- end }}
