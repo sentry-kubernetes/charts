@@ -9,13 +9,13 @@ metadata:
     app.kubernetes.io/managed-by: {{ .Release.Service }}
 spec:
   rules: 
-    host: {{ .Values.clickhouse.ingress.host }}
-    http: 
-      paths: 
-      - path: {{ .Values.clickhouse.ingress.path }}
-        backend: 
-          serviceName: {{ include "clickhouse.fullname" . }}
-          servicePort: http
+    - host: {{ .Values.clickhouse.ingress.host }}
+      http: 
+        paths: 
+        - path: {{ .Values.clickhouse.ingress.path }}
+          backend: 
+            serviceName: {{ include "clickhouse.fullname" . }}
+            servicePort: http
 {{- if .Values.clickhouse.ingress.tls.enabled }}
   tls: 
     hosts: 
