@@ -19,8 +19,8 @@ spec:
       partition: {{ .Values.clickhouse.rollingUpdatePartition }}
     {{- end }}
   serviceName: {{ include "clickhouse.fullname" . }}-replica-headless
-  selector: 
-    matchLabels: 
+  selector:
+    matchLabels:
       app.kubernetes.io/name: {{ include "clickhouse.name" . }}-replica
       app.kubernetes.io/instance: {{ .Release.Name }}-replica
   template:
@@ -60,13 +60,13 @@ spec:
         imagePullPolicy: {{ .Values.clickhouse.imagePullPolicy }}
         ports:
         - name: http-port
-          containerPort: {{ .Values.clickhouse.http_port | default "8123" }} 
+          containerPort: {{ .Values.clickhouse.http_port | default "8123" }}
         - name: tcp-port
           containerPort: {{ .Values.clickhouse.tcp_port | default "9000" }}
         - name: inter-http-port
           containerPort: {{ .Values.clickhouse.interserver_http_port | default "9009" }}
       {{- if .Values.clickhouse.livenessProbe.enabled }}
-        livenessProbe: 
+        livenessProbe:
           tcpSocket:
             port: {{ .Values.clickhouse.tcp_port }}
           initialDelaySeconds: {{ .Values.clickhouse.livenessProbe.initialDelaySeconds }}
@@ -99,15 +99,23 @@ spec:
         securityContext:
           privileged: true
           runAsUser: 0
-    {{- if .Values.clickhouse.imagePullSecrets }}
-      imagePullSecrets: 
+        {{- if .Values.clickhouse.metrics.prometheus.enabled }}
+      - name: prom-exporter
+        image: {{ .Values.clickhouse.metrics.prometheus.exporter.repository }}:{{ .Values.clickhouse.metrics.prometheus.exporter.tag }}
+        ports:
+          - name: metrics
+            containerPort: {{ .Values.clickhouse.metrics.prometheus.exporter.port }}
+            protocol: TCP
+      {{- end }}
+      {{- if .Values.clickhouse.imagePullSecrets }}
+      imagePullSecrets:
       - name: {{ .Values.clickhouse.imagePullSecrets }}
     {{- end }}
     {{- if .Values.clickhouse.nodeSelector }}
       nodeSelector:
 {{ toYaml .Values.clickhouse.nodeSelector | indent 8 }}
     {{- end }}
-      volumes: 
+      volumes:
       - name: {{ include "clickhouse.fullname" . }}-replica-data
       {{- if .Values.clickhouse.persistentVolumeClaim.dataPersistentVolume.enabled }}
         persistentVolumeClaim:
@@ -152,7 +160,7 @@ spec:
         app.kubernetes.io/instance: {{ .Release.Name }}-replica-data
         app.kubernetes.io/managed-by: {{ .Release.Service }}
     spec:
-      accessModes: 
+      accessModes:
     {{- range .Values.clickhouse.persistentVolumeClaim.dataPersistentVolume.accessModes }}
       - {{ . | quote }}
     {{- end }}
@@ -171,7 +179,7 @@ spec:
         app.kubernetes.io/instance: {{ .Release.Name }}-replica-logs
         app.kubernetes.io/managed-by: {{ .Release.Service }}
     spec:
-      accessModes: 
+      accessModes:
     {{- range .Values.clickhouse.persistentVolumeClaim.logsPersistentVolume.accessModes }}
       - {{ . | quote }}
     {{- end }}

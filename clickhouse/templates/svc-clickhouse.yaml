@@ -20,6 +20,12 @@ spec:
     targetPort: inter-http-port
     protocol: TCP
     name: inter-http-port
+{{- if .Values.clickhouse.metrics.prometheus.enabled }}
+  - port: {{ .Values.clickhouse.metrics.prometheus.exporter.port }}
+    targetPort: metrics
+    protocol: TCP
+    name: metrics
+  {{- end }}
   selector:
     app.kubernetes.io/name: {{ include "clickhouse.name" . }}
     app.kubernetes.io/instance: {{ .Release.Name }}

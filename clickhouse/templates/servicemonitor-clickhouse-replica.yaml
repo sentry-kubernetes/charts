@@ -1,0 +1,17 @@
+{{- if .Values.clickhouse.metrics.prometheus.serviceMonitor.enabled }}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ include "clickhouse.fullname" . }}-replica
+  labels:
+    app.kubernetes.io/name: {{ include "clickhouse.name" . }}-replica
+    app.kubernetes.io/instance: {{ .Release.Name }}-replica
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "clickhouse.name" . }}-replica
+  endpoints:
+    - port: metrics
+---
+{{- end}}
