@@ -1,0 +1,29 @@
+{{- if .Values.clickhouse.metrics.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "clickhouse.fullname" . }}-metrics
+  labels:
+    app.kubernetes.io/name: {{ include "clickhouse.name" . }}-metrics
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    {{- if .Values.clickhouse.metrics.service.labels -}}
+    {{- toYaml .Values.clickhouse.metrics.service.labels | nindent 4 }}
+    {{- end -}}
+  {{- if .Values.clickhouse.metrics.service.annotations }}
+  annotations: {{- toYaml .Values.clickhouse.metrics.service.annotations | nindent 4 }}
+  {{- end }}
+spec:
+  type: {{ .Values.clickhouse.metrics.service.type }}
+  {{ if and (eq .Values.clickhouse.metrics.service.type "LoadBalancer") .Values.clickhouse.metrics.service.loadBalancerIP }}
+  loadBalancerIP: {{ .Values.clickhouse.metrics.service.loadBalancerIP }}
+  {{- end }}
+  ports:
+    - port: {{ .Values.clickhouse.metrics.image.port }}
+      targetPort: metrics
+      name: metrics
+  selector:
+    app.kubernetes.io/name: {{ include "clickhouse.name" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+---
+{{- end }}

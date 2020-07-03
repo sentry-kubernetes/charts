@@ -39,22 +39,55 @@ clickhouse:
   ##
   # rollingUpdatePartition:
 
+  ## Prometheus Exporter / Metrics
+  ##
   metrics:
-    prometheus:
-      ###
-      # Enabling this starts a Clickhouse prometheus exporter as an extra container in all Clickhouse pods and
-      # exposes it in the service under port "metrics"
-      ###
+    enabled: false
+    image:
+      registry: docker.io
+      repository: f1yegor/clickhouse-exporter
+      tag: latest
+      pullPolicy: IfNotPresent
+      port: 9116
+
+    ## Metrics exporter resource requests and limits
+    # resources: {}
+
+    ## Metrics exporter pod Annotation and Labels
+    podAnnotations:
+      prometheus.io/scrape: "true"
+      prometheus.io/port: "9116"
+    podLabels: {}
+
+    ## Enable this if you're using https://github.com/coreos/prometheus-operator
+    serviceMonitor:
       enabled: false
-      exporter:
-        repository: f1yegor/clickhouse-exporter
-        tag: latest
-        port: 9116
-      serviceMonitor:
-        ###
-        # Enabling this creates a ServiceMonitor resource for the prometheus operator
-        ###
-        enabled: false
+
+      ## Optionally set a namespace, defaults to the charts namespace
+      # namespace: monitoring
+
+      # fallback to the prometheus default unless specified
+      # interval: 10s
+
+      selector:
+        prometheus: kube-prometheus
+
+    prometheusRule:
+      enabled: false
+      additionalLabels: {}
+      namespace: ""
+      rules: []
+
+
+    service:
+      type: ClusterIP
+      ## Use serviceLoadBalancerIP to request a specific static IP,
+      ## otherwise leave blank
+      # loadBalancerIP:
+      annotations: {}
+      labels: {}
+
+
   ##
   ## The path to the directory containing data.
   ## Default value: /var/lib/clickhouse
