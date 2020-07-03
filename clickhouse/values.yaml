@@ -42,7 +42,8 @@ clickhouse:
   metrics:
     prometheus:
       ###
-      # Enabling this starts a clickhouse prometheus exporter as an extra container in all clichouse pods and exposes it in the service under port "metrics"
+      # Enabling this starts a Clickhouse prometheus exporter as an extra container in all Clickhouse pods and
+      # exposes it in the service under port "metrics"
       ###
       enabled: false
       exporter:
