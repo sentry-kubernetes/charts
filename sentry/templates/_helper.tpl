@@ -200,7 +200,7 @@ Create the name of the service account to use
 {{- end -}}
 
 {{/*
-Set Clickhouse host
+Set ClickHouse host
 */}}
 {{- define "sentry.clickhouse.host" -}}
 {{- if .Values.clickhouse.enabled -}}
@@ -211,13 +211,24 @@ Set Clickhouse host
 {{- end -}}
 
 {{/*
-Set Clickhouse port
+Set ClickHouse port
 */}}
 {{- define "sentry.clickhouse.port" -}}
 {{- if .Values.clickhouse.enabled -}}
 {{- default 9000 .Values.clickhouse.clickhouse.tcp_port }}
 {{- else -}}
 {{ required "A valid .Values.externalClickhouse.tcpPort is required" .Values.externalClickhouse.tcpPort }}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Set ClickHouse cluster name
+*/}}
+{{- define "sentry.clickhouse.cluster.name" -}}
+{{- if .Values.clickhouse.enabled -}}
+{{ .Release.Name | printf "%s-clickhouse" }}
+{{- else -}}
+{{ required "A valid .Values.externalClickhouse.clusterName is required" .Values.externalClickhouse.clusterName }}
 {{- end -}}
 {{- end -}}
 

@@ -287,6 +287,11 @@ externalClickhouse:
   ##
   host: "clickhouse"
   tcpPort: 9000
+  ## Cluster name, can be found in config
+  ## (https://clickhouse.tech/docs/en/operations/server-configuration-parameters/settings/#server-settings-remote-servers)
+  ## or by executing `select * from system.clusters`
+  ##
+  # clusterName: test_shard_localhost
 
 kafka:
   enabled: true
@@ -359,7 +364,7 @@ rabbitmq:
 
   podDisruptionBudget:
     minAvailable: 1
-  
+
   persistentVolume:
     enabled: true
   resources: {}
