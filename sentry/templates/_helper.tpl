@@ -265,29 +265,6 @@ Set Kafka Confluent port
 {{- end -}}
 {{- end -}}
 
-
-{{/*
-Set Zookeeper host
-*/}}
-{{- define "sentry.kafka.zookeeper.host" -}}
-{{- if .Values.kafka.zookeeper.enabled -}}
-{{- template "sentry.kafka.zookeeper.fullname" . -}}
-{{- else -}}
-{{ required "A valid .Values.externalKafka.port is required" .Values.externalKafka.port }}
-{{- end -}}
-{{- end -}}
-
-{{/*
-Set Zookeeper port
-*/}}
-{{- define "sentry.kafka.zookeeper.port" -}}
-{{- if .Values.kafka.zookeeper.enabled -}}
-{{- default "2181" .Values.kafka.zookeeper.service.port }}
-{{- else -}}
-{{ required "A valid .Values.externalKafka.port is required" .Values.externalKafka.port }}
-{{- end -}}
-{{- end -}}
-
 {{/*
 Set RabbitMQ host
 */}}
