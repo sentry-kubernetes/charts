@@ -1,3 +1,4 @@
+{{- $redisPass := include "sentry.redis.password" . -}}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -20,8 +21,8 @@ data:
 
     REDIS_HOST = {{ include "sentry.redis.host" . | quote }}
     REDIS_PORT = {{ include "sentry.redis.port" . }}
-    {{- if .Values.redis.password }}
-    REDIS_PASSWORD = {{ .Values.redis.password | quote }}
+    {{- if $redisPass }}
+    REDIS_PASSWORD = {{ $redisPass | quote }}
     {{- end }}
     REDIS_DB = int(env("REDIS_DB", 1))
     USE_REDIS_CLUSTER = False

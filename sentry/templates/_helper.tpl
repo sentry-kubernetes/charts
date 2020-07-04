@@ -189,6 +189,17 @@ Set redis port
 {{- end -}}
 
 {{/*
+Set redis password
+*/}}
+{{- define "sentry.redis.password" -}}
+{{- if .Values.redis.enabled -}}
+{{ .Values.redis.password }}
+{{- else -}}
+{{ .Values.externalRedis.password }}
+{{- end -}}
+{{- end -}}
+
+{{/*
 Create the name of the service account to use
 */}}
 {{- define "sentry.serviceAccountName" -}}

@@ -310,14 +310,14 @@ kafka:
 externalKafka:
   ## Hostname or ip address of external kafka
   ##
-  host: "kafka-confluent"
+  # host: "kafka-confluent"
   port: 9092
 
 redis:
   enabled: true
   nameOverride: sentry-redis
   usePassword: false
-  # Just omit the password field if your redis cluster doesn't use password
+  ## Just omit the password field if your redis cluster doesn't use password
   # password: redis
   master:
     persistence:
@@ -328,8 +328,10 @@ redis:
 externalRedis:
   ## Hostname or ip address of external redis cluster
   ##
-  host: "redis"
+  # host: "redis"
   port: 6379
+  ## Just omit the password field if your redis cluster doesn't use password
+  # password: redis
 
 postgresql:
   enabled: true
@@ -345,12 +347,12 @@ postgresql:
 ## This value is only used when postgresql.enabled is set to false
 ##
 externalPostgresql:
-  host: postgres
+  # host: postgres
   port: 5432
   username: postgres
   # password: postgres
   database: sentry
-  # postgresSslMode: require
+  # sslMode: require
 
 rabbitmq:
   ## If disabled, Redis will be used instead as the broker. 
