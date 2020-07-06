@@ -14,7 +14,7 @@ Big thanks from the maintainers of the [deprecated chart](https://github.com/hel
 
 For now the full list of values is not documented but you can get inspired by the values.yaml specific to each directory.
 
-## Upgrading from 3.1.0 version of this Chart to 3.2.0
+## Upgrading from 3.1.0 version of this Chart to 4.0.0
 
 Following Helm Chart best practices the new version introduces some breaking changes, all configuration for external
 resources moved to separate config branches: `externalClickhouse`, `externalKafka`, `externalRedis`, `externalPostgresql`.
