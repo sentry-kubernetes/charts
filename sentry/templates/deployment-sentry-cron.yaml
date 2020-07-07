@@ -1,4 +1,4 @@
-{{- $redisHost := .Values.redis.hostOverride | default (include "sentry.redis.host" .) -}}
+{{- $redisHost := include "sentry.redis.host" . -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
