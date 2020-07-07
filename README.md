@@ -14,6 +14,26 @@ Big thanks from the maintainers of the [deprecated chart](https://github.com/hel
 
 For now the full list of values is not documented but you can get inspired by the values.yaml specific to each directory.
 
+## Upgrading from 3.1.0 version of this Chart to 4.0.0
+
+Following Helm Chart best practices the new version introduces some breaking changes, all configuration for external
+resources moved to separate config branches: `externalClickhouse`, `externalKafka`, `externalRedis`, `externalPostgresql`.
+
+Here is a mapping table of old values and new values:
+
+| Before                          | After                                |
+| ------------------------------- | ------------------------------------ |
+| `postgresql.postgresqlHost`     | `externalPostgresql.host`            |
+| `postgresql.postgresqlPort`     | `externalPostgresql.port`            |
+| `postgresql.postgresqlUsername` | `externalPostgresql.username`        |
+| `postgresql.postgresqlPassword` | `externalPostgresql.password`        |
+| `postgresql.postgresqlDatabase` | `externalPostgresql.database`        |
+| `postgresql.postgresSslMode`    | `externalPostgresql.sslMode`         |
+| `redis.host`                    | `externalRedis.host`                 |
+| `redis.port`                    | `externalRedis.port`                 |
+| `redis.password`                | `externalRedis.password`             |
+
+
 ## Upgrading from deprecated 9.0 -> 10.0 Chart
 As this chart runs in helm 3 and also tries its best to follow on from the original Sentry chart. There are some steps that needs to be taken in order to correctly upgrade. 
 
