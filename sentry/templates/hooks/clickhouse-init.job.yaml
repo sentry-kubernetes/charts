@@ -1,9 +1,10 @@
 {{- if .Values.hooks.enabled -}}
 {{- $clickhouseHost := include "sentry.clickhouse.host" . -}}
 {{- $clickhousePort := include "sentry.clickhouse.port" . -}}
+{{- $clickhouseClusterName := include "sentry.clickhouse.cluster.name" . -}}
 {{- $tables := "errors groupassignee groupedmessage outcomes_hourly outcomes_mv_hourly outcomes_raw sentry sessions_hourly sessions_hourly_mv sessions_raw transactions" -}}
 {{- $dropQuery := "DROP TABLE IF EXISTS ${tbl}_dist" -}}
-{{- $createQuery := .Release.Name | printf "CREATE TABLE ${tbl}_dist AS ${tbl}_local ENGINE = Distributed(%s-clickhouse, default, ${tbl}_local, rand())" -}}
+{{- $createQuery := $clickhouseClusterName | printf "CREATE TABLE ${tbl}_dist AS ${tbl}_local ENGINE = Distributed(%s, default, ${tbl}_local, rand())" -}}
 apiVersion: batch/v1
 kind: Job
 metadata:
@@ -39,6 +40,7 @@ spec:
           - /bin/bash
           - -ec
           - >-
+            {{- if .Values.clickhouse.enabled }}
             for tbl in {{ $tables }}; do
               for ((i=0;i<{{ .Values.clickhouse.clickhouse.replicas }};i++)); do
                 clickhouse-client --database=default --host={{ $clickhouseHost }}-$i.{{ $clickhouseHost }}-headless --port={{ $clickhousePort }} --query="{{ $dropQuery }}";
@@ -47,4 +49,10 @@ spec:
                 clickhouse-client --database=default --host={{ $clickhouseHost }}-replica-$i.{{ $clickhouseHost }}-replica-headless --port={{ $clickhousePort }} --query="{{ $createQuery }}";
               done
             done
+            {{- else }}
+            for tbl in {{ $tables }}; do
+              clickhouse-client --database=default --host={{ $clickhouseHost }} --port={{ $clickhousePort }} --query="{{ $dropQuery }}";
+              clickhouse-client --database=default --host={{ $clickhouseHost }} --port={{ $clickhousePort }} --query="{{ $createQuery }}";
+            done
+            {{- end }}
 {{- end }}
