@@ -59,6 +59,8 @@ If Redis auth enabled:
 
 If Redis auth is disabled:
 > helm upgrade -n <Sentry namespace> <Sentry Release> . --set postgresql.postgresqlPassword=<Postgresql Password>
+ 
+Please also follow the steps for Major versio 3 to 4 migration
 
 ## PostgresSQL
 
