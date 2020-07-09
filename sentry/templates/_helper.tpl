@@ -96,7 +96,7 @@ Set postgres host
 {{- if .Values.postgresql.enabled -}}
 {{- template "sentry.postgresql.fullname" . -}}
 {{- else -}}
-{{- .Values.postgresql.postgresqlHost -}}
+{{ required "A valid .Values.externalPostgresql.host is required" .Values.externalPostgresql.host }}
 {{- end -}}
 {{- end -}}
 
@@ -116,9 +116,42 @@ Set postgres port
 */}}
 {{- define "sentry.postgresql.port" -}}
 {{- if .Values.postgresql.enabled -}}
-    "5432"
+{{- default 5432 .Values.postgresql.service.port }}
 {{- else -}}
-{{- default "5432" .Values.postgresql.postgresqlPort | quote -}}
+{{- required "A valid .Values.externalPostgresql.port is required" .Values.externalPostgresql.port -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Set postgresql username
+*/}}
+{{- define "sentry.postgresql.username" -}}
+{{- if .Values.postgresql.enabled -}}
+{{- default "postgres" .Values.postgresql.postgresqlUsername }}
+{{- else -}}
+{{ required "A valid .Values.externalPostgresql.username is required" .Values.externalPostgresql.username }}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Set postgresql password
+*/}}
+{{- define "sentry.postgresql.password" -}}
+{{- if .Values.postgresql.enabled -}}
+{{- default "" .Values.postgresql.postgresqlPassword }}
+{{- else -}}
+{{ required "A valid .Values.externalPostgresql.password is required" .Values.externalPostgresql.password }}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Set postgresql database
+*/}}
+{{- define "sentry.postgresql.database" -}}
+{{- if .Values.postgresql.enabled -}}
+{{- default "sentry" .Values.postgresql.postgresqlDatabase }}
+{{- else -}}
+{{ required "A valid .Values.externalPostgresql.database is required" .Values.externalPostgresql.database }}
 {{- end -}}
 {{- end -}}
 
@@ -127,13 +160,9 @@ Set redis host
 */}}
 {{- define "sentry.redis.host" -}}
 {{- if .Values.redis.enabled -}}
-    {{- if .Values.redis.hostOverride -}}
-        {{- .Values.redis.hostOverride -}}
-    {{- else -}}
-        {{- template "sentry.redis.fullname" . -}}-master
-    {{- end -}}
+{{- template "sentry.redis.fullname" . -}}-master
 {{- else -}}
-    {{- .Values.redis.host -}}
+{{ required "A valid .Values.externalRedis.host is required" .Values.externalRedis.host }}
 {{- end -}}
 {{- end -}}
 
@@ -153,9 +182,20 @@ Set redis port
 */}}
 {{- define "sentry.redis.port" -}}
 {{- if .Values.redis.enabled -}}
-    6379
+{{- default 6379 .Values.redis.redisPort }}
 {{- else -}}
-{{- default 6379 .Values.redis.port -}}
+{{ required "A valid .Values.externalRedis.port is required" .Values.externalRedis.port }}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Set redis password
+*/}}
+{{- define "sentry.redis.password" -}}
+{{- if .Values.redis.enabled -}}
+{{ .Values.redis.password }}
+{{- else -}}
+{{ .Values.externalRedis.password }}
 {{- end -}}
 {{- end -}}
 
@@ -171,17 +211,36 @@ Create the name of the service account to use
 {{- end -}}
 
 {{/*
-Set Clickhouse host
+Set ClickHouse host
 */}}
 {{- define "sentry.clickhouse.host" -}}
-    {{- default "clickhouse" (include "sentry.clickhouse.fullname" .) -}}
+{{- if .Values.clickhouse.enabled -}}
+{{- template "sentry.clickhouse.fullname" . -}}
+{{- else -}}
+{{ required "A valid .Values.externalClickhouse.host is required" .Values.externalClickhouse.host }}
+{{- end -}}
 {{- end -}}
 
 {{/*
-Set Clickhouse port
+Set ClickHouse port
 */}}
 {{- define "sentry.clickhouse.port" -}}
-    {{- default 9000 .Values.clickhouse.clickhouse.tcp_port }}
+{{- if .Values.clickhouse.enabled -}}
+{{- default 9000 .Values.clickhouse.clickhouse.tcp_port }}
+{{- else -}}
+{{ required "A valid .Values.externalClickhouse.tcpPort is required" .Values.externalClickhouse.tcpPort }}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Set ClickHouse cluster name
+*/}}
+{{- define "sentry.clickhouse.cluster.name" -}}
+{{- if .Values.clickhouse.enabled -}}
+{{ .Release.Name | printf "%s-clickhouse" }}
+{{- else -}}
+{{ required "A valid .Values.externalClickhouse.clusterName is required" .Values.externalClickhouse.clusterName }}
+{{- end -}}
 {{- end -}}
 
 {{/*
@@ -189,9 +248,9 @@ Set Kafka Confluent host
 */}}
 {{- define "sentry.kafka.host" -}}
 {{- if .Values.kafka.enabled -}}
-    {{- template "sentry.kafka.fullname" . -}}
+{{- template "sentry.kafka.fullname" . -}}
 {{- else -}}
-    kafka-confluent
+{{ required "A valid .Values.externalKafka.host is required" .Values.externalKafka.host }}
 {{- end -}}
 {{- end -}}
 
@@ -200,32 +259,9 @@ Set Kafka Confluent port
 */}}
 {{- define "sentry.kafka.port" -}}
 {{- if and (.Values.kafka.enabled) (.Values.kafka.service.port) -}}
-    {{- .Values.kafka.service.port }}
+{{- .Values.kafka.service.port }}
 {{- else -}}
-    9092
-{{- end -}}
-{{- end -}}
-
-
-{{/*
-Set Zookeeper host
-*/}}
-{{- define "sentry.kafka.zookeeper.host" -}}
-{{- if .Values.kafka.zookeeper.enabled -}}
-    {{- template "sentry.kafka.zookeeper.fullname" . -}}
-{{- else -}}
-    "zookeeper"
-{{- end -}}
-{{- end -}}
-
-{{/*
-Set Zookeeper port
-*/}}
-{{- define "sentry.kafka.zookeeper.port" -}}
-{{- if .Values.kafka.zookeeper.enabled -}}
-    {{- default "2181" .Values.kafka.zookeeper.service.port }}
-{{- else -}}
-    "2181"
+{{ required "A valid .Values.externalKafka.port is required" .Values.externalKafka.port }}
 {{- end -}}
 {{- end -}}
 
@@ -234,9 +270,8 @@ Set RabbitMQ host
 */}}
 {{- define "sentry.rabbitmq.host" -}}
 {{- if .Values.rabbitmq.enabled -}}
-    {{- default "sentry-rabbitmq-ha"  (include "sentry.rabbitmq.fullname" .) -}}
+{{- default "sentry-rabbitmq-ha"  (include "sentry.rabbitmq.fullname" .) -}}
 {{- else -}}
-    {{ .Values.rabbitmq.host }}
+{{ .Values.rabbitmq.host }}
 {{- end -}}
 {{- end -}}
-

@@ -1,6 +1,6 @@
 {{- $redisHost := include "sentry.redis.host" . -}}
 {{- $redisPort := include "sentry.redis.port" . -}}
-{{- $redisPass := .Values.redis.password -}}
+{{- $redisPass := include "sentry.redis.password" . -}}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -110,14 +110,14 @@ data:
     DATABASES = {
         "default": {
             "ENGINE": "sentry.db.postgres",
-            "NAME": "{{ .Values.postgresql.postgresqlDatabase }}",
-            "USER": "{{ .Values.postgresql.postgresqlUsername }}",
-            "PASSWORD": os.environ.get("POSTGRES_PASSWORD", "{{ .Values.postgresql.postgresqlPassword }}"),
-            "HOST": "{{ default ( include "sentry.postgresql.host" .) .Values.postgresql.hostOverride }}",
+            "NAME": "{{ include "sentry.postgresql.database" . }}",
+            "USER": "{{ include "sentry.postgresql.username" . }}",
+            "PASSWORD": os.environ.get("POSTGRES_PASSWORD", "{{ include "sentry.postgresql.password" . }}"),
+            "HOST": "{{ include "sentry.postgresql.host" . }}",
             "PORT": {{ template "sentry.postgresql.port" . }},
-            {{- if .Values.postgresql.postgresSslMode }}
+            {{- if .Values.externalPostgresql.sslMode }}
             'OPTIONS': {
-                'sslmode': '{{ .Values.postgresql.postgresSslMode }}',
+                'sslmode': '{{ .Values.externalPostgresql.sslMode }}',
             },
             {{- end }}
         }
@@ -147,7 +147,7 @@ data:
 
     {{- if or (.Values.rabbitmq.enabled) (.Values.rabbitmq.host) }}
     BROKER_URL = os.environ.get("BROKER_URL", "amqp://{{ .Values.rabbitmq.rabbitmqUsername }}:{{ .Values.rabbitmq.rabbitmqPassword }}@{{ template "sentry.rabbitmq.host" . }}:5672//")
-    {{- else if .Values.redis.usePassword }}
+    {{- else if $redisPass }}
     BROKER_URL = os.environ.get("BROKER_URL", "redis://:{{ $redisPass }}@{{ $redisHost }}:{{ $redisPort }}/0")
     {{- else }}
     BROKER_URL = os.environ.get("BROKER_URL", "redis://{{ $redisHost }}:{{ $redisPort }}/0")
