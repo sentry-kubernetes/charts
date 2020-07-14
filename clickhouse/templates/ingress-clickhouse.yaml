@@ -1,24 +1,24 @@
 {{- if .Values.clickhouse.ingress.enabled}}
-apiVersion: extensions/v1beta1
+apiVersion: {{- if .Capabilities.APIVersions.Has "networking.k8s.io/v1beta1" }} networking.k8s.io/v1beta1 {{- else }} extensions/v1beta1 {{- end }}
 kind: Ingress
-metadata: 
+metadata:
   name: {{ include "clickhouse.fullname" . }}
   labels:
     app.kubernetes.io/name: {{ include "clickhouse.name" . }}
     app.kubernetes.io/instance: {{ .Release.Name }}
     app.kubernetes.io/managed-by: {{ .Release.Service }}
 spec:
-  rules: 
+  rules:
     - host: {{ .Values.clickhouse.ingress.host }}
-      http: 
-        paths: 
+      http:
+        paths:
         - path: {{ .Values.clickhouse.ingress.path }}
-          backend: 
+          backend:
             serviceName: {{ include "clickhouse.fullname" . }}
             servicePort: http
 {{- if .Values.clickhouse.ingress.tls.enabled }}
-  tls: 
-    hosts: 
+  tls:
+    hosts:
     {{- range .Values.clickhouse.ingress.tls.hosts }}
     - {{ . | quote }}
     {{- end }}
