@@ -1,0 +1,94 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "sentry.fullname" . }}-relay
+  labels:
+    app: {{ template "sentry.fullname" . }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
+    release: "{{ .Release.Name }}"
+    heritage: "{{ .Release.Service }}"
+spec:
+  selector:
+    matchLabels:
+        app: {{ template "sentry.fullname" . }}
+        release: "{{ .Release.Name }}"
+        role: relay
+{{- if not .Values.relay.autoscaling.enabled }}
+  replicas: {{ .Values.relay.replicas }}
+{{- end }}
+  template:
+    metadata:
+      annotations:
+        checksum/configYml: {{ .Values.config.configYml | sha256sum }}
+        checksum/sentryConfPy: {{ .Values.config.sentryConfPy | sha256sum }}
+        checksum/config.yaml: {{ include (print $.Template.BasePath "/configmap-sentry.yaml") . | sha256sum }}
+        {{- if .Values.relay.annotations }}
+{{ toYaml .Values.relay.annotations | indent 8 }}
+        {{- end }}
+      labels:
+        app: {{ template "sentry.fullname" . }}
+        release: "{{ .Release.Name }}"
+        role: relay
+        {{- if .Values.relay.podLabels }}
+{{ toYaml .Values.relay.podLabels | indent 8 }}
+        {{- end }}
+    spec:
+      affinity:
+      {{- if .Values.relay.affinity }}
+{{ toYaml .Values.relay.affinity | indent 8 }}
+      {{- end }}
+      {{- if .Values.relay.nodeSelector }}
+      nodeSelector:
+{{ toYaml .Values.relay.nodeSelector | indent 8 }}
+      {{- end }}
+      {{- if .Values.relay.tolerations }}
+      tolerations:
+{{ toYaml .Values.relay.tolerations | indent 8 }}
+      {{- end }}
+      {{- if .Values.images.sentry.imagePullSecrets }}
+      imagePullSecrets:
+{{ toYaml .Values.images.sentry.imagePullSecrets | indent 8 }}
+      {{- end }}
+      containers:
+      - name: {{ .Chart.Name }}-relay
+        image: "{{ .Values.images.relay.repository }}:{{ .Values.images.relay.tag }}"
+        imagePullPolicy: {{ .Values.images.relay.pullPolicy }}
+        # command: ["sentry", "run", "relay"]
+        ports:
+        - containerPort: {{ template "relay.port" }}
+{{- if .Values.relay.env }}
+{{ toYaml .Values.relay.env | indent 8 }}
+{{- end }}
+        volumeMounts:
+        - mountPath: /etc/sentry
+          name: config
+          readOnly: true
+        livenessProbe:
+          failureThreshold: 5
+          httpGet:
+            path: /_health/
+            port: {{ template "relay.port" }}
+            scheme: HTTP
+          initialDelaySeconds: {{ .Values.relay.probeInitialDelaySeconds }}
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 2
+        readinessProbe:
+          failureThreshold: 10
+          httpGet:
+            path: /_health/
+            port: {{ template "relay.port" }}
+            scheme: HTTP
+          initialDelaySeconds: {{ .Values.relay.probeInitialDelaySeconds }}
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 2
+        resources:
+{{ toYaml .Values.relay.resources | indent 12 }}
+      volumes:
+      - name: config
+        configMap:
+          name: {{ template "sentry.fullname" . }}-relay
+      {{- if .Values.relay.priorityClassName }}
+      priorityClassName: "{{ .Values.relay.priorityClassName }}"
+      {{- end }}

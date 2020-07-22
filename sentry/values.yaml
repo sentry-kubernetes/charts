@@ -8,14 +8,35 @@ user:
 images:
   sentry:
     repository: getsentry/sentry
-    tag: cc9f7d1
+    tag: 20.7.2
     pullPolicy: IfNotPresent
     # imagePullSecrets: []
   snuba:
     repository: getsentry/snuba
-    tag: e944bc414bfc97c9836febbfb2f310a3237f91cf
+    tag: 20.7.2
     pullPolicy: IfNotPresent
     # imagePullSecrets: []
+  snuba:
+    repository: getsentry/relay
+    tag: 20.7.2
+    pullPolicy: IfNotPresent
+    # imagePullSecrets: []
+
+relay:
+  replicas: 1
+  env: []
+  probeInitialDelaySeconds: 10
+  resources: {}
+  affinity: {}
+  nodeSelector: {}
+  # tolerations: []
+  # podLabels: []
+
+  autoscaling:
+    enabled: false
+    minReplicas: 2
+    maxReplicas: 5
+    targetCPUUtilizationPercentage: 50
 
 sentry:
   web:
@@ -271,6 +292,8 @@ config:
     # No Python Extension Config Given
   snubaSettingsPy: |
     # No Python Extension Config Given
+  relay: |
+    # No YAML Extension Config Given
 
 
 clickhouse:
