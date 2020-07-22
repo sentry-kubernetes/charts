@@ -48,6 +48,9 @@ data:
     slack.client-id: "{{ .Values.slack.clientId }}"
     slack.client-secret: "{{ .Values.slack.clientSecret }}"
     slack.verification-token: "{{ .Values.slack.verificationToken }}"
+    {{- if .Values.slack.legacyApp }}
+    slack.legacy-app: "{{ .Values.slack.legacyApp }}"
+    {{ end }}
     {{ end }}
 
     ################
