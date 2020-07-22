@@ -39,13 +39,16 @@ spec:
       - name: db-init-job
         image: "{{ .Values.images.sentry.repository }}:{{ .Values.images.sentry.tag }}"
         command: ["sentry","upgrade","--noinput"]
-        {{- if .Values.postgresql.enabled }}
         env:
+        {{- if .Values.postgresql.enabled }}
         - name: POSTGRES_PASSWORD
           valueFrom:
             secretKeyRef:
               name: {{ include "sentry.postgresql.fullname" . }}
               key: postgresql-password
+        {{- end }}
+        {{- if .Values.hooks.dbInit.env }}
+{{ toYaml .Values.hooks.dbInit.env | indent 8 }}
         {{- end }}
         volumeMounts:
         - mountPath: /etc/sentry
