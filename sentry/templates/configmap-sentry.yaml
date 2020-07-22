@@ -15,7 +15,7 @@ data:
     {{- if .Values.system.adminEmail }}
     system.admin-email: {{ .Values.system.adminEmail }}
     {{- end }}
-    system.secret-key: {{ .Values.system.secretKey }}
+    system.secret-key: {{ .Values.system.secretKey | default (randAlphaNum 50) | quote }}
     {{- if .Values.system.url }}
     system.url-prefix: {{ .Values.system.url }}
     {{- end }}
