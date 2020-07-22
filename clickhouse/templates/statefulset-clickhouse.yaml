@@ -90,6 +90,10 @@ spec:
           failureThreshold: {{ .Values.clickhouse.readinessProbe.failureThreshold }}
           successThreshold: {{ .Values.clickhouse.readinessProbe.successThreshold }}
       {{- end }}
+      {{- if .Values.clickhouse.resources }}
+        resources:
+{{ toYaml .Values.clickhouse.resources | indent 10 }}
+      {{- end }}
         volumeMounts:
         - name: {{ include "clickhouse.fullname" . }}-data
           mountPath: {{ include "clickhouse.fullpath" . }}
