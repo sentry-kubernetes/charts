@@ -20,7 +20,7 @@ images:
 sentry:
   web:
     replicas: 1
-    env: {}
+    env: []
     probeInitialDelaySeconds: 10
     resources: {}
     affinity: {}
@@ -37,7 +37,7 @@ sentry:
   worker:
     replicas: 3
     # concurrency: 4
-    env: {}
+    env: []
     resources: {}
     affinity: {}
     nodeSelector: {}
@@ -53,7 +53,7 @@ sentry:
       targetCPUUtilizationPercentage: 50
 
   cron:
-    env: {}
+    env: []
     resources: {}
     affinity: {}
     nodeSelector: {}
@@ -61,7 +61,7 @@ sentry:
     # podLabels: []
   postProcessForward:
     replicas: 1
-    env: {}
+    env: []
     resources: {}
     affinity: {}
     nodeSelector: {}
@@ -71,7 +71,7 @@ sentry:
 snuba:
   api:
     replicas: 1
-    env: {}
+    env: []
     probeInitialDelaySeconds: 10
     resources: {}
     affinity: {}
@@ -87,7 +87,7 @@ snuba:
 
   consumer:
     replicas: 1
-    env: {}
+    env: []
     resources: {}
     affinity: {}
     nodeSelector: {}
@@ -96,7 +96,7 @@ snuba:
 
   outcomesConsumer:
     replicas: 1
-    env: {}
+    env: []
     resources: {}
     affinity: {}
     nodeSelector: {}
@@ -105,7 +105,7 @@ snuba:
 
   sessionsConsumer:
     replicas: 1
-    env: {}
+    env: []
     resources: {}
     affinity: {}
     nodeSelector: {}
@@ -113,7 +113,7 @@ snuba:
     # podLabels: []
 
   replacer:
-    env: {}
+    env: []
     resources: {}
     affinity: {}
     nodeSelector: {}
@@ -121,15 +121,16 @@ snuba:
     # podLabels: []
 
   dbInitJob:
-    env: {}
+    env: []
 
   migrateJob:
-    env: {}
+    env: []
 
 
 hooks:
   enabled: true
   dbInit:
+    env: []
     resources:
       limits:
         memory: 2048Mi
