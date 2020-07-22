@@ -59,7 +59,9 @@ spec:
               name: {{ include "sentry.postgresql.fullname" . }}
               key: postgresql-password
         {{- end }}
+        {{- if .Values.hooks.dbInit.env }}
 {{ toYaml .Values.hooks.dbInit.env | indent 8 }}
+        {{- end }}
         volumeMounts:
         - mountPath: /etc/sentry
           name: config
