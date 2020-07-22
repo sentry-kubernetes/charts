@@ -15,11 +15,11 @@ data:
         <tmp_path>{{ printf "%s/tmp/" (include "clickhouse.fullpath" .) }}</tmp_path>
         <user_files_path>{{ printf "%s/user_files/" (include "clickhouse.fullpath" .) }}</user_files_path>
         <format_schema_path>{{ printf "%s/format_schemas/" (include "clickhouse.fullpath" .) }}</format_schema_path>
-        
+
         <include_from>/etc/clickhouse-server/metrica.d/metrica.xml</include_from>
 
         <users_config>users.xml</users_config>
-        
+
         <display_name>{{ template "clickhouse.fullname" . }}</display_name>
         <listen_host>0.0.0.0</listen_host>
         <http_port>{{ .Values.clickhouse.http_port | default "8123" }}</http_port>
