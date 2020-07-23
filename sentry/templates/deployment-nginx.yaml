@@ -1,0 +1,92 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "sentry.fullname" . }}-nginx
+  labels:
+    app: {{ template "sentry.fullname" . }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
+    release: "{{ .Release.Name }}"
+    heritage: "{{ .Release.Service }}"
+spec:
+  selector:
+    matchLabels:
+        app: {{ template "sentry.fullname" . }}
+        release: "{{ .Release.Name }}"
+        role: nginx
+{{- if not .Values.nginx.autoscaling.enabled }}
+  replicas: {{ .Values.nginx.replicas }}
+{{- end }}
+  template:
+    metadata:
+      annotations:
+        checksum/config.yaml: {{ include (print $.Template.BasePath "/configmap-nginx.yaml") . | sha256sum }}
+        {{- if .Values.nginx.annotations }}
+{{ toYaml .Values.nginx.annotations | indent 8 }}
+        {{- end }}
+      labels:
+        app: {{ template "sentry.fullname" . }}
+        release: "{{ .Release.Name }}"
+        role: nginx
+        {{- if .Values.nginx.podLabels }}
+{{ toYaml .Values.nginx.podLabels | indent 8 }}
+        {{- end }}
+    spec:
+      affinity:
+      {{- if .Values.nginx.affinity }}
+{{ toYaml .Values.nginx.affinity | indent 8 }}
+      {{- end }}
+      {{- if .Values.nginx.nodeSelector }}
+      nodeSelector:
+{{ toYaml .Values.nginx.nodeSelector | indent 8 }}
+      {{- end }}
+      {{- if .Values.nginx.tolerations }}
+      tolerations:
+{{ toYaml .Values.nginx.tolerations | indent 8 }}
+      {{- end }}
+      {{- if .Values.images.nginx.imagePullSecrets }}
+      imagePullSecrets:
+{{ toYaml .Values.images.nginx.imagePullSecrets | indent 8 }}
+      {{- end }}
+      containers:
+      - name: {{ .Chart.Name }}-nginx
+        image: "{{ .Values.images.nginx.repository }}:{{ .Values.images.nginx.tag }}"
+        imagePullPolicy: {{ .Values.images.nginx.pullPolicy }}
+        # command: ["sentry", "run", "nginx"]
+        ports:
+        - containerPort: {{ template "nginx.port" }}
+{{- if .Values.nginx.env }}
+{{ toYaml .Values.nginx.env | indent 8 }}
+{{- end }}
+        volumeMounts:
+        - mountPath: /work/.nginx
+          name: config
+          readOnly: true
+        livenessProbe:
+          failureThreshold: 5
+          httpGet:
+            path: /_health/
+            port: {{ template "nginx.port" }}
+            scheme: HTTP
+          initialDelaySeconds: {{ .Values.nginx.probeInitialDelaySeconds }}
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 2
+        readinessProbe:
+          failureThreshold: 10
+          httpGet:
+            path: /_health/
+            port: {{ template "nginx.port" }}
+            scheme: HTTP
+          initialDelaySeconds: {{ .Values.nginx.probeInitialDelaySeconds }}
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 2
+        resources:
+{{ toYaml .Values.nginx.resources | indent 12 }}
+      volumes:
+      - name: config
+        configMap:
+          name: {{ template "sentry.fullname" . }}-nginx
+      {{- if .Values.nginx.priorityClassName }}
+      priorityClassName: "{{ .Values.nginx.priorityClassName }}"
+      {{- end }}

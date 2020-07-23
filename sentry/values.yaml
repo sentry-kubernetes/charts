@@ -16,13 +16,34 @@ images:
     tag: 20.7.2
     pullPolicy: IfNotPresent
     # imagePullSecrets: []
-  snuba:
+  relay:
     repository: getsentry/relay
     tag: 20.7.2
     pullPolicy: IfNotPresent
     # imagePullSecrets: []
+  nginx:
+    repository: nginx
+    tag: 1.16
+    pullPolicy: IfNotPresent
+    # imagePullSecrets: []
 
 relay:
+  replicas: 1
+  env: []
+  probeInitialDelaySeconds: 10
+  resources: {}
+  affinity: {}
+  nodeSelector: {}
+  # tolerations: []
+  # podLabels: []
+
+  autoscaling:
+    enabled: false
+    minReplicas: 2
+    maxReplicas: 5
+    targetCPUUtilizationPercentage: 50
+
+nginx:
   replicas: 1
   env: []
   probeInitialDelaySeconds: 10

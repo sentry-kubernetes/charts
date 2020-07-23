@@ -8,6 +8,7 @@
 {{- define "relay.port" -}}3000{{- end -}}
 {{- define "sentry.port" -}}9000{{- end -}}
 {{- define "snuba.port" -}}1218{{- end -}}
+{{- define "nginx.port" -}}80{{- end -}}
 
 {{/* vim: set filetype=mustache: */}}
 {{/*
