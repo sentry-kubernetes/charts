@@ -58,7 +58,7 @@ spec:
 {{ toYaml .Values.nginx.env | indent 8 }}
 {{- end }}
         volumeMounts:
-        - mountPath: /work/.nginx
+        - mountPath: /etc/nginx
           name: config
           readOnly: true
         livenessProbe:
