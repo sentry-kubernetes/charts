@@ -109,6 +109,9 @@ clickhouse:
   imageVersion: "19.14"
   imagePullPolicy: "IfNotPresent"
 
+  ## The resource limits and requests used by clickhouse
+  resources: {}
+
   init:
     image: "busybox"
     imageVersion: "1.31.0"
@@ -425,3 +428,6 @@ tabix:
   #    - "tabix.domain.com"
   #    - "tabix.domain1.com"
   #    secretName: "tabix-secret"
+
+  ## The resource limits and requests used by tabix
+  resources: {}

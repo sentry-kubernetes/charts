@@ -8,12 +8,12 @@ user:
 images:
   sentry:
     repository: getsentry/sentry
-    tag: 20.7.2
+    tag: cc9f7d1
     pullPolicy: IfNotPresent
     # imagePullSecrets: []
   snuba:
     repository: getsentry/snuba
-    tag: 20.7.2
+    tag: e944bc414bfc97c9836febbfb2f310a3237f91cf
     pullPolicy: IfNotPresent
     # imagePullSecrets: []
 
@@ -195,6 +195,11 @@ slack: {}
 #   clientId:
 #   clientSecret:
 #   verificationToken:
+#   # channels.* of Slack API is deprecated.
+#   # All new slack apps created after June 10th, 2020 will give error,
+#   # you need to specify `False` if you want to use the Slack App created after that.
+#   # ref : https://github.com/getsentry/sentry/pull/19446
+#   legacyApp:
 
 ingress:
   enabled: false

@@ -86,4 +86,8 @@ spec:
           failureThreshold: {{ .Values.tabix.readinessProbe.failureThreshold }}
           successThreshold: {{ .Values.tabix.readinessProbe.successThreshold }}
       {{- end }}
+      {{- if .Values.tabix.resources }}
+        resources:
+{{ toYaml .Values.tabix.resources | indent 10 }}
+      {{- end }}
 {{- end }}
