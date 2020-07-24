@@ -55,3 +55,12 @@ Parameter                          | Description                                
 `metrics.serviceMonitor.honorLabels` | honorLabels chooses the metric's labels on collisions with target labels. | `false`
 `metrics.serviceMonitor.namespace` | namespace where servicemonitor resource should be created | `the same namespace as sentry`
 `metrics.serviceMonitor.scrapeInterval` | interval between Prometheus scraping | `30s`
+`system.secretKey` | secret key for the session cookie ([documentation](https://develop.sentry.dev/config/#general)) | `nil`
+
+## Sentry secret key
+
+For your security, the [`system.secret-key`](https://develop.sentry.dev/config/#general) is generated for you on the first installation. Another one will be regenerated on each upgrade invalidating all the current sessions unless it's been provided. The value is stored in the `sentry-sentry` configmap.
+
+```
+helm upgrade ... --set system.secretKey=xx
+```

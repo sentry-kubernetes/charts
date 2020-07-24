@@ -148,8 +148,10 @@ hooks:
 system:
   url: ""
   adminEmail: ""
-  secretKey: 'icLq77rCyY_qrMMpXa6TQNjkDV6mU!c'
-  public: false #  This should only be used if you’re installing Sentry behind your company’s firewall.
+  ## This should only be used if you’re installing Sentry behind your company’s firewall.
+  public: false
+  ## This will generate one for you (it's must be given upon updates)
+  #secretKey: "xx"
 
 mail:
   backend: dummy # smtp
