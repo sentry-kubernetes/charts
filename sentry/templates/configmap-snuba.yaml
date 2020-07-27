@@ -18,7 +18,11 @@ data:
 
     DEBUG = env("DEBUG", "0").lower() in ("1", "true")
 
-    DEFAULT_BROKERS = [{{ printf "%s:%s" (include "sentry.kafka.host" .) (include "sentry.kafka.port" .) | quote }}]
+    # Clickhouse Options
+    CLUSTERS[0]["host"] = env("CLICKHOUSE_HOST", {{ include "sentry.clickhouse.host" . | quote }})
+    CLUSTERS[0]["port"] = int(env("CLICKHOUSE_PORT", {{ include "sentry.clickhouse.port" . }}))
+    # FIXME: Snuba will be able to migrate multi node clusters in the future
+    CLUSTERS[0]["single_node"] = env("CLICKHOUSE_SINGLE_NODE", "false").lower() == "true"
 
     # Redis Options
     REDIS_HOST = {{ include "sentry.redis.host" . | quote }}
@@ -28,10 +32,7 @@ data:
     {{- end }}
     REDIS_DB = int(env("REDIS_DB", 1))
 
-    # Clickhouse Options
-    CLUSTERS[0]["host"] = env("CLICKHOUSE_HOST", {{ include "sentry.clickhouse.host" . | quote }})
-    CLUSTERS[0]["port"] = int(env("CLICKHOUSE_PORT", {{ include "sentry.clickhouse.port" . }}))
-    # FIXME: Snuba will be able to migrate multi node clusters in the future
-    CLUSTERS[0]["single_node"] = env("CLICKHOUSE_SINGLE_NODE", "false").lower() == "true"
+    # Processor/Writer Options
+    DEFAULT_BROKERS = [{{ printf "%s:%s" (include "sentry.kafka.host" .) (include "sentry.kafka.port" .) | quote }}]
 
     {{ .Values.config.snubaSettingsPy | indent 4 }}
