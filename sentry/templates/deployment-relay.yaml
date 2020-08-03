@@ -56,7 +56,7 @@ spec:
             - "generate"
           env:
             - name: RELAY_PORT
-              value: {{ template "relay.port" }}
+              value: '{{ template "relay.port" }}'
           volumeMounts:
             - name: credentials
               mountPath: /work/.relay
@@ -74,7 +74,7 @@ spec:
         - containerPort: {{ template "relay.port" }}
         env:
         - name: RELAY_PORT
-          value: "{{ template 'relay.port' }}"
+          value: '{{ template "relay.port" }}'
 {{- if .Values.relay.env }}
 {{ toYaml .Values.relay.env | indent 8 }}
 {{- end }}
