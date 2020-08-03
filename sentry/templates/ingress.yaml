@@ -17,6 +17,14 @@ spec:
     - host: {{ .Values.ingress.hostname }}
       http:
         paths:
+          - path: {{ default "/" .Values.ingress.path }}api/store
+            backend:
+              serviceName: {{ template "sentry.fullname" . }}-relay
+              sevicePort: {{ template "relay.port" . }}
+          - path: {{ default "/" .Values.ingress.path }}api/[1-9]\d*/(.*)
+            backend:
+              serviceName: {{ template "sentry.fullname" . }}-relay
+              sevicePort: {{ template "relay.port" . }}
           - path: {{ default "/" .Values.ingress.path | quote }}
             backend:
               serviceName: {{ template "sentry.fullname" . }}-web

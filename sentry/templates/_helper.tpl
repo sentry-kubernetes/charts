@@ -5,6 +5,7 @@
     {{- end -}}
 {{- end -}}
 
+{{- define "relay.port" -}}3000{{- end -}}
 {{- define "sentry.port" -}}9000{{- end -}}
 {{- define "snuba.port" -}}1218{{- end -}}
 
