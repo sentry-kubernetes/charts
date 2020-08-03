@@ -48,24 +48,47 @@ spec:
       imagePullSecrets:
 {{ toYaml .Values.images.relay.imagePullSecrets | indent 8 }}
       {{- end }}
+      initContainers:
+        - name: {{ .Chart.Name }}-relay-init
+          image: {{ .Values.images.relay.repository }}:{{ .Values.images.relay.tag }}
+          args:
+            - "credentials"
+            - "generate"
+          env:
+            - name: RELAY_PORT
+              value: {{ template "relay.port" }}
+          volumeMounts:
+            - name: credentials
+              mountPath: /work/.relay
+            - name: config
+              mountPath: /work/.relay/config.yml
+              subPath: config.yml
+              readOnly: true
       containers:
       - name: {{ .Chart.Name }}-relay
         image: "{{ .Values.images.relay.repository }}:{{ .Values.images.relay.tag }}"
         imagePullPolicy: {{ .Values.images.relay.pullPolicy }}
-        # command: ["sentry", "run", "relay"]
+        # command: ["/bin/bash", "-c"]
+        # args: ["mkdir -p /work/.relay; cp /work/config.yml /work/.relay/config.yml;ls /work/.relay;relay credentials generate --stdout > /work/.relay/credentials.json;chmod +x /docker-entrypoint.sh;echo 'Creating credentials';/docker-entrypoint.sh credentials generate  --overwrite;echo 'Done creating credentials.';ls /work/.relay;cat /work/.relay/credentials.json;/docker-entrypoint.sh run"]
         ports:
         - containerPort: {{ template "relay.port" }}
+        env:
+        - name: RELAY_PORT
+          value: "{{ template 'relay.port' }}"
 {{- if .Values.relay.env }}
 {{ toYaml .Values.relay.env | indent 8 }}
 {{- end }}
         volumeMounts:
-        - mountPath: /work/.relay
-          name: config
-          readOnly: true
+          - name: credentials
+            mountPath: /work/.relay
+          - name: config
+            mountPath: /work/.relay/config.yml
+            subPath: config.yml
+            readOnly: true
         livenessProbe:
           failureThreshold: 5
           httpGet:
-            path: /_health/
+            path: /api/relay/healthcheck/ready/
             port: {{ template "relay.port" }}
             scheme: HTTP
           initialDelaySeconds: {{ .Values.relay.probeInitialDelaySeconds }}
@@ -75,7 +98,7 @@ spec:
         readinessProbe:
           failureThreshold: 10
           httpGet:
-            path: /_health/
+            path: /api/relay/healthcheck/ready/
             port: {{ template "relay.port" }}
             scheme: HTTP
           initialDelaySeconds: {{ .Values.relay.probeInitialDelaySeconds }}
@@ -88,6 +111,9 @@ spec:
       - name: config
         configMap:
           name: {{ template "sentry.fullname" . }}-relay
+          defaultMode: 0644
+      - name: credentials
+        emptyDir: {}
       {{- if .Values.relay.priorityClassName }}
       priorityClassName: "{{ .Values.relay.priorityClassName }}"
       {{- end }}

@@ -64,7 +64,7 @@ spec:
         livenessProbe:
           failureThreshold: 5
           httpGet:
-            path: /_health/
+            path: /healthcheck/
             port: {{ template "nginx.port" }}
             scheme: HTTP
           initialDelaySeconds: {{ .Values.nginx.probeInitialDelaySeconds }}
@@ -74,7 +74,7 @@ spec:
         readinessProbe:
           failureThreshold: 10
           httpGet:
-            path: /_health/
+            path: /healthcheck/
             port: {{ template "nginx.port" }}
             scheme: HTTP
           initialDelaySeconds: {{ .Values.nginx.probeInitialDelaySeconds }}

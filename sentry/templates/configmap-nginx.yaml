@@ -66,6 +66,10 @@ data:
             server {
                 listen 80;
 
+                location /healthcheck {
+                    return 200 "healthy\n";
+                }
+
                 location /api/store/ {
                     proxy_pass http://relay;
                 }
