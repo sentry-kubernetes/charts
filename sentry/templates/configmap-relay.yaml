@@ -14,21 +14,24 @@ metadata:
 data:
   config.yml: |-
     relay:
-        upstream: "http://{{ template "sentry.fullname" . }}-web:{{ template "sentry.port" }}/"
-        host: 0.0.0.0
-        port: {{ template "relay.port" }}
-    logging:
-        level: WARN
-    processing:
-        enabled: true
-        kafka_config:
-            - {name: "bootstrap.servers", value: "{{ printf "%s:%s" (include "sentry.kafka.host" .) (include "sentry.kafka.port" .) }}"}
-            - {name: "message.max.bytes", value: 50000000} #50MB or bust
+      mode: proxy
+      upstream: "http://{{ template "sentry.fullname" . }}-web:{{ template "sentry.port" }}/"
+      host: 0.0.0.0
+      port: {{ template "relay.port" }}
 
-        {{- if $redisPass }}
-        redis: redis://:{{ $redisPass }}@{{ $redisHost }}:{{ $redisPort }}/0
-        {{- else }}
-        redis: redis://{{ $redisHost }}:{{ $redisPort }}/0
-        {{- end }}
+    logging:
+      level: WARN
+
+    processing:
+      enabled: true
+      kafka_config:
+        - {name: "bootstrap.servers", value: "{{ printf "%s:%s" (include "sentry.kafka.host" .) (include "sentry.kafka.port" .) }}"}
+        - {name: "message.max.bytes", value: 50000000} #50MB or bust
+
+      {{- if $redisPass }}
+      redis: redis://:{{ $redisPass }}@{{ $redisHost }}:{{ $redisPort }}/0
+      {{- else }}
+      redis: redis://{{ $redisHost }}:{{ $redisPort }}/0
+      {{- end }}
 
     {{- .Values.config.relay | indent 4 }}
