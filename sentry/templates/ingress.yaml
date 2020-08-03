@@ -21,7 +21,7 @@ spec:
             backend:
               serviceName: {{ template "sentry.fullname" . }}-relay
               servicePort: {{ template "relay.port" . }}
-          - path: {{ default "/" .Values.ingress.path }}api/[1-9]\d*/(.*)
+          - path: {{ default "/" .Values.ingress.path }}api/[1-9][0-9]*/(.*)
             backend:
               serviceName: {{ template "sentry.fullname" . }}-relay
               servicePort: {{ template "relay.port" . }}
