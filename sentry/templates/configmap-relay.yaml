@@ -20,7 +20,7 @@ data:
       port: {{ template "relay.port" }}
 
     logging:
-      level: trace
+      level: info
 
     processing:
       enabled: true
