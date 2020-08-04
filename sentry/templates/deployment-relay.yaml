@@ -68,8 +68,6 @@ spec:
       - name: {{ .Chart.Name }}-relay
         image: "{{ .Values.images.relay.repository }}:{{ .Values.images.relay.tag }}"
         imagePullPolicy: {{ .Values.images.relay.pullPolicy }}
-        # command: ["/bin/bash", "-c"]
-        # args: ["mkdir -p /work/.relay; cp /work/config.yml /work/.relay/config.yml;ls /work/.relay;relay credentials generate --stdout > /work/.relay/credentials.json;chmod +x /docker-entrypoint.sh;echo 'Creating credentials';/docker-entrypoint.sh credentials generate  --overwrite;echo 'Done creating credentials.';ls /work/.relay;cat /work/.relay/credentials.json;/docker-entrypoint.sh run"]
         ports:
         - containerPort: {{ template "relay.port" }}
         env:
