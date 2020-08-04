@@ -28,10 +28,6 @@ data:
         - {name: "bootstrap.servers", value: "{{ printf "%s:%s" (include "sentry.kafka.host" .) (include "sentry.kafka.port" .) }}"}
         - {name: "message.max.bytes", value: 50000000} #50MB or bust
 
-      {{- if $redisPass }}
-      redis: redis://:{{ $redisPass }}@{{ $redisHost }}:{{ $redisPort }}/0
-      {{- else }}
       redis: redis://{{ $redisHost }}:{{ $redisPort }}/0
-      {{- end }}
 
     {{- .Values.config.relay | indent 4 }}
