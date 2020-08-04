@@ -19,9 +19,9 @@ data:
       enabled: true
 
       kafka_config:
-        - name: "bootstrap.servers",
+        - name: "bootstrap.servers"
           value: "{{ template "sentry.fullname" . }}-kafka.svc:9092"
-        - name: "message.max.bytes",
+        - name: "message.max.bytes"
           value: 50000000  # 50MB or bust
 
       redis: "redis://{{ template "sentry.fullname" . }}-sentry-redis-master.svc:6379"
