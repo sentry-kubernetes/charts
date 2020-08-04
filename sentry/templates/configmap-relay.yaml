@@ -14,7 +14,7 @@ metadata:
 data:
   config.yml: |-
     relay:
-      mode: proxy
+      mode: managed
       upstream: "http://{{ template "sentry.fullname" . }}-web:{{ template "sentry.port" }}/"
       host: 0.0.0.0
       port: {{ template "relay.port" }}
