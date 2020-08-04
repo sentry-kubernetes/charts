@@ -1,7 +1,3 @@
-{{- $redisHost := include "sentry.redis.host" . -}}
-{{- $redisPort := include "sentry.redis.port" . -}}
-{{- $redisPass := include "sentry.redis.password" . -}}
-
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -21,13 +17,5 @@ data:
 
     logging:
       level: info
-
-    processing:
-      enabled: true
-      kafka_config:
-        - {name: "bootstrap.servers", value: "{{ printf "%s:%s" (include "sentry.kafka.host" .) (include "sentry.kafka.port" .) }}"}
-        - {name: "message.max.bytes", value: 50000000} #50MB or bust
-
-      redis: redis://{{ $redisHost }}:{{ $redisPort }}/0
 
     {{- .Values.config.relay | indent 4 }}
