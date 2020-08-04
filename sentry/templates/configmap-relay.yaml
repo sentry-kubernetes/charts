@@ -11,7 +11,7 @@ data:
   config.yml: |-
     relay:
       mode: managed
-      upstream: "http://{{ template "sentry.fullname" . }}-web.svc:{{ template "sentry.port" }}/"
+      upstream: "http://{{ template "sentry.fullname" . }}-web:{{ template "sentry.port" }}/"
       host: 0.0.0.0
       port: {{ template "relay.port" }}
 
@@ -20,10 +20,10 @@ data:
 
       kafka_config:
         - name: "bootstrap.servers"
-          value: "{{ template "sentry.fullname" . }}-kafka.svc:9092"
+          value: "{{ template "sentry.fullname" . }}-kafka-headless:9092"
         - name: "message.max.bytes"
           value: 50000000  # 50MB or bust
 
-      redis: "redis://{{ template "sentry.fullname" . }}-sentry-redis-master.svc:6379"
+      redis: "redis://{{ template "sentry.fullname" . }}-sentry-redis-master:6379"
 
 {{ .Values.config.relay | indent 4 }}
