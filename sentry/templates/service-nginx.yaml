@@ -18,7 +18,7 @@ metadata:
 spec:
   type: {{ .Values.service.type }}
   ports:
-  - port: {{ .Values.service.externalPort }}
+  - port: {{ template "nginx.port" }}
     targetPort: {{ template "nginx.port" }}
     protocol: TCP
     name: {{ .Values.service.name }}
