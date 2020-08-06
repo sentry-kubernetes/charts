@@ -10,9 +10,9 @@ metadata:
 spec:
   selector:
     matchLabels:
-        app: {{ template "sentry.fullname" . }}
-        release: "{{ .Release.Name }}"
-        role: relay
+      app: {{ template "sentry.fullname" . }}
+      release: "{{ .Release.Name }}"
+      role: relay
 {{- if not .Values.relay.autoscaling.enabled }}
   replicas: {{ .Values.relay.replicas }}
 {{- end }}

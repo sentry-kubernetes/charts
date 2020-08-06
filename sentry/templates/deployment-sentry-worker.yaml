@@ -10,9 +10,9 @@ metadata:
 spec:
   selector:
     matchLabels:
-        app: {{ template "sentry.fullname" . }}
-        release: "{{ .Release.Name }}"
-        role: worker
+      app: {{ template "sentry.fullname" . }}
+      release: "{{ .Release.Name }}"
+      role: worker
 {{- if not .Values.sentry.worker.autoscaling.enabled }}
   replicas: {{ .Values.sentry.worker.replicas }}
 {{- end }}

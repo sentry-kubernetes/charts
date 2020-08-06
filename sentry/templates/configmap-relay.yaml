@@ -20,12 +20,7 @@ data:
 
       kafka_config:
         - name: "bootstrap.servers"
-          value: |-
-            {{ template "sentry.fullname" . }}-kafka-0.{{ template "sentry.fullname" . }}-kafka-headless:9092
-            {{- "," -}}
-            {{ template "sentry.fullname" . }}-kafka-1.{{ template "sentry.fullname" . }}-kafka-headless:9092
-            {{- "," -}}
-            {{ template "sentry.fullname" . }}-kafka-2.{{ template "sentry.fullname" . }}-kafka-headless:9092
+          value: {{ template "sentry.fullname" . }}-kafka:9092
         - name: "message.max.bytes"
           value: 50000000  # 50MB or bust
 
