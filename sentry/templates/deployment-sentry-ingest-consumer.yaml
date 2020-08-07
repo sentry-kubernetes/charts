@@ -1,0 +1,114 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "sentry.fullname" . }}-ingest-consumer
+  labels:
+    app: {{ template "sentry.fullname" . }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
+    release: "{{ .Release.Name }}"
+    heritage: "{{ .Release.Service }}"
+spec:
+  selector:
+    matchLabels:
+      app: {{ template "sentry.fullname" . }}
+      release: "{{ .Release.Name }}"
+      role: ingest-consumer
+{{- if not .Values.sentry.ingestConsumer.autoscaling.enabled }}
+  replicas: {{ .Values.sentry.ingestConsumer.replicas }}
+{{- end }}
+  template:
+    metadata:
+      annotations:
+        checksum/configYml: {{ .Values.config.configYml | sha256sum }}
+        checksum/sentryConfPy: {{ .Values.config.sentryConfPy | sha256sum }}
+        checksum/config.yaml: {{ include (print $.Template.BasePath "/configmap-sentry.yaml") . | sha256sum }}
+        {{- if .Values.sentry.ingestConsumer.annotations }}
+{{ toYaml .Values.sentry.ingestConsumer.annotations | indent 8 }}
+        {{- end }}
+      labels:
+        app: {{ template "sentry.fullname" . }}
+        release: "{{ .Release.Name }}"
+        role: ingest-consumer
+        {{- if .Values.sentry.ingestConsumer.podLabels }}
+{{ toYaml .Values.sentry.ingestConsumer.podLabels | indent 8 }}
+        {{- end }}
+    spec:
+      affinity:
+      {{- if .Values.sentry.ingestConsumer.affinity }}
+{{ toYaml .Values.sentry.ingestConsumer.affinity | indent 8 }}
+      {{- end }}
+      {{- if .Values.sentry.ingestConsumer.nodeSelector }}
+      nodeSelector:
+{{ toYaml .Values.sentry.ingestConsumer.nodeSelector | indent 8 }}
+      {{- end }}
+      {{- if .Values.sentry.ingestConsumer.tolerations }}
+      tolerations:
+{{ toYaml .Values.sentry.ingestConsumer.tolerations | indent 8 }}
+      {{- end }}
+      {{- if .Values.images.sentry.imagePullSecrets }}
+      imagePullSecrets:
+{{ toYaml .Values.images.sentry.imagePullSecrets | indent 8 }}
+      {{- end }}
+      containers:
+      - name: {{ .Chart.Name }}-ingest-consumer
+        image: "{{ .Values.images.sentry.repository }}:{{ .Values.images.sentry.tag }}"
+        imagePullPolicy: {{ .Values.images.sentry.pullPolicy }}
+        command: ["sentry"]
+        args:
+          - "run"
+          - "ingest-consumer"
+          - "--all-consumer-types"
+          {{- if .Values.sentry.ingestConsumer.concurrency }}
+          - "-c"
+          - "{{ .Values.sentry.ingestConsumer.concurrency }}"
+          {{- end }}
+        env:
+        - name: SNUBA
+          value: http://{{ template "sentry.fullname" . }}-snuba:{{ template "snuba.port" }}
+        - name: C_FORCE_ROOT
+          value: "true"
+        {{- if .Values.postgresql.enabled }}
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ include "sentry.postgresql.fullname" . }}
+              key: postgresql-password
+        {{- end }}
+        {{ if eq .Values.filestore.backend "gcs" }}
+        - name: GOOGLE_APPLICATION_CREDENTIALS
+          value: /var/run/secrets/google/{{ .Values.filestore.gcs.credentialsFile }}
+        {{ end }}
+{{- if .Values.sentry.ingestConsumer.env }}
+{{ toYaml .Values.sentry.ingestConsumer.env | indent 8 }}
+{{- end }}
+        volumeMounts:
+        - mountPath: /etc/sentry
+          name: config
+          readOnly: true
+        - mountPath: {{ .Values.filestore.filesystem.path }}
+          name: sentry-data
+        {{- if eq .Values.filestore.backend "gcs" }}
+        - name: sentry-google-cloud-key
+          mountPath: /var/run/secrets/google
+        {{ end }}
+        resources:
+{{ toYaml .Values.sentry.ingestConsumer.resources | indent 12 }}
+      volumes:
+      - name: config
+        configMap:
+          name: {{ template "sentry.fullname" . }}-sentry
+      - name: sentry-data
+      {{- if and (eq .Values.filestore.backend "filesystem") .Values.filestore.filesystem.persistence.enabled (.Values.filestore.filesystem.persistence.persistentWorkers) }}
+        persistentVolumeClaim:
+          claimName: {{ template "sentry.fullname" . }}-data
+      {{- else }}
+        emptyDir: {}
+      {{ end }}
+      {{- if eq .Values.filestore.backend "gcs" }}
+      - name: sentry-google-cloud-key
+        secret:
+          secretName: {{ .Values.filestore.gcs.secretName }}
+      {{ end }}
+      {{- if .Values.sentry.ingestConsumer.priorityClassName }}
+      priorityClassName: "{{ .Values.sentry.ingestConsumer.priorityClassName }}"
+      {{- end }}
