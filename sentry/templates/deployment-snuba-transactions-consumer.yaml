@@ -1,0 +1,71 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "sentry.fullname" . }}-snuba-transactions-consumer
+  labels:
+    app: {{ template "sentry.fullname" . }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
+    release: "{{ .Release.Name }}"
+    heritage: "{{ .Release.Service }}"
+spec:
+  selector:
+    matchLabels:
+        app: {{ template "sentry.fullname" . }}
+        release: "{{ .Release.Name }}"
+        role: snuba-transactions-consumer
+  replicas: {{ .Values.snuba.transactionsConsumer.replicas }}
+  template:
+    metadata:
+      annotations:
+        checksum/snubaSettingsPy: {{ .Values.config.snubaSettingsPy | sha256sum }}
+        checksum/config.yaml: {{ include (print $.Template.BasePath "/configmap-snuba.yaml") . | sha256sum }}
+        {{- if .Values.snuba.transactionsConsumer.annotations }}
+{{ toYaml .Values.snuba.transactionsConsumer.annotations | indent 8 }}
+        {{- end }}
+      labels:
+        app: {{ template "sentry.fullname" . }}
+        release: "{{ .Release.Name }}"
+        role: snuba-transactions-consumer
+        {{- if .Values.snuba.transactionsConsumer.podLabels }}
+{{ toYaml .Values.snuba.transactionsConsumer.podLabels | indent 8 }}
+        {{- end }}
+    spec:
+      affinity:
+      {{- if .Values.snuba.transactionsConsumer.affinity }}
+{{ toYaml .Values.snuba.transactionsConsumer.affinity | indent 8 }}
+      {{- end }}
+      {{- if .Values.snuba.transactionsConsumer.nodeSelector }}
+      nodeSelector:
+{{ toYaml .Values.snuba.transactionsConsumer.nodeSelector | indent 8 }}
+      {{- end }}
+      {{- if .Values.snuba.transactionsConsumer.tolerations }}
+      tolerations:
+{{ toYaml .Values.snuba.transactionsConsumer.tolerations | indent 8 }}
+      {{- end }}
+      {{- if .Values.images.snuba.imagePullSecrets }}
+      imagePullSecrets:
+{{ toYaml .Values.images.snuba.imagePullSecrets | indent 8 }}
+      {{- end }}
+      containers:
+      - name: {{ .Chart.Name }}-snuba
+        image: "{{ .Values.images.snuba.repository }}:{{ .Values.images.snuba.tag }}"
+        imagePullPolicy: {{ .Values.images.snuba.pullPolicy }}
+        command: ["snuba", "consumer", "--storage", "transactions", "--consumer-group", "transactions_group", "--auto-offset-reset=latest", "--max-batch-time-ms", "750"]
+        ports:
+        - containerPort: {{ template "snuba.port" }}
+        env:
+        - name: SNUBA_SETTINGS
+          value: /etc/snuba/settings.py
+{{- if .Values.snuba.transactionsConsumer.env }}
+{{ toYaml .Values.snuba.transactionsConsumer.env | indent 8 }}
+{{- end }}
+        volumeMounts:
+        - mountPath: /etc/snuba
+          name: config
+          readOnly: true
+        resources:
+{{ toYaml .Values.snuba.transactionsConsumer.resources | indent 12 }}
+      volumes:
+        - name: config
+          configMap:
+            name: {{ template "sentry.fullname" . }}-snuba
