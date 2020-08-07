@@ -50,7 +50,8 @@ spec:
       {{- end }}
       initContainers:
         - name: {{ .Chart.Name }}-relay-init
-          image: {{ .Values.images.relay.repository }}:{{ .Values.images.relay.tag }}
+          image: "{{ template "sentry.image" . }}"
+          imagePullPolicy: {{ default "IfNotPresent" .Values.images.sentry.pullPolicy }}
           args:
             - "credentials"
             - "generate"
@@ -66,8 +67,8 @@ spec:
               readOnly: true
       containers:
       - name: {{ .Chart.Name }}-relay
-        image: "{{ .Values.images.relay.repository }}:{{ .Values.images.relay.tag }}"
-        imagePullPolicy: {{ .Values.images.relay.pullPolicy }}
+        image: "{{ template "sentry.image" . }}"
+        imagePullPolicy: {{ default "IfNotPresent" .Values.images.sentry.pullPolicy }}
         ports:
         - containerPort: {{ template "relay.port" }}
         env:

@@ -7,19 +7,19 @@ user:
 
 images:
   sentry:
-    repository: getsentry/sentry
-    tag: 20.7.2
-    pullPolicy: IfNotPresent
+    # repository: getsentry/sentry
+    # tag: Chart.AppVersion
+    # pullPolicy: IfNotPresent
     # imagePullSecrets: []
   snuba:
-    repository: getsentry/snuba
-    tag: 20.7.2
-    pullPolicy: IfNotPresent
+    # repository: getsentry/snuba
+    # tag: Chart.AppVersion
+    # pullPolicy: IfNotPresent
     # imagePullSecrets: []
   relay:
-    repository: getsentry/relay
-    tag: 20.7.2
-    pullPolicy: IfNotPresent
+    # repository: getsentry/relay
+    # tag: Chart.AppVersion
+    # pullPolicy: IfNotPresent
     # imagePullSecrets: []
 
 relay:
