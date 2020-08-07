@@ -134,6 +134,15 @@ snuba:
     # tolerations: []
     # podLabels: []
 
+  transactionsConsumer:
+    replicas: 1
+    env: []
+    resources: {}
+    affinity: {}
+    nodeSelector: {}
+    # tolerations: []
+    # podLabels: []
+
   replacer:
     env: []
     resources: {}
