@@ -1,3 +1,5 @@
+{{/* vim: set filetype=mustache: */}}
+
 {{- define "sentry.prefix" -}}
     {{- if .Values.prefix -}}
         {{.Values.prefix}}-
@@ -5,10 +7,10 @@
     {{- end -}}
 {{- end -}}
 
+{{- define "nginx.port" -}}{{ default "8080" .Values.nginx.containerPort }}{{- end -}}
 {{- define "sentry.port" -}}9000{{- end -}}
 {{- define "snuba.port" -}}1218{{- end -}}
 
-{{/* vim: set filetype=mustache: */}}
 {{/*
 Expand the name of the chart.
 */}}

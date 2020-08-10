@@ -220,6 +220,14 @@ slack: {}
 #   # ref : https://github.com/getsentry/sentry/pull/19446
 #   legacyApp:
 
+nginx:
+  enabled: true
+  containerPort: 8080
+  existingServerBlockConfigmap: sentry-nginx
+  resources: {}
+  service:
+    type: ClusterIP
+
 ingress:
   enabled: false
   # annotations:

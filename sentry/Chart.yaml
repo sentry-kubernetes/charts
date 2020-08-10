@@ -26,3 +26,7 @@ dependencies:
     repository: https://kubernetes-charts.storage.googleapis.com/
     version: 8.2.1
     condition: postgresql.enabled
+  - name: nginx
+    repository: https://charts.bitnami.com/bitnami
+    version: 6.0.5
+    condition: nginx.enabled

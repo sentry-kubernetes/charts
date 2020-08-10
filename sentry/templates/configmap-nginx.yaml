@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "sentry.fullname" . }}-nginx
+data:
+  server-block.conf: |
+    upstream sentry {
+      server {{ template "sentry.fullname" . }}-web:{{ template "sentry.port" }};
+    }
+
+    server {
+      listen {{ template "nginx.port" }};
+
+      location / {
+        proxy_pass http://sentry;
+      }
+    }
