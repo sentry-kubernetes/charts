@@ -4,12 +4,24 @@ metadata:
   name: {{ template "sentry.fullname" . }}-nginx
 data:
   server-block.conf: |
+    upstream relay {
+      server {{ template "sentry.fullname" . }}-relay:{{ template "relay.port" }};
+    }
+
     upstream sentry {
       server {{ template "sentry.fullname" . }}-web:{{ template "sentry.port" }};
     }
 
     server {
       listen {{ template "nginx.port" }};
+
+      location /api/store/ {
+        proxy_pass http://relay;
+      }
+
+      location ~ ^/api/[1-9]\d*/ {
+        proxy_pass http://relay;
+      }
 
       location / {
         proxy_pass http://sentry;

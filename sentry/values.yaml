@@ -16,6 +16,27 @@ images:
     tag: e944bc414bfc97c9836febbfb2f310a3237f91cf
     pullPolicy: IfNotPresent
     # imagePullSecrets: []
+  relay:
+    repository: getsentry/relay
+    tag: 20.7.0
+    pullPolicy: IfNotPresent
+    # imagePullSecrets: []
+
+relay:
+  replicas: 1
+  env: []
+  probeInitialDelaySeconds: 10
+  resources: {}
+  affinity: {}
+  nodeSelector: {}
+  # tolerations: []
+  # podLabels: []
+
+  autoscaling:
+    enabled: false
+    minReplicas: 2
+    maxReplicas: 5
+    targetCPUUtilizationPercentage: 50
 
 sentry:
   web:
@@ -298,7 +319,8 @@ config:
     # No Python Extension Config Given
   snubaSettingsPy: |
     # No Python Extension Config Given
-
+  relay: |
+    # No YAML relay config given
 
 clickhouse:
   enabled: true

@@ -1,0 +1,29 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "sentry.fullname" . }}-relay
+  labels:
+    app: sentry
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
+    release: "{{ .Release.Name }}"
+    heritage: "{{ .Release.Service }}"
+data:
+  config.yml: |-
+    relay:
+      mode: managed
+      upstream: "http://{{ template "sentry.fullname" . }}-web:{{ template "sentry.port" }}/"
+      host: 0.0.0.0
+      port: {{ template "relay.port" }}
+
+    processing:
+      enabled: true
+
+      kafka_config:
+        - name: "bootstrap.servers"
+          value: {{ template "sentry.fullname" . }}-kafka:9092
+        - name: "message.max.bytes"
+          value: 50000000  # 50MB or bust
+
+      redis: "redis://{{ template "sentry.fullname" . }}-sentry-redis-master:6379"
+
+{{ .Values.config.relay | indent 4 }}
