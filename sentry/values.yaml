@@ -8,14 +8,35 @@ user:
 images:
   sentry:
     repository: getsentry/sentry
-    tag: cc9f7d1
+    tag: 20.7.2
     pullPolicy: IfNotPresent
     # imagePullSecrets: []
   snuba:
     repository: getsentry/snuba
-    tag: e944bc414bfc97c9836febbfb2f310a3237f91cf
+    tag: 20.7.2
     pullPolicy: IfNotPresent
     # imagePullSecrets: []
+  relay:
+    repository: getsentry/relay
+    tag: 20.7.2
+    pullPolicy: IfNotPresent
+    # imagePullSecrets: []
+
+relay:
+  replicas: 1
+  env: []
+  probeInitialDelaySeconds: 10
+  resources: {}
+  affinity: {}
+  nodeSelector: {}
+  # tolerations: []
+  # podLabels: []
+
+  autoscaling:
+    enabled: false
+    minReplicas: 2
+    maxReplicas: 5
+    targetCPUUtilizationPercentage: 50
 
 sentry:
   web:
@@ -50,6 +71,24 @@ sentry:
       enabled: false
       minReplicas: 2
       maxReplicas: 5
+      targetCPUUtilizationPercentage: 50
+
+  ingestConsumer:
+    replicas: 1
+    # concurrency: 4
+    env: []
+    resources: {}
+    affinity: {}
+    nodeSelector: {}
+    # tolerations: []
+    # podLabels: []
+
+    # it's better to use prometheus adapter and scale based on
+    # the size of the rabbitmq queue
+    autoscaling:
+      enabled: false
+      minReplicas: 1
+      maxReplicas: 3
       targetCPUUtilizationPercentage: 50
 
   cron:
@@ -202,12 +241,29 @@ slack: {}
 #   # ref : https://github.com/getsentry/sentry/pull/19446
 #   legacyApp:
 
+nginx:
+  enabled: true
+  containerPort: 8080
+  existingServerBlockConfigmap: sentry-nginx
+  resources: {}
+  replicaCount: 1
+  service:
+    type: ClusterIP
+    port: 80
+
 ingress:
   enabled: false
   # annotations:
   #   kubernetes.io/tls-acme:
   #   certmanager.k8s.io/issuer:
+  #
   #   nginx.ingress.kubernetes.io/proxy-body-size:
+  #   nginx.ingress.kubernetes.io/use-regex: "true"
+  #
+  #   nginx.ingress.kubernetes.io/enable-cors: "true"
+  #   nginx.ingress.kubernetes.io/cors-allow-methods: "PUT,GET,POST,OPTIONS"
+  #   nginx.ingress.kubernetes.io/cors-allow-origin: "*"
+  #   nginx.ingress.kubernetes.io/cors-allow-credentials: "true"
   #
   # hostname:
   #
@@ -272,12 +328,13 @@ config:
     # No Python Extension Config Given
   snubaSettingsPy: |
     # No Python Extension Config Given
-
+  relay: |
+    # No YAML relay config given
 
 clickhouse:
   enabled: true
   clickhouse:
-    imageVersion: "19.16"
+    imageVersion: "19.17"
     configmap:
       remote_servers:
         internal_replication: true
