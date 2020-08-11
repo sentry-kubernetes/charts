@@ -14,6 +14,18 @@ Big thanks to the maintainers of the [deprecated chart](https://github.com/helm/
 
 For now the full list of values is not documented but you can get inspired by the values.yaml specific to each directory.
 
+
+## Upgrading from 4.x.x version of this Chart to 5.0.0
+
+As Relay is now part of this chart your need to make sure you enable either Nginx or the Ingress. Please read the next paragraph for more informations.
+
+If you are using an ingress gateway (like istio), you have to change your inbound path from sentry-web to nginx.
+
+## NGINX and/or Ingress
+
+By default, NGINX is enabled to allow sending the incoming requests to [Sentry Relay](https://getsentry.github.io/relay/) or the Django backend depending on the path. When Sentry is meant to be exposed outside of the Kubernetes cluster, it is recommended to disable NGINX and let the Ingress do the same. It's recommended to go with the go to Ingress Controller, [NGINX Ingress](https://kubernetes.github.io/ingress-nginx/) but others should work as well.
+
+
 ## Upgrading from 3.1.0 version of this Chart to 4.0.0
 
 Following Helm Chart best practices the new version introduces some breaking changes, all configuration for external

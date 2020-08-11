@@ -17,10 +17,25 @@ spec:
     - host: {{ .Values.ingress.hostname }}
       http:
         paths:
+    {{- if .Values.nginx.enabled }}
+          - path: {{ default "/" .Values.ingress.path | quote }}
+            backend:
+              serviceName: {{ template "sentry.fullname" . }}-nginx
+              servicePort: {{ .Values.nginx.service.port }}
+    {{- else }}
+          - path: {{ default "/" .Values.ingress.path }}api/store
+            backend:
+              serviceName: {{ template "sentry.fullname" . }}-relay
+              servicePort: {{ template "relay.port" . }}
+          - path: {{ default "/" .Values.ingress.path }}api/[1-9][0-9]*/(.*)
+            backend:
+              serviceName: {{ template "sentry.fullname" . }}-relay
+              servicePort: {{ template "relay.port" . }}
           - path: {{ default "/" .Values.ingress.path | quote }}
             backend:
               serviceName: {{ template "sentry.fullname" . }}-web
               servicePort: {{ .Values.service.externalPort }}
+    {{- end }}
 {{- if .Values.ingress.tls }}
   tls:
 {{ toYaml .Values.ingress.tls | indent 4 }}
