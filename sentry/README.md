@@ -34,7 +34,7 @@ Parameter                          | Description                                
 `user.create` | if `true`, creates a default admin user defined from `email` and `password` | `true`
 `user.email` | Admin user email | `admin@sentry.local`
 `user.password` | Admin user password| `aaaa`
-`ingess.enabled` | Enabling Ingress | `false`
+`ingress.enabled` | Enabling Ingress | `false`
 `nginx.enabled` | Enabling NGINX | `true`
 `metrics.enabled`| if `true`, enable Prometheus metrics | `false`
 `metrics.image.repository`         | Metrics exporter image repository                                                                          | `prom/statsd-exporter`
