@@ -2,8 +2,8 @@ apiVersion: v2
 name: sentry
 description: A Helm chart for Kubernetes
 type: application
-version: 4.8.1
-appVersion: 20.7.0
+version: 5.0.0
+appVersion: 20.7.2
 dependencies:
   - name: redis
     repository: https://charts.bitnami.com/bitnami
@@ -26,3 +26,7 @@ dependencies:
     repository: https://kubernetes-charts.storage.googleapis.com/
     version: 8.2.1
     condition: postgresql.enabled
+  - name: nginx
+    repository: https://charts.bitnami.com/bitnami
+    version: 6.0.5
+    condition: nginx.enabled
