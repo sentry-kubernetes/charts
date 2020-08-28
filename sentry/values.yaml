@@ -23,7 +23,7 @@ images:
     # imagePullSecrets: []
 
 relay:
-  mode: proxy
+  mode: managed
   replicas: 1
   env: []
   probeInitialDelaySeconds: 10
@@ -167,7 +167,6 @@ snuba:
   migrateJob:
     env: []
 
-
 hooks:
   enabled: true
   dbInit:
@@ -227,7 +226,8 @@ github: {} # https://github.com/settings/apps (Create a Github App)
 #   privateKey: "-----BEGIN RSA PRIVATE KEY-----\nMIIEpA" !!!! Don't forget a trailing \n
 #   webhookSecret:  "xxxxx`"
 
-githubSso: {} # https://github.com/settings/developers (Create a OAuth App)
+githubSso:
+  {} # https://github.com/settings/developers (Create a OAuth App)
   # clientId: "xx"
   # clientSecret: "xx"
 
@@ -344,7 +344,7 @@ clickhouse:
       dataPersistentVolume:
         enabled: true
         accessModes:
-        - "ReadWriteOnce"
+          - "ReadWriteOnce"
         storage: "30Gi"
 
 ## This value is only used when clickhouse.enabled is set to false
@@ -442,16 +442,16 @@ rabbitmq:
 
   definitions:
     policies: |-
-     {
-       "name": "ha-all",
-       "pattern": "^((?!celeryev.*).)*$",
-       "vhost": "/",
-       "definition": {
-         "ha-mode": "all",
-         "ha-sync-mode": "automatic",
-         "ha-sync-batch-size": 1
-       }
-     }
+      {
+        "name": "ha-all",
+        "pattern": "^((?!celeryev.*).)*$",
+        "vhost": "/",
+        "definition": {
+          "ha-mode": "all",
+          "ha-sync-mode": "automatic",
+          "ha-sync-batch-size": 1
+        }
+      }
 
 ## Prometheus Exporter / Metrics
 ##
