@@ -44,8 +44,8 @@ spec:
             sentry createuser \
               --no-input \
               --superuser \
-              --email {{ .Values.user.email }} \
-              --password {{ .Values.user.password }} || true; \
+              --email "{{ .Values.user.email }}" \
+              --password "{{ .Values.user.password }}" || true; \
             if [ $? -eq 0 ] || [ $? -eq 3 ]; then \
               exit 0; \
             else \
