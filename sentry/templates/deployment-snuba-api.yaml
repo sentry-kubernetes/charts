@@ -50,8 +50,8 @@ spec:
       {{- end }}
       containers:
       - name: {{ .Chart.Name }}-snuba
-        image: "{{ .Values.images.snuba.repository }}:{{ .Values.images.snuba.tag }}"
-        imagePullPolicy: {{ .Values.images.snuba.pullPolicy }}
+        image: "{{ template "snuba.image" . }}"
+        imagePullPolicy: {{ default "IfNotPresent" .Values.images.snuba.pullPolicy }}
         ports:
         - containerPort: {{ template "snuba.port" }}
         env:

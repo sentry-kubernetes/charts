@@ -39,7 +39,7 @@ spec:
       {{- end }}
       containers:
       - name: snuba-init
-        image: "{{ .Values.images.snuba.repository }}:{{ .Values.images.snuba.tag }}"
+        image: "{{ template "snuba.image" . }}"
         # command: ["./docker_entrypoint.sh", "replacer","--auto-offset-reset=latest","--max-batch-size", "3"]
         command:
           - /bin/bash

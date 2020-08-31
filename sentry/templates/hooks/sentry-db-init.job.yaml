@@ -37,7 +37,8 @@ spec:
       {{- end }}
       containers:
       - name: db-init-job
-        image: "{{ .Values.images.sentry.repository }}:{{ .Values.images.sentry.tag }}"
+        image: "{{ template "sentry.image" . }}"
+        imagePullPolicy: {{ default "IfNotPresent" .Values.images.sentry.pullPolicy }}
         command: ["sentry","upgrade","--noinput"]
         env:
         {{- if .Values.postgresql.enabled }}

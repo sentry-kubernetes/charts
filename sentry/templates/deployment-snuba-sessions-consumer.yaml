@@ -48,7 +48,7 @@ spec:
       {{- end }}
       containers:
       - name: {{ .Chart.Name }}-snuba
-        image: "{{ .Values.images.snuba.repository }}:{{ .Values.images.snuba.tag }}"
+        image: "{{ template "snuba.image" . }}"
         imagePullPolicy: {{ .Values.images.snuba.pullPolicy }}
         command: ["snuba", "consumer", "--storage", "sessions_raw", "--auto-offset-reset=latest", "--max-batch-time-ms", "750"]
         ports:
