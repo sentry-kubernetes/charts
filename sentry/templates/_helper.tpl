@@ -12,6 +12,22 @@
 {{- define "sentry.port" -}}9000{{- end -}}
 {{- define "snuba.port" -}}1218{{- end -}}
 
+{{- define "relay.image" -}}
+{{- default "getsentry/relay" .Values.images.relay.repository -}}
+:
+{{- default .Chart.AppVersion .Values.images.relay.tag -}}
+{{- end -}}
+{{- define "sentry.image" -}}
+{{- default "getsentry/sentry" .Values.images.sentry.repository -}}
+:
+{{- default .Chart.AppVersion .Values.images.sentry.tag -}}
+{{- end -}}
+{{- define "snuba.image" -}}
+{{- default "getsentry/snuba" .Values.images.snuba.repository -}}
+:
+{{- default .Chart.AppVersion .Values.images.snuba.tag -}}
+{{- end -}}
+
 {{/*
 Expand the name of the chart.
 */}}

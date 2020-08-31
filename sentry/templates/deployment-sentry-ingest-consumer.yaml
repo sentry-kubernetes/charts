@@ -51,7 +51,7 @@ spec:
       {{- end }}
       containers:
       - name: {{ .Chart.Name }}-ingest-consumer
-        image: "{{ .Values.images.sentry.repository }}:{{ .Values.images.sentry.tag }}"
+        image: "{{ template "sentry.image" . }}"
         imagePullPolicy: {{ .Values.images.sentry.pullPolicy }}
         command: ["sentry"]
         args:

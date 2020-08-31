@@ -50,8 +50,8 @@ spec:
       {{- end }}
       containers:
       - name: {{ .Chart.Name }}-cron
-        image: "{{ .Values.images.sentry.repository }}:{{ .Values.images.sentry.tag }}"
-        imagePullPolicy: {{ .Values.images.sentry.pullPolicy }}
+        image: "{{ template "sentry.image" . }}"
+        imagePullPolicy: {{ default "IfNotPresent" .Values.images.sentry.pullPolicy }}
         command: ["sentry"]
         args:
           - "run"
