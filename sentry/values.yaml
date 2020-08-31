@@ -8,17 +8,17 @@ user:
 images:
   sentry:
     repository: getsentry/sentry
-    tag: 20.7.2
+    tag: 20.8.0
     pullPolicy: IfNotPresent
     # imagePullSecrets: []
   snuba:
     repository: getsentry/snuba
-    tag: 20.7.2
+    tag: 20.8.0
     pullPolicy: IfNotPresent
     # imagePullSecrets: []
   relay:
     repository: getsentry/relay
-    tag: 20.7.2
+    tag: 20.8.0
     pullPolicy: IfNotPresent
     # imagePullSecrets: []
 
