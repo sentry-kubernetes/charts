@@ -45,8 +45,8 @@ spec:
             sentry createuser \
               --no-input \
               --superuser \
-              --email {{ .Values.user.email }} \
-              --password {{ .Values.user.password }} || true; \
+              --email "{{ .Values.user.email }}" \
+              --password "{{ .Values.user.password }}" || true; \
             if [ $? -eq 0 ] || [ $? -eq 3 ]; then \
               exit 0; \
             else \
@@ -57,8 +57,8 @@ spec:
         - name: POSTGRES_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: {{ include "sentry.postgresql.fullname" . }}
-              key: postgresql-password
+              name: {{ default (include "sentry.postgresql.fullname" .) .Values.postgresql.existingSecret }}
+              key: {{ default "postgresql-password" .Values.postgresql.existingSecretKey }}
         {{- end }}
         {{- if .Values.hooks.dbInit.env }}
 {{ toYaml .Values.hooks.dbInit.env | indent 8 }}

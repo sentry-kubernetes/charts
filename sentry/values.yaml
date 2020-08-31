@@ -39,6 +39,7 @@ relay:
     targetCPUUtilizationPercentage: 50
 
 sentry:
+  singleOrganization: true
   web:
     replicas: 1
     env: []
@@ -144,6 +145,15 @@ snuba:
     # podLabels: []
 
   sessionsConsumer:
+    replicas: 1
+    env: []
+    resources: {}
+    affinity: {}
+    nodeSelector: {}
+    # tolerations: []
+    # podLabels: []
+
+  transactionsConsumer:
     replicas: 1
     env: []
     resources: {}
