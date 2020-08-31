@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ template "sentry.fullname" . }}-sessions-consumer
+  name: {{ template "sentry.fullname" . }}-snuba-transactions-consumer
   labels:
     app: {{ template "sentry.fullname" . }}
     chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
@@ -12,35 +12,35 @@ spec:
     matchLabels:
         app: {{ template "sentry.fullname" . }}
         release: "{{ .Release.Name }}"
-        role: sessions-consumer
-  replicas: {{ .Values.snuba.sessionsConsumer.replicas }}
+        role: snuba-transactions-consumer
+  replicas: {{ .Values.snuba.transactionsConsumer.replicas }}
   template:
     metadata:
       annotations:
         checksum/snubaSettingsPy: {{ .Values.config.snubaSettingsPy | sha256sum }}
         checksum/config.yaml: {{ include (print $.Template.BasePath "/configmap-snuba.yaml") . | sha256sum }}
-        {{- if .Values.snuba.sessionsConsumer.annotations }}
-{{ toYaml .Values.snuba.sessionsConsumer.annotations | indent 8 }}
+        {{- if .Values.snuba.transactionsConsumer.annotations }}
+{{ toYaml .Values.snuba.transactionsConsumer.annotations | indent 8 }}
         {{- end }}
       labels:
         app: {{ template "sentry.fullname" . }}
         release: "{{ .Release.Name }}"
-        role: sessions-consumer
-        {{- if .Values.snuba.sessionsConsumer.podLabels }}
-{{ toYaml .Values.snuba.sessionsConsumer.podLabels | indent 8 }}
+        role: snuba-transactions-consumer
+        {{- if .Values.snuba.transactionsConsumer.podLabels }}
+{{ toYaml .Values.snuba.transactionsConsumer.podLabels | indent 8 }}
         {{- end }}
     spec:
       affinity:
-      {{- if .Values.snuba.sessionsConsumer.affinity }}
-{{ toYaml .Values.snuba.sessionsConsumer.affinity | indent 8 }}
+      {{- if .Values.snuba.transactionsConsumer.affinity }}
+{{ toYaml .Values.snuba.transactionsConsumer.affinity | indent 8 }}
       {{- end }}
-      {{- if .Values.snuba.sessionsConsumer.nodeSelector }}
+      {{- if .Values.snuba.transactionsConsumer.nodeSelector }}
       nodeSelector:
-{{ toYaml .Values.snuba.sessionsConsumer.nodeSelector | indent 8 }}
+{{ toYaml .Values.snuba.transactionsConsumer.nodeSelector | indent 8 }}
       {{- end }}
-      {{- if .Values.snuba.sessionsConsumer.tolerations }}
+      {{- if .Values.snuba.transactionsConsumer.tolerations }}
       tolerations:
-{{ toYaml .Values.snuba.sessionsConsumer.tolerations | indent 8 }}
+{{ toYaml .Values.snuba.transactionsConsumer.tolerations | indent 8 }}
       {{- end }}
       {{- if .Values.images.snuba.imagePullSecrets }}
       imagePullSecrets:
@@ -50,21 +50,21 @@ spec:
       - name: {{ .Chart.Name }}-snuba
         image: "{{ template "snuba.image" . }}"
         imagePullPolicy: {{ .Values.images.snuba.pullPolicy }}
-        command: ["snuba", "consumer", "--storage", "sessions_raw", "--auto-offset-reset=latest", "--max-batch-time-ms", "750"]
+        command: ["snuba", "consumer", "--storage", "transactions", "--consumer-group", "transactions_group", "--auto-offset-reset=latest", "--max-batch-time-ms", "750"]
         ports:
         - containerPort: {{ template "snuba.port" }}
         env:
         - name: SNUBA_SETTINGS
           value: /etc/snuba/settings.py
-{{- if .Values.snuba.sessionsConsumer.env }}
-{{ toYaml .Values.snuba.sessionsConsumer.env | indent 8 }}
+{{- if .Values.snuba.transactionsConsumer.env }}
+{{ toYaml .Values.snuba.transactionsConsumer.env | indent 8 }}
 {{- end }}
         volumeMounts:
         - mountPath: /etc/snuba
           name: config
           readOnly: true
         resources:
-{{ toYaml .Values.snuba.sessionsConsumer.resources | indent 12 }}
+{{ toYaml .Values.snuba.transactionsConsumer.resources | indent 12 }}
       volumes:
         - name: config
           configMap:
