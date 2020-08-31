@@ -138,7 +138,7 @@ data:
 
     # Instruct Sentry that this install intends to be run by a single organization
     # and thus various UI optimizations should be enabled.
-    SENTRY_SINGLE_ORGANIZATION = True
+    SENTRY_SINGLE_ORGANIZATION = {{ if .Values.sentry.singleOrganization }}True{{ else }}False{{ end }}
 
     SENTRY_OPTIONS["system.event-retention-days"] = int(env('SENTRY_EVENT_RETENTION_DAYS') or 90)
 
@@ -285,6 +285,9 @@ data:
         {
             feature: True
             for feature in (
+                {{- if not .Values.sentry.singleOrganization }}
+                "organizations:create",
+                {{ end -}}
                 "organizations:discover",
                 "organizations:events",
                 "organizations:global-views",

@@ -51,8 +51,8 @@ spec:
       {{- end }}
       containers:
       - name: {{ .Chart.Name }}-web
-        image: "{{ .Values.images.sentry.repository }}:{{ .Values.images.sentry.tag }}"
-        imagePullPolicy: {{ .Values.images.sentry.pullPolicy }}
+        image: "{{ template "sentry.image" . }}"
+        imagePullPolicy: {{ default "IfNotPresent" .Values.images.sentry.pullPolicy }}
         command: ["sentry", "run", "web"]
         ports:
         - containerPort: {{ template "sentry.port" }}
@@ -63,8 +63,8 @@ spec:
         - name: POSTGRES_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: {{ include "sentry.postgresql.fullname" . }}
-              key: postgresql-password
+              name: {{ default (include "sentry.postgresql.fullname" .) .Values.postgresql.existingSecret }}
+              key: {{ default "postgresql-password" .Values.postgresql.existingSecretKey }}
         {{- end }}
         {{ if eq .Values.filestore.backend "gcs" }}
         - name: GOOGLE_APPLICATION_CREDENTIALS
