@@ -21,8 +21,10 @@ data:
     {{- end }}
 
     symbolicator.enabled: {{ .Values.symbolicator.enabled }}
+    {{- if .Values.symbolicator.enabled }}
     symbolicator.options:
       url: "http://{{ template "sentry.fullname" . }}-symbolicator:3021"
+    {{- end }}
 
     {{- if .Values.github.appId }}
     github-app.id: {{ .Values.github.appId }}
