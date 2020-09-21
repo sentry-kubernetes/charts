@@ -109,7 +109,7 @@ sentry:
     # podLabels: []
     # commitBatchSize: 1
   cleanup:
-    enabled: false
+    enabled: true
     schedule: "0 0 * * *"
     days: 90
 
