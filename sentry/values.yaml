@@ -108,6 +108,10 @@ sentry:
     # tolerations: []
     # podLabels: []
     # commitBatchSize: 1
+  cleanup:
+    enabled: true
+    schedule: "0 0 * * *"
+    days: 90
 
 snuba:
   api:
