@@ -268,16 +268,9 @@ nginx:
 ingress:
   enabled: false
   # annotations:
-  #   kubernetes.io/tls-acme:
-  #   certmanager.k8s.io/issuer:
-  #
-  #   nginx.ingress.kubernetes.io/proxy-body-size:
+  #   If you are using nginx ingress controller, please use at least those 2 annotations
+  #   kubernetes.io/ingress.class: nginx
   #   nginx.ingress.kubernetes.io/use-regex: "true"
-  #
-  #   nginx.ingress.kubernetes.io/enable-cors: "true"
-  #   nginx.ingress.kubernetes.io/cors-allow-methods: "PUT,GET,POST,OPTIONS"
-  #   nginx.ingress.kubernetes.io/cors-allow-origin: "*"
-  #   nginx.ingress.kubernetes.io/cors-allow-credentials: "true"
   #
   # hostname:
   #
