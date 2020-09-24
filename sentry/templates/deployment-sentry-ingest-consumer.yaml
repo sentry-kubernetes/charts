@@ -52,7 +52,7 @@ spec:
       containers:
       - name: {{ .Chart.Name }}-ingest-consumer
         image: "{{ template "sentry.image" . }}"
-        imagePullPolicy: {{ .Values.images.sentry.pullPolicy }}
+        imagePullPolicy: {{ default "IfNotPresent" .Values.images.sentry.pullPolicy }}
         command: ["sentry"]
         args:
           - "run"
