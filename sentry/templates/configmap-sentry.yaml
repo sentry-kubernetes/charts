@@ -19,6 +19,7 @@ data:
     {{- if .Values.system.url }}
     system.url-prefix: {{ .Values.system.url }}
     {{- end }}
+    postprocess.use-cache-key: 1.0
 
     symbolicator.enabled: {{ .Values.symbolicator.enabled }}
     {{- if .Values.symbolicator.enabled }}
@@ -291,28 +292,69 @@ data:
                 {{- if not .Values.sentry.singleOrganization }}
                 "organizations:create",
                 {{ end -}}
+
+                "organizations:advanced-search",
+                "organizations:android-mappings",
+                "organizations:api-keys",
+                "organizations:boolean-search",
+                "organizations:related-events",
+                "organizations:alert-filters",
+                "organizations:custom-symbol-sources",
+                "organizations:data-forwarding",
                 "organizations:discover",
+                "organizations:discover-basic",
+                "organizations:discover-query",
+                "organizations:enterprise-perf",
+                "organizations:event-attachments",
                 "organizations:events",
                 "organizations:global-views",
+                "organizations:incidents",
+                "organizations:integrations-event-hooks",
                 "organizations:integrations-issue-basic",
                 "organizations:integrations-issue-sync",
+                "organizations:integrations-alert-rule",
+                "organizations:integrations-chat-unfurl",
+                "organizations:integrations-incident-management",
+                "organizations:integrations-vsts-limited-scopes",
+                "organizations:internal-catchall",
                 "organizations:invite-members",
-                "organizations:new-issue-ui",
+                "organizations:large-debug-files",
+                "organizations:monitors",
+                "organizations:onboarding",
+                "organizations:org-saved-searches",
+                "organizations:org-subdomains",
                 "organizations:performance-view",
-                "organizations:repos",
-                "organizations:require-2fa",
                 "organizations:relay",
-                "organizations:sentry10",
+                "organizations:rule-page",
+                "organizations:set-grouping-config",
+                "organizations:slack-migration",
                 "organizations:sso-basic",
                 "organizations:sso-rippling",
                 "organizations:sso-saml2",
-                "organizations:suggested-commits",
+                "organizations:symbol-sources",
+                "organizations:transaction-comparison",
+                "organizations:trends",
+                "organizations:usage-stats-graph",
+                "organizations:dynamic-issue-counts",
+                "organizations:releases-v2",
+                "organizations:artifacts-in-settings",
+                "organizations:transaction-events",
+                "organizations:invite-members-rate-limits",
+
+                "projects:alert-filters",
                 "projects:custom-inbound-filters",
                 "projects:data-forwarding",
                 "projects:discard-groups",
-                "projects:plugins",
+                "projects:issue-alerts-targeting",
+                "projects:minidump",
                 "projects:rate-limits",
+                "projects:sample-events",
                 "projects:servicehooks",
+                "projects:similarity-view",
+                "projects:similarity-indexing",
+                "projects:similarity-view-v2",
+                "projects:similarity-indexing-v2",
+                "projects:reprocessing-v2",
             )
         }
     )
