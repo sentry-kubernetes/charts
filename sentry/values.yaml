@@ -24,7 +24,7 @@ images:
 
 relay:
   replicas: 1
-  # this is required on the first installation, as sentry has to be initialized afterwards
+  # this is required on the first installation, as sentry has to be initialized first
   # recommended to set false for updating the helm chart afterwards,
   # as you will have some downtime on each update if it's a hook
   asHook: true
