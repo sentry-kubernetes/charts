@@ -14,7 +14,7 @@ data:
   config.yml: |-
     relay:
       mode: managed
-      upstream: "http://{{ template "sentry.fullname" . }}-web:{{ template "sentry.port" }}/"
+      upstream: "http://{{ template "sentry.fullname" . }}-web:{{ .Values.service.externalPort }} /"
       host: 0.0.0.0
       port: {{ template "relay.port" }}
 
