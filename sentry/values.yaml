@@ -258,7 +258,7 @@ slack: {}
 nginx:
   enabled: true
   containerPort: 8080
-  existingServerBlockConfigmap: sentry-nginx
+  existingServerBlockConfigmap: '{{ template "sentry.fullname" . }}'
   resources: {}
   replicaCount: 1
   service:
