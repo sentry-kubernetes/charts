@@ -49,11 +49,12 @@ data:
     {{- if .Values.slack.clientId }}
     slack.client-id: "{{ .Values.slack.clientId }}"
     slack.client-secret: "{{ .Values.slack.clientSecret }}"
-    slack.verification-token: "{{ .Values.slack.verificationToken }}"
     {{- if .Values.slack.legacyApp }}
     slack.legacy-app: True
+    slack.verification-token: "{{ .Values.slack.verificationToken }}"
     {{- else }}
     slack.legacy-app: False
+    slack.signing-secret: "{{ .Values.slack.signingSecret }}"
     {{ end }}
     {{ end }}
 
