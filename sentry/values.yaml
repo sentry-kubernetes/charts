@@ -5,6 +5,8 @@ user:
   email: admin@sentry.local
   password: aaaa
 
+asHook: true
+
 images:
   sentry:
     # repository: getsentry/sentry
@@ -28,7 +30,6 @@ relay:
   # this is required on the first installation, as sentry has to be initialized first
   # recommended to set false for updating the helm chart afterwards,
   # as you will have some downtime on each update if it's a hook
-  asHook: true
   env: []
   probeInitialDelaySeconds: 10
   resources: {}
@@ -145,7 +146,6 @@ snuba:
     # podLabels: []
 
   outcomesConsumer:
-    asHook: false
     replicas: 1
     env: []
     resources: {}
@@ -155,7 +155,6 @@ snuba:
     # podLabels: []
 
   sessionsConsumer:
-    asHook: false
     replicas: 1
     env: []
     resources: {}
@@ -174,7 +173,6 @@ snuba:
     # podLabels: []
 
   replacer:
-    asHook: false
     env: []
     resources: {}
     affinity: {}
