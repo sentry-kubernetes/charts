@@ -253,10 +253,11 @@ slack: {}
 #   clientId:
 #   clientSecret:
 #   verificationToken:
+#   signingSecret:
 #   # channels.* of Slack API is deprecated.
-#   # All new slack apps created after June 10th, 2020 will give error,
-#   # you need to specify `False` if you want to use the Slack App created after that.
-#   # ref : https://github.com/getsentry/sentry/pull/19446
+#   If legacyApp is set to `true`, then define the verificationToken property
+#   If legacyApp is set to `false`, then define the signingSecret property
+#   Reference -> https://develop.sentry.dev/integrations/slack/
 #   legacyApp:
 
 nginx:
