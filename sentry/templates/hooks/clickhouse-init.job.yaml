@@ -4,7 +4,7 @@
 {{- $clickhouseClusterName := include "sentry.clickhouse.cluster.name" . -}}
 {{- $tables := "errors groupassignee groupedmessage outcomes_hourly outcomes_mv_hourly outcomes_raw sentry sessions_hourly sessions_hourly_mv sessions_raw transactions" -}}
 {{- $dropQuery := "DROP TABLE IF EXISTS ${tbl}_dist" -}}
-{{- $createQuery := $clickhouseClusterName | printf "CREATE TABLE ${tbl}_dist AS ${tbl}_local ENGINE = Distributed(%s, default, ${tbl}_local, rand())" -}}
+{{- $createQuery := $clickhouseClusterName | printf "CREATE TABLE ${tbl}_dist AS ${tbl}_local ENGINE = Distributed('%s', default, ${tbl}_local, rand())" -}}
 apiVersion: batch/v1
 kind: Job
 metadata:
