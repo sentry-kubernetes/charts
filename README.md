@@ -15,6 +15,12 @@ Big thanks to the maintainers of the [deprecated chart](https://github.com/helm/
 For now the full list of values is not documented but you can get inspired by the values.yaml specific to each directory.
 
 
+## Upgrading from 5.x.x version of this Chart to 6.0.0
+
+- The sentry.configYml value is now in a real yaml format
+- If you were previously using `relay.asHook`, the value is now `asHook`
+
+
 ## Upgrading from 4.x.x version of this Chart to 5.0.0
 
 As Relay is now part of this chart your need to make sure you enable either Nginx or the Ingress. Please read the next paragraph for more informations.
@@ -27,6 +33,9 @@ By default, NGINX is enabled to allow sending the incoming requests to [Sentry R
 
 Note: if you are using NGINX Ingress, please set this annotation on your ingress : nginx.ingress.kubernetes.io/use-regex: "true"
 
+## Clichouse warning
+
+Snuba only supports a UTC timezone for Clickhouse. Please keep the initial value!
 
 ## Upgrading from 3.1.0 version of this Chart to 4.0.0
 
