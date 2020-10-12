@@ -111,7 +111,9 @@ data:
       {{- end }}
     {{ end }}
 
-{{ .Values.config.configYml | indent 4 }}
+    {{- if .Values.config.configYml }}
+{{ .Values.config.configYml | toYaml | indent 4 }}
+    {{- end }}
   sentry.conf.py: |-
     from sentry.conf.server import *  # NOQA
     from distutils.util import strtobool
