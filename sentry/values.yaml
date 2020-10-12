@@ -5,6 +5,10 @@ user:
   email: admin@sentry.local
   password: aaaa
 
+# this is required on the first installation, as sentry has to be initialized first
+# recommended to set false for updating the helm chart afterwards,
+# as you will have some downtime on each update if it's a hook
+# deploys relay & snuba consumers as post hooks
 asHook: true
 
 images:
@@ -27,9 +31,6 @@ images:
 relay:
   replicas: 1
   # mode: managed
-  # this is required on the first installation, as sentry has to be initialized first
-  # recommended to set false for updating the helm chart afterwards,
-  # as you will have some downtime on each update if it's a hook
   env: []
   probeInitialDelaySeconds: 10
   resources: {}
