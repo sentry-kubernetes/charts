@@ -63,6 +63,9 @@ sentry:
       maxReplicas: 5
       targetCPUUtilizationPercentage: 50
 
+  features:
+    orgSubdomains: true
+
   worker:
     replicas: 3
     # concurrency: 4
