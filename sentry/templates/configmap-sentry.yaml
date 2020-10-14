@@ -295,6 +295,9 @@ data:
                 "organizations:create",
                 {{ end -}}
 
+                {{- if .Values.sentry.features.orgSubdomains }}
+                "organizations:org-subdomains",
+                {{ end -}}
                 "organizations:advanced-search",
                 "organizations:android-mappings",
                 "organizations:api-keys",
@@ -324,7 +327,6 @@ data:
                 "organizations:monitors",
                 "organizations:onboarding",
                 "organizations:org-saved-searches",
-                "organizations:org-subdomains",
                 "organizations:performance-view",
                 "organizations:relay",
                 "organizations:rule-page",
