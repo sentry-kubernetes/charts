@@ -5,22 +5,51 @@ user:
   email: admin@sentry.local
   password: aaaa
 
+# this is required on the first installation, as sentry has to be initialized first
+# recommended to set false for updating the helm chart afterwards,
+# as you will have some downtime on each update if it's a hook
+# deploys relay & snuba consumers as post hooks
+asHook: true
+
 images:
   sentry:
-    repository: getsentry/sentry
-    tag: cc9f7d1
-    pullPolicy: IfNotPresent
-    # imagePullSecrets: []
+    # repository: getsentry/sentry
+    # tag: Chart.AppVersion
+    # pullPolicy: IfNotPresent
+    imagePullSecrets: []
   snuba:
-    repository: getsentry/snuba
-    tag: 882be95ba0d462a29759a49b2e9aad0c1ce111a9
-    pullPolicy: IfNotPresent
-    # imagePullSecrets: []
+    # repository: getsentry/snuba
+    # tag: Chart.AppVersion
+    # pullPolicy: IfNotPresent
+    imagePullSecrets: []
+  relay:
+    # repository: getsentry/relay
+    # tag: Chart.AppVersion
+    # pullPolicy: IfNotPresent
+    imagePullSecrets: []
+
+relay:
+  replicas: 1
+  # mode: managed
+  env: []
+  probeInitialDelaySeconds: 10
+  resources: {}
+  affinity: {}
+  nodeSelector: {}
+  # tolerations: []
+  # podLabels: []
+
+  autoscaling:
+    enabled: false
+    minReplicas: 2
+    maxReplicas: 5
+    targetCPUUtilizationPercentage: 50
 
 sentry:
+  singleOrganization: true
   web:
     replicas: 1
-    env: {}
+    env: []
     probeInitialDelaySeconds: 10
     resources: {}
     affinity: {}
@@ -34,10 +63,13 @@ sentry:
       maxReplicas: 5
       targetCPUUtilizationPercentage: 50
 
+  features:
+    orgSubdomains: true
+
   worker:
     replicas: 3
     # concurrency: 4
-    env: {}
+    env: []
     resources: {}
     affinity: {}
     nodeSelector: {}
@@ -52,8 +84,26 @@ sentry:
       maxReplicas: 5
       targetCPUUtilizationPercentage: 50
 
+  ingestConsumer:
+    replicas: 1
+    # concurrency: 4
+    env: []
+    resources: {}
+    affinity: {}
+    nodeSelector: {}
+    # tolerations: []
+    # podLabels: []
+
+    # it's better to use prometheus adapter and scale based on
+    # the size of the rabbitmq queue
+    autoscaling:
+      enabled: false
+      minReplicas: 1
+      maxReplicas: 3
+      targetCPUUtilizationPercentage: 50
+
   cron:
-    env: {}
+    env: []
     resources: {}
     affinity: {}
     nodeSelector: {}
@@ -61,17 +111,22 @@ sentry:
     # podLabels: []
   postProcessForward:
     replicas: 1
-    env: {}
+    env: []
     resources: {}
     affinity: {}
     nodeSelector: {}
     # tolerations: []
     # podLabels: []
+    # commitBatchSize: 1
+  cleanup:
+    enabled: true
+    schedule: "0 0 * * *"
+    days: 90
 
 snuba:
   api:
     replicas: 1
-    env: {}
+    env: []
     probeInitialDelaySeconds: 10
     resources: {}
     affinity: {}
@@ -87,7 +142,7 @@ snuba:
 
   consumer:
     replicas: 1
-    env: {}
+    env: []
     resources: {}
     affinity: {}
     nodeSelector: {}
@@ -96,7 +151,7 @@ snuba:
 
   outcomesConsumer:
     replicas: 1
-    env: {}
+    env: []
     resources: {}
     affinity: {}
     nodeSelector: {}
@@ -105,7 +160,16 @@ snuba:
 
   sessionsConsumer:
     replicas: 1
-    env: {}
+    env: []
+    resources: {}
+    affinity: {}
+    nodeSelector: {}
+    # tolerations: []
+    # podLabels: []
+
+  transactionsConsumer:
+    replicas: 1
+    env: []
     resources: {}
     affinity: {}
     nodeSelector: {}
@@ -113,7 +177,7 @@ snuba:
     # podLabels: []
 
   replacer:
-    env: {}
+    env: []
     resources: {}
     affinity: {}
     nodeSelector: {}
@@ -121,15 +185,16 @@ snuba:
     # podLabels: []
 
   dbInitJob:
-    env: {}
+    env: []
 
   migrateJob:
-    env: {}
+    env: []
 
 
 hooks:
   enabled: true
   dbInit:
+    env: []
     resources:
       limits:
         memory: 2048Mi
@@ -147,8 +212,10 @@ hooks:
 system:
   url: ""
   adminEmail: ""
-  secretKey: 'icLq77rCyY_qrMMpXa6TQNjkDV6mU!c'
-  public: false #  This should only be used if you’re installing Sentry behind your company’s firewall.
+  ## This should only be used if you’re installing Sentry behind your company’s firewall.
+  public: false
+  ## This will generate one for you (it's must be given upon updates)
+  #secretKey: "xx"
 
 mail:
   backend: dummy # smtp
@@ -192,13 +259,29 @@ slack: {}
 #   clientId:
 #   clientSecret:
 #   verificationToken:
+#   signingSecret:
+#   # channels.* of Slack API is deprecated.
+#   If legacyApp is set to `true`, then define the verificationToken property
+#   If legacyApp is set to `false`, then define the signingSecret property
+#   Reference -> https://develop.sentry.dev/integrations/slack/
+#   legacyApp:
+
+nginx:
+  enabled: true
+  containerPort: 8080
+  existingServerBlockConfigmap: '{{ template "sentry.fullname" . }}'
+  resources: {}
+  replicaCount: 1
+  service:
+    type: ClusterIP
+    port: 80
 
 ingress:
   enabled: false
   # annotations:
-  #   kubernetes.io/tls-acme:
-  #   certmanager.k8s.io/issuer:
-  #   nginx.ingress.kubernetes.io/proxy-body-size:
+  #   If you are using nginx ingress controller, please use at least those 2 annotations
+  #   kubernetes.io/ingress.class: nginx
+  #   nginx.ingress.kubernetes.io/use-regex: "true"
   #
   # hostname:
   #
@@ -257,18 +340,19 @@ filestore:
   #  default_acl:
 
 config:
-  configYml: |
-    # No YAML Extension Config Given
+  # No YAML Extension Config Given
+  configYml: {}
   sentryConfPy: |
     # No Python Extension Config Given
   snubaSettingsPy: |
     # No Python Extension Config Given
-
+  relay: |
+    # No YAML relay config given
 
 clickhouse:
   enabled: true
   clickhouse:
-    imageVersion: "19.16"
+    imageVersion: "19.17"
     configmap:
       remote_servers:
         internal_replication: true
@@ -279,6 +363,19 @@ clickhouse:
         accessModes:
         - "ReadWriteOnce"
         storage: "30Gi"
+
+## This value is only used when clickhouse.enabled is set to false
+##
+externalClickhouse:
+  ## Hostname or ip address of external clickhouse
+  ##
+  host: "clickhouse"
+  tcpPort: 9000
+  ## Cluster name, can be found in config
+  ## (https://clickhouse.tech/docs/en/operations/server-configuration-parameters/settings/#server-settings-remote-servers)
+  ## or by executing `select * from system.clusters`
+  ##
+  # clusterName: test_shard_localhost
 
 kafka:
   enabled: true
@@ -292,43 +389,57 @@ kafka:
   service:
     port: 9092
 
+## This value is only used when kafka.enabled is set to false
+##
+externalKafka:
+  ## Hostname or ip address of external kafka
+  ##
+  # host: "kafka-confluent"
+  port: 9092
+
 redis:
-  ## Required if the Redis component of this chart is disabled. (Existing Redis)
-  #
-  hostOverride: ""
   enabled: true
   nameOverride: sentry-redis
   usePassword: false
-  # Only used when internal redis is disabled
-  # host: redis
-  # Just omit the password field if your redis cluster doesn't use password
+  ## Just omit the password field if your redis cluster doesn't use password
   # password: redis
-  # port: 6379
   master:
     persistence:
       enabled: true
 
+## This value is only used when redis.enabled is set to false
+##
+externalRedis:
+  ## Hostname or ip address of external redis cluster
+  ##
+  # host: "redis"
+  port: 6379
+  ## Just omit the password field if your redis cluster doesn't use password
+  # password: redis
+
 postgresql:
-  ## Required if the Postgresql component of this chart is disabled. (Existing Postgres)
-  #
-  hostOverride: ""
   enabled: true
   nameOverride: sentry-postgresql
   postgresqlUsername: postgres
   postgresqlDatabase: sentry
-  # Only used when internal PG is disabled
-  # postgresqlHost: postgres
-  # postgresqlPassword: postgres
-  # postgresqlPort: 5432
-  # postgresSslMode: require
   replication:
     enabled: false
     slaveReplicas: 2
     synchronousCommit: "on"
     numSynchronousReplicas: 1
 
+## This value is only used when postgresql.enabled is set to false
+##
+externalPostgresql:
+  # host: postgres
+  port: 5432
+  username: postgres
+  # password: postgres
+  database: sentry
+  # sslMode: require
+
 rabbitmq:
-  ## If disabled, Redis will be used instead as the broker. 
+  ## If disabled, Redis will be used instead as the broker.
   enabled: true
   forceBoot: true
   replicaCount: 3
@@ -339,7 +450,7 @@ rabbitmq:
 
   podDisruptionBudget:
     minAvailable: 1
-  
+
   persistentVolume:
     enabled: true
   resources: {}
@@ -358,3 +469,63 @@ rabbitmq:
          "ha-sync-batch-size": 1
        }
      }
+
+## Prometheus Exporter / Metrics
+##
+metrics:
+  enabled: false
+
+  ## Configure extra options for liveness and readiness probes
+  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/#configure-probes)
+  livenessProbe:
+    enabled: true
+    initialDelaySeconds: 30
+    periodSeconds: 5
+    timeoutSeconds: 2
+    failureThreshold: 3
+    successThreshold: 1
+  readinessProbe:
+    enabled: true
+    initialDelaySeconds: 30
+    periodSeconds: 5
+    timeoutSeconds: 2
+    failureThreshold: 3
+    successThreshold: 1
+
+  ## Metrics exporter resource requests and limits
+  ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
+  resources: {}
+  #   limits:
+  #     cpu: 100m
+  #     memory: 100Mi
+  #   requests:
+  #     cpu: 100m
+  #     memory: 100Mi
+
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+  # schedulerName:
+  # Optional extra labels for pod, i.e. redis-client: "true"
+  # podLabels: []
+  service:
+    type: ClusterIP
+    labels: {}
+
+  image:
+    repository: prom/statsd-exporter
+    tag: v0.17.0
+    pullPolicy: IfNotPresent
+
+  # Enable this if you're using https://github.com/coreos/prometheus-operator
+  serviceMonitor:
+    enabled: false
+    additionalLabels: {}
+    namespace: ""
+    namespaceSelector: {}
+    # Default: scrape .Release.Namespace only
+    # To scrape all, use the following:
+    # namespaceSelector:
+    #   any: true
+    scrapeInterval: 30s
+    # honorLabels: true

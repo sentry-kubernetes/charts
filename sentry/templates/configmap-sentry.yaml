@@ -1,6 +1,6 @@
 {{- $redisHost := include "sentry.redis.host" . -}}
 {{- $redisPort := include "sentry.redis.port" . -}}
-{{- $redisPass := .Values.redis.password -}}
+{{- $redisPass := include "sentry.redis.password" . -}}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -15,14 +15,17 @@ data:
     {{- if .Values.system.adminEmail }}
     system.admin-email: {{ .Values.system.adminEmail }}
     {{- end }}
-    system.secret-key: {{ .Values.system.secretKey }}
+    system.secret-key: {{ .Values.system.secretKey | default (randAlphaNum 50) | quote }}
     {{- if .Values.system.url }}
     system.url-prefix: {{ .Values.system.url }}
     {{- end }}
+    postprocess.use-cache-key: 1.0
 
     symbolicator.enabled: {{ .Values.symbolicator.enabled }}
+    {{- if .Values.symbolicator.enabled }}
     symbolicator.options:
       url: "http://{{ template "sentry.fullname" . }}-symbolicator:3021"
+    {{- end }}
 
     {{- if .Values.github.appId }}
     github-app.id: {{ .Values.github.appId }}
@@ -47,7 +50,13 @@ data:
     {{- if .Values.slack.clientId }}
     slack.client-id: "{{ .Values.slack.clientId }}"
     slack.client-secret: "{{ .Values.slack.clientSecret }}"
+    {{- if .Values.slack.legacyApp }}
+    slack.legacy-app: True
     slack.verification-token: "{{ .Values.slack.verificationToken }}"
+    {{- else }}
+    slack.legacy-app: False
+    slack.signing-secret: "{{ .Values.slack.signingSecret }}"
+    {{ end }}
     {{ end }}
 
     ################
@@ -102,7 +111,9 @@ data:
       {{- end }}
     {{ end }}
 
-{{ .Values.config.configYml | indent 4 }}
+    {{- if .Values.config.configYml }}
+{{ .Values.config.configYml | toYaml | indent 4 }}
+    {{- end }}
   sentry.conf.py: |-
     from sentry.conf.server import *  # NOQA
     from distutils.util import strtobool
@@ -110,14 +121,14 @@ data:
     DATABASES = {
         "default": {
             "ENGINE": "sentry.db.postgres",
-            "NAME": "{{ .Values.postgresql.postgresqlDatabase }}",
-            "USER": "{{ .Values.postgresql.postgresqlUsername }}",
-            "PASSWORD": os.environ.get("POSTGRES_PASSWORD", "{{ .Values.postgresql.postgresqlPassword }}"),
-            "HOST": "{{ default ( include "sentry.postgresql.host" .) .Values.postgresql.hostOverride }}",
+            "NAME": "{{ include "sentry.postgresql.database" . }}",
+            "USER": "{{ include "sentry.postgresql.username" . }}",
+            "PASSWORD": os.environ.get("POSTGRES_PASSWORD", "{{ include "sentry.postgresql.password" . }}"),
+            "HOST": "{{ include "sentry.postgresql.host" . }}",
             "PORT": {{ template "sentry.postgresql.port" . }},
-            {{- if .Values.postgresql.postgresSslMode }}
+            {{- if .Values.externalPostgresql.sslMode }}
             'OPTIONS': {
-                'sslmode': '{{ .Values.postgresql.postgresSslMode }}',
+                'sslmode': '{{ .Values.externalPostgresql.sslMode }}',
             },
             {{- end }}
         }
@@ -133,7 +144,7 @@ data:
 
     # Instruct Sentry that this install intends to be run by a single organization
     # and thus various UI optimizations should be enabled.
-    SENTRY_SINGLE_ORGANIZATION = True
+    SENTRY_SINGLE_ORGANIZATION = {{ if .Values.sentry.singleOrganization }}True{{ else }}False{{ end }}
 
     SENTRY_OPTIONS["system.event-retention-days"] = int(env('SENTRY_EVENT_RETENTION_DAYS') or 90)
 
@@ -144,15 +155,15 @@ data:
     # See https://docs.getsentry.com/on-premise/server/queue/ for more
     # information on configuring your queue broker and workers. Sentry relies
     # on a Python framework called Celery to manage queues.
-    
+
     {{- if or (.Values.rabbitmq.enabled) (.Values.rabbitmq.host) }}
     BROKER_URL = os.environ.get("BROKER_URL", "amqp://{{ .Values.rabbitmq.rabbitmqUsername }}:{{ .Values.rabbitmq.rabbitmqPassword }}@{{ template "sentry.rabbitmq.host" . }}:5672//")
-    {{- else if .Values.redis.usePassword }}
+    {{- else if $redisPass }}
     BROKER_URL = os.environ.get("BROKER_URL", "redis://:{{ $redisPass }}@{{ $redisHost }}:{{ $redisPort }}/0")
     {{- else }}
     BROKER_URL = os.environ.get("BROKER_URL", "redis://{{ $redisHost }}:{{ $redisPort }}/0")
     {{- end }}
-      
+
     #########
     # Cache #
     #########
@@ -280,26 +291,74 @@ data:
         {
             feature: True
             for feature in (
+                {{- if not .Values.sentry.singleOrganization }}
+                "organizations:create",
+                {{ end -}}
+
+                {{- if .Values.sentry.features.orgSubdomains }}
+                "organizations:org-subdomains",
+                {{ end -}}
+                "organizations:advanced-search",
+                "organizations:android-mappings",
+                "organizations:api-keys",
+                "organizations:boolean-search",
+                "organizations:related-events",
+                "organizations:alert-filters",
+                "organizations:custom-symbol-sources",
+                "organizations:data-forwarding",
                 "organizations:discover",
+                "organizations:discover-basic",
+                "organizations:discover-query",
+                "organizations:enterprise-perf",
+                "organizations:event-attachments",
                 "organizations:events",
                 "organizations:global-views",
+                "organizations:incidents",
+                "organizations:integrations-event-hooks",
                 "organizations:integrations-issue-basic",
                 "organizations:integrations-issue-sync",
+                "organizations:integrations-alert-rule",
+                "organizations:integrations-chat-unfurl",
+                "organizations:integrations-incident-management",
+                "organizations:integrations-vsts-limited-scopes",
+                "organizations:internal-catchall",
                 "organizations:invite-members",
-                "organizations:new-issue-ui",
-                "organizations:repos",
-                "organizations:require-2fa",
-                "organizations:sentry10",
+                "organizations:large-debug-files",
+                "organizations:monitors",
+                "organizations:onboarding",
+                "organizations:org-saved-searches",
+                "organizations:performance-view",
+                "organizations:relay",
+                "organizations:rule-page",
+                "organizations:set-grouping-config",
+                "organizations:slack-migration",
                 "organizations:sso-basic",
                 "organizations:sso-rippling",
                 "organizations:sso-saml2",
-                "organizations:suggested-commits",
+                "organizations:symbol-sources",
+                "organizations:transaction-comparison",
+                "organizations:trends",
+                "organizations:usage-stats-graph",
+                "organizations:dynamic-issue-counts",
+                "organizations:releases-v2",
+                "organizations:artifacts-in-settings",
+                "organizations:transaction-events",
+                "organizations:invite-members-rate-limits",
+
+                "projects:alert-filters",
                 "projects:custom-inbound-filters",
                 "projects:data-forwarding",
                 "projects:discard-groups",
-                "projects:plugins",
+                "projects:issue-alerts-targeting",
+                "projects:minidump",
                 "projects:rate-limits",
+                "projects:sample-events",
                 "projects:servicehooks",
+                "projects:similarity-view",
+                "projects:similarity-indexing",
+                "projects:similarity-view-v2",
+                "projects:similarity-indexing-v2",
+                "projects:reprocessing-v2",
             )
         }
     )
@@ -328,5 +387,19 @@ data:
 
     # BITBUCKET_CONSUMER_KEY = 'YOUR_BITBUCKET_CONSUMER_KEY'
     # BITBUCKET_CONSUMER_SECRET = 'YOUR_BITBUCKET_CONSUMER_SECRET'
+
+    #########
+    # Relay #
+    #########
+    SENTRY_RELAY_WHITELIST_PK = []
+    SENTRY_RELAY_OPEN_REGISTRATION = True
+
+{{- if .Values.metrics.enabled }}
+    SENTRY_METRICS_BACKEND = 'sentry.metrics.statsd.StatsdMetricsBackend'
+    SENTRY_METRICS_OPTIONS = {
+        'host': '{{ template "sentry.fullname" . }}-metrics',
+        'port': 9125,
+    }
+{{- end }}
 
 {{ .Values.config.sentryConfPy | indent 4 }}

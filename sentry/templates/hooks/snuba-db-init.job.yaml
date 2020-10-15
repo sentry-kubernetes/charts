@@ -39,18 +39,23 @@ spec:
       {{- end }}
       containers:
       - name: snuba-init
-        image: "{{ .Values.images.snuba.repository }}:{{ .Values.images.snuba.tag }}"
+        image: "{{ template "snuba.image" . }}"
         # command: ["./docker_entrypoint.sh", "replacer","--auto-offset-reset=latest","--max-batch-size", "3"]
         command:
           - /bin/bash
           - -ec
           - >-
+            {{- if .Values.clickhouse.enabled }}
             for ((i=0;i<{{ .Values.clickhouse.clickhouse.replicas }};i++)); do
               export CLICKHOUSE_HOST={{ $clickhouseHost }}-$i.{{ $clickhouseHost }}-headless;
               snuba bootstrap --force;
               export CLICKHOUSE_HOST={{ $clickhouseHost }}-replica-$i.{{ $clickhouseHost }}-replica-headless;
               snuba bootstrap --force;
             done
+            {{- else }}
+            export CLICKHOUSE_HOST={{ $clickhouseHost }};
+            snuba bootstrap --force;
+            {{- end }}
         env:
         - name: LOG_LEVEL
           value: debug

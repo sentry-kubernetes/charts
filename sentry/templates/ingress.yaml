@@ -1,5 +1,5 @@
 {{- if .Values.ingress.enabled -}}
-apiVersion: extensions/v1beta1
+apiVersion: {{- if .Capabilities.APIVersions.Has "networking.k8s.io/v1beta1" }} networking.k8s.io/v1beta1 {{- else }} extensions/v1beta1 {{- end }}
 kind: Ingress
 metadata:
  name: {{ template "sentry.fullname" . }}
@@ -17,10 +17,25 @@ spec:
     - host: {{ .Values.ingress.hostname }}
       http:
         paths:
+    {{- if .Values.nginx.enabled }}
+          - path: {{ default "/" .Values.ingress.path | quote }}
+            backend:
+              serviceName: {{ template "sentry.fullname" . }}-nginx
+              servicePort: {{ .Values.nginx.service.port }}
+    {{- else }}
+          - path: {{ default "/" .Values.ingress.path }}api/store
+            backend:
+              serviceName: {{ template "sentry.fullname" . }}-relay
+              servicePort: {{ template "relay.port" . }}
+          - path: {{ default "/" .Values.ingress.path }}api/[1-9][0-9]*/(.*)
+            backend:
+              serviceName: {{ template "sentry.fullname" . }}-relay
+              servicePort: {{ template "relay.port" . }}
           - path: {{ default "/" .Values.ingress.path | quote }}
             backend:
               serviceName: {{ template "sentry.fullname" . }}-web
               servicePort: {{ .Values.service.externalPort }}
+    {{- end }}
 {{- if .Values.ingress.tls }}
   tls:
 {{ toYaml .Values.ingress.tls | indent 4 }}

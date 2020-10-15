@@ -1,3 +1,4 @@
+{{- $redisPass := include "sentry.redis.password" . -}}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -10,38 +11,28 @@ metadata:
 data:
   settings.py: |
     import os
-    from typing import Any, Mapping, Sequence
+
+    from snuba.settings import *
 
     env = os.environ.get
 
     DEBUG = env("DEBUG", "0").lower() in ("1", "true")
 
-    {{- if .Values.kafka.enabled }}
-    DEFAULT_BROKERS = [{{ printf "%s:%s" (include "sentry.kafka.host" .) (include "sentry.kafka.port" .) | quote }}]
-    {{- end }}
+    # Clickhouse Options
+    CLUSTERS[0]["host"] = env("CLICKHOUSE_HOST", {{ include "sentry.clickhouse.host" . | quote }})
+    CLUSTERS[0]["port"] = int(env("CLICKHOUSE_PORT", {{ include "sentry.clickhouse.port" . }}))
+    # FIXME: Snuba will be able to migrate multi node clusters in the future
+    CLUSTERS[0]["single_node"] = env("CLICKHOUSE_SINGLE_NODE", "false").lower() == "true"
 
+    # Redis Options
     REDIS_HOST = {{ include "sentry.redis.host" . | quote }}
     REDIS_PORT = {{ include "sentry.redis.port" . }}
-    {{- if .Values.redis.password }}
-    REDIS_PASSWORD = {{ .Values.redis.password | quote }}
+    {{- if $redisPass }}
+    REDIS_PASSWORD = {{ $redisPass | quote }}
     {{- end }}
     REDIS_DB = int(env("REDIS_DB", 1))
-    USE_REDIS_CLUSTER = False
 
-    # Dogstatsd Options
-    DOGSTATSD_HOST = None
-    DOGSTATSD_PORT = None
-
-    # Clickhouse Options
-    CLUSTERS: Sequence[Mapping[str, Any]] = [
-        {
-            "host": env("CLICKHOUSE_HOST", {{ include "sentry.clickhouse.host" . | quote }}),
-            "port": int(env("CLICKHOUSE_PORT", {{ include "sentry.clickhouse.port" . }})),
-            "http_port": int(env("CLICKHOUSE_HTTP_PORT", 8123)),
-            "storage_sets": {"events", "migrations", "outcomes", "querylog", "sessions", "transactions"},
-            # FIXME: Snuba will be able to migrate multi node clusters in the future
-            "single_node": env("CLICKHOUSE_SINGLE_NODE", "false").lower() == "true"
-        },
-    ]
+    # Processor/Writer Options
+    DEFAULT_BROKERS = [{{ printf "%s:%s" (include "sentry.kafka.host" .) (include "sentry.kafka.port" .) | quote }}]
 
 {{ .Values.config.snubaSettingsPy | indent 4 }}

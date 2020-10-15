@@ -26,3 +26,50 @@ If Redis auth enabled:
 
 If Redis auth is disabled:
 > helm upgrade -n <Sentry namespace> <Sentry Release> .
+
+## Configuration
+
+The following table lists the configurable parameters of the Sentry chart and their default values.
+
+Parameter                          | Description                                                                                                | Default
+:--------------------------------- | :--------------------------------------------------------------------------------------------------------- | :---------------------------------------------------
+`user.create` | if `true`, creates a default admin user defined from `email` and `password` | `true`
+`user.email` | Admin user email | `admin@sentry.local`
+`user.password` | Admin user password| `aaaa`
+`ingress.enabled` | Enabling Ingress | `false`
+`nginx.enabled` | Enabling NGINX | `true`
+`metrics.enabled`| if `true`, enable Prometheus metrics | `false`
+`metrics.image.repository`         | Metrics exporter image repository                                                                          | `prom/statsd-exporter`
+`metrics.image.tag`                | Metrics exporter image tag                                                                                 | `v0.10.5`
+`metrics.image.PullPolicy`         | Metrics exporter image pull policy                                                                         | `IfNotPresent`
+`metrics.nodeSelector`| Node labels for metrics pod assignment| `{}`
+`metrics.tolerations` | Toleration labels for metrics pod assignment| `[]`
+`metrics.affinity` | Affinity settings for metrics | `{}`
+`metrics.resources`| Metrics resource requests/limit| `{}`
+`metrics.service.annotations` | annotations for Prometheus metrics service | `{}`
+`metrics.service.clusterIP` | cluster IP address to assign to service (set to `"-"` to pass an empty value) | `nil`
+`metrics.service.omitClusterIP` | (Deprecated) To omit the `clusterIP` from the metrics service | `false`
+`metrics.service.externalIPs` | Prometheus metrics service external IP addresses | `[]`
+`metrics.service.additionalLabels` | labels for metrics service | `{}`
+`metrics.service.loadBalancerIP` | IP address to assign to load balancer (if supported) | `""`
+`metrics.service.loadBalancerSourceRanges` | list of IP CIDRs allowed access to load balancer (if supported) | `[]`
+`metrics.service.servicePort` | Prometheus metrics service port | `9913`
+`metrics.service.type` | type of Prometheus metrics service to create | `ClusterIP`
+`metrics.serviceMonitor.enabled` | Set this to `true` to create ServiceMonitor for Prometheus operator | `false`
+`metrics.serviceMonitor.additionalLabels` | Additional labels that can be used so ServiceMonitor will be discovered by Prometheus | `{}`
+`metrics.serviceMonitor.honorLabels` | honorLabels chooses the metric's labels on collisions with target labels. | `false`
+`metrics.serviceMonitor.namespace` | namespace where servicemonitor resource should be created | `the same namespace as sentry`
+`metrics.serviceMonitor.scrapeInterval` | interval between Prometheus scraping | `30s`
+`system.secretKey` | secret key for the session cookie ([documentation](https://develop.sentry.dev/config/#general)) | `nil`
+
+## NGINX and/or Ingress
+
+By default, NGINX is enabled to allow sending the incoming requests to [Sentry Relay](https://getsentry.github.io/relay/) or the Django backend depending on the path. When Sentry is meant to be exposed outside of the Kubernetes cluster, it is recommended to disable NGINX and let the Ingress do the same. It's recommended to go with the go to Ingress Controller, [NGINX Ingress](https://kubernetes.github.io/ingress-nginx/) but others should work as well.
+
+## Sentry secret key
+
+For your security, the [`system.secret-key`](https://develop.sentry.dev/config/#general) is generated for you on the first installation. Another one will be regenerated on each upgrade invalidating all the current sessions unless it's been provided. The value is stored in the `sentry-sentry` configmap.
+
+```
+helm upgrade ... --set system.secretKey=xx
+```

@@ -1,0 +1,38 @@
+{{- $redisHost := include "sentry.redis.host" . -}}
+{{- $redisPort := include "sentry.redis.port" . -}}
+{{- $redisPass := include "sentry.redis.password" . -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "sentry.fullname" . }}-relay
+  labels:
+    app: sentry
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
+    release: "{{ .Release.Name }}"
+    heritage: "{{ .Release.Service }}"
+data:
+  config.yml: |-
+    relay:
+      {{- if .Values.relay.mode }}
+      mode: {{ .Values.relay.mode }}
+      {{- end }}
+      upstream: "http://{{ template "sentry.fullname" . }}-web:{{ .Values.service.externalPort }}/"
+      host: 0.0.0.0
+      port: {{ template "relay.port" }}
+
+    processing:
+      enabled: true
+
+      kafka_config:
+        - name: "bootstrap.servers"
+          value: {{ printf "%s:%s" (include "sentry.kafka.host" .) (include "sentry.kafka.port" .) }}
+        - name: "message.max.bytes"
+          value: 50000000  # 50MB or bust
+
+      {{- if $redisPass }}
+      redis: "redis://:{{ $redisPass }}@{{ $redisHost }}:{{ $redisPort }}"
+      {{- else }}
+      redis: "redis://{{ $redisHost }}:{{ $redisPort }}"
+      {{- end }}
+
+{{ .Values.config.relay | indent 4 }}

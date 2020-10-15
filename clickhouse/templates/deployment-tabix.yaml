@@ -6,26 +6,26 @@ metadata:
   labels:
     app.kubernetes.io/name: {{ include "clickhouse.name" . }}-tabix
     app.kubernetes.io/instance: {{ .Release.Name }}-tabix
-    app.kubernetes.io/managed-by: {{ .Release.Service }} 
-spec: 
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+spec:
   replicas: {{ .Values.tabix.replicas }}
   selector:
-    matchLabels: 
+    matchLabels:
       app.kubernetes.io/name: {{ include "clickhouse.name" . }}-tabix
       app.kubernetes.io/instance: {{ .Release.Name }}-tabix
 {{- if .Values.tabix.updateStrategy }}
-  strategy: 
+  strategy:
     type: {{ .Values.tabix.updateStrategy.type }}
-    rollingUpdate: 
+    rollingUpdate:
       maxSurge: {{ .Values.tabix.updateStrategy.maxSurge }}
       maxUnavailable: {{ .Values.tabix.updateStrategy.maxUnavailable }}
 {{- end }}
-  template: 
-    metadata: 
-      labels: 
+  template:
+    metadata:
+      labels:
         app.kubernetes.io/name: {{ include "clickhouse.name" . }}-tabix
         app.kubernetes.io/instance: {{ .Release.Name }}-tabix
-    spec: 
+    spec:
     {{- if .Values.affinity }}
       affinity:
 {{ toYaml .Values.affinity | indent 8 }}
@@ -40,14 +40,14 @@ spec:
       - name: {{ . | quote }}
     {{- end }}
     {{- end }}
-      containers: 
+      containers:
       - name: {{ include "clickhouse.name" . }}-tabix
         image: {{ .Values.tabix.image }}:{{ .Values.tabix.imageVersion }}
         imagePullPolicy: {{ .Values.tabix.imagePullPolicy }}
         ports:
         - name: http
           containerPort: 80
-        env: 
+        env:
         {{- if .Values.tabix.security }}
         - name: USER
           value: {{ .Values.tabix.security.user }}
@@ -85,5 +85,9 @@ spec:
           timeoutSeconds: {{ .Values.tabix.readinessProbe.timeoutSeconds }}
           failureThreshold: {{ .Values.tabix.readinessProbe.failureThreshold }}
           successThreshold: {{ .Values.tabix.readinessProbe.successThreshold }}
+      {{- end }}
+      {{- if .Values.tabix.resources }}
+        resources:
+{{ toYaml .Values.tabix.resources | indent 10 }}
       {{- end }}
 {{- end }}

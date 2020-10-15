@@ -7,6 +7,11 @@ metadata:
     chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
     release: "{{ .Release.Name }}"
     heritage: "{{ .Release.Service }}"
+  {{- if .Values.asHook }}
+  annotations:
+    "helm.sh/hook": "post-install,post-upgrade"
+    "helm.sh/hook-weight": "16"
+  {{- end }}
 spec:
   selector:
     matchLabels:
@@ -48,8 +53,8 @@ spec:
       {{- end }}
       containers:
       - name: {{ .Chart.Name }}-snuba
-        image: "{{ .Values.images.snuba.repository }}:{{ .Values.images.snuba.tag }}"
-        imagePullPolicy: {{ .Values.images.snuba.pullPolicy }}
+        image: "{{ template "snuba.image" . }}"
+        imagePullPolicy: {{ default "IfNotPresent" .Values.images.snuba.pullPolicy }}
         command: ["snuba", "consumer", "--storage", "sessions_raw", "--auto-offset-reset=latest", "--max-batch-time-ms", "750"]
         ports:
         - containerPort: {{ template "snuba.port" }}

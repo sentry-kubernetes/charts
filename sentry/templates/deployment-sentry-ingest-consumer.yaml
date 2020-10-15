@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ template "sentry.fullname" . }}-web
+  name: {{ template "sentry.fullname" . }}-ingest-consumer
   labels:
     app: {{ template "sentry.fullname" . }}
     chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
@@ -10,11 +10,11 @@ metadata:
 spec:
   selector:
     matchLabels:
-        app: {{ template "sentry.fullname" . }}
-        release: "{{ .Release.Name }}"
-        role: web
-{{- if not .Values.sentry.web.autoscaling.enabled }}
-  replicas: {{ .Values.sentry.web.replicas }}
+      app: {{ template "sentry.fullname" . }}
+      release: "{{ .Release.Name }}"
+      role: ingest-consumer
+{{- if not .Values.sentry.ingestConsumer.autoscaling.enabled }}
+  replicas: {{ .Values.sentry.ingestConsumer.replicas }}
 {{- end }}
   template:
     metadata:
@@ -22,43 +22,51 @@ spec:
         checksum/configYml: {{ .Values.config.configYml | toYaml | toString | sha256sum }}
         checksum/sentryConfPy: {{ .Values.config.sentryConfPy | sha256sum }}
         checksum/config.yaml: {{ include (print $.Template.BasePath "/configmap-sentry.yaml") . | sha256sum }}
-        {{- if .Values.sentry.web.annotations }}
-{{ toYaml .Values.sentry.web.annotations | indent 8 }}
+        {{- if .Values.sentry.ingestConsumer.annotations }}
+{{ toYaml .Values.sentry.ingestConsumer.annotations | indent 8 }}
         {{- end }}
       labels:
         app: {{ template "sentry.fullname" . }}
         release: "{{ .Release.Name }}"
-        role: web
-        {{- if .Values.sentry.web.podLabels }}
-{{ toYaml .Values.sentry.web.podLabels | indent 8 }}
+        role: ingest-consumer
+        {{- if .Values.sentry.ingestConsumer.podLabels }}
+{{ toYaml .Values.sentry.ingestConsumer.podLabels | indent 8 }}
         {{- end }}
     spec:
       affinity:
-      {{- if .Values.sentry.web.affinity }}
-{{ toYaml .Values.sentry.web.affinity | indent 8 }}
+      {{- if .Values.sentry.ingestConsumer.affinity }}
+{{ toYaml .Values.sentry.ingestConsumer.affinity | indent 8 }}
       {{- end }}
-      {{- if .Values.sentry.web.nodeSelector }}
+      {{- if .Values.sentry.ingestConsumer.nodeSelector }}
       nodeSelector:
-{{ toYaml .Values.sentry.web.nodeSelector | indent 8 }}
+{{ toYaml .Values.sentry.ingestConsumer.nodeSelector | indent 8 }}
       {{- end }}
-      {{- if .Values.sentry.web.tolerations }}
+      {{- if .Values.sentry.ingestConsumer.tolerations }}
       tolerations:
-{{ toYaml .Values.sentry.web.tolerations | indent 8 }}
+{{ toYaml .Values.sentry.ingestConsumer.tolerations | indent 8 }}
       {{- end }}
       {{- if .Values.images.sentry.imagePullSecrets }}
       imagePullSecrets:
 {{ toYaml .Values.images.sentry.imagePullSecrets | indent 8 }}
       {{- end }}
       containers:
-      - name: {{ .Chart.Name }}-web
+      - name: {{ .Chart.Name }}-ingest-consumer
         image: "{{ template "sentry.image" . }}"
         imagePullPolicy: {{ default "IfNotPresent" .Values.images.sentry.pullPolicy }}
-        command: ["sentry", "run", "web"]
-        ports:
-        - containerPort: {{ template "sentry.port" }}
+        command: ["sentry"]
+        args:
+          - "run"
+          - "ingest-consumer"
+          - "--all-consumer-types"
+          {{- if .Values.sentry.ingestConsumer.concurrency }}
+          - "-c"
+          - "{{ .Values.sentry.ingestConsumer.concurrency }}"
+          {{- end }}
         env:
         - name: SNUBA
           value: http://{{ template "sentry.fullname" . }}-snuba:{{ template "snuba.port" }}
+        - name: C_FORCE_ROOT
+          value: "true"
         {{- if .Values.postgresql.enabled }}
         - name: POSTGRES_PASSWORD
           valueFrom:
@@ -70,8 +78,8 @@ spec:
         - name: GOOGLE_APPLICATION_CREDENTIALS
           value: /var/run/secrets/google/{{ .Values.filestore.gcs.credentialsFile }}
         {{ end }}
-{{- if .Values.sentry.web.env }}
-{{ toYaml .Values.sentry.web.env | indent 8 }}
+{{- if .Values.sentry.ingestConsumer.env }}
+{{ toYaml .Values.sentry.ingestConsumer.env | indent 8 }}
 {{- end }}
         volumeMounts:
         - mountPath: /etc/sentry
@@ -83,34 +91,14 @@ spec:
         - name: sentry-google-cloud-key
           mountPath: /var/run/secrets/google
         {{ end }}
-        livenessProbe:
-          failureThreshold: 5
-          httpGet:
-            path: /_health/
-            port: {{ template "sentry.port" }}
-            scheme: HTTP
-          initialDelaySeconds: {{ .Values.sentry.web.probeInitialDelaySeconds }}
-          periodSeconds: 10
-          successThreshold: 1
-          timeoutSeconds: 2
-        readinessProbe:
-          failureThreshold: 10
-          httpGet:
-            path: /_health/
-            port: {{ template "sentry.port" }}
-            scheme: HTTP
-          initialDelaySeconds: {{ .Values.sentry.web.probeInitialDelaySeconds }}
-          periodSeconds: 10
-          successThreshold: 1
-          timeoutSeconds: 2
         resources:
-{{ toYaml .Values.sentry.web.resources | indent 12 }}
+{{ toYaml .Values.sentry.ingestConsumer.resources | indent 12 }}
       volumes:
       - name: config
         configMap:
           name: {{ template "sentry.fullname" . }}-sentry
       - name: sentry-data
-      {{- if and (eq .Values.filestore.backend "filesystem") .Values.filestore.filesystem.persistence.enabled }}
+      {{- if and (eq .Values.filestore.backend "filesystem") .Values.filestore.filesystem.persistence.enabled (.Values.filestore.filesystem.persistence.persistentWorkers) }}
         persistentVolumeClaim:
           claimName: {{ template "sentry.fullname" . }}-data
       {{- else }}
@@ -121,6 +109,6 @@ spec:
         secret:
           secretName: {{ .Values.filestore.gcs.secretName }}
       {{ end }}
-      {{- if .Values.sentry.web.priorityClassName }}
-      priorityClassName: "{{ .Values.sentry.web.priorityClassName }}"
+      {{- if .Values.sentry.ingestConsumer.priorityClassName }}
+      priorityClassName: "{{ .Values.sentry.ingestConsumer.priorityClassName }}"
       {{- end }}
