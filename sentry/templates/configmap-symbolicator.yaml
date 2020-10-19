@@ -1,0 +1,21 @@
+{{- if .Values.symbolicator.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "sentry.fullname" . }}-symbolicator
+  labels:
+    app: sentry
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
+    release: "{{ .Release.Name }}"
+    heritage: "{{ .Release.Service }}"
+data:
+  config.yml: |-
+    # See: https://getsentry.github.io/symbolicator/#configuration
+    cache_dir: "/data"
+    bind: "0.0.0.0:{{ template "symbolicator.port" }}"
+    logging:
+      level: "{{ .Values.symbolicator.api.logging.level }}"
+    metrics:
+      statsd: null
+    sentry_dsn: null # TODO: Automatically fill this with the internal project DSN
+{{- end }}
