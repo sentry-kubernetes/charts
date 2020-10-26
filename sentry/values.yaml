@@ -35,7 +35,7 @@ images:
 
 relay:
   replicas: 1
-  # mode: managed
+  mode: proxy
   env: []
   probeInitialDelaySeconds: 10
   resources: {}
