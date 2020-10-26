@@ -53,6 +53,8 @@ relay:
 sentry:
   singleOrganization: true
   web:
+    # if using filestore backend filesystem with RWO access, set strategyType to Recreate
+    strategyType: RollingUpdate
     replicas: 1
     env: []
     probeInitialDelaySeconds: 10
