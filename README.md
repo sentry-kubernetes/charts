@@ -14,6 +14,10 @@ Big thanks to the maintainers of the [deprecated chart](https://github.com/helm/
 
 For now the full list of values is not documented but you can get inspired by the values.yaml specific to each directory.
 
+## Upgrading from 6.x.x version of this Chart to 7.0.0
+
+- the default mode of relay is now "proxy". You can change it through the values.yaml file
+- we removed the `githubSso` variable for oauth github configuration. It was using the old environment variable, that doesn't work anymore with Sentry. Just use the common github.xxxx configuration for both oauth & application integration.
 
 ## Upgrading from 5.x.x version of this Chart to 6.0.0
 
