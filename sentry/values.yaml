@@ -27,6 +27,11 @@ images:
     # tag: Chart.AppVersion
     # pullPolicy: IfNotPresent
     imagePullSecrets: []
+  symbolicator:
+    # repository: getsentry/symbolicator
+    tag: 0.2.0
+    # pullPolicy: IfNotPresent
+    imagePullSecrets: []
 
 relay:
   replicas: 1
@@ -230,6 +235,30 @@ mail:
 
 symbolicator:
   enabled: false
+  api:
+    replicas: 1
+    env: []
+    probeInitialDelaySeconds: 10
+    resources: {}
+    affinity: {}
+    nodeSelector: {}
+    # tolerations: []
+    # podLabels: []
+    # priorityClassName: "xxx"
+    logging:
+      level: warn
+
+    autoscaling:
+      enabled: false
+      minReplicas: 2
+      maxReplicas: 5
+      targetCPUUtilizationPercentage: 50
+  # TODO The cleanup cronjob is not yet implemented
+  cleanup:
+    enabled: false
+    # podLabels: []
+    # affinity: {}
+    # env: []
 
 auth:
   register: true
@@ -379,6 +408,8 @@ externalClickhouse:
   ##
   # clusterName: test_shard_localhost
 
+# Settings for Kafka.
+# See https://github.com/bitnami/charts/tree/master/bitnami/kafka
 kafka:
   enabled: true
   replicaCount: 3
@@ -387,6 +418,10 @@ kafka:
   offsetsTopicReplicationFactor: 3
   transactionStateLogReplicationFactor: 3
   transactionStateLogMinIsr: 3
+  # 50 MB
+  maxMessageBytes: "50000000"
+  # 50 MB
+  socketRequestMaxBytes: "50000000"
 
   service:
     port: 9092

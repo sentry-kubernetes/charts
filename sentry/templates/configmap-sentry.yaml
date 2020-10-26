@@ -21,10 +21,13 @@ data:
     {{- end }}
     postprocess.use-cache-key: 1.0
 
+    # This URL will be used to tell Symbolicator where to obtain the Sentry source.
+    # See https://getsentry.github.io/symbolicator/api/
+    system.internal-url-prefix: 'http://{{ template "sentry.fullname" . }}-web:{{ .Values.service.externalPort }}'
     symbolicator.enabled: {{ .Values.symbolicator.enabled }}
     {{- if .Values.symbolicator.enabled }}
     symbolicator.options:
-      url: "http://{{ template "sentry.fullname" . }}-symbolicator:3021"
+      url: "http://{{ template "sentry.fullname" . }}-symbolicator:{{ template "symbolicator.port" }}"
     {{- end }}
 
     {{- if .Values.github.appId }}
