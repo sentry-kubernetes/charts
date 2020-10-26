@@ -11,6 +11,7 @@
 {{- define "relay.port" -}}3000{{- end -}}
 {{- define "sentry.port" -}}9000{{- end -}}
 {{- define "snuba.port" -}}1218{{- end -}}
+{{- define "symbolicator.port" -}}3021{{- end -}}
 
 {{- define "relay.image" -}}
 {{- default "getsentry/relay" .Values.images.relay.repository -}}
@@ -26,6 +27,12 @@
 {{- default "getsentry/snuba" .Values.images.snuba.repository -}}
 :
 {{- default .Chart.AppVersion .Values.images.snuba.tag -}}
+{{- end -}}
+
+{{- define "symbolicator.image" -}}
+{{- default "getsentry/symbolicator" .Values.images.symbolicator.repository -}}
+:
+{{- .Values.images.symbolicator.tag -}}
 {{- end -}}
 
 {{/*
