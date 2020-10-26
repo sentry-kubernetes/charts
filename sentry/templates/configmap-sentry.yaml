@@ -377,13 +377,6 @@ data:
     SENTRY_OPTIONS['mail.host'] = os.getenv("SENTRY_EMAIL_HOST", "{{ .Values.mail.host }}")
     SENTRY_OPTIONS['mail.from'] = os.getenv("SENTRY_EMAIL_FROM", "{{ .Values.mail.from }}")
 
-    ######################
-    # GitHub Integration #
-    #####################
-
-    GITHUB_APP_ID = '{{ .Values.githubSso.clientId }}'
-    GITHUB_API_SECRET = '{{ .Values.githubSso.clientSecret }}'
-
     #########################
     # Bitbucket Integration #
     ########################

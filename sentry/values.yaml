@@ -35,7 +35,7 @@ images:
 
 relay:
   replicas: 1
-  # mode: managed
+  mode: proxy
   env: []
   probeInitialDelaySeconds: 10
   resources: {}
@@ -110,6 +110,7 @@ sentry:
       targetCPUUtilizationPercentage: 50
 
   cron:
+    replicas: 1
     env: []
     resources: {}
     affinity: {}
@@ -146,6 +147,9 @@ snuba:
       minReplicas: 2
       maxReplicas: 5
       targetCPUUtilizationPercentage: 50
+
+  replacer:
+    replicas: 1
 
   consumer:
     replicas: 1
@@ -280,10 +284,6 @@ github: {} # https://github.com/settings/apps (Create a Github App)
 #   clientSecret: "xxxxx"
 #   privateKey: "-----BEGIN RSA PRIVATE KEY-----\nMIIEpA" !!!! Don't forget a trailing \n
 #   webhookSecret:  "xxxxx`"
-
-githubSso: {} # https://github.com/settings/developers (Create a OAuth App)
-  # clientId: "xx"
-  # clientSecret: "xx"
 
 slack: {}
 # slack:
