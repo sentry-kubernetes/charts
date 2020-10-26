@@ -110,6 +110,7 @@ sentry:
       targetCPUUtilizationPercentage: 50
 
   cron:
+    replicas: 1
     env: []
     resources: {}
     affinity: {}
@@ -146,6 +147,9 @@ snuba:
       minReplicas: 2
       maxReplicas: 5
       targetCPUUtilizationPercentage: 50
+
+  replacer:
+    replicas: 1
 
   consumer:
     replicas: 1

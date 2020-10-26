@@ -48,13 +48,13 @@ spec:
             {{- if .Values.clickhouse.enabled }}
             for ((i=0;i<{{ .Values.clickhouse.clickhouse.replicas }};i++)); do
               export CLICKHOUSE_HOST={{ $clickhouseHost }}-$i.{{ $clickhouseHost }}-headless;
-              snuba migrate;
+              snuba migrations migrate --force;
               export CLICKHOUSE_HOST={{ $clickhouseHost }}-replica-$i.{{ $clickhouseHost }}-replica-headless;
-              snuba migrate;
+              snuba migrations migrate --force;
             done
             {{- else }}
             export CLICKHOUSE_HOST={{ $clickhouseHost }};
-            snuba migrate;
+            snuba migrations migrate --force;
             {{- end }}
         env:
         - name: LOG_LEVEL

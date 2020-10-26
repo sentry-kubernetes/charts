@@ -14,7 +14,7 @@ spec:
         app: {{ template "sentry.fullname" . }}
         release: "{{ .Release.Name }}"
         role: cron
-  replicas: 1
+  replicas: {{ .Values.sentry.cron.replicas }}
   template:
     metadata:
       annotations:
