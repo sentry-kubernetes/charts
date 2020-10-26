@@ -17,7 +17,7 @@ For now the full list of values is not documented but you can get inspired by th
 ## Upgrading from 6.x.x version of this Chart to 7.0.0
 
 - the default mode of relay is now "proxy". You can change it through the values.yaml file
-- we removed the `githubSso` variable for oauth github configuration. It was using the old environment variable, that doesn't work anymore with Sentry. Just use the common github.xxxx configuration for both oauth & application integration.
+- we removed the `githubSso` variable for the oauth github configuration. It was using the old environment variable, that doesn't work with Sentry anymore. Just use the common github.xxxx configuration for both oauth & the application integration.
 
 ## Upgrading from 5.x.x version of this Chart to 6.0.0
 
