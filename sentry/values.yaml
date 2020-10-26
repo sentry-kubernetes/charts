@@ -48,9 +48,8 @@ relay:
 sentry:
   singleOrganization: true
   web:
-    # if using filestore backend filesystem with RWO access,
-    # enable recreate strategy type, instead of default rolling update
-    enableRecreate: false
+    # if using filestore backend filesystem with RWO access, set strategyType to Recreate
+    strategyType: RollingUpdate
     replicas: 1
     env: []
     probeInitialDelaySeconds: 10

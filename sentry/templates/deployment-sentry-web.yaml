@@ -8,10 +8,8 @@ metadata:
     release: "{{ .Release.Name }}"
     heritage: "{{ .Release.Service }}"
 spec:
-{{- if .Values.sentry.web.enableRecreate }}
   strategy:
-    type: Recreate
-{{- end }}
+    type: {{ .Values.sentry.web.strategyType }}
   selector:
     matchLabels:
         app: {{ template "sentry.fullname" . }}
