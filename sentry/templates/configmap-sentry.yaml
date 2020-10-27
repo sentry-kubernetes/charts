@@ -38,7 +38,7 @@ data:
     {{ end }}
     {{- if .Values.github.privateKey }}
     github-app.private-key: |-
-      {{ .Values.github.privateKey | nindent 8 }}"
+      {{ .Values.github.privateKey | nindent 8 }}
     {{ end }}
     {{- if .Values.github.webhookSecret }}
     github-app.webhook-secret: "{{ .Values.github.webhookSecret }}"
