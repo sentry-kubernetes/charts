@@ -204,6 +204,7 @@ snuba:
 
 hooks:
   enabled: true
+  removeOnSuccess: true
   dbInit:
     env: []
     resources:
@@ -220,6 +221,7 @@ hooks:
       requests:
         cpu: 700m
         memory: 1Gi
+
 system:
   url: ""
   adminEmail: ""
