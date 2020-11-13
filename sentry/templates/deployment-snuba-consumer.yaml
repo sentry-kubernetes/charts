@@ -10,7 +10,7 @@ metadata:
   {{- if .Values.asHook }}
   annotations:
     "helm.sh/hook": "post-install,post-upgrade"
-    "helm.sh/hook-weight": "19"
+    "helm.sh/hook-weight": "0"
   {{- end }}
 spec:
   selector:
