@@ -18,12 +18,12 @@ dependencies:
     version: 1.5.0
     condition: clickhouse.enabled
   - name: rabbitmq-ha
-    repository: https://kubernetes-charts.storage.googleapis.com/
+    repository: https://charts.helm.sh/stable
     version: 1.39.0
     alias: rabbitmq
     condition: rabbitmq.enabled
   - name: postgresql
-    repository: https://kubernetes-charts.storage.googleapis.com/
+    repository: https://charts.helm.sh/stable
     version: 8.2.1
     condition: postgresql.enabled
   - name: nginx
