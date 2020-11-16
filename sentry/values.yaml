@@ -148,9 +148,6 @@ snuba:
       maxReplicas: 5
       targetCPUUtilizationPercentage: 50
 
-  replacer:
-    replicas: 1
-
   consumer:
     replicas: 1
     env: []
@@ -161,6 +158,15 @@ snuba:
     # podLabels: []
 
   outcomesConsumer:
+    replicas: 1
+    env: []
+    resources: {}
+    affinity: {}
+    nodeSelector: {}
+    # tolerations: []
+    # podLabels: []
+
+  replacer:
     replicas: 1
     env: []
     resources: {}
@@ -180,14 +186,6 @@ snuba:
 
   transactionsConsumer:
     replicas: 1
-    env: []
-    resources: {}
-    affinity: {}
-    nodeSelector: {}
-    # tolerations: []
-    # podLabels: []
-
-  replacer:
     env: []
     resources: {}
     affinity: {}
