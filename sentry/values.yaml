@@ -27,10 +27,15 @@ images:
     # tag: Chart.AppVersion
     # pullPolicy: IfNotPresent
     imagePullSecrets: []
+  symbolicator:
+    # repository: getsentry/symbolicator
+    tag: 0.2.0
+    # pullPolicy: IfNotPresent
+    imagePullSecrets: []
 
 relay:
   replicas: 1
-  # mode: managed
+  mode: proxy
   env: []
   probeInitialDelaySeconds: 10
   resources: {}
@@ -48,6 +53,8 @@ relay:
 sentry:
   singleOrganization: true
   web:
+    # if using filestore backend filesystem with RWO access, set strategyType to Recreate
+    strategyType: RollingUpdate
     replicas: 1
     env: []
     probeInitialDelaySeconds: 10
@@ -103,6 +110,7 @@ sentry:
       targetCPUUtilizationPercentage: 50
 
   cron:
+    replicas: 1
     env: []
     resources: {}
     affinity: {}
@@ -158,6 +166,15 @@ snuba:
     # tolerations: []
     # podLabels: []
 
+  replacer:
+    replicas: 1
+    env: []
+    resources: {}
+    affinity: {}
+    nodeSelector: {}
+    # tolerations: []
+    # podLabels: []
+
   sessionsConsumer:
     replicas: 1
     env: []
@@ -176,14 +193,6 @@ snuba:
     # tolerations: []
     # podLabels: []
 
-  replacer:
-    env: []
-    resources: {}
-    affinity: {}
-    nodeSelector: {}
-    # tolerations: []
-    # podLabels: []
-
   dbInitJob:
     env: []
 
@@ -193,6 +202,7 @@ snuba:
 
 hooks:
   enabled: true
+  removeOnSuccess: true
   dbInit:
     env: []
     resources:
@@ -209,6 +219,7 @@ hooks:
       requests:
         cpu: 700m
         memory: 1Gi
+
 system:
   url: ""
   adminEmail: ""
@@ -228,6 +239,30 @@ mail:
 
 symbolicator:
   enabled: false
+  api:
+    replicas: 1
+    env: []
+    probeInitialDelaySeconds: 10
+    resources: {}
+    affinity: {}
+    nodeSelector: {}
+    # tolerations: []
+    # podLabels: []
+    # priorityClassName: "xxx"
+    logging:
+      level: warn
+
+    autoscaling:
+      enabled: false
+      minReplicas: 2
+      maxReplicas: 5
+      targetCPUUtilizationPercentage: 50
+  # TODO The cleanup cronjob is not yet implemented
+  cleanup:
+    enabled: false
+    # podLabels: []
+    # affinity: {}
+    # env: []
 
 auth:
   register: true
@@ -249,10 +284,6 @@ github: {} # https://github.com/settings/apps (Create a Github App)
 #   clientSecret: "xxxxx"
 #   privateKey: "-----BEGIN RSA PRIVATE KEY-----\nMIIEpA" !!!! Don't forget a trailing \n
 #   webhookSecret:  "xxxxx`"
-
-githubSso: {} # https://github.com/settings/developers (Create a OAuth App)
-  # clientId: "xx"
-  # clientSecret: "xx"
 
 slack: {}
 # slack:
@@ -377,6 +408,8 @@ externalClickhouse:
   ##
   # clusterName: test_shard_localhost
 
+# Settings for Kafka.
+# See https://github.com/bitnami/charts/tree/master/bitnami/kafka
 kafka:
   enabled: true
   replicaCount: 3
@@ -385,6 +418,10 @@ kafka:
   offsetsTopicReplicationFactor: 3
   transactionStateLogReplicationFactor: 3
   transactionStateLogMinIsr: 3
+  # 50 MB
+  maxMessageBytes: "50000000"
+  # 50 MB
+  socketRequestMaxBytes: "50000000"
 
   service:
     port: 9092

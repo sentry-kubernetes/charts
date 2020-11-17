@@ -13,7 +13,7 @@ metadata:
     # This is what defines this resource as a hook. Without this line, the
     # job is considered part of the release.
     "helm.sh/hook": "post-install,post-upgrade"
-    "helm.sh/hook-delete-policy": "hook-succeeded,before-hook-creation"
+    "helm.sh/hook-delete-policy": "{{ if .Values.hooks.removeOnSuccess }}hook-succeeded,{{ end }}before-hook-creation"
     "helm.sh/hook-weight": "5"
 spec:
   template:
@@ -48,13 +48,13 @@ spec:
             {{- if .Values.clickhouse.enabled }}
             for ((i=0;i<{{ .Values.clickhouse.clickhouse.replicas }};i++)); do
               export CLICKHOUSE_HOST={{ $clickhouseHost }}-$i.{{ $clickhouseHost }}-headless;
-              snuba migrate;
+              snuba migrations migrate --force;
               export CLICKHOUSE_HOST={{ $clickhouseHost }}-replica-$i.{{ $clickhouseHost }}-replica-headless;
-              snuba migrate;
+              snuba migrations migrate --force;
             done
             {{- else }}
             export CLICKHOUSE_HOST={{ $clickhouseHost }};
-            snuba migrate;
+            snuba migrations migrate --force;
             {{- end }}
         env:
         - name: LOG_LEVEL

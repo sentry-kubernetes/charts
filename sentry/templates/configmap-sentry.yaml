@@ -21,10 +21,13 @@ data:
     {{- end }}
     postprocess.use-cache-key: 1.0
 
+    # This URL will be used to tell Symbolicator where to obtain the Sentry source.
+    # See https://getsentry.github.io/symbolicator/api/
+    system.internal-url-prefix: 'http://{{ template "sentry.fullname" . }}-web:{{ .Values.service.externalPort }}'
     symbolicator.enabled: {{ .Values.symbolicator.enabled }}
     {{- if .Values.symbolicator.enabled }}
     symbolicator.options:
-      url: "http://{{ template "sentry.fullname" . }}-symbolicator:3021"
+      url: "http://{{ template "sentry.fullname" . }}-symbolicator:{{ template "symbolicator.port" }}"
     {{- end }}
 
     {{- if .Values.github.appId }}
@@ -373,13 +376,6 @@ data:
     SENTRY_OPTIONS['mail.port'] = int(os.getenv("SENTRY_EMAIL_PORT", {{ .Values.mail.port }}))
     SENTRY_OPTIONS['mail.host'] = os.getenv("SENTRY_EMAIL_HOST", "{{ .Values.mail.host }}")
     SENTRY_OPTIONS['mail.from'] = os.getenv("SENTRY_EMAIL_FROM", "{{ .Values.mail.from }}")
-
-    ######################
-    # GitHub Integration #
-    #####################
-
-    GITHUB_APP_ID = '{{ .Values.githubSso.clientId }}'
-    GITHUB_API_SECRET = '{{ .Values.githubSso.clientSecret }}'
 
     #########################
     # Bitbucket Integration #
