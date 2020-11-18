@@ -31,7 +31,7 @@ data:
     {{- end }}
 
     {{- if .Values.github.appId }}
-    github-app.id: {{ .Values.github.appId | quote }}
+    github-app.id: {{ .Values.github.appId }}
     {{ end }}
     {{- if .Values.github.appName }}
     github-app.name: {{ .Values.github.appName | quote }}
