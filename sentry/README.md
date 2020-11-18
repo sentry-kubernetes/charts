@@ -1,9 +1,11 @@
 ### Upgrading from deprecated 9.0 -> 10.0 Chart
+
 As this chart runs in helm 3 and also tries its best to follow on from the original Sentry chart. There are some steps that needs to be taken in order to correctly upgrade.
 
 From the previous upgrade, make sure to get the following from your previous installation:
- - Redis Password (If Redis auth was enabled)
- - Postgresql Password
+
+- Redis Password (If Redis auth was enabled)
+- Postgresql Password
 Both should be in the `secrets` of your original 9.0 release. Make a note of both of these values.
 
 #### Upgrade Steps
