@@ -31,7 +31,7 @@ spec:
       restartPolicy: Never
       {{- if .Values.clickhouse.clickhouse.imagePullSecrets }}
       imagePullSecrets:
-      {{- range .Values.clickhouse.imagePullSecrets }}
+      {{- range .Values.clickhouse.clickhouse.imagePullSecrets }}
         - name: {{ . | quote }}
       {{- end }}
       {{- end }}
