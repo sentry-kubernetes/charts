@@ -49,8 +49,10 @@ spec:
             for ((i=0;i<{{ .Values.clickhouse.clickhouse.replicas }};i++)); do
               export CLICKHOUSE_HOST={{ $clickhouseHost }}-$i.{{ $clickhouseHost }}-headless;
               snuba migrations migrate --force;
+              {{- if .Values.clickhouse.configmap.remote_servers.replica.backup.enabled }}
               export CLICKHOUSE_HOST={{ $clickhouseHost }}-replica-$i.{{ $clickhouseHost }}-replica-headless;
               snuba migrations migrate --force;
+              {{- end }}
             done
             {{- else }}
             export CLICKHOUSE_HOST={{ $clickhouseHost }};
