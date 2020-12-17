@@ -19,7 +19,6 @@ data:
     {{- if .Values.system.url }}
     system.url-prefix: {{ .Values.system.url | quote }}
     {{- end }}
-    postprocess.use-cache-key: 1.0
 
     # This URL will be used to tell Symbolicator where to obtain the Sentry source.
     # See https://getsentry.github.io/symbolicator/api/
