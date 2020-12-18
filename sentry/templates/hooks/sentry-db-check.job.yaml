@@ -1,0 +1,102 @@
+{{- if .Values.hooks.enabled -}}
+{{- $clickhouseHost := include "sentry.clickhouse.host" . -}}
+{{- $clickhousePort := include "sentry.clickhouse.port" . -}}
+{{- $kafkaHost := include "sentry.kafka.host" . -}}
+{{- $kafkaPort := include "sentry.kafka.port" . -}}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ template "sentry.fullname" . }}-db-check
+  labels:
+    app: sentry
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
+    release: "{{ .Release.Name }}"
+    heritage: "{{ .Release.Service }}"
+  annotations:
+    # This is what defines this resource as a hook. Without this line, the
+    # job is considered part of the release.
+    "helm.sh/hook": "post-install,post-upgrade"
+    "helm.sh/hook-delete-policy": "{{ if .Values.hooks.removeOnSuccess }}hook-succeeded,{{ end }}before-hook-creation"
+    "helm.sh/hook-weight": "-1"
+spec:
+  template:
+    metadata:
+      name: {{ template "sentry.fullname" . }}-db-check
+      annotations:
+        {{- if .Values.sentry.worker.annotations }}
+{{ toYaml .Values.sentry.worker.annotations | indent 8 }}
+        {{- end }}
+      labels:
+        app: sentry
+        release: "{{ .Release.Name }}"
+        {{- if .Values.sentry.worker.podLabels }}
+{{ toYaml .Values.sentry.worker.podLabels | indent 8 }}
+        {{- end }}
+    spec:
+      restartPolicy: Never
+      {{- if .Values.images.sentry.imagePullSecrets }}
+      imagePullSecrets:
+{{ toYaml .Values.images.sentry.imagePullSecrets | indent 8 }}
+      {{- end }}
+      containers:
+      - name: db-check
+        image: subfuzion/netcat:latest
+        command:
+          - /bin/sh
+          - -c
+          - |
+            {{- if .Values.clickhouse.enabled }}
+            echo "Checking if clickhouse is up"
+            CLICKHOUSE_STATUS=0
+            while [ $CLICKHOUSE_STATUS -eq 0 ]; do
+              CLICKHOUSE_STATUS=1
+              i=0; while [ $i -lt {{ .Values.clickhouse.clickhouse.replicas }} ]; do
+                CLICKHOUSE_HOST={{ $clickhouseHost }}-$i.{{ $clickhouseHost }}-headless
+                if ! nc -z "$CLICKHOUSE_HOST" {{ $clickhousePort }}; then
+                  CLICKHOUSE_STATUS=0
+                  echo "$CLICKHOUSE_HOST is not available yet"
+                fi
+                {{- if .Values.clickhouse.clickhouse.configmap.remote_servers.replica.backup.enabled }}
+                CLICKHOUSE_HOST={{ $clickhouseHost }}-replica-$i.{{ $clickhouseHost }}-replica-headless
+                if ! nc -z "$CLICKHOUSE_HOST" {{ $clickhousePort }}; then
+                  CLICKHOUSE_STATUS=0
+                  echo "$CLICKHOUSE_HOST is not available yet"
+                fi
+                {{- end }}
+                i=$((i+1))
+              done
+              if [ "$CLICKHOUSE_STATUS" -eq 0 ]; then
+                echo "Clickhouse not ready. Sleeping for 10s before trying again"
+                sleep 10;
+              fi
+            done
+            echo "Clickhouse is up"
+            {{- end }}
+
+            {{- if .Values.kafka.enabled }}
+            echo "Checking if kafka is up"
+            KAFKA_STATUS=0
+            while [ $KAFKA_STATUS -eq 0 ]; do
+              KAFKA_STATUS=1
+              i=0; while [ $i -lt {{ .Values.kafka.replicaCount }} ]; do
+                KAFKA_HOST={{ $kafkaHost }}-$i.{{ $kafkaHost }}-headless
+                if ! nc -z "$KAFKA_HOST" {{ $kafkaPort }}; then
+                  KAFKA_STATUS=0
+                  echo "$KAFKA_HOST is not available yet"
+                fi
+                i=$((i+1))
+              done
+              if [ "$KAFKA_STATUS" -eq 0 ]; then
+                echo "Kafka not ready. Sleeping for 10s before trying again"
+                sleep 10;
+              fi
+            done
+            echo "Kafka is up"
+            {{- end }}
+        env:
+{{- if .Values.hooks.dbCheck.env }}
+{{ toYaml .Values.hooks.dbCheck.env | indent 8 }}
+{{- end }}
+        resources:
+{{ toYaml .Values.hooks.dbCheck.resources | indent 10 }}
+{{- end }}
