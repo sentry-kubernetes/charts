@@ -41,7 +41,7 @@ By default, NGINX is enabled to allow sending the incoming requests to [Sentry R
 
 Note: if you are using NGINX Ingress, please set this annotation on your ingress : nginx.ingress.kubernetes.io/use-regex: "true"
 
-## Clichouse warning
+## Clickhouse warning
 
 Snuba only supports a UTC timezone for Clickhouse. Please keep the initial value!
 
