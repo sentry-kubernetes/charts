@@ -56,7 +56,7 @@ spec:
         ports:
         - containerPort: {{ template "symbolicator.port" }}
         env:
-        {{ if eq .Values.filestore.backend "gcs" }}
+        {{ if and (eq .Values.filestore.backend "gcs") .Values.filestore.gcs.secretName }}
         - name: GOOGLE_APPLICATION_CREDENTIALS
           value: /var/run/secrets/google/{{ .Values.filestore.gcs.credentialsFile }}
         {{ end }}
@@ -69,7 +69,7 @@ spec:
           readOnly: true
         - mountPath: /data
           name: symbolicator-data
-        {{- if eq .Values.filestore.backend "gcs" }}
+        {{- if and (eq .Values.filestore.backend "gcs") .Values.filestore.gcs.secretName }}
         - name: sentry-google-cloud-key
           mountPath: /var/run/secrets/google
         {{ end }}
@@ -101,7 +101,7 @@ spec:
           name: {{ template "sentry.fullname" . }}-symbolicator
       - name: symbolicator-data
         emptyDir: {}
-      {{- if eq .Values.filestore.backend "gcs" }}
+      {{- if and (eq .Values.filestore.backend "gcs") .Values.filestore.gcs.secretName }}
       - name: sentry-google-cloud-key
         secret:
           secretName: {{ .Values.filestore.gcs.secretName }}
