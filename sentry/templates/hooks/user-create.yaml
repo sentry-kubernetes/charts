@@ -11,7 +11,7 @@ metadata:
   annotations:
     "helm.sh/hook": "post-install,post-upgrade"
     "helm.sh/hook-delete-policy": "{{ if .Values.hooks.removeOnSuccess }}hook-succeeded,{{ end }}before-hook-creation"
-    "helm.sh/hook-weight": "10"
+    "helm.sh/hook-weight": "9"
 spec:
   template:
     metadata:
