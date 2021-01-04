@@ -37,6 +37,7 @@ Parameter                          | Description                                
 `user.email` | Admin user email | `admin@sentry.local`
 `user.password` | Admin user password| `aaaa`
 `ingress.enabled` | Enabling Ingress | `false`
+`ingress.regexPathStyle` | Allows setting the style the regex paths are rendered in the ingress for the ingress controller in use. Possible values are `nginx` and `traefik` | `nginx`
 `nginx.enabled` | Enabling NGINX | `true`
 `metrics.enabled`| if `true`, enable Prometheus metrics | `false`
 `metrics.image.repository`         | Metrics exporter image repository                                                                          | `prom/statsd-exporter`
