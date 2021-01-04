@@ -203,6 +203,14 @@ snuba:
 hooks:
   enabled: true
   removeOnSuccess: true
+  dbCheck:
+    env: []
+    resources:
+      limits:
+        memory: 64Mi
+      requests:
+        cpu: 100m
+        memory: 64Mi
   dbInit:
     env: []
     resources:
