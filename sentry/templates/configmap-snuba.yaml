@@ -19,8 +19,8 @@ data:
     DEBUG = env("DEBUG", "0").lower() in ("1", "true")
 
     # Clickhouse Options
-    CLUSTERS[0]["host"] = env("CLICKHOUSE_HOST", {{ include "sentry.clickhouse.host" . | quote }})
-    CLUSTERS[0]["port"] = int(env("CLICKHOUSE_PORT", {{ include "sentry.clickhouse.port" . }}))
+    CLUSTERS[0]["host"] = {{ include "sentry.clickhouse.host" . | quote }}
+    CLUSTERS[0]["port"] = int({{ include "sentry.clickhouse.port" . }})
     # FIXME: Snuba will be able to migrate multi node clusters in the future
     CLUSTERS[0]["single_node"] = env("CLICKHOUSE_SINGLE_NODE", "false").lower() == "true"
 
