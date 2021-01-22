@@ -471,9 +471,10 @@ postgresql:
   postgresqlDatabase: sentry
   replication:
     enabled: false
-    slaveReplicas: 2
+    readReplicas: 2
     synchronousCommit: "on"
     numSynchronousReplicas: 1
+    applicationName: sentry
 
 ## This value is only used when postgresql.enabled is set to false
 ##
@@ -490,9 +491,10 @@ rabbitmq:
   enabled: true
   forceBoot: true
   replicaCount: 3
-  rabbitmqErlangCookie: pHgpy3Q6adTskzAT6bLHCFqFTF7lMxhA
-  rabbitmqUsername: guest
-  rabbitmqPassword: guest
+  auth:
+    erlangCookie: pHgpy3Q6adTskzAT6bLHCFqFTF7lMxhA
+    username: guest
+    password: guest
   nameOverride: ""
 
   podDisruptionBudget:
