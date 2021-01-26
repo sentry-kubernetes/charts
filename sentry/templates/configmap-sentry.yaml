@@ -30,6 +30,9 @@ data:
       url: "http://{{ template "sentry.fullname" . }}-symbolicator:{{ template "symbolicator.port" }}"
     {{- end }}
 
+    ##########
+    # Github #
+    ##########
     {{- if .Values.github.appId }}
     github-app.id: {{ .Values.github.appId }}
     {{ end }}
@@ -50,6 +53,17 @@ data:
     github-app.client-secret: {{ .Values.github.clientSecret | quote }}
     {{ end }}
 
+    ##########
+    # Google #
+    ##########
+    {{- if .Values.google.clientId }}
+    auth-google.client-id: {{ .Values.google.clientId | quote }}
+    auth-google.client-secret: {{ .Values.google.clientSecret | quote }}
+    {{ end }}
+
+    #########
+    # Slack #
+    #########
     {{- if .Values.slack.clientId }}
     slack.client-id: {{ .Values.slack.clientId | quote }}
     slack.client-secret: {{ .Values.slack.clientSecret | quote }}
@@ -62,9 +76,9 @@ data:
     {{ end }}
     {{ end }}
 
-    ################
-    #    Redis     #
-    ################
+    #########
+    # Redis #
+    #########
     redis.clusters:
       default:
         hosts:
