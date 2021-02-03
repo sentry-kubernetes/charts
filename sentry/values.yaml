@@ -72,6 +72,7 @@ sentry:
 
   features:
     orgSubdomains: false
+    vstsLimitedScopes: true
 
   worker:
     replicas: 3
