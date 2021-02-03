@@ -315,6 +315,7 @@ data:
                 {{- if .Values.sentry.features.orgSubdomains }}
                 "organizations:org-subdomains",
                 {{ end -}}
+
                 "organizations:advanced-search",
                 "organizations:android-mappings",
                 "organizations:api-keys",
@@ -340,7 +341,11 @@ data:
                 "organizations:integrations-chat-unfurl",
                 "organizations:integrations-incident-management",
                 "organizations:integrations-ticket-rules",
+
+                {{- if .Values.sentry.features.vstsLimitedScopes }}
                 "organizations:integrations-vsts-limited-scopes",
+                {{ end -}}
+
                 "organizations:integrations-stacktrace-link",
                 "organizations:internal-catchall",
                 "organizations:invite-members",

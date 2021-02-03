@@ -62,6 +62,7 @@ Parameter                          | Description                                
 `metrics.serviceMonitor.namespace` | namespace where servicemonitor resource should be created | `the same namespace as sentry`
 `metrics.serviceMonitor.scrapeInterval` | interval between Prometheus scraping | `30s`
 `system.secretKey` | secret key for the session cookie ([documentation](https://develop.sentry.dev/config/#general)) | `nil`
+`sentry.features.vstsLimitedScopes` | Disables the azdo-integrations with limited scopes that is the cause of so much pain | `true`
 
 ## NGINX and/or Ingress
 
