@@ -72,6 +72,7 @@ sentry:
 
   features:
     orgSubdomains: false
+    vstsLimitedScopes: true
 
   worker:
     replicas: 3
@@ -292,6 +293,11 @@ github: {} # https://github.com/settings/apps (Create a Github App)
 #   clientSecret: "xxxxx"
 #   privateKey: "-----BEGIN RSA PRIVATE KEY-----\nMIIEpA" !!!! Don't forget a trailing \n
 #   webhookSecret:  "xxxxx`"
+
+google: {} # https://developers.google.com/identity/sign-in/web/server-side-flow#step_1_create_a_client_id_and_client_secret
+# google:
+#   clientId:
+#   clientSecret:
 
 slack: {}
 # slack:
