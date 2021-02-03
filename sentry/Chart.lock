@@ -8,14 +8,14 @@ dependencies:
 - name: clickhouse
   repository: https://sentry-kubernetes.github.io/charts
   version: 1.5.0
-- name: rabbitmq-ha
-  repository: https://charts.helm.sh/stable
-  version: 1.39.0
+- name: rabbitmq
+  repository: https://charts.bitnami.com/bitnami
+  version: 8.9.1
 - name: postgresql
-  repository: https://charts.helm.sh/stable
-  version: 8.2.1
+  repository: https://charts.bitnami.com/bitnami
+  version: 10.2.4
 - name: nginx
   repository: https://charts.bitnami.com/bitnami
   version: 6.0.5
-digest: sha256:eb574f9d0aac37cc16860ef31ecd9df4e32a0b610b39a5bc73bdefb1ba1100d6
-generated: "2020-11-17T17:30:52.8193018+09:00"
+digest: sha256:a944f5fec35b6e58156e8048ee668a7a052394507c7187075db3773c6e925965
+generated: "2021-02-03T08:52:29.0684548+01:00"
