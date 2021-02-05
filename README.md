@@ -14,6 +14,12 @@ Big thanks to the maintainers of the [deprecated chart](https://github.com/helm/
 
 For now the full list of values is not documented but you can get inspired by the values.yaml specific to each directory.
 
+## Upgrading from 8.x.x version of this Chart to 9.0.0
+
+to simplify 1st time installations, backup value on clickhouse has been changed to false.
+
+clickhouse.clickhouse.configmap.remote_servers.replica.backup
+
 ## Upgrading from 7.x.x version of this Chart to 8.0.0
 
 - the default value of features.orgSubdomains is now "false"
