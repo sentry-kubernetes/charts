@@ -30,6 +30,9 @@ data:
       url: "http://{{ template "sentry.fullname" . }}-symbolicator:{{ template "symbolicator.port" }}"
     {{- end }}
 
+    ##########
+    # Github #
+    ##########
     {{- if .Values.github.appId }}
     github-app.id: {{ .Values.github.appId }}
     {{ end }}
@@ -50,6 +53,17 @@ data:
     github-app.client-secret: {{ .Values.github.clientSecret | quote }}
     {{ end }}
 
+    ##########
+    # Google #
+    ##########
+    {{- if .Values.google.clientId }}
+    auth-google.client-id: {{ .Values.google.clientId | quote }}
+    auth-google.client-secret: {{ .Values.google.clientSecret | quote }}
+    {{ end }}
+
+    #########
+    # Slack #
+    #########
     {{- if .Values.slack.clientId }}
     slack.client-id: {{ .Values.slack.clientId | quote }}
     slack.client-secret: {{ .Values.slack.clientSecret | quote }}
@@ -62,9 +76,9 @@ data:
     {{ end }}
     {{ end }}
 
-    ################
-    #    Redis     #
-    ################
+    #########
+    # Redis #
+    #########
     redis.clusters:
       default:
         hosts:
@@ -301,6 +315,7 @@ data:
                 {{- if .Values.sentry.features.orgSubdomains }}
                 "organizations:org-subdomains",
                 {{ end -}}
+
                 "organizations:advanced-search",
                 "organizations:android-mappings",
                 "organizations:api-keys",
@@ -317,13 +332,21 @@ data:
                 "organizations:events",
                 "organizations:global-views",
                 "organizations:incidents",
+                "organizations:metric-alert-builder-aggregate",
+                "organizations:metric-alert-gui-filters",
                 "organizations:integrations-event-hooks",
                 "organizations:integrations-issue-basic",
                 "organizations:integrations-issue-sync",
                 "organizations:integrations-alert-rule",
                 "organizations:integrations-chat-unfurl",
                 "organizations:integrations-incident-management",
+                "organizations:integrations-ticket-rules",
+
+                {{- if .Values.sentry.features.vstsLimitedScopes }}
                 "organizations:integrations-vsts-limited-scopes",
+                {{ end -}}
+
+                "organizations:integrations-stacktrace-link",
                 "organizations:internal-catchall",
                 "organizations:invite-members",
                 "organizations:large-debug-files",
@@ -331,22 +354,25 @@ data:
                 "organizations:onboarding",
                 "organizations:org-saved-searches",
                 "organizations:performance-view",
+                "organizations:project-detail",
                 "organizations:relay",
+                "organizations:release-performance-views",
                 "organizations:rule-page",
                 "organizations:set-grouping-config",
+                "organizations:custom-event-title",
                 "organizations:slack-migration",
                 "organizations:sso-basic",
                 "organizations:sso-rippling",
                 "organizations:sso-saml2",
+                "organizations:sso-migration",
+                "organizations:stacktrace-hover-preview",
                 "organizations:symbol-sources",
                 "organizations:transaction-comparison",
-                "organizations:trends",
                 "organizations:usage-stats-graph",
-                "organizations:dynamic-issue-counts",
-                "organizations:releases-v2",
-                "organizations:artifacts-in-settings",
-                "organizations:transaction-events",
+                "organizations:inbox",
+                "organizations:unhandled-issue-flag",
                 "organizations:invite-members-rate-limits",
+                "organizations:dashboards-v2",
 
                 "projects:alert-filters",
                 "projects:custom-inbound-filters",
@@ -362,6 +388,8 @@ data:
                 "projects:similarity-view-v2",
                 "projects:similarity-indexing-v2",
                 "projects:reprocessing-v2",
+
+                "projects:plugins",
             )
         }
     )

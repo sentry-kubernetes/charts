@@ -2,8 +2,8 @@ apiVersion: v2
 name: sentry
 description: A Helm chart for Kubernetes
 type: application
-version: 9.0.1
-appVersion: 20.10.1
+version: 10.0.0
+appVersion: 21.1.0
 dependencies:
   - name: redis
     repository: https://charts.bitnami.com/bitnami
@@ -17,14 +17,14 @@ dependencies:
     repository: https://sentry-kubernetes.github.io/charts
     version: 1.5.0
     condition: clickhouse.enabled
-  - name: rabbitmq-ha
-    repository: https://charts.helm.sh/stable
-    version: 1.39.0
+  - name: rabbitmq
+    repository: https://charts.bitnami.com/bitnami
+    version: 8.9.1
     alias: rabbitmq
     condition: rabbitmq.enabled
   - name: postgresql
-    repository: https://charts.helm.sh/stable
-    version: 8.2.1
+    repository: https://charts.bitnami.com/bitnami
+    version: 10.2.4
     condition: postgresql.enabled
   - name: nginx
     repository: https://charts.bitnami.com/bitnami

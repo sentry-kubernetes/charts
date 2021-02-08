@@ -27,7 +27,11 @@ spec:
             backend:
               serviceName: {{ template "sentry.fullname" . }}-relay
               servicePort: {{ template "relay.port" . }}
+        {{- if eq (default "nginx" .Values.ingress.regexPathStyle) "traefik" }}
+          - path: {{ default "/" .Values.ingress.path }}api/{[1-9][0-9]*}/{(.*)}
+        {{- else }}
           - path: {{ default "/" .Values.ingress.path }}api/[1-9][0-9]*/(.*)
+        {{- end }}
             backend:
               serviceName: {{ template "sentry.fullname" . }}-relay
               servicePort: {{ template "relay.port" . }}

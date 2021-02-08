@@ -37,6 +37,7 @@ Parameter                          | Description                                
 `user.email` | Admin user email | `admin@sentry.local`
 `user.password` | Admin user password| `aaaa`
 `ingress.enabled` | Enabling Ingress | `false`
+`ingress.regexPathStyle` | Allows setting the style the regex paths are rendered in the ingress for the ingress controller in use. Possible values are `nginx` and `traefik` | `nginx`
 `nginx.enabled` | Enabling NGINX | `true`
 `metrics.enabled`| if `true`, enable Prometheus metrics | `false`
 `metrics.image.repository`         | Metrics exporter image repository                                                                          | `prom/statsd-exporter`
@@ -61,6 +62,7 @@ Parameter                          | Description                                
 `metrics.serviceMonitor.namespace` | namespace where servicemonitor resource should be created | `the same namespace as sentry`
 `metrics.serviceMonitor.scrapeInterval` | interval between Prometheus scraping | `30s`
 `system.secretKey` | secret key for the session cookie ([documentation](https://develop.sentry.dev/config/#general)) | `nil`
+`sentry.features.vstsLimitedScopes` | Disables the azdo-integrations with limited scopes that is the cause of so much pain | `true`
 
 ## NGINX and/or Ingress
 
