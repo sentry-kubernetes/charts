@@ -31,7 +31,9 @@ spec:
       restartPolicy: Never
       {{- if .Values.clickhouse.clickhouse.imagePullSecrets }}
       imagePullSecrets:
-{{ toYaml .Values.clickhouse.clickhouse.imagePullSecrets | indent 8 }}
+      {{- range .Values.clickhouse.clickhouse.imagePullSecrets }}
+        - name: {{ . | quote }}
+      {{- end }}
       {{- end }}
       containers:
       - name: clickhouse-init
