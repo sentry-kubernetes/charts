@@ -230,6 +230,7 @@ hooks:
         memory: 1Gi
 
 system:
+  ## be sure to include the scheme on the url, for example: "https://sentry.example.com"
   url: ""
   adminEmail: ""
   ## This should only be used if you’re installing Sentry behind your company’s firewall.
