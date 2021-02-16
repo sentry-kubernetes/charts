@@ -90,7 +90,7 @@ spec:
             subPath: config.yml
             readOnly: true
         livenessProbe:
-          failureThreshold: 5
+          failureThreshold: 10
           httpGet:
             path: /api/relay/healthcheck/ready/
             port: {{ template "relay.port" }}
@@ -100,7 +100,7 @@ spec:
           successThreshold: 1
           timeoutSeconds: 2
         readinessProbe:
-          failureThreshold: 10
+          failureThreshold: 5
           httpGet:
             path: /api/relay/healthcheck/ready/
             port: {{ template "relay.port" }}
