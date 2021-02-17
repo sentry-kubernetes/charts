@@ -66,6 +66,9 @@ data:
             <errorlog>{{ printf "%s/%s" (include "clickhouse.logpath" .) "clickhouse-server.err.log" }}</errorlog>
             <size>{{ .Values.clickhouse.configmap.logger.size | default "1000M" }}</size>
             <count>{{ .Values.clickhouse.configmap.logger.count | default "10" }}</count>
+            {{- if .Values.clickhouse.configmap.logger.stdoutLogsEnabled }}
+            <console>1</console>
+            {{- end }}
         </logger>
         {{- end }}
 

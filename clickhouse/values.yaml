@@ -227,11 +227,13 @@ clickhouse:
     # level – Logging level. Acceptable values: trace, debug, information, warning, error. Default value: /var/log/clickhouse-server
     # size – Size of the file. Applies to loganderrorlog. Once the file reaches size, ClickHouse archives and renames it, and creates a new log file in its place.
     # count – The number of archived log files that ClickHouse stores.
+    # stdoutLogsEnabled - send clickhouse logs to stdout/stderr (docker way)
     logger:
       path: "/var/log/clickhouse-server"
       level: "trace"
       size: "1000M"
       count: "10"
+      stdoutLogsEnabled: false
     ##
     ## Data compression settings.
     # min_part_size – The minimum size of a table part.
