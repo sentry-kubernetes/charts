@@ -64,9 +64,9 @@ sentry:
     # tolerations: []
     # podLabels: []
     # Mount and use custom CA
-    customCA:
-      secretName: custom-ca
-    #  item: ca.crt
+    # customCA:
+    #   secretName: custom-ca
+    #   item: ca.crt
 
     autoscaling:
       enabled: false
