@@ -63,6 +63,8 @@ Parameter                          | Description                                
 `metrics.serviceMonitor.scrapeInterval` | interval between Prometheus scraping | `30s`
 `system.secretKey` | secret key for the session cookie ([documentation](https://develop.sentry.dev/config/#general)) | `nil`
 `sentry.features.vstsLimitedScopes` | Disables the azdo-integrations with limited scopes that is the cause of so much pain | `true`
+`sentry.web.customCA.secretName` | Allows mounting a custom CA secret | `nil`
+`sentry.web.customCA.item` | Key of CA cert object within the secret | `ca.crt`
 
 ## NGINX and/or Ingress
 

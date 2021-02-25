@@ -63,6 +63,10 @@ sentry:
     nodeSelector: {}
     # tolerations: []
     # podLabels: []
+    # Mount and use custom CA
+    # customCA:
+    #   secretName: custom-ca
+    #   item: ca.crt
 
     autoscaling:
       enabled: false
