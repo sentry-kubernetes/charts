@@ -222,6 +222,13 @@ clickhouse:
     ## Useful for breaking away from a specific network interface.
     #interserver_http_host:
     ##
+    ## Set the default page to the tabix ui. The page that is shown by default when you access the ClickHouse HTTP(s) server.
+    ## When true, this opens https://tabix.io/ when accessing http://localhost:http_port.
+    ##
+    ## <http_server_default_response>
+    ##    <![CDATA[<html ng-app="SMI2"><head><base href="http://ui.tabix.io/"></head><body><div ui-view="" class="content-ui"></div><script src="http://loader.tabix.io/master.js"></script></body></html>]]>
+    ## </http_server_default_response>
+    http_server_default_response_tabix: false
     ## Logging settings.
     # path – The log path. Default value: /var/log/clickhouse-server.
     # level – Logging level. Acceptable values: trace, debug, information, warning, error. Default value: /var/log/clickhouse-server

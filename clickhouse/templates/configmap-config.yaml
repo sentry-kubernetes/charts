@@ -111,5 +111,11 @@ data:
         {{- if .Values.clickhouse.configmap.interserver_http_host }}
         <interserver_http_host>{{ .Values.clickhouse.configmap.interserver_http_host }}</interserver_http_host>
         {{- end }}
+
+        {{- if .Values.clickhouse.configmap.http_server_default_response_tabix }}
+        <http_server_default_response>
+          <![CDATA[<html ng-app="SMI2"><head><base href="http://ui.tabix.io/"></head><body><div ui-view="" class="content-ui"></div><script src="http://loader.tabix.io/master.js"></script></body></html>]]>
+        </http_server_default_response>
+        {{- end }}
     </yandex>
 {{- end }}
