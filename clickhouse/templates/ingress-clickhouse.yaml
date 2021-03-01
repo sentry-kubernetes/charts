@@ -22,7 +22,7 @@ spec:
             servicePort: http-port
 {{- if .Values.clickhouse.ingress.tls.enabled }}
   tls:
-    hosts:
+  - hosts:
     {{- range .Values.clickhouse.ingress.tls.hosts }}
     - {{ . | quote }}
     {{- end }}
