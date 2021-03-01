@@ -503,7 +503,9 @@ externalPostgresql:
 rabbitmq:
   ## If disabled, Redis will be used instead as the broker.
   enabled: true
-  forceBoot: true
+  clustering:
+    forceBoot: true
+    rebalance: true
   replicaCount: 3
   auth:
     erlangCookie: pHgpy3Q6adTskzAT6bLHCFqFTF7lMxhA
@@ -511,14 +513,15 @@ rabbitmq:
     password: guest
   nameOverride: ""
 
-  podDisruptionBudget:
-    minAvailable: 1
-
-  persistentVolume:
+  pdb:
+    create: true
+  persistence:
     enabled: true
   resources: {}
-  # rabbitmqMemoryHighWatermark: 600MB
-  # rabbitmqMemoryHighWatermarkType: absolute
+  memoryHighWatermark: {}
+    # enabled: true
+    # type: relative
+    # value: 0.4
 
   definitions:
     policies: |-
