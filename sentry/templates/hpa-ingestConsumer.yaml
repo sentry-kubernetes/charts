@@ -7,7 +7,7 @@ spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: {{ template "sentry.fullname" . }}-ingestConsumer
+    name: {{ template "sentry.fullname" . }}-ingest-consumer
   minReplicas: {{ .Values.sentry.ingestConsumer.autoscaling.minReplicas }}
   maxReplicas: {{ .Values.sentry.ingestConsumer.autoscaling.maxReplicas }}
   targetCPUUtilizationPercentage: {{ .Values.sentry.ingestConsumer.autoscaling.targetCPUUtilizationPercentage }}
