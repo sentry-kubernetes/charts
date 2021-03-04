@@ -57,8 +57,14 @@ spec:
           readOnly: true
         resources:
 {{ toYaml .Values.hooks.dbInit.resources | indent 10 }}
+{{- if .Values.sentry.sidecars }}
+{{ toYaml .Values.sentry.sidecars | indent 6 }}
+{{- end }}
       volumes:
       - name: config
         configMap:
           name: {{ template "sentry.fullname" . }}-sentry
+{{- if .Values.sentry.volumes }}
+{{ toYaml .Values.sentry.volumes | indent 6 }}
+{{- end }}
 {{- end -}}
