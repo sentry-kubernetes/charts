@@ -9,6 +9,9 @@ metadata:
     release: "{{ .Release.Name }}"
     heritage: "{{ .Release.Service }}"
  annotations:
+   {{- if eq (default "nginx" .Values.ingress.regexPathStyle) "nginx" }}
+     nginx.ingress.kubernetes.io/use-regex: "true"
+   {{- end }}
    {{- range $key, $value := .Values.ingress.annotations }}
      {{ $key }}: {{ $value | quote }}
    {{- end }}
