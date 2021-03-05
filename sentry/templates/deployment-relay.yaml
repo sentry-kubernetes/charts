@@ -125,9 +125,9 @@ spec:
           defaultMode: 0644
       - name: credentials
         emptyDir: {}
-      {{- if .Values.relay.priorityClassName }}
-      priorityClassName: "{{ .Values.relay.priorityClassName }}"
-      {{- end }}
 {{- if .Values.sentry.volumes }}
 {{ toYaml .Values.sentry.volumes | indent 6 }}
 {{- end }}
+      {{- if .Values.relay.priorityClassName }}
+      priorityClassName: "{{ .Values.relay.priorityClassName }}"
+      {{- end }}
