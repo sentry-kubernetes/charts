@@ -19,7 +19,6 @@ data:
     {{- if .Values.system.url }}
     system.url-prefix: {{ .Values.system.url | quote }}
     {{- end }}
-    postprocess.use-cache-key: 1.0
 
     # This URL will be used to tell Symbolicator where to obtain the Sentry source.
     # See https://getsentry.github.io/symbolicator/api/
@@ -67,13 +66,7 @@ data:
     {{- if .Values.slack.clientId }}
     slack.client-id: {{ .Values.slack.clientId | quote }}
     slack.client-secret: {{ .Values.slack.clientSecret | quote }}
-    {{- if .Values.slack.legacyApp }}
-    slack.legacy-app: True
-    slack.verification-token: {{ .Values.slack.verificationToken | quote }}
-    {{- else }}
-    slack.legacy-app: False
     slack.signing-secret: {{ .Values.slack.signingSecret | quote }}
-    {{ end }}
     {{ end }}
 
     #########
