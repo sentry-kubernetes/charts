@@ -308,13 +308,8 @@ slack: {}
 # slack:
 #   clientId:
 #   clientSecret:
-#   verificationToken:
 #   signingSecret:
-#   # channels.* of Slack API is deprecated.
-#   If legacyApp is set to `true`, then define the verificationToken property
-#   If legacyApp is set to `false`, then define the signingSecret property
 #   Reference -> https://develop.sentry.dev/integrations/slack/
-#   legacyApp:
 
 nginx:
   enabled: true
