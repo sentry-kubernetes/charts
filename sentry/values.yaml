@@ -398,6 +398,7 @@ config:
 
 clickhouse:
   enabled: true
+  username: default
   clickhouse:
     imageVersion: "20.8.9.6"
     configmap:
@@ -406,6 +407,8 @@ clickhouse:
         replica:
           backup:
             enabled: false
+      users:
+        enabled: false
     persistentVolumeClaim:
       enabled: true
       dataPersistentVolume:

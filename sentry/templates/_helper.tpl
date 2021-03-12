@@ -261,22 +261,33 @@ Set ClickHouse port
 {{/*
 Set ClickHouse Databse
 */}}
-{{- define "sentry.clickhouse.host" -}}
+{{- define "sentry.clickhouse.database" -}}
 {{- if .Values.clickhouse.enabled -}}
-{{- template "sentry.clickhouse.fullname" . -}}
+{{- template "sentry.clickhouse.database" . -}}
 {{- else -}}
-{{ required "A valid .Values.externalClickhouse.host is required" .Values.externalClickhouse.host }}
+{{ required "A valid .Values.externalClickhouse.database is required" .Values.externalClickhouse.database }}
 {{- end -}}
 {{- end -}}
 
 {{/*
 Set ClickHouse User
 */}}
-{{- define "sentry.clickhouse.host" -}}
+{{- define "sentry.clickhouse.username" -}}
 {{- if .Values.clickhouse.enabled -}}
-{{- template "sentry.clickhouse.fullname" . -}}
+{{- template "sentry.clickhouse.username" . -}}
 {{- else -}}
-{{ required "A valid .Values.externalClickhouse.host is required" .Values.externalClickhouse.host }}
+{{ required "A valid .Values.externalClickhouse.username is required" .Values.externalClickhouse.username }}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Set ClickHouse Password
+*/}}
+{{- define "sentry.clickhouse.password" -}}
+{{- if .Values.clickhouse.enabled -}}
+{{- template "sentry.clickhouse.password" . -}}
+{{- else -}}
+{{ required "A valid .Values.externalClickhouse.password is required" .Values.externalClickhouse.password }}
 {{- end -}}
 {{- end -}}
 
