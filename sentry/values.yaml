@@ -29,7 +29,7 @@ images:
     imagePullSecrets: []
   symbolicator:
     # repository: getsentry/symbolicator
-    tag: 0.2.0
+    tag: 0.3.3
     # pullPolicy: IfNotPresent
     imagePullSecrets: []
 
@@ -63,6 +63,10 @@ sentry:
     nodeSelector: {}
     # tolerations: []
     # podLabels: []
+    # Mount and use custom CA
+    # customCA:
+    #   secretName: custom-ca
+    #   item: ca.crt
 
     autoscaling:
       enabled: false
@@ -304,13 +308,8 @@ slack: {}
 # slack:
 #   clientId:
 #   clientSecret:
-#   verificationToken:
 #   signingSecret:
-#   # channels.* of Slack API is deprecated.
-#   If legacyApp is set to `true`, then define the verificationToken property
-#   If legacyApp is set to `false`, then define the signingSecret property
 #   Reference -> https://develop.sentry.dev/integrations/slack/
-#   legacyApp:
 
 nginx:
   enabled: true
