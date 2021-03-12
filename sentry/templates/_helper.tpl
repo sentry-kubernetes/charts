@@ -263,9 +263,20 @@ Set ClickHouse Databse
 */}}
 {{- define "sentry.clickhouse.database" -}}
 {{- if .Values.clickhouse.enabled -}}
-{{- template "sentry.clickhouse.database" . -}}
+default
 {{- else -}}
 {{ required "A valid .Values.externalClickhouse.database is required" .Values.externalClickhouse.database }}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Set ClickHouse Authorization
+*/}}
+{{- define "sentry.clickhouse.auth" -}}
+{{- if .Values.clickhouse.enabled -}}
+ 
+{{- else -}}
+--user {{ .Values.externalClickhouse.username }} --password {{.Values.externalClickhouse.password }}
 {{- end -}}
 {{- end -}}
 
@@ -274,7 +285,7 @@ Set ClickHouse User
 */}}
 {{- define "sentry.clickhouse.username" -}}
 {{- if .Values.clickhouse.enabled -}}
-{{- template "sentry.clickhouse.username" . -}}
+default
 {{- else -}}
 {{ required "A valid .Values.externalClickhouse.username is required" .Values.externalClickhouse.username }}
 {{- end -}}
@@ -285,9 +296,8 @@ Set ClickHouse Password
 */}}
 {{- define "sentry.clickhouse.password" -}}
 {{- if .Values.clickhouse.enabled -}}
-{{- template "sentry.clickhouse.password" . -}}
 {{- else -}}
-{{ required "A valid .Values.externalClickhouse.password is required" .Values.externalClickhouse.password }}
+{{ .Values.externalClickhouse.password }}
 {{- end -}}
 {{- end -}}
 
