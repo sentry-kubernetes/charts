@@ -1,6 +1,8 @@
 {{- if .Values.hooks.enabled -}}
 {{- $clickhouseHost := include "sentry.clickhouse.host" . -}}
 {{- $clickhousePort := include "sentry.clickhouse.port" . -}}
+{{- $clickhouseDB := include "sentry.clickhouse.port" . -}}
+{{- $clickhouseUser := include "sentry.clickhouse.port" . -}}
 {{- $clickhouseClusterName := include "sentry.clickhouse.cluster.name" . -}}
 {{- $tables := "discover errors groupassignee groupedmessage outcomes_hourly migrations outcomes_mv_hourly outcomes_raw sentry sessions_hourly sessions_hourly_mv sessions_raw transactions" -}}
 {{- $dropQuery := "DROP TABLE IF EXISTS ${tbl}_dist" -}}

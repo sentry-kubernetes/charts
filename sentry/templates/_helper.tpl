@@ -259,6 +259,28 @@ Set ClickHouse port
 {{- end -}}
 
 {{/*
+Set ClickHouse Databse
+*/}}
+{{- define "sentry.clickhouse.host" -}}
+{{- if .Values.clickhouse.enabled -}}
+{{- template "sentry.clickhouse.fullname" . -}}
+{{- else -}}
+{{ required "A valid .Values.externalClickhouse.host is required" .Values.externalClickhouse.host }}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Set ClickHouse User
+*/}}
+{{- define "sentry.clickhouse.host" -}}
+{{- if .Values.clickhouse.enabled -}}
+{{- template "sentry.clickhouse.fullname" . -}}
+{{- else -}}
+{{ required "A valid .Values.externalClickhouse.host is required" .Values.externalClickhouse.host }}
+{{- end -}}
+{{- end -}}
+
+{{/*
 Set ClickHouse cluster name
 */}}
 {{- define "sentry.clickhouse.cluster.name" -}}

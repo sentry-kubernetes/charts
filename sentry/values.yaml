@@ -422,6 +422,9 @@ externalClickhouse:
   ##
   host: "clickhouse"
   tcpPort: 9000
+  username: default
+  password: ""
+  database: default
   ## Cluster name, can be found in config
   ## (https://clickhouse.tech/docs/en/operations/server-configuration-parameters/settings/#server-settings-remote-servers)
   ## or by executing `select * from system.clusters`
