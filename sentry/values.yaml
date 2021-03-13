@@ -324,6 +324,7 @@ nginx:
 ingress:
   enabled: false
   # If you are using traefik ingress controller, switch this to 'traefik'
+  # if you are using AWS ALB Ingress controller, switch this to 'aws-alb' 
   regexPathStyle: nginx
   # annotations:
   #   If you are using nginx ingress controller, please use at least those 2 annotations
