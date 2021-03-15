@@ -84,8 +84,8 @@ spec:
             {{ end }}
             resources:
 {{ toYaml .Values.sentry.cleanup.resources | indent 14 }}
-{{- if .Values.sentry.sidecars }}
-{{ toYaml .Values.sentry.sidecars | indent 10 }}
+{{- if .Values.sentry.cleanup.sidecars }}
+{{ toYaml .Values.sentry.cleanup.sidecars | indent 10 }}
 {{- end }}
           restartPolicy: Never
           volumes:
@@ -104,8 +104,8 @@ spec:
             secret:
               secretName: {{ .Values.filestore.gcs.secretName }}
           {{ end }}
-{{- if .Values.sentry.volumes }}
-{{ toYaml .Values.sentry.volumes | indent 10 }}
+{{- if .Values.sentry.cleanup.volumes }}
+{{ toYaml .Values.sentry.cleanup.volumes | indent 10 }}
 {{- end }}
           {{- if .Values.sentry.cleanup.priorityClassName }}
           priorityClassName: "{{ .Values.sentry.cleanup.priorityClassName }}"

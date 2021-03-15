@@ -86,13 +86,13 @@ spec:
           timeoutSeconds: 2
         resources:
 {{ toYaml .Values.snuba.api.resources | indent 12 }}
-{{- if .Values.sentry.sidecars }}
-{{ toYaml .Values.sentry.sidecars | indent 6 }}
+{{- if .Values.snuba.api.sidecars }}
+{{ toYaml .Values.snuba.api.sidecars | indent 6 }}
 {{- end }}
       volumes:
         - name: config
           configMap:
             name: {{ template "sentry.fullname" . }}-snuba
-{{- if .Values.sentry.volumes }}
-{{ toYaml .Values.sentry.volumes | indent 8 }}
+{{- if .Values.snuba.api.volumes }}
+{{ toYaml .Values.snuba.api.volumes | indent 8 }}
 {{- end }}

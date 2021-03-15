@@ -86,8 +86,8 @@ spec:
         {{ end }}
         resources:
 {{ toYaml .Values.sentry.cron.resources | indent 12 }}
-{{- if .Values.sentry.sidecars }}
-{{ toYaml .Values.sentry.sidecars | indent 6 }}
+{{- if .Values.sentry.cron.sidecars }}
+{{ toYaml .Values.sentry.cron.sidecars | indent 6 }}
 {{- end }}
       volumes:
       - name: config
@@ -105,8 +105,8 @@ spec:
         secret:
           secretName: {{ .Values.filestore.gcs.secretName }}
       {{ end }}
-{{- if .Values.sentry.volumes }}
-{{ toYaml .Values.sentry.volumes | indent 6 }}
+{{- if .Values.sentry.cron.volumes }}
+{{ toYaml .Values.sentry.cron.volumes | indent 6 }}
 {{- end }}
       {{- if .Values.sentry.cron.priorityClassName }}
       priorityClassName: "{{ .Values.sentry.cron.priorityClassName }}"

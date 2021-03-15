@@ -65,8 +65,6 @@ Parameter                          | Description                                
 `sentry.features.vstsLimitedScopes` | Disables the azdo-integrations with limited scopes that is the cause of so much pain | `true`
 `sentry.web.customCA.secretName` | Allows mounting a custom CA secret | `nil`
 `sentry.web.customCA.item` | Key of CA cert object within the secret | `ca.crt`
-`sentry.sidecars` | List of container definitions to add to sentry deployments and jobs | `[]`
-`sentry.volumes` | List of volume definitions to add to sentry deployments and jobs | `[]`
 
 ## NGINX and/or Ingress
 

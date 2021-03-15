@@ -92,8 +92,8 @@ spec:
         {{ end }}
         resources:
 {{ toYaml .Values.sentry.worker.resources | indent 12 }}
-{{- if .Values.sentry.sidecars }}
-{{ toYaml .Values.sentry.sidecars | indent 6 }}
+{{- if .Values.sentry.worker.sidecars }}
+{{ toYaml .Values.sentry.worker.sidecars | indent 6 }}
 {{- end }}
       volumes:
       - name: config
@@ -114,6 +114,6 @@ spec:
       {{- if .Values.sentry.worker.priorityClassName }}
       priorityClassName: "{{ .Values.sentry.worker.priorityClassName }}"
       {{- end }}
-{{- if .Values.sentry.volumes }}
-{{ toYaml .Values.sentry.volumes | indent 6 }}
+{{- if .Values.sentry.worker.volumes }}
+{{ toYaml .Values.sentry.worker.volumes | indent 6 }}
 {{- end }}
