@@ -398,7 +398,6 @@ config:
 
 clickhouse:
   enabled: true
-  username: default
   clickhouse:
     imageVersion: "20.8.9.6"
     configmap:
@@ -409,6 +408,16 @@ clickhouse:
             enabled: false
       users:
         enabled: false
+        user:
+        # the first user will be used if enabled
+        - name: default
+          config:
+            password: ""
+            networks:
+            - ::/0
+            profile: default
+            quota: default
+          
     persistentVolumeClaim:
       enabled: true
       dataPersistentVolume:
