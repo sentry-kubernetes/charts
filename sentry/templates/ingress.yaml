@@ -22,8 +22,7 @@ spec:
             backend:
               serviceName: {{ template "sentry.fullname" . }}-nginx
               servicePort: {{ .Values.nginx.service.port }}
-    {{- else }}
-    {{- if eq (default "nginx" .Values.ingress.regexPathStyle) "aws-alb" }}
+    {{- else if eq (default "nginx" .Values.ingress.regexPathStyle) "aws-alb" }}
           - path: /api/0/*
             backend:
               serviceName: {{ template "sentry.fullname" . }}-web
