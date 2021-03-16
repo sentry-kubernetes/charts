@@ -49,6 +49,8 @@ relay:
     minReplicas: 2
     maxReplicas: 5
     targetCPUUtilizationPercentage: 50
+  sidecars: [ ]
+  volumes: [ ]
 
 sentry:
   singleOrganization: true
@@ -73,6 +75,8 @@ sentry:
       minReplicas: 2
       maxReplicas: 5
       targetCPUUtilizationPercentage: 50
+    sidecars: [ ]
+    volumes: [ ]
 
   features:
     orgSubdomains: false
@@ -95,6 +99,8 @@ sentry:
       minReplicas: 2
       maxReplicas: 5
       targetCPUUtilizationPercentage: 50
+    sidecars: [ ]
+    volumes: [ ]
 
   ingestConsumer:
     replicas: 1
@@ -113,7 +119,8 @@ sentry:
       minReplicas: 1
       maxReplicas: 3
       targetCPUUtilizationPercentage: 50
-
+    sidecars: [ ]
+    volumes: [ ]
   cron:
     replicas: 1
     env: []
@@ -122,6 +129,8 @@ sentry:
     nodeSelector: {}
     # tolerations: []
     # podLabels: []
+    sidecars: [ ]
+    volumes: [ ]
   postProcessForward:
     replicas: 1
     env: []
@@ -131,10 +140,14 @@ sentry:
     # tolerations: []
     # podLabels: []
     # commitBatchSize: 1
+    sidecars: [ ]
+    volumes: [ ]
   cleanup:
     enabled: true
     schedule: "0 0 * * *"
     days: 90
+    sidecars: []
+    volumes: []
 
 snuba:
   api:
@@ -152,6 +165,8 @@ snuba:
       minReplicas: 2
       maxReplicas: 5
       targetCPUUtilizationPercentage: 50
+    sidecars: [ ]
+    volumes: [ ]
 
   consumer:
     replicas: 1
@@ -224,6 +239,8 @@ hooks:
       requests:
         cpu: 300m
         memory: 2048Mi
+    sidecars: [ ]
+    volumes: [ ]
   snubaInit:
     resources:
       limits:

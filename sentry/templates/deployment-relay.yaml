@@ -115,6 +115,9 @@ spec:
           timeoutSeconds: 2
         resources:
 {{ toYaml .Values.relay.resources | indent 12 }}
+{{- if .Values.relay.sidecars }}
+{{ toYaml .Values.relay.sidecars | indent 6 }}
+{{- end }}
       volumes:
       - name: config
         configMap:
@@ -122,6 +125,9 @@ spec:
           defaultMode: 0644
       - name: credentials
         emptyDir: {}
+{{- if .Values.relay.volumes }}
+{{ toYaml .Values.relay.volumes | indent 6 }}
+{{- end }}
       {{- if .Values.relay.priorityClassName }}
       priorityClassName: "{{ .Values.relay.priorityClassName }}"
       {{- end }}

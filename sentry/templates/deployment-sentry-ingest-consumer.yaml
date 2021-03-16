@@ -102,6 +102,9 @@ spec:
         {{ end }}
         resources:
 {{ toYaml .Values.sentry.ingestConsumer.resources | indent 12 }}
+{{- if .Values.sentry.ingestConsumer.sidecars }}
+{{ toYaml .Values.sentry.ingestConsumer.sidecars | indent 6 }}
+{{- end }}
       volumes:
       - name: config
         configMap:
@@ -118,6 +121,9 @@ spec:
         secret:
           secretName: {{ .Values.filestore.gcs.secretName }}
       {{ end }}
+{{- if .Values.sentry.ingestConsumer.volumes }}
+{{ toYaml .Values.sentry.ingestConsumer.volumes | indent 6 }}
+{{- end }}
       {{- if .Values.sentry.ingestConsumer.priorityClassName }}
       priorityClassName: "{{ .Values.sentry.ingestConsumer.priorityClassName }}"
       {{- end }}
