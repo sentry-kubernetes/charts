@@ -115,6 +115,9 @@ spec:
           timeoutSeconds: 2
         resources:
 {{ toYaml .Values.sentry.web.resources | indent 12 }}
+{{- if .Values.sentry.web.sidecars }}
+{{ toYaml .Values.sentry.web.sidecars | indent 6 }}
+{{- end }}
       volumes:
       - name: config
         configMap:
@@ -139,3 +142,6 @@ spec:
       {{- if .Values.sentry.web.priorityClassName }}
       priorityClassName: "{{ .Values.sentry.web.priorityClassName }}"
       {{- end }}
+{{- if .Values.sentry.web.volumes }}
+{{ toYaml .Values.sentry.web.volumes | indent 6 }}
+{{- end }}

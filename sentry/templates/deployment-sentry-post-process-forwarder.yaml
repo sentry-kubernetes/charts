@@ -87,6 +87,9 @@ spec:
         {{ end }}
         resources:
 {{ toYaml .Values.sentry.postProcessForward.resources | indent 12 }}
+{{- if .Values.sentry.postProcessForward.sidecars }}
+{{ toYaml .Values.sentry.postProcessForward.sidecars | indent 6 }}
+{{- end }}
       volumes:
       - name: config
         configMap:
@@ -103,6 +106,9 @@ spec:
         secret:
           secretName: {{ .Values.filestore.gcs.secretName }}
       {{ end }}
+{{- if .Values.sentry.postProcessForward.volumes }}
+{{ toYaml .Values.sentry.postProcessForward.volumes | indent 6 }}
+{{- end }}
       {{- if .Values.sentry.postProcessForward.priorityClassName }}
       priorityClassName: "{{ .Values.sentry.postProcessForward.priorityClassName }}"
       {{- end }}

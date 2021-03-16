@@ -1,4 +1,3 @@
-{{- $redisHost := include "sentry.redis.host" . -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -87,6 +86,9 @@ spec:
         {{ end }}
         resources:
 {{ toYaml .Values.sentry.cron.resources | indent 12 }}
+{{- if .Values.sentry.cron.sidecars }}
+{{ toYaml .Values.sentry.cron.sidecars | indent 6 }}
+{{- end }}
       volumes:
       - name: config
         configMap:
@@ -103,6 +105,9 @@ spec:
         secret:
           secretName: {{ .Values.filestore.gcs.secretName }}
       {{ end }}
+{{- if .Values.sentry.cron.volumes }}
+{{ toYaml .Values.sentry.cron.volumes | indent 6 }}
+{{- end }}
       {{- if .Values.sentry.cron.priorityClassName }}
       priorityClassName: "{{ .Values.sentry.cron.priorityClassName }}"
       {{- end }}
