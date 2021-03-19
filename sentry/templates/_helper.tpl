@@ -154,8 +154,8 @@ Set postgresql username
 {{- define "sentry.postgresql.username" -}}
 {{- if .Values.postgresql.enabled -}}
 {{- default "postgres" .Values.postgresql.postgresqlUsername }}
-{{- else -}}
-{{ required "A valid .Values.externalPostgresql.username is required" .Values.externalPostgresql.username }}
+{{- else if .Values.externalPostgresql.username -}}
+{{- .Values.externalPostgresql.username }}
 {{- end -}}
 {{- end -}}
 
@@ -165,8 +165,8 @@ Set postgresql password
 {{- define "sentry.postgresql.password" -}}
 {{- if .Values.postgresql.enabled -}}
 {{- default "" .Values.postgresql.postgresqlPassword }}
-{{- else -}}
-{{ required "A valid .Values.externalPostgresql.password is required" .Values.externalPostgresql.password }}
+{{- else if .Values.externalPostgresql.password -}}
+{{- .Values.externalPostgresql.password }}
 {{- end -}}
 {{- end -}}
 

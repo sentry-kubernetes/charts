@@ -59,10 +59,14 @@ spec:
             echo "clickhouse-init finished"
             {{- else }}
             echo "clickhouse-init started"
-            
+
+            CLICKHOUSE_CONN="--database=${CLICKHOUSE_DATABASE:-default}"
+            [ -n "$CLICKHOUSE_USER" ] && CLICKHOUSE_CONN="$CLICKHOUSE_CONN --username=$CLICKHOUSE_USER"
+            [ -n "$CLICKHOUSE_PASSWORD" ] && CLICKHOUSE_CONN="$CLICKHOUSE_CONN --password=$CLICKHOUSE_PASSWORD"
+
             for tbl in {{ $tables }}; do
-              clickhouse-client --database=default --host={{ $clickhouseHost }} --port={{ $clickhousePort }} --query="{{ $dropQuery }}";
-              clickhouse-client --database=default --host={{ $clickhouseHost }} --port={{ $clickhousePort }} --query="{{ $createQuery }}";
+              clickhouse-client ${CLICKHOUSE_CONN} --host={{ $clickhouseHost }} --port={{ $clickhousePort }} --query="{{ $dropQuery }}";
+              clickhouse-client ${CLICKHOUSE_CONN} --host={{ $clickhouseHost }} --port={{ $clickhousePort }} --query="{{ $createQuery }}";
             done
             
             echo "clickhouse-init finished"

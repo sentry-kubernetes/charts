@@ -76,6 +76,9 @@ spec:
         - name: REQUESTS_CA_BUNDLE
           value: /etc/pki/ca-trust/custom/{{ default "ca.crt" .Values.sentry.web.customCA.item }}
         {{ end }}
+{{- if .Values.externalPostgresql.env }}
+{{ toYaml .Values.externalPostgresql.env | indent 8 }}
+{{- end }}
 {{- if .Values.sentry.web.env }}
 {{ toYaml .Values.sentry.web.env | indent 8 }}
 {{- end }}

@@ -132,7 +132,7 @@ data:
         "default": {
             "ENGINE": "sentry.db.postgres",
             "NAME": {{ include "sentry.postgresql.database" . | quote }},
-            "USER": {{ include "sentry.postgresql.username" . | quote }},
+            "USER": os.environ.get("POSTGRES_USER", {{ include "sentry.postgresql.username" . | quote }}),
             "PASSWORD": os.environ.get("POSTGRES_PASSWORD", {{ include "sentry.postgresql.password" . | quote }}),
             "HOST": {{ include "sentry.postgresql.host" . | quote }},
             "PORT": {{ template "sentry.postgresql.port" . }},

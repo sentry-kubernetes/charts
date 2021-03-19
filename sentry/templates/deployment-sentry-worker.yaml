@@ -77,6 +77,9 @@ spec:
         - name: GOOGLE_APPLICATION_CREDENTIALS
           value: /var/run/secrets/google/{{ .Values.filestore.gcs.credentialsFile }}
         {{ end }}
+{{- if .Values.externalPostgresql.env }}
+{{ toYaml .Values.externalPostgresql.env | indent 8 }}
+{{- end }}
 {{- if .Values.sentry.worker.env }}
 {{ toYaml .Values.sentry.worker.env | indent 8 }}
 {{- end }}

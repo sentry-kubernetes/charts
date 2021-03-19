@@ -443,6 +443,7 @@ externalClickhouse:
   ## or by executing `select * from system.clusters`
   ##
   # clusterName: test_shard_localhost
+  env: []
 
 # Settings for Kafka.
 # See https://github.com/bitnami/charts/tree/master/bitnami/kafka
@@ -511,6 +512,7 @@ externalPostgresql:
   # password: postgres
   database: sentry
   # sslMode: require
+  env: []
 
 rabbitmq:
   ## If disabled, Redis will be used instead as the broker.
