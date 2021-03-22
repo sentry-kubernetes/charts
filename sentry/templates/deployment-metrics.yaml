@@ -15,6 +15,7 @@ spec:
       release: "{{ .Release.Name }}"
       role: metrics
   replicas: 1
+  revisionHistoryLimit: {{ .Values.revisionHistoryLimit }}
   template:
     metadata:
       annotations:
