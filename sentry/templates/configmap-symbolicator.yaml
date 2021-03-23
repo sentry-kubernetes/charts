@@ -9,13 +9,5 @@ metadata:
     release: "{{ .Release.Name }}"
     heritage: "{{ .Release.Service }}"
 data:
-  config.yml: |-
-    # See: https://getsentry.github.io/symbolicator/#configuration
-    cache_dir: "/data"
-    bind: "0.0.0.0:{{ template "symbolicator.port" }}"
-    logging:
-      level: "{{ .Values.symbolicator.api.logging.level }}"
-    metrics:
-      statsd: null
-    sentry_dsn: null # TODO: Automatically fill this with the internal project DSN
+  config.yml: {{ toYaml .Values.symbolicator.api.config | indent 2 }}
 {{- end }}
