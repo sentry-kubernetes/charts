@@ -280,9 +280,30 @@ symbolicator:
     # tolerations: []
     # podLabels: []
     # priorityClassName: "xxx"
-    logging:
-      level: warn
+    config: |-
+      # See: https://getsentry.github.io/symbolicator/#configuration
+      cache_dir: "/data"
+      bind: "0.0.0.0:3021"
+      logging:
+        level: "warn"
+      metrics:
+        statsd: null
+        prefix: "symbolicator"
+      sentry_dsn: null
+      connect_to_reserved_ips: true
+      # caches:
+      #   downloaded:
+      #     max_unused_for: 1w
+      #     retry_misses_after: 5m
+      #     retry_malformed_after: 5m
+      #   derived:
+      #     max_unused_for: 1w
+      #     retry_misses_after: 5m
+      #     retry_malformed_after: 5m
+      #   diagnostics:
+      #     retention: 1w
 
+    # TODO autoscaling in not yet implemented
     autoscaling:
       enabled: false
       minReplicas: 2
