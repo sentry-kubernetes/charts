@@ -5,6 +5,7 @@
 {{- $clickhouseAuth := include "sentry.clickhouse.auth" . -}}
 {{- $clickhouseClusterName := include "sentry.clickhouse.cluster.name" . -}}
 {{- $tables := "discover errors groupassignee groupedmessage outcomes_hourly migrations outcomes_mv_hourly outcomes_raw sentry sessions_hourly sessions_hourly_mv sessions_raw transactions" -}}
+{{- $readinessQuery := "SELECT 1;" -}}
 {{- $dropQuery := "DROP TABLE IF EXISTS ${tbl}_dist" -}}
 {{- $createQuery := $clickhouseClusterName | printf "CREATE TABLE ${tbl}_dist AS ${tbl}_local ENGINE = Distributed('%s', default, ${tbl}_local, rand())" -}}
 apiVersion: batch/v1
@@ -44,11 +45,24 @@ spec:
           - /bin/bash
           - -ec
           - >-
+            check_readiness() {
+              local host="$1"
+              local port="$2"
+              local count="$3"
+              until [ $count -le 0 ] || clickhouse-client --database=default --host=$host --port=$port --query="{{ $readinessQuery }}" > /dev/null;
+              do
+                echo "Waiting for clickhouse to be ready..."
+                count="$((count-1))"
+                sleep 1
+              done
+            };
             {{- if .Values.clickhouse.enabled }}
             echo "clickhouse-init started"
-            
+
             for tbl in {{ $tables }}; do
               for ((i=0;i<{{ .Values.clickhouse.clickhouse.replicas }};i++)); do
+                check_readiness "{{ $clickhouseHost }}-$i.{{ $clickhouseHost }}-headless" "{{ $clickhousePort }}" "5";
+
                 clickhouse-client {{ $clickhouseAuth }} --database={{ $clickhouseDB }} --host={{ $clickhouseHost }}-$i.{{ $clickhouseHost }}-headless --port={{ $clickhousePort }} --query="{{ $dropQuery }}";
                 clickhouse-client {{ $clickhouseAuth }} --database={{ $clickhouseDB }} --host={{ $clickhouseHost }}-$i.{{ $clickhouseHost }}-headless --port={{ $clickhousePort }} --query="{{ $createQuery }}";
                 {{- if .Values.clickhouse.clickhouse.configmap.remote_servers.replica.backup.enabled }}
@@ -57,16 +71,17 @@ spec:
                 {{- end }}
               done
             done
-            
+
             echo "clickhouse-init finished"
             {{- else }}
-            echo "clickhouse-init started"
-            
+            echo "clickhouse-init started";
+            check_readiness "{{ $clickhouseHost }}" "{{ $clickhousePort }}" "5";
+
             for tbl in {{ $tables }}; do
               clickhouse-client {{ $clickhouseAuth }} --database={{ $clickhouseDB }} --host={{ $clickhouseHost }} --port={{ $clickhousePort }} --query="{{ $dropQuery }}";
               clickhouse-client {{ $clickhouseAuth }} --database={{ $clickhouseDB }} --host={{ $clickhouseHost }} --port={{ $clickhousePort }} --query="{{ $createQuery }}";
             done
-            
+
             echo "clickhouse-init finished"
             {{- end }}
 {{- end }}
