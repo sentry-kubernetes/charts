@@ -223,8 +223,11 @@ snuba:
 hooks:
   enabled: true
   removeOnSuccess: true
+  clickhouseInit:
+    podAnnotations:
   dbCheck:
     env: []
+    podAnnotations: []
     resources:
       limits:
         memory: 64Mi
@@ -233,6 +236,7 @@ hooks:
         memory: 64Mi
   dbInit:
     env: []
+    podAnnotations: []
     resources:
       limits:
         memory: 2048Mi
@@ -242,6 +246,7 @@ hooks:
     sidecars: [ ]
     volumes: [ ]
   snubaInit:
+    podAnnotations: []
     resources:
       limits:
         cpu: 2000m
@@ -362,7 +367,7 @@ nginx:
 ingress:
   enabled: false
   # If you are using traefik ingress controller, switch this to 'traefik'
-  # if you are using AWS ALB Ingress controller, switch this to 'aws-alb' 
+  # if you are using AWS ALB Ingress controller, switch this to 'aws-alb'
   regexPathStyle: nginx
   # annotations:
   #   If you are using nginx ingress controller, please use at least those 2 annotations
