@@ -17,6 +17,7 @@ metadata:
     "helm.sh/hook-weight": "10"
   {{- end }}
 spec:
+  revisionHistoryLimit: {{ .Values.revisionHistoryLimit }}
   selector:
     matchLabels:
       app: {{ template "sentry.fullname" . }}
