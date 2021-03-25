@@ -25,6 +25,9 @@ spec:
         {{- if .Values.snuba.annotations }}
 {{ toYaml .Values.snuba.annotations | indent 8 }}
         {{- end }}
+        {{- if .Values.hooks.snubaInit.podAnnotations }}
+{{ toYaml .Values.hooks.snubaInit.podAnnotations | indent 8 }}
+        {{- end }}
       labels:
         app: sentry
         release: "{{ .Release.Name }}"
