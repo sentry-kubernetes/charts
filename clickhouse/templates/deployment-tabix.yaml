@@ -22,9 +22,20 @@ spec:
 {{- end }}
   template:
     metadata:
+      {{- if .Values.clickhouse.podAnnotations }}
+      annotations:
+      {{- range $key, $value := .Values.clickhouse.podAnnotations }}
+        {{ $key }}: {{ $value | quote }}
+      {{- end }}
+      {{- end }}
       labels:
         app.kubernetes.io/name: {{ include "clickhouse.name" . }}-tabix
         app.kubernetes.io/instance: {{ .Release.Name }}-tabix
+      {{- if .Values.clickhouse.podLabels }}
+      {{- range $key, $value := .Values.clickhouse.podLabels }}
+        {{ $key }}: {{ $value | quote }}
+      {{- end }}
+      {{- end }}
     spec:
     {{- if .Values.affinity }}
       affinity:
