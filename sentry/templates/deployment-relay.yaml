@@ -25,6 +25,7 @@ spec:
 {{- if not .Values.relay.autoscaling.enabled }}
   replicas: {{ .Values.relay.replicas }}
 {{- end }}
+  revisionHistoryLimit: {{ .Values.revisionHistoryLimit }}
   template:
     metadata:
       annotations:
