@@ -259,7 +259,7 @@ Set ClickHouse port
 {{- end -}}
 
 {{/*
-Set ClickHouse Databse
+Set ClickHouse Database
 */}}
 {{- define "sentry.clickhouse.database" -}}
 {{- if .Values.clickhouse.enabled -}}
