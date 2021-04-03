@@ -1,7 +1,7 @@
 {{- if .Values.hooks.enabled -}}
 {{- $clickhouseHost := include "sentry.clickhouse.host" . -}}
 {{- $clickhousePort := include "sentry.clickhouse.port" . -}}
-{{- $kafkaHost := include "sentry.kafka.host" . -}}
+{{- $kafkaHost := include "sentry.kafka.hosts" . -}}
 {{- $kafkaPort := include "sentry.kafka.port" . -}}
 apiVersion: batch/v1
 kind: Job

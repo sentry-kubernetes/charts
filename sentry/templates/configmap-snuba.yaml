@@ -33,6 +33,6 @@ data:
     REDIS_DB = int(env("REDIS_DB", 1))
 
     # Processor/Writer Options
-    DEFAULT_BROKERS = [{{ printf "%s:%s" (include "sentry.kafka.host" .) (include "sentry.kafka.port" .) | quote }}]
+    DEFAULT_BROKERS = [{{ printf "%s:%s" (include "sentry.kafka.hosts" .) (include "sentry.kafka.port" .) | quote }}]
 
 {{ .Values.config.snubaSettingsPy | indent 4 }}

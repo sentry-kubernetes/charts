@@ -1,6 +1,7 @@
 {{- $redisHost := include "sentry.redis.host" . -}}
 {{- $redisPort := include "sentry.redis.port" . -}}
 {{- $redisPass := include "sentry.redis.password" . -}}
+{{- $kafkaBootstrappers := include "sentry.kafka.bootstrappers" . -}}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -25,9 +26,20 @@ data:
 
       kafka_config:
         - name: "bootstrap.servers"
-          value: {{ printf "%s:%s" (include "sentry.kafka.host" .) (include "sentry.kafka.port" .) }}
+          value: {{ $kafkaBootstrappers }}
         - name: "message.max.bytes"
           value: 50000000  # 50MB or bust
+
+      {{- if and (not .Values.kafka.enabled) .Values.externalKafka.topics }}
+      topics:
+      {{- with .Values.externalKafka.topics }}
+        events: {{ .ingestEvents | quote }}
+        attachments: {{ .ingestAttachments | quote }}
+        transactions: {{ .ingestTransactions | quote }}
+        sessions: {{ .ingestSessions | quote }}
+        outcomes: {{ .outcomes | quote }}
+      {{- end }}
+      {{- end }}
 
       {{- if $redisPass }}
       redis: "redis://:{{ $redisPass }}@{{ $redisHost }}:{{ $redisPort }}"

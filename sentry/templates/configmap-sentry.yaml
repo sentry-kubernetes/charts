@@ -193,7 +193,7 @@ data:
     SENTRY_CACHE = "sentry.cache.redis.RedisCache"
 
     DEFAULT_KAFKA_OPTIONS = {
-        "bootstrap.servers": {{ printf "%s:%s" (include "sentry.kafka.host" .) (include "sentry.kafka.port" .) | quote }},
+        "bootstrap.servers": {{ printf "%s:%s" (include "sentry.kafka.hosts" .) (include "sentry.kafka.port" .) | quote }},
         "message.max.bytes": 50000000,
         "socket.timeout.ms": 1000,
     }
