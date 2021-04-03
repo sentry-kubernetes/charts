@@ -75,46 +75,46 @@ spec:
               subPath: config.yml
               readOnly: true
       containers:
-      - name: {{ .Chart.Name }}-relay
-        image: "{{ template "relay.image" . }}"
-        imagePullPolicy: {{ default "IfNotPresent" .Values.images.sentry.pullPolicy }}
-        ports:
-        - containerPort: {{ template "relay.port" }}
-        env:
-        - name: RELAY_PORT
-          value: '{{ template "relay.port" }}'
-{{- if .Values.relay.env }}
-{{ toYaml .Values.relay.env | indent 8 }}
-{{- end }}
-        volumeMounts:
-          - name: credentials
-            mountPath: /work/.relay
-          - name: config
-            mountPath: /work/.relay/config.yml
-            subPath: config.yml
-            readOnly: true
-        livenessProbe:
-          failureThreshold: 5
-          httpGet:
-            path: /api/relay/healthcheck/ready/
-            port: {{ template "relay.port" }}
-            scheme: HTTP
-          initialDelaySeconds: {{ .Values.relay.probeInitialDelaySeconds }}
-          periodSeconds: 10
-          successThreshold: 1
-          timeoutSeconds: 2
-        readinessProbe:
-          failureThreshold: 10
-          httpGet:
-            path: /api/relay/healthcheck/ready/
-            port: {{ template "relay.port" }}
-            scheme: HTTP
-          initialDelaySeconds: {{ .Values.relay.probeInitialDelaySeconds }}
-          periodSeconds: 10
-          successThreshold: 1
-          timeoutSeconds: 2
-        resources:
-{{ toYaml .Values.relay.resources | indent 12 }}
+        - name: {{ .Chart.Name }}-relay
+          image: "{{ template "relay.image" . }}"
+          imagePullPolicy: {{ default "IfNotPresent" .Values.images.sentry.pullPolicy }}
+          ports:
+            - containerPort: {{ template "relay.port" }}
+          env:
+            - name: RELAY_PORT
+              value: '{{ template "relay.port" }}'
+  {{- if .Values.relay.env }}
+  {{ toYaml .Values.relay.env | indent 8 }}
+  {{- end }}
+          volumeMounts:
+            - name: credentials
+              mountPath: /work/.relay
+            - name: config
+              mountPath: /work/.relay/config.yml
+              subPath: config.yml
+              readOnly: true
+          livenessProbe:
+            failureThreshold: 5
+            httpGet:
+              path: /api/relay/healthcheck/ready/
+              port: {{ template "relay.port" }}
+              scheme: HTTP
+            initialDelaySeconds: {{ .Values.relay.probeInitialDelaySeconds }}
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 2
+          readinessProbe:
+            failureThreshold: 10
+            httpGet:
+              path: /api/relay/healthcheck/ready/
+              port: {{ template "relay.port" }}
+              scheme: HTTP
+            initialDelaySeconds: {{ .Values.relay.probeInitialDelaySeconds }}
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 2
+          resources:
+  {{ toYaml .Values.relay.resources | indent 10 }}
       volumes:
       - name: config
         configMap:
