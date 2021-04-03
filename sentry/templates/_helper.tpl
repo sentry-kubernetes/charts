@@ -220,7 +220,7 @@ Set redis password
 {{- define "sentry.redis.password" -}}
 {{- if .Values.redis.enabled -}}
 {{ .Values.redis.password }}
-{{- else -}}
+{{- else if .Values.externalRedis.password -}}
 {{ .Values.externalRedis.password }}
 {{- end -}}
 {{- end -}}
@@ -270,13 +270,13 @@ Set ClickHouse cluster name
 {{- end -}}
 
 {{/*
-Set Kafka Confluent host
+Set Kafka Confluent hosts
 */}}
-{{- define "sentry.kafka.host" -}}
+{{- define "sentry.kafka.hosts" -}}
 {{- if .Values.kafka.enabled -}}
-{{- template "sentry.kafka.fullname" . -}}
+{{- include "sentry.kafka.fullname" . -}}
 {{- else -}}
-{{ required "A valid .Values.externalKafka.host is required" .Values.externalKafka.host }}
+{{- required "A valid .Values.externalKafka.hosts is required" .Values.externalKafka.hosts -}}
 {{- end -}}
 {{- end -}}
 
@@ -285,11 +285,23 @@ Set Kafka Confluent port
 */}}
 {{- define "sentry.kafka.port" -}}
 {{- if and (.Values.kafka.enabled) (.Values.kafka.service.port) -}}
-{{- .Values.kafka.service.port }}
+{{- .Values.kafka.service.port -}}
 {{- else -}}
-{{ required "A valid .Values.externalKafka.port is required" .Values.externalKafka.port }}
+{{- required "A valid .Values.externalKafka.port is required" .Values.externalKafka.port -}}
 {{- end -}}
 {{- end -}}
+
+{{/*
+Set Kafka bootstrappers
+*/}}
+{{- define "sentry.kafka.bootstrappers" -}}
+{{- if .Values.kafka.enabled -}}
+{{- printf "%s:%s" (include "sentry.kafka.fullname" .) ($.Values.kafka.service.port | toString) -}}
+{{- else -}}
+{{- range $index, $element := .Values.externalKafka.hosts -}}{{if $index}},{{end}}{{- printf "%s:%s" $element ($.Values.externalKafka.port | toString) -}}{{end}}
+{{- end -}}
+{{- end -}}
+
 
 {{/*
 Set RabbitMQ host
