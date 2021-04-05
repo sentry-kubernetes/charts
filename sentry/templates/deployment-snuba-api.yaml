@@ -61,6 +61,9 @@ spec:
 {{- if .Values.snuba.api.env }}
 {{ toYaml .Values.snuba.api.env | indent 8 }}
 {{- end }}
+        envFrom:
+        - secretRef:
+            name: {{ template "sentry.fullname" . }}-snuba-env
         volumeMounts:
         - mountPath: /etc/snuba
           name: config

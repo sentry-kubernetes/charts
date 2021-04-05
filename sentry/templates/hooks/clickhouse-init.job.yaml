@@ -1,6 +1,8 @@
 {{- if .Values.hooks.enabled -}}
 {{- $clickhouseHost := include "sentry.clickhouse.host" . -}}
 {{- $clickhousePort := include "sentry.clickhouse.port" . -}}
+{{- $clickhouseDB := include "sentry.clickhouse.database" . -}}
+{{- $clickhouseAuth := include "sentry.clickhouse.auth" . -}}
 {{- $clickhouseClusterName := include "sentry.clickhouse.cluster.name" . -}}
 {{- $tables := "discover errors groupassignee groupedmessage outcomes_hourly migrations outcomes_mv_hourly outcomes_raw sentry sessions_hourly sessions_hourly_mv sessions_raw transactions" -}}
 {{- $dropQuery := "DROP TABLE IF EXISTS ${tbl}_dist" -}}
@@ -47,11 +49,11 @@ spec:
             
             for tbl in {{ $tables }}; do
               for ((i=0;i<{{ .Values.clickhouse.clickhouse.replicas }};i++)); do
-                clickhouse-client --database=default --host={{ $clickhouseHost }}-$i.{{ $clickhouseHost }}-headless --port={{ $clickhousePort }} --query="{{ $dropQuery }}";
-                clickhouse-client --database=default --host={{ $clickhouseHost }}-$i.{{ $clickhouseHost }}-headless --port={{ $clickhousePort }} --query="{{ $createQuery }}";
+                clickhouse-client {{ $clickhouseAuth }} --database={{ $clickhouseDB }} --host={{ $clickhouseHost }}-$i.{{ $clickhouseHost }}-headless --port={{ $clickhousePort }} --query="{{ $dropQuery }}";
+                clickhouse-client {{ $clickhouseAuth }} --database={{ $clickhouseDB }} --host={{ $clickhouseHost }}-$i.{{ $clickhouseHost }}-headless --port={{ $clickhousePort }} --query="{{ $createQuery }}";
                 {{- if .Values.clickhouse.clickhouse.configmap.remote_servers.replica.backup.enabled }}
-                clickhouse-client --database=default --host={{ $clickhouseHost }}-replica-$i.{{ $clickhouseHost }}-replica-headless --port={{ $clickhousePort }} --query="{{ $dropQuery }}";
-                clickhouse-client --database=default --host={{ $clickhouseHost }}-replica-$i.{{ $clickhouseHost }}-replica-headless --port={{ $clickhousePort }} --query="{{ $createQuery }}";
+                clickhouse-client {{ $clickhouseAuth }} --database={{ $clickhouseDB }} --host={{ $clickhouseHost }}-replica-$i.{{ $clickhouseHost }}-replica-headless --port={{ $clickhousePort }} --query="{{ $dropQuery }}";
+                clickhouse-client {{ $clickhouseAuth }} --database={{ $clickhouseDB }} --host={{ $clickhouseHost }}-replica-$i.{{ $clickhouseHost }}-replica-headless --port={{ $clickhousePort }} --query="{{ $createQuery }}";
                 {{- end }}
               done
             done
@@ -61,8 +63,8 @@ spec:
             echo "clickhouse-init started"
             
             for tbl in {{ $tables }}; do
-              clickhouse-client --database=default --host={{ $clickhouseHost }} --port={{ $clickhousePort }} --query="{{ $dropQuery }}";
-              clickhouse-client --database=default --host={{ $clickhouseHost }} --port={{ $clickhousePort }} --query="{{ $createQuery }}";
+              clickhouse-client {{ $clickhouseAuth }} --database={{ $clickhouseDB }} --host={{ $clickhouseHost }} --port={{ $clickhousePort }} --query="{{ $dropQuery }}";
+              clickhouse-client {{ $clickhouseAuth }} --database={{ $clickhouseDB }} --host={{ $clickhouseHost }} --port={{ $clickhousePort }} --query="{{ $createQuery }}";
             done
             
             echo "clickhouse-init finished"
