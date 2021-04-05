@@ -450,6 +450,18 @@ clickhouse:
         replica:
           backup:
             enabled: false
+      users:
+        enabled: false
+        user:
+        # the first user will be used if enabled
+        - name: default
+          config:
+            password: ""
+            networks:
+            - ::/0
+            profile: default
+            quota: default
+          
     persistentVolumeClaim:
       enabled: true
       dataPersistentVolume:
@@ -465,6 +477,9 @@ externalClickhouse:
   ##
   host: "clickhouse"
   tcpPort: 9000
+  username: default
+  password: ""
+  database: default
   ## Cluster name, can be found in config
   ## (https://clickhouse.tech/docs/en/operations/server-configuration-parameters/settings/#server-settings-remote-servers)
   ## or by executing `select * from system.clusters`
