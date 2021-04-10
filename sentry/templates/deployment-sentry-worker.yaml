@@ -63,9 +63,18 @@ spec:
           {{- end }}
         env:
         - name: SNUBA
+          {{- if .Values.snuba.api.address }}
+          value: {{ .Values.snuba.api.address }}
+          {{- else }}
           value: http://{{ template "sentry.fullname" . }}-snuba:{{ template "snuba.port" }}
+          {{- end }}
         - name: C_FORCE_ROOT
           value: "true"
+        - name: SENTRY_LOG_LEVEL
+          valueFrom:
+            configMapKeyRef:
+              name: {{ template "sentry.fullname" . }}-sentry
+              key: sentryLogLevel
         {{- if .Values.postgresql.enabled }}
         - name: POSTGRES_PASSWORD
           valueFrom:

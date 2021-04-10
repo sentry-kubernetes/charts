@@ -420,3 +420,4 @@ data:
 {{- end }}
 
 {{ .Values.config.sentryConfPy | indent 4 }}
+  sentryLogLevel: 'INFO'
