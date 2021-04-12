@@ -14,6 +14,10 @@ Big thanks to the maintainers of the [deprecated chart](https://github.com/helm/
 
 For now the full list of values is not documented but you can get inspired by the values.yaml specific to each directory.
 
+## Upgrading from 10.x.x version of this Chart to 11.0.0
+
+If you were using clickhouse tabix externally, we disabled it per default.
+
 ## Upgrading from 9.x.x version of this Chart to 10.0.0
 
 If you were using clickhouse ImagePullSecrets, [we unified](https://github.com/sentry-kubernetes/charts/commit/573ca29d03bf2c044004c1aa387f652a36ada23a) the way it's used.
