@@ -224,10 +224,10 @@ hooks:
   enabled: true
   removeOnSuccess: true
   clickhouseInit:
-    podAnnotations:
+    podAnnotations: {}
   dbCheck:
     env: []
-    podAnnotations: []
+    podAnnotations: {}
     resources:
       limits:
         memory: 64Mi
@@ -236,7 +236,7 @@ hooks:
         memory: 64Mi
   dbInit:
     env: []
-    podAnnotations: []
+    podAnnotations: {}
     resources:
       limits:
         memory: 2048Mi
@@ -246,7 +246,7 @@ hooks:
     sidecars: [ ]
     volumes: [ ]
   snubaInit:
-    podAnnotations: []
+    podAnnotations: {}
     resources:
       limits:
         cpu: 2000m
@@ -461,7 +461,7 @@ clickhouse:
             - ::/0
             profile: default
             quota: default
-          
+
     persistentVolumeClaim:
       enabled: true
       dataPersistentVolume:

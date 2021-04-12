@@ -26,6 +26,10 @@ spec:
   template:
     metadata:
       name: {{ template "sentry.fullname" . }}-clickhouse-init
+      annotations:
+        {{- if .Values.hooks.clickhouseInit.podAnnotations }}
+{{ toYaml .Values.hooks.clickhouseInit.podAnnotations | indent 8 }}
+        {{- end }}
       labels:
         app: sentry
         release: "{{ .Release.Name }}"
