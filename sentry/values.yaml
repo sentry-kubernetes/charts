@@ -219,6 +219,17 @@ snuba:
   migrateJob:
     env: []
 
+  cleanupErrors:
+    enabled: true
+    schedule: "0 * * * *"
+    sidecars: []
+    volumes: []
+
+  cleanupTransactions:
+    enabled: true
+    schedule: "0 * * * *"
+    sidecars: []
+    volumes: []
 
 hooks:
   enabled: true
