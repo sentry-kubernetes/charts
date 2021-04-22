@@ -226,6 +226,11 @@ hooks:
   clickhouseInit:
     podAnnotations: {}
   dbCheck:
+    image:
+      # repository: subfuzion/netcat
+      # tag: latest
+      # pullPolicy: IfNotPresent
+      imagePullSecrets: []
     env: []
     podAnnotations: {}
     resources:
