@@ -2,7 +2,7 @@
 apiVersion: batch/v1beta1
 kind: CronJob
 metadata:
-  name: {{ template "sentry.fullname" . }}-sentry-cleanup-errors
+  name: {{ template "sentry.fullname" . }}-sentry-cleanup
   labels:
     app: {{ template "sentry.fullname" . }}
     chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
@@ -53,8 +53,6 @@ spec:
               - "cleanup"
               - "--days"
               - "{{ .Values.sentry.cleanup.days }}"
-              - "--storage"
-              - "errors"
             env:
             - name: SNUBA
               value: http://{{ template "sentry.fullname" . }}-snuba:{{ template "snuba.port" }}
