@@ -219,6 +219,17 @@ snuba:
   migrateJob:
     env: []
 
+  cleanupErrors:
+    enabled: true
+    schedule: "0 * * * *"
+    sidecars: []
+    volumes: []
+
+  cleanupTransactions:
+    enabled: true
+    schedule: "0 * * * *"
+    sidecars: []
+    volumes: []
 
 hooks:
   enabled: true
@@ -226,6 +237,11 @@ hooks:
   clickhouseInit:
     podAnnotations: {}
   dbCheck:
+    image:
+      # repository: subfuzion/netcat
+      # tag: latest
+      # pullPolicy: IfNotPresent
+      imagePullSecrets: []
     env: []
     podAnnotations: {}
     resources:

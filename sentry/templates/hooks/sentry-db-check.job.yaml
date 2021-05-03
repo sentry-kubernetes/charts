@@ -37,13 +37,14 @@ spec:
         {{- end }}
     spec:
       restartPolicy: Never
-      {{- if .Values.images.sentry.imagePullSecrets }}
+      {{- if .Values.hooks.dbCheck.image.imagePullSecrets }}
       imagePullSecrets:
-{{ toYaml .Values.images.sentry.imagePullSecrets | indent 8 }}
+{{ toYaml .Values.hooks.dbCheck.image.imagePullSecrets | indent 8 }}
       {{- end }}
       containers:
       - name: db-check
-        image: subfuzion/netcat:latest
+        image: {{ template "dbCheck.image" }}
+        imagePullPolicy: {{ default "IfNotPresent" .Values.hooks.dbCheck.image.pullPolicy }}
         command:
           - /bin/sh
           - -c

@@ -35,6 +35,12 @@
 {{- .Values.images.symbolicator.tag -}}
 {{- end -}}
 
+{{- define "dbCheck.image" -}}
+{{- default "subfuzion/netcat" .Values.hooks.dbCheck.image.repository -}}
+:
+{{- default "latest" .Values.hooks.dbCheck.image.tag -}}
+{{- end -}}
+
 {{/*
 Expand the name of the chart.
 */}}
