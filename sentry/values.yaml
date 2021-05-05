@@ -63,6 +63,7 @@ sentry:
     resources: {}
     affinity: {}
     nodeSelector: {}
+    securityContext: {}
     # tolerations: []
     # podLabels: []
     # Mount and use custom CA
