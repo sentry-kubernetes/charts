@@ -52,7 +52,7 @@ spec:
       imagePullSecrets:
 {{ toYaml .Values.images.sentry.imagePullSecrets | indent 8 }}
       {{- end }}
-      {{- if .Values.images.sentry.web.securityContext }}
+      {{- if .Values.sentry.web.securityContext }}
      securityContext:
 {{ toYaml .Values.sentry.web.securityContext | indent 8 }}
       {{- end }}
