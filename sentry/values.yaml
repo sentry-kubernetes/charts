@@ -385,6 +385,9 @@ ingress:
   # If you are using traefik ingress controller, switch this to 'traefik'
   # if you are using AWS ALB Ingress controller, switch this to 'aws-alb'
   regexPathStyle: nginx
+  #If you are using AWS ALB Ingress controller, switch to true if you want activate the http to https redirection.
+  alb:
+    httpRedirect: false
   # annotations:
   #   If you are using nginx ingress controller, please use at least those 2 annotations
   #   kubernetes.io/ingress.class: nginx
