@@ -45,6 +45,10 @@ spec:
       {{- if .Values.metrics.schedulerName }}
       schedulerName: "{{ .Values.metrics.schedulerName }}"
       {{- end }}
+      {{- if .Values.metrics.securityContext }}
+      securityContext:
+{{ toYaml .Values.metrics.securityContext | indent 8 }}
+      {{- end }}
       containers:
       - name: {{ .Chart.Name }}-metrics
         args:
