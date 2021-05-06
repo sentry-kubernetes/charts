@@ -54,6 +54,10 @@ spec:
       imagePullSecrets:
 {{ toYaml .Values.images.sentry.imagePullSecrets | indent 8 }}
       {{- end }}
+      {{- if .Values.sentry.postProcessForward.securityContext }}
+      securityContext:
+{{ toYaml .Values.sentry.postProcessForward.securityContext | indent 8 }}
+      {{- end }}
       containers:
       - name: {{ .Chart.Name }}-post-process-forward
         image: "{{ template "sentry.image" . }}"

@@ -49,6 +49,10 @@ spec:
       imagePullSecrets:
 {{ toYaml .Values.images.snuba.imagePullSecrets | indent 8 }}
       {{- end }}
+      {{- if .Values.snuba.api.securityContext }}
+      securityContext:
+{{ toYaml .Values.snuba.api.securityContext | indent 8 }}
+      {{- end }}
       containers:
       - name: {{ .Chart.Name }}-snuba
         image: "{{ template "snuba.image" . }}"

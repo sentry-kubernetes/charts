@@ -58,6 +58,10 @@ spec:
       imagePullSecrets:
 {{ toYaml .Values.images.relay.imagePullSecrets | indent 8 }}
       {{- end }}
+      {{- if .Values.relay.securityContext }}
+      securityContext:
+{{ toYaml .Values.relay.securityContext | indent 8 }}
+      {{- end }}
       initContainers:
         - name: {{ .Chart.Name }}-relay-init
           image: "{{ template "relay.image" . }}"

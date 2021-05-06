@@ -59,6 +59,10 @@ spec:
       imagePullSecrets:
 {{ toYaml .Values.images.sentry.imagePullSecrets | indent 8 }}
       {{- end }}
+      {{- if .Values.sentry.ingestConsumer.securityContext }}
+      securityContext:
+{{ toYaml .Values.sentry.ingestConsumer.securityContext | indent 8 }}
+      {{- end }}
       containers:
       - name: {{ .Chart.Name }}-ingest-consumer
         image: "{{ template "sentry.image" . }}"
