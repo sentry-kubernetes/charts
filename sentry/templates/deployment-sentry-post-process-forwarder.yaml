@@ -38,6 +38,7 @@ spec:
 {{ toYaml .Values.sentry.postProcessForward.podLabels | indent 8 }}
         {{- end }}
     spec:
+      serviceAccountName: {{ include "sentry.serviceAccountName" . }}
       affinity:
       {{- if .Values.sentry.postProcessForward.affinity }}
 {{ toYaml .Values.sentry.postProcessForward.affinity | indent 8 }}

@@ -36,6 +36,7 @@ spec:
 {{ toYaml .Values.sentry.web.podLabels | indent 8 }}
         {{- end }}
     spec:
+      serviceAccountName: {{ include "sentry.serviceAccountName" . }}
       affinity:
       {{- if .Values.sentry.web.affinity }}
 {{ toYaml .Values.sentry.web.affinity | indent 8 }}

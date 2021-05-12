@@ -50,8 +50,8 @@ relay:
     minReplicas: 2
     maxReplicas: 5
     targetCPUUtilizationPercentage: 50
-  sidecars: [ ]
-  volumes: [ ]
+  sidecars: []
+  volumes: []
 
 sentry:
   singleOrganization: true
@@ -77,8 +77,8 @@ sentry:
       minReplicas: 2
       maxReplicas: 5
       targetCPUUtilizationPercentage: 50
-    sidecars: [ ]
-    volumes: [ ]
+    sidecars: []
+    volumes: []
 
   features:
     orgSubdomains: false
@@ -101,8 +101,8 @@ sentry:
       minReplicas: 2
       maxReplicas: 5
       targetCPUUtilizationPercentage: 50
-    sidecars: [ ]
-    volumes: [ ]
+    sidecars: []
+    volumes: []
 
   ingestConsumer:
     replicas: 1
@@ -122,8 +122,8 @@ sentry:
       minReplicas: 1
       maxReplicas: 3
       targetCPUUtilizationPercentage: 50
-    sidecars: [ ]
-    volumes: [ ]
+    sidecars: []
+    volumes: []
   cron:
     replicas: 1
     env: []
@@ -132,8 +132,8 @@ sentry:
     nodeSelector: {}
     # tolerations: []
     # podLabels: []
-    sidecars: [ ]
-    volumes: [ ]
+    sidecars: []
+    volumes: []
   postProcessForward:
     replicas: 1
     env: []
@@ -144,8 +144,8 @@ sentry:
     # tolerations: []
     # podLabels: []
     # commitBatchSize: 1
-    sidecars: [ ]
-    volumes: [ ]
+    sidecars: []
+    volumes: []
   cleanup:
     enabled: true
     schedule: "0 0 * * *"
@@ -170,8 +170,8 @@ snuba:
       minReplicas: 2
       maxReplicas: 5
       targetCPUUtilizationPercentage: 50
-    sidecars: [ ]
-    volumes: [ ]
+    sidecars: []
+    volumes: []
 
   consumer:
     replicas: 1
@@ -269,8 +269,8 @@ hooks:
       requests:
         cpu: 300m
         memory: 2048Mi
-    sidecars: [ ]
-    volumes: [ ]
+    sidecars: []
+    volumes: []
   snubaInit:
     podAnnotations: {}
     resources:
@@ -440,7 +440,8 @@ filestore:
       ## different nodes.
       persistentWorkers: false
 
-  gcs: {}
+  gcs:
+    {}
     ## Point this at a pre-configured secret containing a service account. The resulting
     ## secret will be mounted at /var/run/secrets/google
     # secretName:
@@ -467,6 +468,10 @@ config:
   relay: |
     # No YAML relay config given
 
+serviceAccount:
+  create: true
+  name:
+
 clickhouse:
   enabled: true
   clickhouse:
@@ -480,21 +485,21 @@ clickhouse:
       users:
         enabled: false
         user:
-        # the first user will be used if enabled
-        - name: default
-          config:
-            password: ""
-            networks:
-            - ::/0
-            profile: default
-            quota: default
+          # the first user will be used if enabled
+          - name: default
+            config:
+              password: ""
+              networks:
+                - ::/0
+              profile: default
+              quota: default
 
     persistentVolumeClaim:
       enabled: true
       dataPersistentVolume:
         enabled: true
         accessModes:
-        - "ReadWriteOnce"
+          - "ReadWriteOnce"
         storage: "30Gi"
 
 ## This value is only used when clickhouse.enabled is set to false
@@ -599,7 +604,8 @@ rabbitmq:
   persistence:
     enabled: true
   resources: {}
-  memoryHighWatermark: {}
+  memoryHighWatermark:
+    {}
     # enabled: true
     # type: relative
     # value: 0.4
@@ -645,7 +651,6 @@ rabbitmq:
     existingSecret: load-definition
   extraConfiguration: |
     load_definitions = /app/load_definition.json
-
 
 ## Prometheus Exporter / Metrics
 ##

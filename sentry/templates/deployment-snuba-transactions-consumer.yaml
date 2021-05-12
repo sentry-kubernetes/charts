@@ -40,6 +40,7 @@ spec:
 {{ toYaml .Values.snuba.transactionsConsumer.podLabels | indent 8 }}
         {{- end }}
     spec:
+      serviceAccountName: {{ include "sentry.serviceAccountName" . }}
       affinity:
       {{- if .Values.snuba.transactionsConsumer.affinity }}
 {{ toYaml .Values.snuba.transactionsConsumer.affinity | indent 8 }}

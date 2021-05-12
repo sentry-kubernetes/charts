@@ -32,6 +32,7 @@ spec:
 {{ toYaml .Values.sentry.cron.podLabels | indent 8 }}
         {{- end }}
     spec:
+      serviceAccountName: {{ include "sentry.serviceAccountName" . }}
       affinity:
       {{- if .Values.sentry.cron.affinity }}
 {{ toYaml .Values.sentry.cron.affinity | indent 8 }}
