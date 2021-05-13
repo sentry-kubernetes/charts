@@ -11,7 +11,7 @@ metadata:
   annotations:
     # This is what defines this resource as a hook. Without this line, the
     # job is considered part of the release.
-    "helm.sh/hook": "post-install,post-upgrade"
+    "helm.sh/hook": {{ if .Values.postgresql.enabled }}"post-install,post-upgrade"{{ else }}"pre-install,pre-upgrade"{{ end }}
     "helm.sh/hook-delete-policy": "{{ if .Values.hooks.removeOnSuccess }}hook-succeeded,{{ end }}before-hook-creation"
     "helm.sh/hook-weight": "6"
 spec:
