@@ -265,6 +265,17 @@ Set ClickHouse port
 {{- end -}}
 
 {{/*
+Set ClickHouse HTTP port
+*/}}
+{{- define "sentry.clickhouse.http_port" -}}
+{{- if .Values.clickhouse.enabled -}}
+{{- default 8123 .Values.clickhouse.clickhouse.http_port }}
+{{- else -}}
+{{ required "A valid .Values.externalClickhouse.httpPort is required" .Values.externalClickhouse.httpPort }}
+{{- end -}}
+{{- end -}}
+
+{{/*
 Set ClickHouse Database
 */}}
 {{- define "sentry.clickhouse.database" -}}
@@ -288,7 +299,7 @@ Set ClickHouse User
 {{- define "sentry.clickhouse.username" -}}
 {{- if .Values.clickhouse.enabled -}}
   {{- if .Values.clickhouse.clickhouse.configmap.users.enabled -}}
-{{ (index .Values.clickhouse.clickhouse.configmap.users.user 0).name }} 
+{{ (index .Values.clickhouse.clickhouse.configmap.users.user 0).name }}
   {{- else -}}
 default
   {{- end -}}
@@ -303,7 +314,7 @@ Set ClickHouse Password
 {{- define "sentry.clickhouse.password" -}}
 {{- if .Values.clickhouse.enabled -}}
   {{- if .Values.clickhouse.clickhouse.configmap.users.enabled -}}
-{{ (index .Values.clickhouse.clickhouse.configmap.users.user 0).config.password }} 
+{{ (index .Values.clickhouse.clickhouse.configmap.users.user 0).config.password }}
   {{- else -}}
   {{- end -}}
 {{- else -}}
