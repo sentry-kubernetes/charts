@@ -71,6 +71,9 @@ spec:
 {{- if .Values.snuba.migrateJob.env }}
 {{ toYaml .Values.snuba.migrateJob.env | indent 8 }}
 {{- end }}
+        envFrom:
+        - secretRef:
+            name: {{ template "sentry.fullname" . }}-snuba-env
         volumeMounts:
         - mountPath: /etc/snuba
           name: config
