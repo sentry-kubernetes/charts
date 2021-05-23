@@ -60,8 +60,7 @@ spec:
         ports:
         - containerPort: {{ template "snuba.port" }}
         env:
-        - name: SNUBA_SETTINGS
-          value: /etc/snuba/settings.py
+{{ include "sentry.snuba.env" . | indent 8 }}
 {{- if .Values.snuba.api.env }}
 {{ toYaml .Values.snuba.api.env | indent 8 }}
 {{- end }}

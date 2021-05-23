@@ -365,3 +365,13 @@ Set RabbitMQ host
 {{ .Values.rabbitmq.host }}
 {{- end -}}
 {{- end -}}
+
+{{/*
+Common Snuba environment variables
+*/}}
+{{- define "sentry.snuba.env" -}}
+- name: SNUBA_SETTINGS
+  value: /etc/snuba/settings.py
+- name: DEFAULT_BROKERS
+  value: {{ printf "%s:%s" (include "sentry.kafka.host" .) (include "sentry.kafka.port" .) | quote }}
+{{- end -}}
