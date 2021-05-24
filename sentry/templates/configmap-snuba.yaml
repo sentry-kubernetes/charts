@@ -21,6 +21,7 @@ data:
     # Clickhouse Options
     CLUSTERS[0]["host"] = env("CLICKHOUSE_HOST", {{ include "sentry.clickhouse.host" . | quote }})
     CLUSTERS[0]["port"] = int({{ include "sentry.clickhouse.port" . }})
+    CLUSTERS[0]["http_port"] = int({{ include "sentry.clickhouse.http_port" . }})
     CLUSTERS[0]["database"] = env("CLICKHOUSE_DATABASE", "default")
     CLUSTERS[0]["user"] = env("CLICKHOUSE_USER", "default")
     CLUSTERS[0]["password"] = env("CLICKHOUSE_PASSWORD", "")
@@ -34,8 +35,5 @@ data:
     REDIS_PASSWORD = {{ $redisPass | quote }}
     {{- end }}
     REDIS_DB = int(env("REDIS_DB", 1))
-
-    # Processor/Writer Options
-    DEFAULT_BROKERS = [{{ printf "%s:%s" (include "sentry.kafka.host" .) (include "sentry.kafka.port" .) | quote }}]
 
 {{ .Values.config.snubaSettingsPy | indent 4 }}
