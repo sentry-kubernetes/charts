@@ -35,6 +35,18 @@ spec:
 {{ toYaml .Values.snuba.podLabels | indent 8 }}
         {{- end }}
     spec:
+      {{- if .Values.hooks.snubaInit.affinity }}
+      affinity:
+{{ toYaml .Values.hooks.snubaInit.affinity | indent 8 }}
+      {{- end }}
+      {{- if .Values.hooks.snubaInit.nodeSelector }}
+      nodeSelector:
+{{ toYaml .Values.hooks.snubaInit.nodeSelector | indent 8 }}
+      {{- end }}
+      {{- if .Values.hooks.snubaInit.tolerations }}
+      tolerations:
+{{ toYaml .Values.hooks.snubaInit.tolerations | indent 8 }}
+      {{- end }}
       restartPolicy: Never
       {{- if .Values.images.snuba.imagePullSecrets }}
       imagePullSecrets:

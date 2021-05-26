@@ -34,6 +34,18 @@ spec:
         app: sentry
         release: "{{ .Release.Name }}"
     spec:
+      {{- if .Values.hooks.clickhouseInit.affinity }}
+      affinity:
+{{ toYaml .Values.hooks.clickhouseInit.affinity | indent 8 }}
+      {{- end }}
+      {{- if .Values.hooks.clickhouseInit.nodeSelector }}
+      nodeSelector:
+{{ toYaml .Values.hooks.clickhouseInit.nodeSelector | indent 8 }}
+      {{- end }}
+      {{- if .Values.hooks.clickhouseInit.tolerations }}
+      tolerations:
+{{ toYaml .Values.hooks.clickhouseInit.tolerations | indent 8 }}
+      {{- end }}
       restartPolicy: Never
       {{- if .Values.clickhouse.clickhouse.imagePullSecrets }}
       imagePullSecrets:
