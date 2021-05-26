@@ -36,6 +36,18 @@ spec:
 {{ toYaml .Values.sentry.worker.podLabels | indent 8 }}
         {{- end }}
     spec:
+      {{- if .Values.hooks.dbCheck.affinity }}
+      affinity:
+{{ toYaml .Values.hooks.dbCheck.affinity | indent 8 }}
+      {{- end }}
+      {{- if .Values.hooks.dbCheck.nodeSelector }}
+      nodeSelector:
+{{ toYaml .Values.hooks.dbCheck.nodeSelector | indent 8 }}
+      {{- end }}
+      {{- if .Values.hooks.dbCheck.tolerations }}
+      tolerations:
+{{ toYaml .Values.hooks.dbCheck.tolerations | indent 8 }}
+      {{- end }}
       restartPolicy: Never
       {{- if .Values.hooks.dbCheck.image.imagePullSecrets }}
       imagePullSecrets:
