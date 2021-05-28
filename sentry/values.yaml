@@ -407,6 +407,7 @@ ingress:
   enabled: false
   # If you are using traefik ingress controller, switch this to 'traefik'
   # if you are using AWS ALB Ingress controller, switch this to 'aws-alb'
+  # if you are using GKE Ingress controller, switch this to 'gke'
   regexPathStyle: nginx
   #If you are using AWS ALB Ingress controller, switch to true if you want activate the http to https redirection.
   alb:
