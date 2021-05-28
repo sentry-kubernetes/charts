@@ -38,5 +38,9 @@ data:
 
     # Processor/Writer Options
     DEFAULT_BROKERS = {{ include "sentry.kafka.bootstrap_servers_list" . }}
+{{- if .Values.metrics.enabled }}
+    DOGSTATSD_HOST = "{{ template "sentry.fullname" . }}-metrics"
+    DOGSTATSD_PORT = 9125
+{{- end }}
 
 {{ .Values.config.snubaSettingsPy | indent 4 }}

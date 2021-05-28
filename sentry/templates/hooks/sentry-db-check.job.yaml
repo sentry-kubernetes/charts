@@ -61,18 +61,22 @@ spec:
           - /bin/sh
           - -c
           - |
-            {{- if .Values.clickhouse.enabled }}
             echo "Checking if clickhouse is up"
             CLICKHOUSE_STATUS=0
             while [ $CLICKHOUSE_STATUS -eq 0 ]; do
               CLICKHOUSE_STATUS=1
-              i=0; while [ $i -lt {{ .Values.clickhouse.clickhouse.replicas }} ]; do
+              CLICKHOUSE_REPLICAS={{ .Values.clickhouse.enabled | ternary .Values.clickhouse.clickhouse.replicas "1" }}
+              i=0; while [ $i -lt $CLICKHOUSE_REPLICAS ]; do
+                {{- if .Values.clickhouse.enabled }}
                 CLICKHOUSE_HOST={{ $clickhouseHost }}-$i.{{ $clickhouseHost }}-headless
+                {{- else }}
+                CLICKHOUSE_HOST={{ .Values.externalClickhouse.host }}
+                {{- end }}
                 if ! nc -z "$CLICKHOUSE_HOST" {{ $clickhousePort }}; then
                   CLICKHOUSE_STATUS=0
                   echo "$CLICKHOUSE_HOST is not available yet"
                 fi
-                {{- if .Values.clickhouse.clickhouse.configmap.remote_servers.replica.backup.enabled }}
+                {{- if and .Values.clickhouse.enabled .Values.clickhouse.clickhouse.configmap.remote_servers.replica.backup.enabled }}
                 CLICKHOUSE_HOST={{ $clickhouseHost }}-replica-$i.{{ $clickhouseHost }}-replica-headless
                 if ! nc -z "$CLICKHOUSE_HOST" {{ $clickhousePort }}; then
                   CLICKHOUSE_STATUS=0
@@ -87,7 +91,6 @@ spec:
               fi
             done
             echo "Clickhouse is up"
-            {{- end }}
 
             echo "Checking if kafka is up"
             KAFKA_STATUS=0
