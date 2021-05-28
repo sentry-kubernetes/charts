@@ -36,4 +36,7 @@ data:
     {{- end }}
     REDIS_DB = int(env("REDIS_DB", 1))
 
+    # Processor/Writer Options
+    DEFAULT_BROKERS = {{ include "sentry.kafka.bootstrap_servers_list" . }}
+
 {{ .Values.config.snubaSettingsPy | indent 4 }}
