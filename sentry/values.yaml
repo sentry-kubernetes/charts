@@ -246,6 +246,9 @@ hooks:
   removeOnSuccess: true
   clickhouseInit:
     podAnnotations: {}
+    affinity: {}
+    nodeSelector: {}
+    # tolerations: []
   dbCheck:
     image:
       # repository: subfuzion/netcat
@@ -260,6 +263,9 @@ hooks:
       requests:
         cpu: 100m
         memory: 64Mi
+    affinity: {}
+    nodeSelector: {}
+    # tolerations: []
   dbInit:
     env: []
     podAnnotations: {}
@@ -271,6 +277,9 @@ hooks:
         memory: 2048Mi
     sidecars: []
     volumes: []
+    affinity: {}
+    nodeSelector: {}
+    # tolerations: []
   snubaInit:
     podAnnotations: {}
     resources:
@@ -280,6 +289,9 @@ hooks:
       requests:
         cpu: 700m
         memory: 1Gi
+    affinity: {}
+    nodeSelector: {}
+    # tolerations: []
 
 system:
   ## be sure to include the scheme on the url, for example: "https://sentry.example.com"
