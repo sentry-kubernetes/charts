@@ -339,7 +339,7 @@ Set Kafka Confluent host
 {{- define "sentry.kafka.host" -}}
 {{- if .Values.kafka.enabled -}}
 {{- template "sentry.kafka.fullname" . -}}
-{{- else -}}
+{{- else if and (.Values.externalKafka) (not (kindIs "slice" .Values.externalKafka)) -}}
 {{ required "A valid .Values.externalKafka.host is required" .Values.externalKafka.host }}
 {{- end -}}
 {{- end -}}
@@ -350,10 +350,24 @@ Set Kafka Confluent port
 {{- define "sentry.kafka.port" -}}
 {{- if and (.Values.kafka.enabled) (.Values.kafka.service.port) -}}
 {{- .Values.kafka.service.port }}
-{{- else -}}
+{{- else if and (.Values.externalKafka) (not (kindIs "slice" .Values.externalKafka)) -}}
 {{ required "A valid .Values.externalKafka.port is required" .Values.externalKafka.port }}
 {{- end -}}
 {{- end -}}
+
+{{/*
+Set Kafka bootstrap servers string
+*/}}
+{{- define "sentry.kafka.bootstrap_servers_string" -}}
+{{- if or (.Values.kafka.enabled) (not (kindIs "slice" .Values.externalKafka)) -}}
+{{ printf "%s:%s" (include "sentry.kafka.host" .) (include "sentry.kafka.port" .) }}
+{{- else -}}
+{{- range $index, $elem := .Values.externalKafka -}}
+{{- if $index -}},{{- end -}}{{ printf "%s:%s" $elem.host (toString $elem.port) }}
+{{- end -}}
+{{- end -}}
+{{- end -}}
+
 
 {{/*
 Set RabbitMQ host
@@ -373,5 +387,5 @@ Common Snuba environment variables
 - name: SNUBA_SETTINGS
   value: /etc/snuba/settings.py
 - name: DEFAULT_BROKERS
-  value: {{ printf "%s:%s" (include "sentry.kafka.host" .) (include "sentry.kafka.port" .) | quote }}
+  value: {{ include "sentry.kafka.bootstrap_servers_string" . | quote }}
 {{- end -}}
