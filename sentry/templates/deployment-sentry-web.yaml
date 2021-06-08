@@ -119,6 +119,9 @@ spec:
 {{- if .Values.sentry.web.sidecars }}
 {{ toYaml .Values.sentry.web.sidecars | indent 6 }}
 {{- end }}
+      {{- if .Values.serviceAccount.enabled }}
+      serviceAccountName: {{ .Values.serviceAccount.name }}-web
+      {{- end }}
       volumes:
       - name: config
         configMap:

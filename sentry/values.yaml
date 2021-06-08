@@ -33,6 +33,16 @@ images:
     # pullPolicy: IfNotPresent
     imagePullSecrets: []
 
+serviceAccount:
+  # serviceAccount.annotations -- Additional Service Account annotations.
+  annotations: {}
+  # serviceAccount.enabled -- If `true`, a custom Service Account will be used.
+  enabled: false
+  # serviceAccount.name -- The base name of the ServiceAccount to use. Will be appended with e.g. `snuba-api` or `web` for the pods accordingly.
+  name: "sentry"
+  # serviceAccount.automountServiceAccountToken -- Automount API credentials for a Service Account.
+  automountServiceAccountToken: true
+
 relay:
   replicas: 1
   mode: proxy
@@ -363,6 +373,9 @@ nginx:
   service:
     type: ClusterIP
     port: 80
+  serviceAccount:
+    create: false
+    name: nginx
 
 ingress:
   enabled: false
@@ -470,6 +483,12 @@ clickhouse:
         - "ReadWriteOnce"
         storage: "30Gi"
 
+  serviceAccount:
+    annotations: {}
+    enabled: false
+    name: "sentry-clickhouse"
+    automountServiceAccountToken: true
+
 ## This value is only used when clickhouse.enabled is set to false
 ##
 externalClickhouse:
@@ -504,6 +523,15 @@ kafka:
   service:
     port: 9092
 
+  serviceAccount:
+    create: false
+    name: kafka
+
+  zookeeper:
+    serviceAccount:
+      create: false
+      name: zookeeper
+
 ## This value is only used when kafka.enabled is set to false
 ##
 externalKafka:
@@ -521,6 +549,9 @@ redis:
   master:
     persistence:
       enabled: true
+  serviceAccount:
+    create: false
+    name: sentry-redis
 
 ## This value is only used when redis.enabled is set to false
 ##
@@ -543,6 +574,8 @@ postgresql:
     synchronousCommit: "on"
     numSynchronousReplicas: 1
     applicationName: sentry
+  serviceAccount:
+    enabled: false
 
 ## This value is only used when postgresql.enabled is set to false
 ##
@@ -618,7 +651,9 @@ rabbitmq:
     existingSecret: load-definition
   extraConfiguration: |
     load_definitions = /app/load_definition.json
-
+  serviceAccount:
+    create: false
+    name: rabbitmq
 
 ## Prometheus Exporter / Metrics
 ##

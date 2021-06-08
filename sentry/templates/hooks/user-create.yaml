@@ -72,6 +72,9 @@ spec:
           readOnly: true
         resources:
 {{ toYaml .Values.hooks.dbInit.resources | indent 10 }}
+{{- if .Values.serviceAccount.enabled }}
+      serviceAccountName: user-create-job
+{{- end }}
       volumes:
       - name: config
         configMap:

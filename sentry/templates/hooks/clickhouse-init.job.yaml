@@ -69,4 +69,7 @@ spec:
             
             echo "clickhouse-init finished"
             {{- end }}
+{{- if .Values.serviceAccount.enabled }}
+      serviceAccountName: clickhouse-init
+{{- end }}
 {{- end }}

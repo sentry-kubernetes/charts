@@ -119,6 +119,9 @@ spec:
 {{- if .Values.relay.sidecars }}
 {{ toYaml .Values.relay.sidecars | indent 6 }}
 {{- end }}
+      {{- if .Values.serviceAccount.enabled }}
+      serviceAccountName: {{ .Values.serviceAccount.name }}
+      {{- end }}
       volumes:
       - name: config
         configMap:

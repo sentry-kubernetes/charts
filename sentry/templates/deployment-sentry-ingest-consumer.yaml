@@ -106,6 +106,9 @@ spec:
 {{- if .Values.sentry.ingestConsumer.sidecars }}
 {{ toYaml .Values.sentry.ingestConsumer.sidecars | indent 6 }}
 {{- end }}
+      {{- if .Values.serviceAccount.enabled }}
+      serviceAccountName: {{ .Values.serviceAccount.name }}-ingest-consume
+      {{- end }}
       volumes:
       - name: config
         configMap:
