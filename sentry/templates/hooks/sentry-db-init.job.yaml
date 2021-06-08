@@ -74,9 +74,6 @@ spec:
 {{ toYaml .Values.hooks.dbInit.resources | indent 10 }}
 {{- if .Values.hooks.dbInit.sidecars }}
 {{ toYaml .Values.hooks.dbInit.sidecars | indent 6 }}
-{{- if .Values.serviceAccount.enabled }}
-      serviceAccountName: db-init-job
-{{- end }}
 {{- end }}
       volumes:
       - name: config

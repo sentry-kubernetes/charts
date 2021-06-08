@@ -133,7 +133,4 @@ spec:
 {{- end }}
         resources:
 {{ toYaml .Values.hooks.dbCheck.resources | indent 10 }}
-{{- if .Values.serviceAccount.enabled }}
-      serviceAccountName: db-check
-{{- end }}
 {{- end }}
