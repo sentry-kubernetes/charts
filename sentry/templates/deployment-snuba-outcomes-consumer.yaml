@@ -56,6 +56,10 @@ spec:
       imagePullSecrets:
 {{ toYaml .Values.images.snuba.imagePullSecrets | indent 8 }}
       {{- end }}
+      {{- if .Values.snuba.outcomesConsumer.securityContext }}
+      securityContext:
+{{ toYaml .Values.snuba.outcomesConsumer.securityContext | indent 8 }}
+      {{- end }}
       containers:
       - name: {{ .Chart.Name }}-snuba
         image: "{{ template "snuba.image" . }}"
@@ -64,8 +68,7 @@ spec:
         ports:
         - containerPort: {{ template "snuba.port" }}
         env:
-        - name: SNUBA_SETTINGS
-          value: /etc/snuba/settings.py
+{{ include "sentry.snuba.env" . | indent 8 }}
 {{- if .Values.snuba.outcomesConsumer.env }}
 {{ toYaml .Values.snuba.outcomesConsumer.env | indent 8 }}
 {{- end }}

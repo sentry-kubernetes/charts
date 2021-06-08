@@ -35,6 +35,18 @@ spec:
 {{ toYaml .Values.snuba.podLabels | indent 8 }}
         {{- end }}
     spec:
+      {{- if .Values.hooks.snubaInit.affinity }}
+      affinity:
+{{ toYaml .Values.hooks.snubaInit.affinity | indent 8 }}
+      {{- end }}
+      {{- if .Values.hooks.snubaInit.nodeSelector }}
+      nodeSelector:
+{{ toYaml .Values.hooks.snubaInit.nodeSelector | indent 8 }}
+      {{- end }}
+      {{- if .Values.hooks.snubaInit.tolerations }}
+      tolerations:
+{{ toYaml .Values.hooks.snubaInit.tolerations | indent 8 }}
+      {{- end }}
       restartPolicy: Never
       {{- if .Values.images.snuba.imagePullSecrets }}
       imagePullSecrets:
@@ -64,13 +76,15 @@ spec:
         env:
         - name: LOG_LEVEL
           value: debug
-        - name: SNUBA_SETTINGS
-          value: /etc/snuba/settings.py
         - name: CLICKHOUSE_SINGLE_NODE
           value: "true"
+{{ include "sentry.snuba.env" . | indent 8 }}
 {{- if .Values.snuba.migrateJob.env }}
 {{ toYaml .Values.snuba.migrateJob.env | indent 8 }}
 {{- end }}
+        envFrom:
+        - secretRef:
+            name: {{ template "sentry.fullname" . }}-snuba-env
         volumeMounts:
         - mountPath: /etc/snuba
           name: config

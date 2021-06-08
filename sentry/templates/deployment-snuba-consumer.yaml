@@ -56,16 +56,19 @@ spec:
       imagePullSecrets:
 {{ toYaml .Values.images.snuba.imagePullSecrets | indent 8 }}
       {{- end }}
+      {{- if .Values.snuba.consumer.securityContext }}
+      securityContext:
+{{ toYaml .Values.snuba.consumer.securityContext | indent 8 }}
+      {{- end }}
       containers:
       - name: {{ .Chart.Name }}-snuba
         image: "{{ template "snuba.image" . }}"
         imagePullPolicy: {{ default "IfNotPresent" .Values.images.snuba.pullPolicy }}
-        command: ["snuba", "consumer", "--storage", "events", "--auto-offset-reset=latest", "--max-batch-time-ms", "750"]
+        command: ["snuba", "consumer", "--storage", "errors", "--auto-offset-reset=latest", "--max-batch-time-ms", "750"]
         ports:
         - containerPort: {{ template "snuba.port" }}
         env:
-        - name: SNUBA_SETTINGS
-          value: /etc/snuba/settings.py
+{{ include "sentry.snuba.env" . | indent 8 }}
 {{- if .Values.snuba.consumer.env }}
 {{ toYaml .Values.snuba.consumer.env | indent 8 }}
 {{- end }}

@@ -49,6 +49,10 @@ spec:
       imagePullSecrets:
 {{ toYaml .Values.images.symbolicator.imagePullSecrets | indent 8 }}
       {{- end }}
+      {{- if .Values.symbolicator.api.securityContext }}
+      securityContext:
+{{ toYaml .Values.symbolicator.api.securityContext | indent 8 }}
+      {{- end }}
       containers:
       - name: {{ .Chart.Name }}-symbolicator
         image: "{{ template "symbolicator.image" . }}"

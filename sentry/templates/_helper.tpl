@@ -35,6 +35,12 @@
 {{- .Values.images.symbolicator.tag -}}
 {{- end -}}
 
+{{- define "dbCheck.image" -}}
+{{- default "subfuzion/netcat" .Values.hooks.dbCheck.image.repository -}}
+:
+{{- default "latest" .Values.hooks.dbCheck.image.tag -}}
+{{- end -}}
+
 {{/*
 Expand the name of the chart.
 */}}
@@ -259,6 +265,17 @@ Set ClickHouse port
 {{- end -}}
 
 {{/*
+Set ClickHouse HTTP port
+*/}}
+{{- define "sentry.clickhouse.http_port" -}}
+{{- if .Values.clickhouse.enabled -}}
+{{- default 8123 .Values.clickhouse.clickhouse.http_port }}
+{{- else -}}
+{{ required "A valid .Values.externalClickhouse.httpPort is required" .Values.externalClickhouse.httpPort }}
+{{- end -}}
+{{- end -}}
+
+{{/*
 Set ClickHouse Database
 */}}
 {{- define "sentry.clickhouse.database" -}}
@@ -282,7 +299,7 @@ Set ClickHouse User
 {{- define "sentry.clickhouse.username" -}}
 {{- if .Values.clickhouse.enabled -}}
   {{- if .Values.clickhouse.clickhouse.configmap.users.enabled -}}
-{{ (index .Values.clickhouse.clickhouse.configmap.users.user 0).name }} 
+{{ (index .Values.clickhouse.clickhouse.configmap.users.user 0).name }}
   {{- else -}}
 default
   {{- end -}}
@@ -297,7 +314,7 @@ Set ClickHouse Password
 {{- define "sentry.clickhouse.password" -}}
 {{- if .Values.clickhouse.enabled -}}
   {{- if .Values.clickhouse.clickhouse.configmap.users.enabled -}}
-{{ (index .Values.clickhouse.clickhouse.configmap.users.user 0).config.password }} 
+{{ (index .Values.clickhouse.clickhouse.configmap.users.user 0).config.password }}
   {{- else -}}
   {{- end -}}
 {{- else -}}
@@ -322,7 +339,7 @@ Set Kafka Confluent host
 {{- define "sentry.kafka.host" -}}
 {{- if .Values.kafka.enabled -}}
 {{- template "sentry.kafka.fullname" . -}}
-{{- else -}}
+{{- else if and (.Values.externalKafka) (not (kindIs "slice" .Values.externalKafka)) -}}
 {{ required "A valid .Values.externalKafka.host is required" .Values.externalKafka.host }}
 {{- end -}}
 {{- end -}}
@@ -333,10 +350,24 @@ Set Kafka Confluent port
 {{- define "sentry.kafka.port" -}}
 {{- if and (.Values.kafka.enabled) (.Values.kafka.service.port) -}}
 {{- .Values.kafka.service.port }}
-{{- else -}}
+{{- else if and (.Values.externalKafka) (not (kindIs "slice" .Values.externalKafka)) -}}
 {{ required "A valid .Values.externalKafka.port is required" .Values.externalKafka.port }}
 {{- end -}}
 {{- end -}}
+
+{{/*
+Set Kafka bootstrap servers string
+*/}}
+{{- define "sentry.kafka.bootstrap_servers_string" -}}
+{{- if or (.Values.kafka.enabled) (not (kindIs "slice" .Values.externalKafka)) -}}
+{{ printf "%s:%s" (include "sentry.kafka.host" .) (include "sentry.kafka.port" .) }}
+{{- else -}}
+{{- range $index, $elem := .Values.externalKafka -}}
+{{- if $index -}},{{- end -}}{{ printf "%s:%s" $elem.host (toString $elem.port) }}
+{{- end -}}
+{{- end -}}
+{{- end -}}
+
 
 {{/*
 Set RabbitMQ host
@@ -347,4 +378,14 @@ Set RabbitMQ host
 {{- else -}}
 {{ .Values.rabbitmq.host }}
 {{- end -}}
+{{- end -}}
+
+{{/*
+Common Snuba environment variables
+*/}}
+{{- define "sentry.snuba.env" -}}
+- name: SNUBA_SETTINGS
+  value: /etc/snuba/settings.py
+- name: DEFAULT_BROKERS
+  value: {{ include "sentry.kafka.bootstrap_servers_string" . | quote }}
 {{- end -}}
