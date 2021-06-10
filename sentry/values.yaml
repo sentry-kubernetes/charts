@@ -158,6 +158,10 @@ snuba:
     replicas: 1
     env: []
     probeInitialDelaySeconds: 10
+    liveness:
+      timeoutSeconds: 2
+    readiness:
+      timeoutSeconds: 2
     resources: {}
     affinity: {}
     nodeSelector: {}
