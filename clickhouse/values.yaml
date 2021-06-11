@@ -213,6 +213,9 @@ clickhouse:
     ## Uncomment to disable ClickHouse internal DNS caching.
     disable_internal_dns_cache: "1"
     ##
+    ## Limits total RAM usage by the ClickHouse server. (0 is Auto)
+    #max_server_memory_usage: "0"
+    ##
     ## The maximum number of open files.
     ## We recommend using this option in Mac OS X, since the getrlimit() function returns an incorrect value.
     #max_open_files:

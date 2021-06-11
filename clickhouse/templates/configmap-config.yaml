@@ -41,6 +41,10 @@ data:
         <default_session_timeout>{{ .Values.clickhouse.configmap.default_session_timeout | default "60" }}</default_session_timeout>
         <disable_internal_dns_cache>{{ .Values.clickhouse.configmap.disable_internal_dns_cache | default "1" }}</disable_internal_dns_cache>
 
+        {{- if .Values.clickhouse.configmap.max_server_memory_usage }}
+        <max_server_memory_usage>{{ .Values.clickhouse.configmap.max_server_memory_usage | default "0" }}</max_server_memory_usage>
+        {{- end }}
+
         <query_log>
             <database>system</database>
             <table>query_log</table>
