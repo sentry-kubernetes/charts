@@ -198,6 +198,7 @@ snuba:
     securityContext: {}
     # tolerations: []
     # podLabels: []
+    maxBatchSize: "3"
 
   replacer:
     replicas: 1
@@ -208,6 +209,7 @@ snuba:
     securityContext: {}
     # tolerations: []
     # podLabels: []
+    maxBatchSize: "3"
 
   sessionsConsumer:
     replicas: 1
