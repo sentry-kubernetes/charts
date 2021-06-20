@@ -76,6 +76,10 @@ spec:
           - "-c"
           - "{{ .Values.sentry.ingestConsumer.concurrency }}"
           {{- end }}
+          {{- if .Values.sentry.ingestConsumer.maxBatchSize }}
+          - "--max-batch-size"
+          - "{{ .Values.sentry.ingestConsumer.maxBatchSize }}"
+          {{- end }}
         env:
         - name: SNUBA
           value: http://{{ template "sentry.fullname" . }}-snuba:{{ template "snuba.port" }}
