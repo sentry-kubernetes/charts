@@ -114,6 +114,7 @@ sentry:
     securityContext: {}
     # tolerations: []
     # podLabels: []
+    # maxBatchSize: ""
 
     # it's better to use prometheus adapter and scale based on
     # the size of the rabbitmq queue
@@ -186,6 +187,7 @@ snuba:
     securityContext: {}
     # tolerations: []
     # podLabels: []
+    # maxBatchSize: ""
 
   outcomesConsumer:
     replicas: 1
@@ -196,6 +198,7 @@ snuba:
     securityContext: {}
     # tolerations: []
     # podLabels: []
+    maxBatchSize: "3"
 
   replacer:
     replicas: 1
@@ -206,6 +209,7 @@ snuba:
     securityContext: {}
     # tolerations: []
     # podLabels: []
+    maxBatchSize: "3"
 
   sessionsConsumer:
     replicas: 1
@@ -216,6 +220,7 @@ snuba:
     securityContext: {}
     # tolerations: []
     # podLabels: []
+    # maxBatchSize: ""
 
   transactionsConsumer:
     replicas: 1
@@ -226,6 +231,7 @@ snuba:
     securityContext: {}
     # tolerations: []
     # podLabels: []
+    # maxBatchSize: ""
 
   dbInitJob:
     env: []
