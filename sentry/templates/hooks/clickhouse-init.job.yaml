@@ -60,7 +60,7 @@ spec:
         command:
           - /bin/bash
           - -ec
-          - >-
+          - |-
             check_readiness() {
               local host="$1"
               local port="$2"
