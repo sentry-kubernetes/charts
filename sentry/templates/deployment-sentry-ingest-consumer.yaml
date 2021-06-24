@@ -73,7 +73,7 @@ spec:
           - "ingest-consumer"
           - "--all-consumer-types"
           {{- if .Values.sentry.ingestConsumer.concurrency }}
-          - "-c"
+          - "--concurrency"
           - "{{ .Values.sentry.ingestConsumer.concurrency }}"
           {{- end }}
           {{- if .Values.sentry.ingestConsumer.maxBatchSize }}
