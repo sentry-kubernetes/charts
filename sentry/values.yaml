@@ -222,6 +222,9 @@ snuba:
     # tolerations: []
     # podLabels: []
     maxBatchSize: "3"
+    # maxBatchTimeMs: ""
+    # queuedMaxMessagesKbytes: ""
+    # queuedMinMessages: ""
 
   sessionsConsumer:
     replicas: 1
