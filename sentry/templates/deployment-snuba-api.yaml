@@ -80,7 +80,7 @@ spec:
           initialDelaySeconds: {{ .Values.snuba.api.probeInitialDelaySeconds }}
           periodSeconds: 10
           successThreshold: 1
-          timeoutSeconds: 2
+          timeoutSeconds: {{ .Values.snuba.api.liveness.timeoutSeconds }}
         readinessProbe:
           failureThreshold: 10
           httpGet:
@@ -90,7 +90,7 @@ spec:
           initialDelaySeconds: {{ .Values.snuba.api.probeInitialDelaySeconds }}
           periodSeconds: 10
           successThreshold: 1
-          timeoutSeconds: 2
+          timeoutSeconds: {{ .Values.snuba.api.readiness.timeoutSeconds }}
         resources:
 {{ toYaml .Values.snuba.api.resources | indent 12 }}
 {{- if .Values.snuba.api.sidecars }}

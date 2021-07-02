@@ -64,7 +64,38 @@ spec:
       - name: {{ .Chart.Name }}-snuba
         image: "{{ template "snuba.image" . }}"
         imagePullPolicy: {{ default "IfNotPresent" .Values.images.snuba.pullPolicy }}
-        command: ["snuba", "consumer", "--storage", "outcomes_raw", "--auto-offset-reset=latest", "--max-batch-size",  "3"]
+        command:
+          - "snuba"
+          - "consumer"
+          - "--storage"
+          - "outcomes_raw"
+          - "--auto-offset-reset=latest"
+          - "--max-batch-size"
+          - "{{ default "3" .Values.snuba.outcomesConsumer.maxBatchSize }}"
+          {{- if .Values.snuba.outcomesConsumer.processes }}
+          - "--processes"
+          - "{{ .Values.snuba.outcomesConsumer.processes }}"
+          {{- end }}
+          {{- if .Values.snuba.outcomesConsumer.inputBlockSize }}
+          - "--input-block-size"
+          - "{{ .Values.snuba.outcomesConsumer.inputBlockSize }}"
+          {{- end }}
+          {{- if .Values.snuba.outcomesConsumer.outputBlockSize }}
+          - "--output-block-size"
+          - "{{ .Values.snuba.outcomesConsumer.outputBlockSize }}"
+          {{- end }}
+          {{- if .Values.snuba.outcomesConsumer.maxBatchTimeMs }}
+          - "--max-batch-time-ms"
+          - "{{ .Values.snuba.outcomesConsumer.maxBatchTimeMs }}"
+          {{- end }}
+          {{- if .Values.snuba.outcomesConsumer.queuedMaxMessagesKbytes }}
+          - "--queued-max-messages-kbytes"
+          - "{{ .Values.snuba.outcomesConsumer.queuedMaxMessagesKbytes }}"
+          {{- end }}
+          {{- if .Values.snuba.outcomesConsumer.queuedMinMessages }}
+          - "--queued-min-messages"
+          - "{{ .Values.snuba.outcomesConsumer.queuedMinMessages }}"
+          {{- end }}
         ports:
         - containerPort: {{ template "snuba.port" }}
         env:

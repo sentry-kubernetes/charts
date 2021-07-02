@@ -64,7 +64,42 @@ spec:
       - name: {{ .Chart.Name }}-snuba
         image: "{{ template "snuba.image" . }}"
         imagePullPolicy: {{ default "IfNotPresent" .Values.images.snuba.pullPolicy }}
-        command: ["snuba", "consumer", "--storage", "sessions_raw", "--auto-offset-reset=latest", "--max-batch-time-ms", "750"]
+        command:
+          - "snuba"
+          - "consumer"
+          - "--storage"
+          - "sessions_raw"
+          - "--auto-offset-reset=latest"
+          - "--max-batch-time-ms"
+          - "750"
+          {{- if .Values.snuba.sessionsConsumer.maxBatchSize }}
+          - "--max-batch-size"
+          - "{{ .Values.snuba.sessionsConsumer.maxBatchSize }}"
+          {{- end }}
+          {{- if .Values.snuba.sessionsConsumer.processes }}
+          - "--processes"
+          - "{{ .Values.snuba.sessionsConsumer.processes }}"
+          {{- end }}
+          {{- if .Values.snuba.sessionsConsumer.inputBlockSize }}
+          - "--input-block-size"
+          - "{{ .Values.snuba.sessionsConsumer.inputBlockSize }}"
+          {{- end }}
+          {{- if .Values.snuba.sessionsConsumer.outputBlockSize }}
+          - "--output-block-size"
+          - "{{ .Values.snuba.sessionsConsumer.outputBlockSize }}"
+          {{- end }}
+          {{- if .Values.snuba.sessionsConsumer.maxBatchTimeMs }}
+          - "--max-batch-time-ms"
+          - "{{ .Values.snuba.sessionsConsumer.maxBatchTimeMs }}"
+          {{- end }}
+          {{- if .Values.snuba.sessionsConsumer.queuedMaxMessagesKbytes }}
+          - "--queued-max-messages-kbytes"
+          - "{{ .Values.snuba.sessionsConsumer.queuedMaxMessagesKbytes }}"
+          {{- end }}
+          {{- if .Values.snuba.sessionsConsumer.queuedMinMessages }}
+          - "--queued-min-messages"
+          - "{{ .Values.snuba.sessionsConsumer.queuedMinMessages }}"
+          {{- end }}
         ports:
         - containerPort: {{ template "snuba.port" }}
         env:

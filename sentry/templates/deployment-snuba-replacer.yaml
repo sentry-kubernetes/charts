@@ -64,7 +64,7 @@ spec:
       - name: {{ .Chart.Name }}-snuba
         image: "{{ template "snuba.image" . }}"
         imagePullPolicy: {{ default "IfNotPresent" .Values.images.snuba.pullPolicy }}
-        command: ["snuba", "replacer", "--storage", "errors", "--auto-offset-reset=latest", "--max-batch-size",  "3"]
+        command: ["snuba", "replacer", "--storage", "errors", "--auto-offset-reset=latest", "--max-batch-size", "{{ default "3" .Values.snuba.replacer.maxBatchSize }}"]
         ports:
         - containerPort: {{ template "snuba.port" }}
         env:

@@ -64,7 +64,44 @@ spec:
       - name: {{ .Chart.Name }}-snuba
         image: "{{ template "snuba.image" . }}"
         imagePullPolicy: {{ default "IfNotPresent" .Values.images.snuba.pullPolicy }}
-        command: ["snuba", "consumer", "--storage", "transactions", "--consumer-group", "transactions_group", "--auto-offset-reset=latest", "--max-batch-time-ms", "750"]
+        command:
+          - "snuba"
+          - "consumer"
+          - "--storage"
+          - "transactions"
+          - "--consumer-group"
+          - "transactions_group"
+          - "--auto-offset-reset=latest"
+          - "--max-batch-time-ms"
+          - "750"
+          {{- if .Values.snuba.transactionsConsumer.maxBatchSize }}
+          - "--max-batch-size"
+          - "{{ .Values.snuba.transactionsConsumer.maxBatchSize }}"
+          {{- end }}
+          {{- if .Values.snuba.transactionsConsumer.processes }}
+          - "--processes"
+          - "{{ .Values.snuba.transactionsConsumer.processes }}"
+          {{- end }}
+          {{- if .Values.snuba.transactionsConsumer.inputBlockSize }}
+          - "--input-block-size"
+          - "{{ .Values.snuba.transactionsConsumer.inputBlockSize }}"
+          {{- end }}
+          {{- if .Values.snuba.transactionsConsumer.outputBlockSize }}
+          - "--output-block-size"
+          - "{{ .Values.snuba.transactionsConsumer.outputBlockSize }}"
+          {{- end }}
+          {{- if .Values.snuba.transactionsConsumer.maxBatchTimeMs }}
+          - "--max-batch-time-ms"
+          - "{{ .Values.snuba.transactionsConsumer.maxBatchTimeMs }}"
+          {{- end }}
+          {{- if .Values.snuba.transactionsConsumer.queuedMaxMessagesKbytes }}
+          - "--queued-max-messages-kbytes"
+          - "{{ .Values.snuba.transactionsConsumer.queuedMaxMessagesKbytes }}"
+          {{- end }}
+          {{- if .Values.snuba.transactionsConsumer.queuedMinMessages }}
+          - "--queued-min-messages"
+          - "{{ .Values.snuba.transactionsConsumer.queuedMinMessages }}"
+          {{- end }}
         ports:
         - containerPort: {{ template "snuba.port" }}
         env:
