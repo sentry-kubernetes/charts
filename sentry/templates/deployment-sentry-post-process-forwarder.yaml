@@ -98,6 +98,9 @@ spec:
 {{- if .Values.sentry.postProcessForward.sidecars }}
 {{ toYaml .Values.sentry.postProcessForward.sidecars | indent 6 }}
 {{- end }}
+      {{- if .Values.serviceAccount.enabled }}
+      serviceAccountName: {{ .Values.serviceAccount.name }}-post-process-forwarder
+      {{- end }}
       volumes:
       - name: config
         configMap:

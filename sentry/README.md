@@ -63,6 +63,10 @@ Parameter                          | Description                                
 `metrics.serviceMonitor.honorLabels` | honorLabels chooses the metric's labels on collisions with target labels. | `false`
 `metrics.serviceMonitor.namespace` | namespace where servicemonitor resource should be created | `the same namespace as sentry`
 `metrics.serviceMonitor.scrapeInterval` | interval between Prometheus scraping | `30s`
+`serviceAccount.annotations` |  Additional Service Account annotations. | `{}`
+`serviceAccount.enabled` | If `true`, a custom Service Account will be used. | `false`
+`serviceAccount.name` | The base name of the ServiceAccount to use. Will be appended with e.g. `snuba` or `web` for the pods accordingly. | `"sentry"`
+`serviceAccount.automountServiceAccountToken` | Automount API credentials for a Service Account. | `true`
 `system.secretKey` | secret key for the session cookie ([documentation](https://develop.sentry.dev/config/#general)) | `nil`
 `sentry.features.vstsLimitedScopes` | Disables the azdo-integrations with limited scopes that is the cause of so much pain | `true`
 `sentry.web.customCA.secretName` | Allows mounting a custom CA secret | `nil`

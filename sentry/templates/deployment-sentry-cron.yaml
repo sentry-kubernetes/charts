@@ -94,6 +94,9 @@ spec:
 {{- if .Values.sentry.cron.sidecars }}
 {{ toYaml .Values.sentry.cron.sidecars | indent 6 }}
 {{- end }}
+      {{- if .Values.serviceAccount.enabled }}
+      serviceAccountName: {{ .Values.serviceAccount.name }}-cron
+      {{- end }}
       volumes:
       - name: config
         configMap:

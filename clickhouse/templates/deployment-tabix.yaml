@@ -101,4 +101,7 @@ spec:
         resources:
 {{ toYaml .Values.tabix.resources | indent 10 }}
       {{- end }}
+      {{- if .Values.serviceAccount.enabled }}
+      serviceAccountName: {{ .Values.serviceAccount.name }}-tabix
+      {{- end }}
 {{- end }}
