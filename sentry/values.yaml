@@ -188,6 +188,12 @@ snuba:
     # tolerations: []
     # podLabels: []
     # maxBatchSize: ""
+    # processes: ""
+    # inputBlockSize: ""
+    # outputBlockSize: ""
+    # maxBatchTimeMs: ""
+    # queuedMaxMessagesKbytes: ""
+    # queuedMinMessages: ""
 
   outcomesConsumer:
     replicas: 1
@@ -199,6 +205,12 @@ snuba:
     # tolerations: []
     # podLabels: []
     maxBatchSize: "3"
+    # processes: ""
+    # inputBlockSize: ""
+    # outputBlockSize: ""
+    # maxBatchTimeMs: ""
+    # queuedMaxMessagesKbytes: ""
+    # queuedMinMessages: ""
 
   replacer:
     replicas: 1
@@ -221,6 +233,12 @@ snuba:
     # tolerations: []
     # podLabels: []
     # maxBatchSize: ""
+    # processes: ""
+    # inputBlockSize: ""
+    # outputBlockSize: ""
+    # maxBatchTimeMs: ""
+    # queuedMaxMessagesKbytes: ""
+    # queuedMinMessages: ""
 
   transactionsConsumer:
     replicas: 1
@@ -232,6 +250,12 @@ snuba:
     # tolerations: []
     # podLabels: []
     # maxBatchSize: ""
+    # processes: ""
+    # inputBlockSize: ""
+    # outputBlockSize: ""
+    # maxBatchTimeMs: ""
+    # queuedMaxMessagesKbytes: ""
+    # queuedMinMessages: ""
 
   dbInitJob:
     env: []
