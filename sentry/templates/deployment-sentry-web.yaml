@@ -99,7 +99,7 @@ spec:
           mountPath: /etc/pki/ca-trust/custom
         {{ end }}
         livenessProbe:
-          failureThreshold: 5
+          failureThreshold: 10
           httpGet:
             path: /_health/
             port: {{ template "sentry.port" }}
@@ -109,7 +109,7 @@ spec:
           successThreshold: 1
           timeoutSeconds: 2
         readinessProbe:
-          failureThreshold: 10
+          failureThreshold: 5
           httpGet:
             path: /_health/
             port: {{ template "sentry.port" }}
