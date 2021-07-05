@@ -34,23 +34,23 @@ data:
     ##########
     {{- if .Values.github.appId }}
     github-app.id: {{ .Values.github.appId }}
-    {{ end }}
+    {{- end }}
     {{- if .Values.github.appName }}
     github-app.name: {{ .Values.github.appName | quote }}
-    {{ end }}
+    {{- end }}
     {{- if .Values.github.privateKey }}
     github-app.private-key: |-
-      {{ .Values.github.privateKey | nindent 8 }}"
-    {{ end }}
+{{ .Values.github.privateKey | indent 8 }}
+    {{- end }}
     {{- if .Values.github.webhookSecret }}
     github-app.webhook-secret: {{ .Values.github.webhookSecret | quote }}
-    {{ end }}
+    {{- end }}
     {{- if .Values.github.clientId }}
     github-app.client-id: {{ .Values.github.clientId | quote }}
-    {{ end }}
+    {{- end }}
     {{- if .Values.github.clientSecret }}
     github-app.client-secret: {{ .Values.github.clientSecret | quote }}
-    {{ end }}
+    {{- end }}
 
     ##########
     # Google #
