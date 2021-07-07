@@ -125,6 +125,11 @@ sentry:
       targetCPUUtilizationPercentage: 50
     sidecars: [ ]
     volumes: [ ]
+
+    # volumeMounts:
+    #   - mountPath: /dev/shm
+    #     name: dshm
+
   cron:
     replicas: 1
     env: []
@@ -195,6 +200,14 @@ snuba:
     # queuedMaxMessagesKbytes: ""
     # queuedMinMessages: ""
 
+    # volumeMounts:
+    #   - mountPath: /dev/shm
+    #     name: dshm
+    # volumes:
+    #   - name: dshm
+    #     emptyDir:
+    #       medium: Memory
+
   outcomesConsumer:
     replicas: 1
     env: []
@@ -211,6 +224,14 @@ snuba:
     # maxBatchTimeMs: ""
     # queuedMaxMessagesKbytes: ""
     # queuedMinMessages: ""
+
+    # volumeMounts:
+    #   - mountPath: /dev/shm
+    #     name: dshm
+    # volumes:
+    #   - name: dshm
+    #     emptyDir:
+    #       medium: Memory
 
   replacer:
     replicas: 1
@@ -240,6 +261,14 @@ snuba:
     # queuedMaxMessagesKbytes: ""
     # queuedMinMessages: ""
 
+    # volumeMounts:
+    #   - mountPath: /dev/shm
+    #     name: dshm
+    # volumes:
+    #   - name: dshm
+    #     emptyDir:
+    #       medium: Memory
+
   transactionsConsumer:
     replicas: 1
     env: []
@@ -256,6 +285,14 @@ snuba:
     # maxBatchTimeMs: ""
     # queuedMaxMessagesKbytes: ""
     # queuedMinMessages: ""
+
+    # volumeMounts:
+    #   - mountPath: /dev/shm
+    #     name: dshm
+    # volumes:
+    #   - name: dshm
+    #     emptyDir:
+    #       medium: Memory
 
   dbInitJob:
     env: []
