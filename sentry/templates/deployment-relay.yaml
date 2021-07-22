@@ -42,6 +42,7 @@ spec:
 {{ toYaml .Values.relay.podLabels | indent 8 }}
         {{- end }}
     spec:
+      serviceAccountName: {{ include "sentry.serviceAccountName" . }}
       affinity:
       {{- if .Values.relay.affinity }}
 {{ toYaml .Values.relay.affinity | indent 8 }}

@@ -36,6 +36,7 @@ spec:
 {{ toYaml .Values.sentry.web.podLabels | indent 8 }}
         {{- end }}
     spec:
+      serviceAccountName: {{ include "sentry.serviceAccountName" . }}
       affinity:
       {{- if .Values.sentry.web.affinity }}
 {{ toYaml .Values.sentry.web.affinity | indent 8 }}
@@ -70,8 +71,14 @@ spec:
         - name: POSTGRES_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: {{ default (include "sentry.postgresql.fullname" .) .Values.postgresql.existingSecret }}
+              name: {{ .Values.postgresql.existingSecret }}
               key: {{ default "postgresql-password" .Values.postgresql.existingSecretKey }}
+        {{- else if .Values.externalPostgresql.existingSecret }}
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.externalPostgresql.existingSecret }}
+              key: {{ default "postgresql-password" .Values.externalPostgresql.existingSecretKey }}
         {{- end }}
         {{ if and (eq .Values.filestore.backend "gcs") .Values.filestore.gcs.secretName }}
         - name: GOOGLE_APPLICATION_CREDENTIALS
