@@ -114,6 +114,7 @@ sentry:
     securityContext: {}
     # tolerations: []
     # podLabels: []
+    # maxBatchSize: ""
 
     # it's better to use prometheus adapter and scale based on
     # the size of the rabbitmq queue
@@ -158,6 +159,10 @@ snuba:
     replicas: 1
     env: []
     probeInitialDelaySeconds: 10
+    liveness:
+      timeoutSeconds: 2
+    readiness:
+      timeoutSeconds: 2
     resources: {}
     affinity: {}
     nodeSelector: {}
@@ -182,6 +187,13 @@ snuba:
     securityContext: {}
     # tolerations: []
     # podLabels: []
+    # maxBatchSize: ""
+    # processes: ""
+    # inputBlockSize: ""
+    # outputBlockSize: ""
+    # maxBatchTimeMs: ""
+    # queuedMaxMessagesKbytes: ""
+    # queuedMinMessages: ""
 
   outcomesConsumer:
     replicas: 1
@@ -192,6 +204,13 @@ snuba:
     securityContext: {}
     # tolerations: []
     # podLabels: []
+    maxBatchSize: "3"
+    # processes: ""
+    # inputBlockSize: ""
+    # outputBlockSize: ""
+    # maxBatchTimeMs: ""
+    # queuedMaxMessagesKbytes: ""
+    # queuedMinMessages: ""
 
   replacer:
     replicas: 1
@@ -202,6 +221,7 @@ snuba:
     securityContext: {}
     # tolerations: []
     # podLabels: []
+    maxBatchSize: "3"
 
   sessionsConsumer:
     replicas: 1
@@ -212,6 +232,13 @@ snuba:
     securityContext: {}
     # tolerations: []
     # podLabels: []
+    # maxBatchSize: ""
+    # processes: ""
+    # inputBlockSize: ""
+    # outputBlockSize: ""
+    # maxBatchTimeMs: ""
+    # queuedMaxMessagesKbytes: ""
+    # queuedMinMessages: ""
 
   transactionsConsumer:
     replicas: 1
@@ -222,6 +249,13 @@ snuba:
     securityContext: {}
     # tolerations: []
     # podLabels: []
+    # maxBatchSize: ""
+    # processes: ""
+    # inputBlockSize: ""
+    # outputBlockSize: ""
+    # maxBatchTimeMs: ""
+    # queuedMaxMessagesKbytes: ""
+    # queuedMinMessages: ""
 
   dbInitJob:
     env: []
@@ -407,6 +441,7 @@ ingress:
   enabled: false
   # If you are using traefik ingress controller, switch this to 'traefik'
   # if you are using AWS ALB Ingress controller, switch this to 'aws-alb'
+  # if you are using GKE Ingress controller, switch this to 'gke'
   regexPathStyle: nginx
   #If you are using AWS ALB Ingress controller, switch to true if you want activate the http to https redirection.
   alb:

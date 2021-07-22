@@ -13,7 +13,7 @@ metadata:
      {{ $key }}: {{ $value | quote }}
    {{- end }}
    {{- if and (eq .Values.ingress.regexPathStyle "aws-alb") (.Values.ingress.alb.httpRedirect) }}
-   alb.ingress.kubernetes.io/actions.ssl-redirect: '{"Type": "redirect", "RedirectConfig": { "Protocol": "HTTPS", "Port": "443", "StatusCode": "HTTP_301"}}'
+     alb.ingress.kubernetes.io/actions.ssl-redirect: '{"Type": "redirect", "RedirectConfig": { "Protocol": "HTTPS", "Port": "443", "StatusCode": "HTTP_301"}}'
    {{- end }}
 spec:
   rules:
@@ -25,7 +25,7 @@ spec:
             backend:
               serviceName: {{ template "sentry.fullname" . }}-nginx
               servicePort: {{ .Values.nginx.service.port }}
-    {{- else if eq (default "nginx" .Values.ingress.regexPathStyle) "aws-alb" }}
+    {{- else if or (eq (default "nginx" .Values.ingress.regexPathStyle) "aws-alb") (eq (default "nginx" .Values.ingress.regexPathStyle) "gke") }}
     {{- if .Values.ingress.alb.httpRedirect }}
           - path: "/*"
             backend:

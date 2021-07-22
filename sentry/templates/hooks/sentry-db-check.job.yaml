@@ -92,12 +92,13 @@ spec:
             done
             echo "Clickhouse is up"
 
-            {{- if .Values.kafka.enabled }}
             echo "Checking if kafka is up"
             KAFKA_STATUS=0
             while [ $KAFKA_STATUS -eq 0 ]; do
               KAFKA_STATUS=1
-              i=0; while [ $i -lt {{ .Values.kafka.replicaCount }} ]; do
+              {{- if .Values.kafka.enabled }}
+              KAFKA_REPLICAS={{ .Values.kafka.replicaCount }}
+              i=0; while [ $i -lt $KAFKA_REPLICAS ]; do
                 KAFKA_HOST={{ $kafkaHost }}-$i.{{ $kafkaHost }}-headless
                 if ! nc -z "$KAFKA_HOST" {{ $kafkaPort }}; then
                   KAFKA_STATUS=0
@@ -105,13 +106,27 @@ spec:
                 fi
                 i=$((i+1))
               done
+              {{- else if (not (kindIs "slice" .Values.externalKafka)) }}
+              KAFKA_HOST={{ .Values.externalKafka.host }}
+              if ! nc -z "$KAFKA_HOST" {{ $kafkaPort }}; then
+                KAFKA_STATUS=0
+                echo "$KAFKA_HOST is not available yet"
+              fi
+              {{- else }}
+              {{- range $elem := .Values.externalKafka }}
+              KAFKA_HOST={{ $elem.host }}
+              if ! nc -z "$KAFKA_HOST" {{ $elem.port }}; then
+                KAFKA_STATUS=0
+                echo "$KAFKA_HOST is not available yet"
+              fi
+              {{- end }}
+              {{- end }}
               if [ "$KAFKA_STATUS" -eq 0 ]; then
                 echo "Kafka not ready. Sleeping for 10s before trying again"
                 sleep 10;
               fi
             done
             echo "Kafka is up"
-            {{- end }}
         env:
 {{- if .Values.hooks.dbCheck.env }}
 {{ toYaml .Values.hooks.dbCheck.env | indent 8 }}
