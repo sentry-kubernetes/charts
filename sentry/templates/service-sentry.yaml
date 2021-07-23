@@ -3,9 +3,12 @@ kind: Service
 metadata:
   name: {{ template "sentry.fullname" . }}-web
   annotations:
-   {{- range $key, $value := .Values.service.annotations }}
-     {{ $key }}: {{ $value | quote }}
-   {{- end }}
+    {{- range $key, $value := .Values.service.annotations }}
+      {{ $key }}: {{ $value | quote }}
+    {{- end }}
+    {{- if and (.Values.ingress.enabled) (eq (default "nginx" .Values.ingress.regexPathStyle) "gke") }}
+      cloud.google.com/backend-config: '{"ports": {"{{ .Values.service.externalPort }}":"{{ include "sentry.fullname" . }}-web"}}'
+    {{- end }}
   labels:
     app: {{ template "sentry.fullname" . }}
     chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
