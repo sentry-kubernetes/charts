@@ -9,7 +9,9 @@
 
 {{- define "nginx.port" -}}{{ default "8080" .Values.nginx.containerPort }}{{- end -}}
 {{- define "relay.port" -}}3000{{- end -}}
+{{- define "relay.healthCheck.requestPath" -}}/api/relay/healthcheck/ready/{{- end -}}
 {{- define "sentry.port" -}}9000{{- end -}}
+{{- define "sentry.healthCheck.requestPath" -}}/_health/{{- end -}}
 {{- define "snuba.port" -}}1218{{- end -}}
 {{- define "symbolicator.port" -}}3021{{- end -}}
 

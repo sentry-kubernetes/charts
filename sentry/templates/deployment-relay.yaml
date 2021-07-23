@@ -101,7 +101,7 @@ spec:
         livenessProbe:
           failureThreshold: 5
           httpGet:
-            path: /api/relay/healthcheck/ready/
+            path: {{ template "relay.healthCheck.requestPath" }}
             port: {{ template "relay.port" }}
             scheme: HTTP
           initialDelaySeconds: {{ .Values.relay.probeInitialDelaySeconds }}
@@ -111,7 +111,7 @@ spec:
         readinessProbe:
           failureThreshold: 10
           httpGet:
-            path: /api/relay/healthcheck/ready/
+            path: {{ template "relay.healthCheck.requestPath" }}
             port: {{ template "relay.port" }}
             scheme: HTTP
           initialDelaySeconds: {{ .Values.relay.probeInitialDelaySeconds }}
