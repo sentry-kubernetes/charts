@@ -99,25 +99,25 @@ spec:
             subPath: config.yml
             readOnly: true
         livenessProbe:
-          failureThreshold: 5
+          failureThreshold: {{ .Values.relay.probeFailureThreshold }}
           httpGet:
             path: {{ template "relay.healthCheck.requestPath" }}
             port: {{ template "relay.port" }}
             scheme: HTTP
           initialDelaySeconds: {{ .Values.relay.probeInitialDelaySeconds }}
-          periodSeconds: 10
-          successThreshold: 1
-          timeoutSeconds: 2
+          periodSeconds: {{ .Values.relay.probePeriodSeconds }}
+          successThreshold: {{ .Values.relay.probeSuccessThreshold }}
+          timeoutSeconds: {{ .Values.relay.probeTimeoutSeconds }}
         readinessProbe:
-          failureThreshold: 10
+          failureThreshold: {{ .Values.relay.probeFailureThreshold }}
           httpGet:
             path: {{ template "relay.healthCheck.requestPath" }}
             port: {{ template "relay.port" }}
             scheme: HTTP
           initialDelaySeconds: {{ .Values.relay.probeInitialDelaySeconds }}
-          periodSeconds: 10
-          successThreshold: 1
-          timeoutSeconds: 2
+          periodSeconds: {{ .Values.relay.probePeriodSeconds }}
+          successThreshold: {{ .Values.relay.probeSuccessThreshold }}
+          timeoutSeconds: {{ .Values.relay.probeTimeoutSeconds }}
         resources:
 {{ toYaml .Values.relay.resources | indent 12 }}
 {{- if .Values.relay.sidecars }}
