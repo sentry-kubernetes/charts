@@ -116,9 +116,15 @@ spec:
         - mountPath: /etc/snuba
           name: config
           readOnly: true
+{{- if .Values.snuba.transactionsConsumer.volumeMounts }}
+{{ toYaml .Values.snuba.transactionsConsumer.volumeMounts | indent 8 }}
+{{- end }}
         resources:
 {{ toYaml .Values.snuba.transactionsConsumer.resources | indent 12 }}
       volumes:
         - name: config
           configMap:
             name: {{ template "sentry.fullname" . }}-snuba
+{{- if .Values.snuba.transactionsConsumer.volumes }}
+{{ toYaml .Values.snuba.transactionsConsumer.volumes | indent 8 }}
+{{- end }}
