@@ -99,25 +99,25 @@ spec:
           mountPath: /etc/pki/ca-trust/custom
         {{ end }}
         livenessProbe:
-          failureThreshold: 5
+          failureThreshold: {{ .Values.sentry.web.probeFailureThreshold }}
           httpGet:
             path: {{ template "sentry.healthCheck.requestPath" }}
             port: {{ template "sentry.port" }}
             scheme: HTTP
           initialDelaySeconds: {{ .Values.sentry.web.probeInitialDelaySeconds }}
-          periodSeconds: 10
-          successThreshold: 1
-          timeoutSeconds: 2
+          periodSeconds: {{ .Values.sentry.web.probePeriodSeconds }}
+          successThreshold: {{ .Values.sentry.web.probeSuccessThreshold }}
+          timeoutSeconds: {{ .Values.sentry.web.probeTimeoutSeconds }}
         readinessProbe:
-          failureThreshold: 10
+          failureThreshold: {{ .Values.sentry.web.probeFailureThreshold }}
           httpGet:
             path: {{ template "sentry.healthCheck.requestPath" }}
             port: {{ template "sentry.port" }}
             scheme: HTTP
           initialDelaySeconds: {{ .Values.sentry.web.probeInitialDelaySeconds }}
-          periodSeconds: 10
-          successThreshold: 1
-          timeoutSeconds: 2
+          periodSeconds: {{ .Values.sentry.web.probePeriodSeconds }}
+          successThreshold: {{ .Values.sentry.web.probeSuccessThreshold }}
+          timeoutSeconds: {{ .Values.sentry.web.probeTimeoutSeconds }}
         resources:
 {{ toYaml .Values.sentry.web.resources | indent 12 }}
 {{- if .Values.sentry.web.sidecars }}

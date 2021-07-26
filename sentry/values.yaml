@@ -37,7 +37,11 @@ relay:
   replicas: 1
   mode: managed
   env: []
+  probeFailureThreshold: 5
   probeInitialDelaySeconds: 10
+  probePeriodSeconds: 10
+  probeSuccessThreshold: 1
+  probeTimeoutSeconds: 2
   resources: {}
   affinity: {}
   nodeSelector: {}
@@ -60,7 +64,11 @@ sentry:
     strategyType: RollingUpdate
     replicas: 1
     env: []
+    probeFailureThreshold: 5
     probeInitialDelaySeconds: 10
+    probePeriodSeconds: 10
+    probeSuccessThreshold: 1
+    probeTimeoutSeconds: 2
     resources: {}
     affinity: {}
     nodeSelector: {}
