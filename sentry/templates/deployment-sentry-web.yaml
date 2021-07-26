@@ -101,7 +101,7 @@ spec:
         livenessProbe:
           failureThreshold: 5
           httpGet:
-            path: /_health/
+            path: {{ template "sentry.healthCheck.requestPath" }}
             port: {{ template "sentry.port" }}
             scheme: HTTP
           initialDelaySeconds: {{ .Values.sentry.web.probeInitialDelaySeconds }}
@@ -111,7 +111,7 @@ spec:
         readinessProbe:
           failureThreshold: 10
           httpGet:
-            path: /_health/
+            path: {{ template "sentry.healthCheck.requestPath" }}
             port: {{ template "sentry.port" }}
             scheme: HTTP
           initialDelaySeconds: {{ .Values.sentry.web.probeInitialDelaySeconds }}
