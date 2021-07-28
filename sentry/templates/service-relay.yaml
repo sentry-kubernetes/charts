@@ -3,9 +3,12 @@ kind: Service
 metadata:
   name: {{ template "sentry.fullname" . }}-relay
   annotations:
-   {{- range $key, $value := .Values.service.annotations }}
-     {{ $key }}: {{ $value | quote }}
-   {{- end }}
+    {{- range $key, $value := .Values.service.annotations }}
+      {{ $key }}: {{ $value | quote }}
+    {{- end }}
+    {{- if and (.Values.ingress.enabled) (eq (default "nginx" .Values.ingress.regexPathStyle) "gke") }}
+      cloud.google.com/backend-config: '{"ports": {"{{ template "relay.port" . }}":"{{ include "sentry.fullname" . }}-relay"}}'
+    {{- end }}
   labels:
     app: {{ template "sentry.fullname" . }}
     chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"

@@ -47,7 +47,11 @@ relay:
   replicas: 1
   mode: managed
   env: []
+  probeFailureThreshold: 5
   probeInitialDelaySeconds: 10
+  probePeriodSeconds: 10
+  probeSuccessThreshold: 1
+  probeTimeoutSeconds: 2
   resources: {}
   affinity: {}
   nodeSelector: {}
@@ -70,7 +74,11 @@ sentry:
     strategyType: RollingUpdate
     replicas: 1
     env: []
+    probeFailureThreshold: 5
     probeInitialDelaySeconds: 10
+    probePeriodSeconds: 10
+    probeSuccessThreshold: 1
+    probeTimeoutSeconds: 2
     resources: {}
     affinity: {}
     nodeSelector: {}
@@ -135,6 +143,11 @@ sentry:
       targetCPUUtilizationPercentage: 50
     sidecars: [ ]
     volumes: [ ]
+
+    # volumeMounts:
+    #   - mountPath: /dev/shm
+    #     name: dshm
+
   cron:
     replicas: 1
     env: []
@@ -205,6 +218,14 @@ snuba:
     # queuedMaxMessagesKbytes: ""
     # queuedMinMessages: ""
 
+    # volumeMounts:
+    #   - mountPath: /dev/shm
+    #     name: dshm
+    # volumes:
+    #   - name: dshm
+    #     emptyDir:
+    #       medium: Memory
+
   outcomesConsumer:
     replicas: 1
     env: []
@@ -222,6 +243,14 @@ snuba:
     # queuedMaxMessagesKbytes: ""
     # queuedMinMessages: ""
 
+    # volumeMounts:
+    #   - mountPath: /dev/shm
+    #     name: dshm
+    # volumes:
+    #   - name: dshm
+    #     emptyDir:
+    #       medium: Memory
+
   replacer:
     replicas: 1
     env: []
@@ -232,6 +261,9 @@ snuba:
     # tolerations: []
     # podLabels: []
     maxBatchSize: "3"
+    # maxBatchTimeMs: ""
+    # queuedMaxMessagesKbytes: ""
+    # queuedMinMessages: ""
 
   sessionsConsumer:
     replicas: 1
@@ -250,6 +282,14 @@ snuba:
     # queuedMaxMessagesKbytes: ""
     # queuedMinMessages: ""
 
+    # volumeMounts:
+    #   - mountPath: /dev/shm
+    #     name: dshm
+    # volumes:
+    #   - name: dshm
+    #     emptyDir:
+    #       medium: Memory
+
   transactionsConsumer:
     replicas: 1
     env: []
@@ -266,6 +306,14 @@ snuba:
     # maxBatchTimeMs: ""
     # queuedMaxMessagesKbytes: ""
     # queuedMinMessages: ""
+
+    # volumeMounts:
+    #   - mountPath: /dev/shm
+    #     name: dshm
+    # volumes:
+    #   - name: dshm
+    #     emptyDir:
+    #       medium: Memory
 
   dbInitJob:
     env: []
@@ -454,6 +502,7 @@ ingress:
   enabled: false
   # If you are using traefik ingress controller, switch this to 'traefik'
   # if you are using AWS ALB Ingress controller, switch this to 'aws-alb'
+  # if you are using GKE Ingress controller, switch this to 'gke'
   regexPathStyle: nginx
   #If you are using AWS ALB Ingress controller, switch to true if you want activate the http to https redirection.
   alb:

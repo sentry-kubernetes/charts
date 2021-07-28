@@ -110,6 +110,9 @@ spec:
         - mountPath: /etc/snuba
           name: config
           readOnly: true
+{{- if .Values.snuba.outcomesConsumer.volumeMounts }}
+{{ toYaml .Values.snuba.outcomesConsumer.volumeMounts | indent 8 }}
+{{- end }}
         resources:
 {{ toYaml .Values.snuba.outcomesConsumer.resources | indent 12 }}
       {{- if .Values.serviceAccount.enabled }}
@@ -119,3 +122,6 @@ spec:
         - name: config
           configMap:
             name: {{ template "sentry.fullname" . }}-snuba
+{{- if .Values.snuba.outcomesConsumer.volumes }}
+{{ toYaml .Values.snuba.outcomesConsumer.volumes | indent 8 }}
+{{- end }}
