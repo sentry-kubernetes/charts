@@ -100,6 +100,9 @@ spec:
 {{- if .Values.sentry.worker.sidecars }}
 {{ toYaml .Values.sentry.worker.sidecars | indent 6 }}
 {{- end }}
+      {{- if .Values.serviceAccount.enabled }}
+      serviceAccountName: {{ .Values.serviceAccount.name }}-worker
+      {{- end }}
       volumes:
       - name: config
         configMap:

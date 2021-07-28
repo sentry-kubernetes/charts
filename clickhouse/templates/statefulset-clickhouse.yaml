@@ -169,6 +169,9 @@ spec:
           - key: users.xml
             path: users.xml
       {{- end }}
+      {{- if .Values.serviceAccount.enabled }}
+      serviceAccountName: {{ .Values.serviceAccount.name }}
+      {{- end }}
 {{- if .Values.clickhouse.persistentVolumeClaim.enabled }}
   volumeClaimTemplates:
 {{- if .Values.clickhouse.persistentVolumeClaim.dataPersistentVolume.enabled }}

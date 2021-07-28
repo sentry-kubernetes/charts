@@ -100,6 +100,9 @@ spec:
           readOnly: true
         resources:
 {{ toYaml .Values.snuba.replacer.resources | indent 12 }}
+      {{- if .Values.serviceAccount.enabled }}
+      serviceAccountName: {{ .Values.serviceAccount.name }}-snuba
+      {{- end }}
       volumes:
         - name: config
           configMap:
