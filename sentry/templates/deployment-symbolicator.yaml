@@ -100,6 +100,9 @@ spec:
           timeoutSeconds: 2
         resources:
 {{ toYaml .Values.symbolicator.api.resources | indent 12 }}
+      {{- if .Values.serviceAccount.enabled }}
+      serviceAccountName: {{ .Values.serviceAccount.name }}-symbolicator-api
+      {{- end }}
       volumes:
       - name: config
         configMap:
