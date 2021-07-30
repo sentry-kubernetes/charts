@@ -494,9 +494,10 @@ nginx:
   service:
     type: ClusterIP
     port: 80
-  serviceAccount:
-    create: false
-    name: nginx
+  ## Use this to enable an extra service account
+  # serviceAccount:
+  #   create: false
+  #   name: nginx
 
 ingress:
   enabled: false
@@ -608,11 +609,12 @@ clickhouse:
         - "ReadWriteOnce"
         storage: "30Gi"
 
-  serviceAccount:
-    annotations: {}
-    enabled: false
-    name: "sentry-clickhouse"
-    automountServiceAccountToken: true
+  ## Use this to enable an extra service account
+  # serviceAccount:
+  #   annotations: {}
+  #   enabled: false
+  #   name: "sentry-clickhouse"
+  #   automountServiceAccountToken: true
 
 ## This value is only used when clickhouse.enabled is set to false
 ##
@@ -649,14 +651,16 @@ kafka:
   service:
     port: 9092
 
-  serviceAccount:
-    create: false
-    name: kafka
+  ## Use this to enable an extra service account
+  # serviceAccount:
+  #   create: false
+  #   name: kafka
 
-  zookeeper:
-    serviceAccount:
-      create: false
-      name: zookeeper
+  ## Use this to enable an extra service account
+  # zookeeper:
+  #   serviceAccount:
+  #     create: false
+  #     name: zookeeper
 
 ## This value is only used when kafka.enabled is set to false
 ##
@@ -675,9 +679,10 @@ redis:
   master:
     persistence:
       enabled: true
-  serviceAccount:
-    create: false
-    name: sentry-redis
+  ## Use this to enable an extra service account
+  # serviceAccount:
+  #   create: false
+  #   name: sentry-redis
 
 ## This value is only used when redis.enabled is set to false
 ##
@@ -700,8 +705,9 @@ postgresql:
     synchronousCommit: "on"
     numSynchronousReplicas: 1
     applicationName: sentry
-  serviceAccount:
-    enabled: false
+  ## Use this to enable an extra service account
+  # serviceAccount:
+  #   enabled: false
 
 ## This value is only used when postgresql.enabled is set to false
 ##
@@ -777,9 +783,10 @@ rabbitmq:
     existingSecret: load-definition
   extraConfiguration: |
     load_definitions = /app/load_definition.json
-  serviceAccount:
-    create: false
-    name: rabbitmq
+  ## Use this to enable an extra service account
+  # serviceAccount:
+  #   create: false
+  #   name: rabbitmq
 
 ## Prometheus Exporter / Metrics
 ##
