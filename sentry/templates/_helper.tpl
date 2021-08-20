@@ -68,6 +68,26 @@ If release name contains chart name it will be used as a full name.
 {{- end -}}
 {{- end -}}
 
+{{- define "broker.url" -}}
+    {{- if .Values.rabbitmq.enabled -}}
+    amqp://{{ .Values.rabbitmq.username }}:{{ .Values.rabbitmq.password }}@{{ .Values.rabbitmq.host }}:5672//
+    {{- else if .Values.redis.password -}}
+    redis://:{{ .Values.redis.password }}@{{ .Values.redis.host }}:6379/0
+    {{- else -}}
+    redis://{{ .Values.redis.host }}:6379/0
+    {{- end -}}
+{{- end -}}
+
+{{- define "redis.password.fromSecret" -}}
+{{- if and .Values.redis.existingPasswordSecret .Values.redis.existingPasswordSecretKey }}
+        - name: REDIS_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: {{ .Values.redis.existingPasswordSecret }}
+              name: {{ .Values.redis.existingPasswordSecretKey }}
+              optional: false
+{{- end }}
+{{- end -}}
 {{/*
 Create a default fully qualified app name.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
