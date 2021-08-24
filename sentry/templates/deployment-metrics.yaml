@@ -88,6 +88,6 @@ spec:
         resources:
 {{ toYaml .Values.metrics.resources | indent 10 }}
       {{- if .Values.serviceAccount.enabled }}
-      serviceAccountName: {{ .Values.serviceAccount.name }}
+      serviceAccountName: {{ .Values.serviceAccount.name }}-metrics
       {{- end }}
 {{- end }}
