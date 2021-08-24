@@ -1,5 +1,9 @@
 {{- if .Values.ingress.enabled -}}
-apiVersion: {{- if .Capabilities.APIVersions.Has "networking.k8s.io/v1beta1" }} networking.k8s.io/v1beta1 {{- else }} extensions/v1beta1 {{- end }}
+{{- $ingressApiIsStable := eq (include "sentry.ingress.isStable" .) "true" -}}
+{{- $ingressSupportsIngressClassName := eq (include "sentry.ingress.supportsIngressClassName" .) "true" -}}
+{{- $ingressSupportsPathType := eq (include "sentry.ingress.supportsPathType" .) "true" -}}
+{{- $ingressPathType := .Values.ingress.pathType | default "ImplementationSpecific" -}}
+apiVersion: {{ include "sentry.ingress.apiVersion" . }}
 kind: Ingress
 metadata:
  name: {{ template "sentry.fullname" . }}
@@ -16,51 +20,150 @@ metadata:
      alb.ingress.kubernetes.io/actions.ssl-redirect: '{"Type": "redirect", "RedirectConfig": { "Protocol": "HTTPS", "Port": "443", "StatusCode": "HTTP_301"}}'
    {{- end }}
 spec:
+  {{- if and $ingressSupportsIngressClassName .Values.ingress.ingressClassName }}
+  ingressClassName: {{ .Values.ingress.ingressClassName | quote }}
+  {{- end }}
   rules:
     - host: {{ .Values.ingress.hostname }}
       http:
         paths:
     {{- if .Values.nginx.enabled }}
           - path: {{ default "/" .Values.ingress.path | quote }}
+            {{- if $ingressSupportsPathType }}
+            pathType: {{ $ingressPathType }}
+            {{- end }}
             backend:
+              {{- if $ingressApiIsStable }}
+              service:
+                name: {{ template "sentry.fullname" . }}-nginx
+                port:
+                  {{- if kindIs "float64" .Values.nginx.service.port }}
+                  number: {{ .Values.nginx.service.port }}
+                  {{- else }}
+                  name: {{ .Values.nginx.service.port }}
+                  {{- end }}
+              {{- else }}
               serviceName: {{ template "sentry.fullname" . }}-nginx
               servicePort: {{ .Values.nginx.service.port }}
+              {{- end }}
     {{- else if or (eq (default "nginx" .Values.ingress.regexPathStyle) "aws-alb") (eq (default "nginx" .Values.ingress.regexPathStyle) "gke") }}
     {{- if .Values.ingress.alb.httpRedirect }}
           - path: "/*"
+            {{- if $ingressSupportsPathType }}
+            pathType: {{ $ingressPathType }}
+            {{- end }}
             backend:
+              {{- if $ingressApiIsStable }}
+              service:
+                name: ssl-redirect
+                port:
+                  number: use-annotation
+              {{- else }}
               serviceName: ssl-redirect
               servicePort: use-annotation
+              {{- end }}
     {{- end }}
           - path: /api/0/*
+            {{- if $ingressSupportsPathType }}
+            pathType: {{ $ingressPathType }}
+            {{- end }}
             backend:
+              {{- if $ingressApiIsStable }}
+              service:
+                name: {{ template "sentry.fullname" . }}-web
+                port:
+                  {{- if kindIs "float64" .Values.service.externalPort }}
+                  number: {{ .Values.service.externalPort }}
+                  {{- else }}
+                  name: {{ .Values.service.externalPort }}
+                  {{- end }}
+              {{- else }}
               serviceName: {{ template "sentry.fullname" . }}-web
               servicePort: {{ .Values.service.externalPort }}
+              {{- end }}
           - path: /api/*
+            {{- if $ingressSupportsPathType }}
+            pathType: {{ $ingressPathType }}
+            {{- end }}
             backend:
+              {{- if $ingressApiIsStable }}
+              service:
+                name: {{ template "sentry.fullname" . }}-relay
+                port:
+                  number: {{ template "relay.port" . }}
+              {{- else }}
               serviceName: {{ template "sentry.fullname" . }}-relay
               servicePort: {{ template "relay.port" . }}
+              {{- end }}
           - path: "/*"
+            {{- if $ingressSupportsPathType }}
+            pathType: {{ $ingressPathType }}
+            {{- end }}
             backend:
+              {{- if $ingressApiIsStable }}
+              service:
+                name: {{ template "sentry.fullname" . }}-web
+                port:
+                  {{- if kindIs "float64" .Values.service.externalPort }}
+                  number: {{ .Values.service.externalPort }}
+                  {{- else }}
+                  name: {{ .Values.service.externalPort }}
+                  {{- end }}
+              {{- else }}
               serviceName: {{ template "sentry.fullname" . }}-web
               servicePort: {{ .Values.service.externalPort }}
+              {{- end }}
     {{- else }}
           - path: {{ default "/" .Values.ingress.path }}api/store
+            {{- if $ingressSupportsPathType }}
+            pathType: {{ $ingressPathType }}
+            {{- end }}
             backend:
+              {{- if $ingressApiIsStable }}
+              service:
+                name: {{ template "sentry.fullname" . }}-relay
+                port:
+                  number: {{ template "relay.port" . }}
+              {{- else }}
               serviceName: {{ template "sentry.fullname" . }}-relay
               servicePort: {{ template "relay.port" . }}
+              {{- end }}
         {{- if eq (default "nginx" .Values.ingress.regexPathStyle) "traefik" }}
           - path: {{ default "/" .Values.ingress.path }}api/{[1-9][0-9]*}/{(.*)}
         {{- else }}
           - path: {{ default "/" .Values.ingress.path }}api/[1-9][0-9]*/(.*)
         {{- end }}
+            {{- if $ingressSupportsPathType }}
+            pathType: {{ $ingressPathType }}
+            {{- end }}
             backend:
+              {{- if $ingressApiIsStable }}
+              service:
+                name: {{ template "sentry.fullname" . }}-relay
+                port:
+                  number: {{ template "relay.port" . }}
+              {{- else }}
               serviceName: {{ template "sentry.fullname" . }}-relay
               servicePort: {{ template "relay.port" . }}
+              {{- end }}
           - path: {{ default "/" .Values.ingress.path | quote }}
+            {{- if $ingressSupportsPathType }}
+            pathType: {{ $ingressPathType }}
+            {{- end }}
             backend:
+              {{- if $ingressApiIsStable }}
+              service:
+                name: {{ template "sentry.fullname" . }}-web
+                port:
+                  {{- if kindIs "float64" .Values.service.externalPort }}
+                  number: {{ .Values.service.externalPort }}
+                  {{- else }}
+                  name: {{ .Values.service.externalPort }}
+                  {{- end }}
+              {{- else }}
               serviceName: {{ template "sentry.fullname" . }}-web
               servicePort: {{ .Values.service.externalPort }}
+              {{- end }}
     {{- end }}
 {{- if .Values.ingress.tls }}
   tls:
