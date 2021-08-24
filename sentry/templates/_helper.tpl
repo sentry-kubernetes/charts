@@ -68,6 +68,48 @@ If release name contains chart name it will be used as a full name.
 {{- end -}}
 {{- end -}}
 
+
+{{/*
+Get KubeVersion removing pre-release information.
+*/}}
+{{- define "sentry.kubeVersion" -}}
+  {{- default .Capabilities.KubeVersion.Version (regexFind "v[0-9]+\\.[0-9]+\\.[0-9]+" .Capabilities.KubeVersion.Version) -}}
+{{- end -}}
+
+{{/*
+Return the appropriate apiVersion for ingress.
+*/}}
+{{- define "sentry.ingress.apiVersion" -}}
+  {{- if and (.Capabilities.APIVersions.Has "networking.k8s.io/v1") (semverCompare ">= 1.19.x" (include "sentry.kubeVersion" .)) -}}
+      {{- print "networking.k8s.io/v1" -}}
+  {{- else if .Capabilities.APIVersions.Has "networking.k8s.io/v1beta1" -}}
+    {{- print "networking.k8s.io/v1beta1" -}}
+  {{- else -}}
+    {{- print "extensions/v1beta1" -}}
+  {{- end -}}
+{{- end -}}
+
+{{/*
+Return if ingress is stable.
+*/}}
+{{- define "sentry.ingress.isStable" -}}
+  {{- eq (include "sentry.ingress.apiVersion" .) "networking.k8s.io/v1" -}}
+{{- end -}}
+
+{{/*
+Return if ingress supports ingressClassName.
+*/}}
+{{- define "sentry.ingress.supportsIngressClassName" -}}
+  {{- or (eq (include "sentry.ingress.isStable" .) "true") (and (eq (include "sentry.ingress.apiVersion" .) "networking.k8s.io/v1beta1") (semverCompare ">= 1.18.x" (include "sentry.kubeVersion" .))) -}}
+{{- end -}}
+
+{{/*
+Return if ingress supports pathType.
+*/}}
+{{- define "sentry.ingress.supportsPathType" -}}
+  {{- or (eq (include "sentry.ingress.isStable" .) "true") (and (eq (include "sentry.ingress.apiVersion" .) "networking.k8s.io/v1beta1") (semverCompare ">= 1.18.x" (include "sentry.kubeVersion" .))) -}}
+{{- end -}}
+
 {{/*
 Create a default fully qualified app name.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
