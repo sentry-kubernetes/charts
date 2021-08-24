@@ -55,7 +55,6 @@ spec:
       containers:
       - name: snuba-init
         image: "{{ template "snuba.image" . }}"
-        # command: ["./docker_entrypoint.sh", "replacer","--auto-offset-reset=latest","--max-batch-size", "3"]
         command:
           - /bin/bash
           - -ec

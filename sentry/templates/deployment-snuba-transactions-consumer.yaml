@@ -71,7 +71,7 @@ spec:
           - "transactions"
           - "--consumer-group"
           - "transactions_group"
-          - "--auto-offset-reset=latest"
+          - "--auto-offset-reset=earliest"
           - "--max-batch-time-ms"
           - "750"
           {{- if .Values.snuba.transactionsConsumer.maxBatchSize }}
