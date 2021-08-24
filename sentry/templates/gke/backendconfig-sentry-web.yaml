@@ -11,6 +11,10 @@ metadata:
     heritage: "{{ .Release.Service }}"
 spec:
   healthCheck:
+    checkIntervalSec: {{ .Values.sentry.web.probePeriodSeconds }}
+    timeoutSec: {{ .Values.sentry.web.probeTimeoutSeconds }}
+    healthyThreshold: {{ .Values.sentry.web.probeSuccessThreshold }}
+    unhealthyThreshold: {{ .Values.sentry.web.probeFailureThreshold }}  
     type: HTTP
     requestPath: {{ template "sentry.healthCheck.requestPath" }}
     port: {{ .Values.service.externalPort }}
