@@ -11,6 +11,10 @@ metadata:
     heritage: "{{ .Release.Service }}"
 spec:
   healthCheck:
+    checkIntervalSec: {{ .Values.relay.probePeriodSeconds }}
+    timeoutSec: {{ .Values.relay.probeTimeoutSeconds }}
+    healthyThreshold: {{ .Values.relay.probeSuccessThreshold }}
+    unhealthyThreshold: {{ .Values.relay.probeFailureThreshold }}
     type: HTTP
     requestPath: {{ template "relay.healthCheck.requestPath" }}
     port: {{ template "relay.port" . }}
