@@ -69,7 +69,7 @@ spec:
           - "replacer"
           - "--storage"
           - "errors"
-          - "--auto-offset-reset=latest"
+          - "--auto-offset-reset=earliest"
           - "--max-batch-size"
           - "{{ default "3" .Values.snuba.replacer.maxBatchSize }}"
           {{- if .Values.snuba.replacer.maxBatchTimeMs }}
