@@ -29,18 +29,33 @@ images:
     imagePullSecrets: []
   symbolicator:
     # repository: getsentry/symbolicator
-    tag: 0.2.0
+    tag: 0.3.3
     # pullPolicy: IfNotPresent
     imagePullSecrets: []
 
+serviceAccount:
+  # serviceAccount.annotations -- Additional Service Account annotations.
+  annotations: {}
+  # serviceAccount.enabled -- If `true`, a custom Service Account will be used.
+  enabled: false
+  # serviceAccount.name -- The base name of the ServiceAccount to use. Will be appended with e.g. `snuba-api` or `web` for the pods accordingly.
+  name: "sentry"
+  # serviceAccount.automountServiceAccountToken -- Automount API credentials for a Service Account.
+  automountServiceAccountToken: true
+
 relay:
   replicas: 1
-  mode: proxy
+  mode: managed
   env: []
+  probeFailureThreshold: 5
   probeInitialDelaySeconds: 10
+  probePeriodSeconds: 10
+  probeSuccessThreshold: 1
+  probeTimeoutSeconds: 2
   resources: {}
   affinity: {}
   nodeSelector: {}
+  securityContext: {}
   # tolerations: []
   # podLabels: []
 
@@ -49,6 +64,8 @@ relay:
     minReplicas: 2
     maxReplicas: 5
     targetCPUUtilizationPercentage: 50
+  sidecars: [ ]
+  volumes: [ ]
 
 sentry:
   singleOrganization: true
@@ -57,21 +74,33 @@ sentry:
     strategyType: RollingUpdate
     replicas: 1
     env: []
+    probeFailureThreshold: 5
     probeInitialDelaySeconds: 10
+    probePeriodSeconds: 10
+    probeSuccessThreshold: 1
+    probeTimeoutSeconds: 2
     resources: {}
     affinity: {}
     nodeSelector: {}
+    securityContext: {}
     # tolerations: []
     # podLabels: []
+    # Mount and use custom CA
+    # customCA:
+    #   secretName: custom-ca
+    #   item: ca.crt
 
     autoscaling:
       enabled: false
       minReplicas: 2
       maxReplicas: 5
       targetCPUUtilizationPercentage: 50
+    sidecars: [ ]
+    volumes: [ ]
 
   features:
     orgSubdomains: false
+    vstsLimitedScopes: true
 
   worker:
     replicas: 3
@@ -90,6 +119,8 @@ sentry:
       minReplicas: 2
       maxReplicas: 5
       targetCPUUtilizationPercentage: 50
+    sidecars: [ ]
+    volumes: [ ]
 
   ingestConsumer:
     replicas: 1
@@ -98,8 +129,10 @@ sentry:
     resources: {}
     affinity: {}
     nodeSelector: {}
+    securityContext: {}
     # tolerations: []
     # podLabels: []
+    # maxBatchSize: ""
 
     # it's better to use prometheus adapter and scale based on
     # the size of the rabbitmq queue
@@ -108,6 +141,12 @@ sentry:
       minReplicas: 1
       maxReplicas: 3
       targetCPUUtilizationPercentage: 50
+    sidecars: [ ]
+    volumes: [ ]
+
+    # volumeMounts:
+    #   - mountPath: /dev/shm
+    #     name: dshm
 
   cron:
     replicas: 1
@@ -117,28 +156,40 @@ sentry:
     nodeSelector: {}
     # tolerations: []
     # podLabels: []
+    sidecars: [ ]
+    volumes: [ ]
   postProcessForward:
     replicas: 1
     env: []
     resources: {}
     affinity: {}
     nodeSelector: {}
+    securityContext: {}
     # tolerations: []
     # podLabels: []
     # commitBatchSize: 1
+    sidecars: [ ]
+    volumes: [ ]
   cleanup:
     enabled: true
     schedule: "0 0 * * *"
     days: 90
+    sidecars: []
+    volumes: []
 
 snuba:
   api:
     replicas: 1
     env: []
     probeInitialDelaySeconds: 10
+    liveness:
+      timeoutSeconds: 2
+    readiness:
+      timeoutSeconds: 2
     resources: {}
     affinity: {}
     nodeSelector: {}
+    securityContext: {}
     # tolerations: []
     # podLabels: []
 
@@ -147,6 +198,8 @@ snuba:
       minReplicas: 2
       maxReplicas: 5
       targetCPUUtilizationPercentage: 50
+    sidecars: [ ]
+    volumes: [ ]
 
   consumer:
     replicas: 1
@@ -154,8 +207,24 @@ snuba:
     resources: {}
     affinity: {}
     nodeSelector: {}
+    securityContext: {}
     # tolerations: []
     # podLabels: []
+    # maxBatchSize: ""
+    # processes: ""
+    # inputBlockSize: ""
+    # outputBlockSize: ""
+    # maxBatchTimeMs: ""
+    # queuedMaxMessagesKbytes: ""
+    # queuedMinMessages: ""
+
+    # volumeMounts:
+    #   - mountPath: /dev/shm
+    #     name: dshm
+    # volumes:
+    #   - name: dshm
+    #     emptyDir:
+    #       medium: Memory
 
   outcomesConsumer:
     replicas: 1
@@ -163,8 +232,24 @@ snuba:
     resources: {}
     affinity: {}
     nodeSelector: {}
+    securityContext: {}
     # tolerations: []
     # podLabels: []
+    maxBatchSize: "3"
+    # processes: ""
+    # inputBlockSize: ""
+    # outputBlockSize: ""
+    # maxBatchTimeMs: ""
+    # queuedMaxMessagesKbytes: ""
+    # queuedMinMessages: ""
+
+    # volumeMounts:
+    #   - mountPath: /dev/shm
+    #     name: dshm
+    # volumes:
+    #   - name: dshm
+    #     emptyDir:
+    #       medium: Memory
 
   replacer:
     replicas: 1
@@ -172,8 +257,13 @@ snuba:
     resources: {}
     affinity: {}
     nodeSelector: {}
+    securityContext: {}
     # tolerations: []
     # podLabels: []
+    maxBatchSize: "3"
+    # maxBatchTimeMs: ""
+    # queuedMaxMessagesKbytes: ""
+    # queuedMinMessages: ""
 
   sessionsConsumer:
     replicas: 1
@@ -181,8 +271,24 @@ snuba:
     resources: {}
     affinity: {}
     nodeSelector: {}
+    securityContext: {}
     # tolerations: []
     # podLabels: []
+    # maxBatchSize: ""
+    # processes: ""
+    # inputBlockSize: ""
+    # outputBlockSize: ""
+    # maxBatchTimeMs: ""
+    # queuedMaxMessagesKbytes: ""
+    # queuedMinMessages: ""
+
+    # volumeMounts:
+    #   - mountPath: /dev/shm
+    #     name: dshm
+    # volumes:
+    #   - name: dshm
+    #     emptyDir:
+    #       medium: Memory
 
   transactionsConsumer:
     replicas: 1
@@ -190,8 +296,24 @@ snuba:
     resources: {}
     affinity: {}
     nodeSelector: {}
+    securityContext: {}
     # tolerations: []
     # podLabels: []
+    # maxBatchSize: ""
+    # processes: ""
+    # inputBlockSize: ""
+    # outputBlockSize: ""
+    # maxBatchTimeMs: ""
+    # queuedMaxMessagesKbytes: ""
+    # queuedMinMessages: ""
+
+    # volumeMounts:
+    #   - mountPath: /dev/shm
+    #     name: dshm
+    # volumes:
+    #   - name: dshm
+    #     emptyDir:
+    #       medium: Memory
 
   dbInitJob:
     env: []
@@ -199,19 +321,59 @@ snuba:
   migrateJob:
     env: []
 
+  cleanupErrors:
+    enabled: true
+    schedule: "0 * * * *"
+    sidecars: []
+    volumes: []
+
+  cleanupTransactions:
+    enabled: true
+    schedule: "0 * * * *"
+    sidecars: []
+    volumes: []
 
 hooks:
   enabled: true
   removeOnSuccess: true
+  clickhouseInit:
+    podAnnotations: {}
+    affinity: {}
+    nodeSelector: {}
+    # tolerations: []
+  dbCheck:
+    image:
+      # repository: subfuzion/netcat
+      # tag: latest
+      # pullPolicy: IfNotPresent
+      imagePullSecrets: []
+    env: []
+    podAnnotations: {}
+    resources:
+      limits:
+        memory: 64Mi
+      requests:
+        cpu: 100m
+        memory: 64Mi
+    affinity: {}
+    nodeSelector: {}
+    # tolerations: []
   dbInit:
     env: []
+    podAnnotations: {}
     resources:
       limits:
         memory: 2048Mi
       requests:
         cpu: 300m
         memory: 2048Mi
+    sidecars: [ ]
+    volumes: [ ]
+    affinity: {}
+    nodeSelector: {}
+    # tolerations: []
   snubaInit:
+    podAnnotations: {}
     resources:
       limits:
         cpu: 2000m
@@ -219,8 +381,12 @@ hooks:
       requests:
         cpu: 700m
         memory: 1Gi
+    affinity: {}
+    nodeSelector: {}
+    # tolerations: []
 
 system:
+  ## be sure to include the scheme on the url, for example: "https://sentry.example.com"
   url: ""
   adminEmail: ""
   ## This should only be used if you’re installing Sentry behind your company’s firewall.
@@ -246,12 +412,34 @@ symbolicator:
     resources: {}
     affinity: {}
     nodeSelector: {}
+    securityContext: {}
     # tolerations: []
     # podLabels: []
     # priorityClassName: "xxx"
-    logging:
-      level: warn
+    config: |-
+      # See: https://getsentry.github.io/symbolicator/#configuration
+      cache_dir: "/data"
+      bind: "0.0.0.0:3021"
+      logging:
+        level: "warn"
+      metrics:
+        statsd: null
+        prefix: "symbolicator"
+      sentry_dsn: null
+      connect_to_reserved_ips: true
+      # caches:
+      #   downloaded:
+      #     max_unused_for: 1w
+      #     retry_misses_after: 5m
+      #     retry_malformed_after: 5m
+      #   derived:
+      #     max_unused_for: 1w
+      #     retry_misses_after: 5m
+      #     retry_malformed_after: 5m
+      #   diagnostics:
+      #     retention: 1w
 
+    # TODO autoscaling in not yet implemented
     autoscaling:
       enabled: false
       minReplicas: 2
@@ -285,17 +473,17 @@ github: {} # https://github.com/settings/apps (Create a Github App)
 #   privateKey: "-----BEGIN RSA PRIVATE KEY-----\nMIIEpA" !!!! Don't forget a trailing \n
 #   webhookSecret:  "xxxxx`"
 
+google: {} # https://developers.google.com/identity/sign-in/web/server-side-flow#step_1_create_a_client_id_and_client_secret
+# google:
+#   clientId:
+#   clientSecret:
+
 slack: {}
 # slack:
 #   clientId:
 #   clientSecret:
-#   verificationToken:
 #   signingSecret:
-#   # channels.* of Slack API is deprecated.
-#   If legacyApp is set to `true`, then define the verificationToken property
-#   If legacyApp is set to `false`, then define the signingSecret property
 #   Reference -> https://develop.sentry.dev/integrations/slack/
-#   legacyApp:
 
 nginx:
   enabled: true
@@ -306,9 +494,20 @@ nginx:
   service:
     type: ClusterIP
     port: 80
+  ## Use this to enable an extra service account
+  # serviceAccount:
+  #   create: false
+  #   name: nginx
 
 ingress:
   enabled: false
+  # If you are using traefik ingress controller, switch this to 'traefik'
+  # if you are using AWS ALB Ingress controller, switch this to 'aws-alb'
+  # if you are using GKE Ingress controller, switch this to 'gke'
+  regexPathStyle: nginx
+  #If you are using AWS ALB Ingress controller, switch to true if you want activate the http to https redirection.
+  alb:
+    httpRedirect: false
   # annotations:
   #   If you are using nginx ingress controller, please use at least those 2 annotations
   #   kubernetes.io/ingress.class: nginx
@@ -353,12 +552,12 @@ filestore:
       ## different nodes.
       persistentWorkers: false
 
-  ## Point this at a pre-configured secret containing a service account. The resulting
-  ## secret will be mounted at /var/run/secrets/google
-  gcs:
+  gcs: {}
+    ## Point this at a pre-configured secret containing a service account. The resulting
+    ## secret will be mounted at /var/run/secrets/google
+    # secretName:
     # credentialsFile: credentials.json
-    #  secretName:
-    #  bucketName:
+    # bucketName:
 
   ## Currently unconfigured and changing this has no impact on the template configuration.
   s3: {}
@@ -387,6 +586,21 @@ clickhouse:
     configmap:
       remote_servers:
         internal_replication: true
+        replica:
+          backup:
+            enabled: false
+      users:
+        enabled: false
+        user:
+        # the first user will be used if enabled
+        - name: default
+          config:
+            password: ""
+            networks:
+            - ::/0
+            profile: default
+            quota: default
+
     persistentVolumeClaim:
       enabled: true
       dataPersistentVolume:
@@ -395,6 +609,13 @@ clickhouse:
         - "ReadWriteOnce"
         storage: "30Gi"
 
+  ## Use this to enable an extra service account
+  # serviceAccount:
+  #   annotations: {}
+  #   enabled: false
+  #   name: "sentry-clickhouse"
+  #   automountServiceAccountToken: true
+
 ## This value is only used when clickhouse.enabled is set to false
 ##
 externalClickhouse:
@@ -402,6 +623,10 @@ externalClickhouse:
   ##
   host: "clickhouse"
   tcpPort: 9000
+  httpPort: 8123
+  username: default
+  password: ""
+  database: default
   ## Cluster name, can be found in config
   ## (https://clickhouse.tech/docs/en/operations/server-configuration-parameters/settings/#server-settings-remote-servers)
   ## or by executing `select * from system.clusters`
@@ -426,6 +651,17 @@ kafka:
   service:
     port: 9092
 
+  ## Use this to enable an extra service account
+  # serviceAccount:
+  #   create: false
+  #   name: kafka
+
+  ## Use this to enable an extra service account
+  # zookeeper:
+  #   serviceAccount:
+  #     create: false
+  #     name: zookeeper
+
 ## This value is only used when kafka.enabled is set to false
 ##
 externalKafka:
@@ -443,6 +679,10 @@ redis:
   master:
     persistence:
       enabled: true
+  ## Use this to enable an extra service account
+  # serviceAccount:
+  #   create: false
+  #   name: sentry-redis
 
 ## This value is only used when redis.enabled is set to false
 ##
@@ -461,9 +701,13 @@ postgresql:
   postgresqlDatabase: sentry
   replication:
     enabled: false
-    slaveReplicas: 2
+    readReplicas: 2
     synchronousCommit: "on"
     numSynchronousReplicas: 1
+    applicationName: sentry
+  ## Use this to enable an extra service account
+  # serviceAccount:
+  #   enabled: false
 
 ## This value is only used when postgresql.enabled is set to false
 ##
@@ -478,34 +722,71 @@ externalPostgresql:
 rabbitmq:
   ## If disabled, Redis will be used instead as the broker.
   enabled: true
-  forceBoot: true
+  clustering:
+    forceBoot: true
+    rebalance: true
   replicaCount: 3
-  rabbitmqErlangCookie: pHgpy3Q6adTskzAT6bLHCFqFTF7lMxhA
-  rabbitmqUsername: guest
-  rabbitmqPassword: guest
+  auth:
+    erlangCookie: pHgpy3Q6adTskzAT6bLHCFqFTF7lMxhA
+    username: guest
+    password: guest
   nameOverride: ""
 
-  podDisruptionBudget:
-    minAvailable: 1
-
-  persistentVolume:
+  pdb:
+    create: true
+  persistence:
     enabled: true
   resources: {}
-  # rabbitmqMemoryHighWatermark: 600MB
-  # rabbitmqMemoryHighWatermarkType: absolute
+  memoryHighWatermark: {}
+    # enabled: true
+    # type: relative
+    # value: 0.4
 
-  definitions:
-    policies: |-
-     {
-       "name": "ha-all",
-       "pattern": "^((?!celeryev.*).)*$",
-       "vhost": "/",
-       "definition": {
-         "ha-mode": "all",
-         "ha-sync-mode": "automatic",
-         "ha-sync-batch-size": 1
-       }
-     }
+  extraSecrets:
+    load-definition:
+      load_definition.json: |
+        {
+          "users": [
+            {
+              "name": "{{ .Values.auth.username }}",
+              "password": "{{ .Values.auth.password }}",
+              "tags": "administrator"
+            }
+          ],
+          "permissions": [{
+            "user": "{{ .Values.auth.username }}",
+            "vhost": "/",
+            "configure": ".*",
+            "write": ".*",
+            "read": ".*"
+          }],
+          "policies": [
+            {
+              "name": "ha-all",
+              "pattern": ".*",
+              "vhost": "/",
+              "definition": {
+                "ha-mode": "all",
+                "ha-sync-mode": "automatic",
+                "ha-sync-batch-size": 1
+              }
+            }
+          ],
+          "vhosts": [
+            {
+              "name": "/"
+            }
+          ]
+        }
+  loadDefinition:
+    enabled: true
+    existingSecret: load-definition
+  extraConfiguration: |
+    load_definitions = /app/load_definition.json
+  ## Use this to enable an extra service account
+  # serviceAccount:
+  #   create: false
+  #   name: rabbitmq
 
 ## Prometheus Exporter / Metrics
 ##
@@ -542,6 +823,7 @@ metrics:
   nodeSelector: {}
   tolerations: []
   affinity: {}
+  securityContext: {}
   # schedulerName:
   # Optional extra labels for pod, i.e. redis-client: "true"
   # podLabels: []
@@ -566,3 +848,5 @@ metrics:
     #   any: true
     scrapeInterval: 30s
     # honorLabels: true
+
+revisionHistoryLimit: 10

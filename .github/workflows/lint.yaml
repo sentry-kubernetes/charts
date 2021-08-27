@@ -8,13 +8,13 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Lint Helm
-        uses: yeouchien/helm3-action@f3a7c239c5c60777210c8e631839edf5dd3fa29c
+        uses: WyriHaximus/github-action-helm3@v2
         with:
-          command: lint ./sentry
+          command: helm lint ./sentry
       - name: Lint Helm
-        uses: yeouchien/helm3-action@f3a7c239c5c60777210c8e631839edf5dd3fa29c
+        uses: WyriHaximus/github-action-helm3@v2
         with:
-          command: lint ./sentry-kubernetes
+          command: helm lint ./sentry-kubernetes
       # - name: Create kind cluster
       #   uses: helm/kind-action@v1.0.0-alpha.3
       #   with:

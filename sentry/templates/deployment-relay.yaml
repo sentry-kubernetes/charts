@@ -7,10 +7,14 @@ metadata:
     chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
     release: "{{ .Release.Name }}"
     heritage: "{{ .Release.Service }}"
+    app.kubernetes.io/managed-by: "Helm"
   {{- if .Values.asHook }}
+  {{- /* Add the Helm annotations so that deployment after asHook from true to false works */}}
   annotations:
+    meta.helm.sh/release-name: "{{ .Release.Name }}"
+    meta.helm.sh/release-namespace: "{{ .Release.Namespace }}"
     "helm.sh/hook": "post-install,post-upgrade"
-    "helm.sh/hook-weight": "15"
+    "helm.sh/hook-weight": "25"
   {{- end }}
 spec:
   selector:
@@ -21,6 +25,7 @@ spec:
 {{- if not .Values.relay.autoscaling.enabled }}
   replicas: {{ .Values.relay.replicas }}
 {{- end }}
+  revisionHistoryLimit: {{ .Values.revisionHistoryLimit }}
   template:
     metadata:
       annotations:
@@ -52,6 +57,10 @@ spec:
       {{- if .Values.images.relay.imagePullSecrets }}
       imagePullSecrets:
 {{ toYaml .Values.images.relay.imagePullSecrets | indent 8 }}
+      {{- end }}
+      {{- if .Values.relay.securityContext }}
+      securityContext:
+{{ toYaml .Values.relay.securityContext | indent 8 }}
       {{- end }}
       initContainers:
         - name: {{ .Chart.Name }}-relay-init
@@ -90,27 +99,33 @@ spec:
             subPath: config.yml
             readOnly: true
         livenessProbe:
-          failureThreshold: 5
+          failureThreshold: {{ .Values.relay.probeFailureThreshold }}
           httpGet:
-            path: /api/relay/healthcheck/ready/
+            path: {{ template "relay.healthCheck.requestPath" }}
             port: {{ template "relay.port" }}
             scheme: HTTP
           initialDelaySeconds: {{ .Values.relay.probeInitialDelaySeconds }}
-          periodSeconds: 10
-          successThreshold: 1
-          timeoutSeconds: 2
+          periodSeconds: {{ .Values.relay.probePeriodSeconds }}
+          successThreshold: {{ .Values.relay.probeSuccessThreshold }}
+          timeoutSeconds: {{ .Values.relay.probeTimeoutSeconds }}
         readinessProbe:
-          failureThreshold: 10
+          failureThreshold: {{ .Values.relay.probeFailureThreshold }}
           httpGet:
-            path: /api/relay/healthcheck/ready/
+            path: {{ template "relay.healthCheck.requestPath" }}
             port: {{ template "relay.port" }}
             scheme: HTTP
           initialDelaySeconds: {{ .Values.relay.probeInitialDelaySeconds }}
-          periodSeconds: 10
-          successThreshold: 1
-          timeoutSeconds: 2
+          periodSeconds: {{ .Values.relay.probePeriodSeconds }}
+          successThreshold: {{ .Values.relay.probeSuccessThreshold }}
+          timeoutSeconds: {{ .Values.relay.probeTimeoutSeconds }}
         resources:
 {{ toYaml .Values.relay.resources | indent 12 }}
+{{- if .Values.relay.sidecars }}
+{{ toYaml .Values.relay.sidecars | indent 6 }}
+{{- end }}
+      {{- if .Values.serviceAccount.enabled }}
+      serviceAccountName: {{ .Values.serviceAccount.name }}-relay
+      {{- end }}
       volumes:
       - name: config
         configMap:
@@ -118,6 +133,9 @@ spec:
           defaultMode: 0644
       - name: credentials
         emptyDir: {}
+{{- if .Values.relay.volumes }}
+{{ toYaml .Values.relay.volumes | indent 6 }}
+{{- end }}
       {{- if .Values.relay.priorityClassName }}
       priorityClassName: "{{ .Values.relay.priorityClassName }}"
       {{- end }}

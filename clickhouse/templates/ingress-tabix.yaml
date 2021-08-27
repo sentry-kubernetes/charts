@@ -10,7 +10,7 @@ metadata:
     app.kubernetes.io/managed-by: {{ .Release.Service }}
 spec:
   rules:
-    host: {{ .Values.tabix.ingress.host }}
+  - host: {{ .Values.tabix.ingress.host }}
     http:
       paths:
       - path: {{ .Values.tabix.ingress.path }}
@@ -19,7 +19,7 @@ spec:
           servicePort: http
 {{- if .Values.tabix.ingress.tls.enabled }}
   tls:
-    hosts:
+  - hosts:
     {{- range .Values.tabix.ingress.tls.hosts }}
     - {{ . | quote }}
     {{- end }}

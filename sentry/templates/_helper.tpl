@@ -9,7 +9,9 @@
 
 {{- define "nginx.port" -}}{{ default "8080" .Values.nginx.containerPort }}{{- end -}}
 {{- define "relay.port" -}}3000{{- end -}}
+{{- define "relay.healthCheck.requestPath" -}}/api/relay/healthcheck/ready/{{- end -}}
 {{- define "sentry.port" -}}9000{{- end -}}
+{{- define "sentry.healthCheck.requestPath" -}}/_health/{{- end -}}
 {{- define "snuba.port" -}}1218{{- end -}}
 {{- define "symbolicator.port" -}}3021{{- end -}}
 
@@ -35,6 +37,12 @@
 {{- .Values.images.symbolicator.tag -}}
 {{- end -}}
 
+{{- define "dbCheck.image" -}}
+{{- default "subfuzion/netcat" .Values.hooks.dbCheck.image.repository -}}
+:
+{{- default "latest" .Values.hooks.dbCheck.image.tag -}}
+{{- end -}}
+
 {{/*
 Expand the name of the chart.
 */}}
@@ -58,6 +66,48 @@ If release name contains chart name it will be used as a full name.
 {{- printf "%s-%s" .Release.Name $name | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 {{- end -}}
+{{- end -}}
+
+
+{{/*
+Get KubeVersion removing pre-release information.
+*/}}
+{{- define "sentry.kubeVersion" -}}
+  {{- default .Capabilities.KubeVersion.Version (regexFind "v[0-9]+\\.[0-9]+\\.[0-9]+" .Capabilities.KubeVersion.Version) -}}
+{{- end -}}
+
+{{/*
+Return the appropriate apiVersion for ingress.
+*/}}
+{{- define "sentry.ingress.apiVersion" -}}
+  {{- if and (.Capabilities.APIVersions.Has "networking.k8s.io/v1") (semverCompare ">= 1.19.x" (include "sentry.kubeVersion" .)) -}}
+      {{- print "networking.k8s.io/v1" -}}
+  {{- else if .Capabilities.APIVersions.Has "networking.k8s.io/v1beta1" -}}
+    {{- print "networking.k8s.io/v1beta1" -}}
+  {{- else -}}
+    {{- print "extensions/v1beta1" -}}
+  {{- end -}}
+{{- end -}}
+
+{{/*
+Return if ingress is stable.
+*/}}
+{{- define "sentry.ingress.isStable" -}}
+  {{- eq (include "sentry.ingress.apiVersion" .) "networking.k8s.io/v1" -}}
+{{- end -}}
+
+{{/*
+Return if ingress supports ingressClassName.
+*/}}
+{{- define "sentry.ingress.supportsIngressClassName" -}}
+  {{- or (eq (include "sentry.ingress.isStable" .) "true") (and (eq (include "sentry.ingress.apiVersion" .) "networking.k8s.io/v1beta1") (semverCompare ">= 1.18.x" (include "sentry.kubeVersion" .))) -}}
+{{- end -}}
+
+{{/*
+Return if ingress supports pathType.
+*/}}
+{{- define "sentry.ingress.supportsPathType" -}}
+  {{- or (eq (include "sentry.ingress.isStable" .) "true") (and (eq (include "sentry.ingress.apiVersion" .) "networking.k8s.io/v1beta1") (semverCompare ">= 1.18.x" (include "sentry.kubeVersion" .))) -}}
 {{- end -}}
 
 {{/*
@@ -259,6 +309,64 @@ Set ClickHouse port
 {{- end -}}
 
 {{/*
+Set ClickHouse HTTP port
+*/}}
+{{- define "sentry.clickhouse.http_port" -}}
+{{- if .Values.clickhouse.enabled -}}
+{{- default 8123 .Values.clickhouse.clickhouse.http_port }}
+{{- else -}}
+{{ required "A valid .Values.externalClickhouse.httpPort is required" .Values.externalClickhouse.httpPort }}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Set ClickHouse Database
+*/}}
+{{- define "sentry.clickhouse.database" -}}
+{{- if .Values.clickhouse.enabled -}}
+default
+{{- else -}}
+{{ required "A valid .Values.externalClickhouse.database is required" .Values.externalClickhouse.database }}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Set ClickHouse Authorization
+*/}}
+{{- define "sentry.clickhouse.auth" -}}
+--user {{ include "sentry.clickhouse.username" . }} --password {{ include "sentry.clickhouse.password" .| quote }}
+{{- end -}}
+
+{{/*
+Set ClickHouse User
+*/}}
+{{- define "sentry.clickhouse.username" -}}
+{{- if .Values.clickhouse.enabled -}}
+  {{- if .Values.clickhouse.clickhouse.configmap.users.enabled -}}
+{{ (index .Values.clickhouse.clickhouse.configmap.users.user 0).name }}
+  {{- else -}}
+default
+  {{- end -}}
+{{- else -}}
+{{ required "A valid .Values.externalClickhouse.username is required" .Values.externalClickhouse.username }}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Set ClickHouse Password
+*/}}
+{{- define "sentry.clickhouse.password" -}}
+{{- if .Values.clickhouse.enabled -}}
+  {{- if .Values.clickhouse.clickhouse.configmap.users.enabled -}}
+{{ (index .Values.clickhouse.clickhouse.configmap.users.user 0).config.password }}
+  {{- else -}}
+  {{- end -}}
+{{- else -}}
+{{ .Values.externalClickhouse.password }}
+{{- end -}}
+{{- end -}}
+
+{{/*
 Set ClickHouse cluster name
 */}}
 {{- define "sentry.clickhouse.cluster.name" -}}
@@ -275,7 +383,7 @@ Set Kafka Confluent host
 {{- define "sentry.kafka.host" -}}
 {{- if .Values.kafka.enabled -}}
 {{- template "sentry.kafka.fullname" . -}}
-{{- else -}}
+{{- else if and (.Values.externalKafka) (not (kindIs "slice" .Values.externalKafka)) -}}
 {{ required "A valid .Values.externalKafka.host is required" .Values.externalKafka.host }}
 {{- end -}}
 {{- end -}}
@@ -286,10 +394,24 @@ Set Kafka Confluent port
 {{- define "sentry.kafka.port" -}}
 {{- if and (.Values.kafka.enabled) (.Values.kafka.service.port) -}}
 {{- .Values.kafka.service.port }}
-{{- else -}}
+{{- else if and (.Values.externalKafka) (not (kindIs "slice" .Values.externalKafka)) -}}
 {{ required "A valid .Values.externalKafka.port is required" .Values.externalKafka.port }}
 {{- end -}}
 {{- end -}}
+
+{{/*
+Set Kafka bootstrap servers string
+*/}}
+{{- define "sentry.kafka.bootstrap_servers_string" -}}
+{{- if or (.Values.kafka.enabled) (not (kindIs "slice" .Values.externalKafka)) -}}
+{{ printf "%s:%s" (include "sentry.kafka.host" .) (include "sentry.kafka.port" .) }}
+{{- else -}}
+{{- range $index, $elem := .Values.externalKafka -}}
+{{- if $index -}},{{- end -}}{{ printf "%s:%s" $elem.host (toString $elem.port) }}
+{{- end -}}
+{{- end -}}
+{{- end -}}
+
 
 {{/*
 Set RabbitMQ host
@@ -300,4 +422,14 @@ Set RabbitMQ host
 {{- else -}}
 {{ .Values.rabbitmq.host }}
 {{- end -}}
+{{- end -}}
+
+{{/*
+Common Snuba environment variables
+*/}}
+{{- define "sentry.snuba.env" -}}
+- name: SNUBA_SETTINGS
+  value: /etc/snuba/settings.py
+- name: DEFAULT_BROKERS
+  value: {{ include "sentry.kafka.bootstrap_servers_string" . | quote }}
 {{- end -}}

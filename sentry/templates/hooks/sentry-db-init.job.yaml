@@ -23,6 +23,9 @@ spec:
         {{- if .Values.sentry.worker.annotations }}
 {{ toYaml .Values.sentry.worker.annotations | indent 8 }}
         {{- end }}
+        {{- if .Values.hooks.dbInit.podAnnotations }}
+{{ toYaml .Values.hooks.dbInit.podAnnotations | indent 8 }}
+        {{- end }}
       labels:
         app: sentry
         release: "{{ .Release.Name }}"
@@ -30,6 +33,18 @@ spec:
 {{ toYaml .Values.sentry.worker.podLabels | indent 8 }}
         {{- end }}
     spec:
+      {{- if .Values.hooks.dbInit.affinity }}
+      affinity:
+{{ toYaml .Values.hooks.dbInit.affinity | indent 8 }}
+      {{- end }}
+      {{- if .Values.hooks.dbInit.nodeSelector }}
+      nodeSelector:
+{{ toYaml .Values.hooks.dbInit.nodeSelector | indent 8 }}
+      {{- end }}
+      {{- if .Values.hooks.dbInit.tolerations }}
+      tolerations:
+{{ toYaml .Values.hooks.dbInit.tolerations | indent 8 }}
+      {{- end }}
       restartPolicy: Never
       {{- if .Values.images.sentry.imagePullSecrets }}
       imagePullSecrets:
@@ -57,8 +72,14 @@ spec:
           readOnly: true
         resources:
 {{ toYaml .Values.hooks.dbInit.resources | indent 10 }}
+{{- if .Values.hooks.dbInit.sidecars }}
+{{ toYaml .Values.hooks.dbInit.sidecars | indent 6 }}
+{{- end }}
       volumes:
       - name: config
         configMap:
           name: {{ template "sentry.fullname" . }}-sentry
+{{- if .Values.hooks.dbInit.volumes }}
+{{ toYaml .Values.hooks.dbInit.volumes | indent 6 }}
+{{- end }}
 {{- end -}}

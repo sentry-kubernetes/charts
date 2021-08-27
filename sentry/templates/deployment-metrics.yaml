@@ -15,6 +15,7 @@ spec:
       release: "{{ .Release.Name }}"
       role: metrics
   replicas: 1
+  revisionHistoryLimit: {{ .Values.revisionHistoryLimit }}
   template:
     metadata:
       annotations:
@@ -43,6 +44,10 @@ spec:
       {{- end }}
       {{- if .Values.metrics.schedulerName }}
       schedulerName: "{{ .Values.metrics.schedulerName }}"
+      {{- end }}
+      {{- if .Values.metrics.securityContext }}
+      securityContext:
+{{ toYaml .Values.metrics.securityContext | indent 8 }}
       {{- end }}
       containers:
       - name: {{ .Chart.Name }}-metrics
@@ -82,4 +87,7 @@ spec:
 {{- end }}
         resources:
 {{ toYaml .Values.metrics.resources | indent 10 }}
+      {{- if .Values.serviceAccount.enabled }}
+      serviceAccountName: {{ .Values.serviceAccount.name }}-metrics
+      {{- end }}
 {{- end }}

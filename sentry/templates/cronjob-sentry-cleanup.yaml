@@ -65,7 +65,7 @@ spec:
                   name: {{ default (include "sentry.postgresql.fullname" .) .Values.postgresql.existingSecret }}
                   key: {{ default "postgresql-password" .Values.postgresql.existingSecretKey }}
             {{- end }}
-            {{ if eq .Values.filestore.backend "gcs" }}
+            {{ if and (eq .Values.filestore.backend "gcs") .Values.filestore.gcs.secretName }}
             - name: GOOGLE_APPLICATION_CREDENTIALS
               value: /var/run/secrets/google/{{ .Values.filestore.gcs.credentialsFile }}
             {{ end }}
@@ -78,12 +78,15 @@ spec:
               readOnly: true
             - mountPath: {{ .Values.filestore.filesystem.path }}
               name: sentry-data
-            {{- if eq .Values.filestore.backend "gcs" }}
+            {{- if and (eq .Values.filestore.backend "gcs") .Values.filestore.gcs.secretName }}
             - name: sentry-google-cloud-key
               mountPath: /var/run/secrets/google
             {{ end }}
             resources:
 {{ toYaml .Values.sentry.cleanup.resources | indent 14 }}
+{{- if .Values.sentry.cleanup.sidecars }}
+{{ toYaml .Values.sentry.cleanup.sidecars | indent 10 }}
+{{- end }}
           restartPolicy: Never
           volumes:
           - name: config
@@ -96,11 +99,14 @@ spec:
           {{- else }}
             emptyDir: {}
           {{ end }}
-          {{- if eq .Values.filestore.backend "gcs" }}
+          {{- if and (eq .Values.filestore.backend "gcs") .Values.filestore.gcs.secretName }}
           - name: sentry-google-cloud-key
             secret:
               secretName: {{ .Values.filestore.gcs.secretName }}
           {{ end }}
+{{- if .Values.sentry.cleanup.volumes }}
+{{ toYaml .Values.sentry.cleanup.volumes | indent 10 }}
+{{- end }}
           {{- if .Values.sentry.cleanup.priorityClassName }}
           priorityClassName: "{{ .Values.sentry.cleanup.priorityClassName }}"
           {{- end }}

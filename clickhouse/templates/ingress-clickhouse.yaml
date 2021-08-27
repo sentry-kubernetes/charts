@@ -7,6 +7,10 @@ metadata:
     app.kubernetes.io/name: {{ include "clickhouse.name" . }}
     app.kubernetes.io/instance: {{ .Release.Name }}
     app.kubernetes.io/managed-by: {{ .Release.Service }}
+  annotations:
+    {{- range $key, $value := .Values.clickhouse.ingress.annotations }}
+      {{ $key }}: {{ $value | quote }}
+    {{- end }}
 spec:
   rules:
     - host: {{ .Values.clickhouse.ingress.host }}
@@ -15,10 +19,10 @@ spec:
         - path: {{ .Values.clickhouse.ingress.path }}
           backend:
             serviceName: {{ include "clickhouse.fullname" . }}
-            servicePort: http
+            servicePort: http-port
 {{- if .Values.clickhouse.ingress.tls.enabled }}
   tls:
-    hosts:
+  - hosts:
     {{- range .Values.clickhouse.ingress.tls.hosts }}
     - {{ . | quote }}
     {{- end }}

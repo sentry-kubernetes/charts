@@ -23,6 +23,16 @@ clusterDomain: "cluster.local"
 #          values:
 #          - "true"
 
+serviceAccount:
+  # serviceAccount.annotations -- Additional Service Account annotations.
+  annotations: {}
+  # serviceAccount.enabled -- If `true`, a custom Service Account will be used.
+  enabled: false
+  # serviceAccount.name -- The name of the ServiceAccount to use. Will be appended with `replica` and `tabix` for those pods.
+  name: "clickhouse"
+  # serviceAccount.automountServiceAccountToken -- Automount API credentials for a Service Account.
+  automountServiceAccountToken: true
+
 clickhouse:
   ## StatefulSet controller supports relax its ordering guarantees while preserving its uniqueness and identity guarantees. There are two valid pod management policies: OrderedReady and Parallel
   ## ref: https://kubernetes.io/docs/tutorials/stateful-application/basic-stateful-set/#pod-management-policy
@@ -213,6 +223,9 @@ clickhouse:
     ## Uncomment to disable ClickHouse internal DNS caching.
     disable_internal_dns_cache: "1"
     ##
+    ## Limits total RAM usage by the ClickHouse server. (0 is Auto)
+    #max_server_memory_usage: "0"
+    ##
     ## The maximum number of open files.
     ## We recommend using this option in Mac OS X, since the getrlimit() function returns an incorrect value.
     #max_open_files:
@@ -227,11 +240,13 @@ clickhouse:
     # level – Logging level. Acceptable values: trace, debug, information, warning, error. Default value: /var/log/clickhouse-server
     # size – Size of the file. Applies to loganderrorlog. Once the file reaches size, ClickHouse archives and renames it, and creates a new log file in its place.
     # count – The number of archived log files that ClickHouse stores.
+    # stdoutLogsEnabled - send clickhouse logs to stdout/stderr (docker way)
     logger:
       path: "/var/log/clickhouse-server"
       level: "trace"
       size: "1000M"
       count: "10"
+      stdoutLogsEnabled: false
     ##
     ## Data compression settings.
     # min_part_size – The minimum size of a table part.
@@ -350,7 +365,7 @@ clickhouse:
 tabix:
   ##
   ## Enable Tabix
-  enabled: true
+  enabled: false
   ##
   ## ## The instance number of Tabix
   replicas: "1"
@@ -431,3 +446,9 @@ tabix:
 
   ## The resource limits and requests used by tabix
   resources: {}
+
+  ## Pod annotations
+  podAnnotations:
+
+  ## Additional Labels
+  podLabels:

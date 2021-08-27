@@ -30,11 +30,21 @@ spec:
       {{- if and .Values.clickhouse.metrics.enabled .Values.clickhouse.metrics.podAnnotations }}
       {{- toYaml .Values.clickhouse.metrics.podAnnotations | nindent 8 }}
       {{- end }}
+      {{- if .Values.clickhouse.podAnnotations }}
+      {{- range $key, $value := .Values.clickhouse.podAnnotations }}
+        {{ $key }}: {{ $value | quote }}
+      {{- end }}
+      {{- end }}
       labels:
         app.kubernetes.io/name: {{ include "clickhouse.name" . }}-replica
         app.kubernetes.io/instance: {{ .Release.Name }}-replica
       {{- if and .Values.clickhouse.metrics.enabled .Values.clickhouse.metrics.podLabels }}
       {{- toYaml .Values.clickhouse.metrics.podLabels | nindent 8 }}
+      {{- end }}
+      {{- if .Values.clickhouse.podLabels }}
+      {{- range $key, $value := .Values.clickhouse.podLabels }}
+        {{ $key }}: {{ $value | quote }}
+      {{- end }}
       {{- end }}
     spec:
     {{- if .Values.affinity }}
@@ -121,10 +131,6 @@ spec:
         resources: {{- toYaml .Values.clickhouse.metrics.resources | nindent 8 }}
         {{- end }}
       {{- end }}
-      {{- if .Values.clickhouse.imagePullSecrets }}
-      imagePullSecrets:
-      - name: {{ .Values.clickhouse.imagePullSecrets }}
-    {{- end }}
     {{- if .Values.clickhouse.nodeSelector }}
       nodeSelector:
 {{ toYaml .Values.clickhouse.nodeSelector | indent 8 }}
@@ -163,6 +169,9 @@ spec:
           items:
           - key: users.xml
             path: users.xml
+      {{- end }}
+      {{- if .Values.serviceAccount.enabled }}
+      serviceAccountName: {{ .Values.serviceAccount.name }}-replica
       {{- end }}
 {{- if .Values.clickhouse.persistentVolumeClaim.enabled }}
   volumeClaimTemplates:

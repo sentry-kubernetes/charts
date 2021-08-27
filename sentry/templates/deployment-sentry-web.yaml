@@ -8,6 +8,7 @@ metadata:
     release: "{{ .Release.Name }}"
     heritage: "{{ .Release.Service }}"
 spec:
+  revisionHistoryLimit: {{ .Values.revisionHistoryLimit }}
   strategy:
     type: {{ .Values.sentry.web.strategyType }}
   selector:
@@ -51,6 +52,10 @@ spec:
       imagePullSecrets:
 {{ toYaml .Values.images.sentry.imagePullSecrets | indent 8 }}
       {{- end }}
+      {{- if .Values.sentry.web.securityContext }}
+      securityContext:
+{{ toYaml .Values.sentry.web.securityContext | indent 8 }}
+      {{- end }}
       containers:
       - name: {{ .Chart.Name }}-web
         image: "{{ template "sentry.image" . }}"
@@ -68,9 +73,13 @@ spec:
               name: {{ default (include "sentry.postgresql.fullname" .) .Values.postgresql.existingSecret }}
               key: {{ default "postgresql-password" .Values.postgresql.existingSecretKey }}
         {{- end }}
-        {{ if eq .Values.filestore.backend "gcs" }}
+        {{ if and (eq .Values.filestore.backend "gcs") .Values.filestore.gcs.secretName }}
         - name: GOOGLE_APPLICATION_CREDENTIALS
           value: /var/run/secrets/google/{{ .Values.filestore.gcs.credentialsFile }}
+        {{ end }}
+        {{ if .Values.sentry.web.customCA }}
+        - name: REQUESTS_CA_BUNDLE
+          value: /etc/pki/ca-trust/custom/{{ default "ca.crt" .Values.sentry.web.customCA.item }}
         {{ end }}
 {{- if .Values.sentry.web.env }}
 {{ toYaml .Values.sentry.web.env | indent 8 }}
@@ -81,32 +90,42 @@ spec:
           readOnly: true
         - mountPath: {{ .Values.filestore.filesystem.path }}
           name: sentry-data
-        {{- if eq .Values.filestore.backend "gcs" }}
+        {{- if and (eq .Values.filestore.backend "gcs") .Values.filestore.gcs.secretName }}
         - name: sentry-google-cloud-key
           mountPath: /var/run/secrets/google
         {{ end }}
+        {{- if .Values.sentry.web.customCA }}
+        - name: custom-ca
+          mountPath: /etc/pki/ca-trust/custom
+        {{ end }}
         livenessProbe:
-          failureThreshold: 5
+          failureThreshold: {{ .Values.sentry.web.probeFailureThreshold }}
           httpGet:
-            path: /_health/
+            path: {{ template "sentry.healthCheck.requestPath" }}
             port: {{ template "sentry.port" }}
             scheme: HTTP
           initialDelaySeconds: {{ .Values.sentry.web.probeInitialDelaySeconds }}
-          periodSeconds: 10
-          successThreshold: 1
-          timeoutSeconds: 2
+          periodSeconds: {{ .Values.sentry.web.probePeriodSeconds }}
+          successThreshold: {{ .Values.sentry.web.probeSuccessThreshold }}
+          timeoutSeconds: {{ .Values.sentry.web.probeTimeoutSeconds }}
         readinessProbe:
-          failureThreshold: 10
+          failureThreshold: {{ .Values.sentry.web.probeFailureThreshold }}
           httpGet:
-            path: /_health/
+            path: {{ template "sentry.healthCheck.requestPath" }}
             port: {{ template "sentry.port" }}
             scheme: HTTP
           initialDelaySeconds: {{ .Values.sentry.web.probeInitialDelaySeconds }}
-          periodSeconds: 10
-          successThreshold: 1
-          timeoutSeconds: 2
+          periodSeconds: {{ .Values.sentry.web.probePeriodSeconds }}
+          successThreshold: {{ .Values.sentry.web.probeSuccessThreshold }}
+          timeoutSeconds: {{ .Values.sentry.web.probeTimeoutSeconds }}
         resources:
 {{ toYaml .Values.sentry.web.resources | indent 12 }}
+{{- if .Values.sentry.web.sidecars }}
+{{ toYaml .Values.sentry.web.sidecars | indent 6 }}
+{{- end }}
+      {{- if .Values.serviceAccount.enabled }}
+      serviceAccountName: {{ .Values.serviceAccount.name }}-web
+      {{- end }}
       volumes:
       - name: config
         configMap:
@@ -118,11 +137,19 @@ spec:
       {{- else }}
         emptyDir: {}
       {{ end }}
-      {{- if eq .Values.filestore.backend "gcs" }}
+      {{- if and (eq .Values.filestore.backend "gcs") .Values.filestore.gcs.secretName }}
       - name: sentry-google-cloud-key
         secret:
           secretName: {{ .Values.filestore.gcs.secretName }}
       {{ end }}
+      {{- if .Values.sentry.web.customCA }}
+      - name: custom-ca
+        secret:
+{{ toYaml .Values.sentry.web.customCA | indent 10 }}
+      {{ end }}
       {{- if .Values.sentry.web.priorityClassName }}
       priorityClassName: "{{ .Values.sentry.web.priorityClassName }}"
       {{- end }}
+{{- if .Values.sentry.web.volumes }}
+{{ toYaml .Values.sentry.web.volumes | indent 6 }}
+{{- end }}

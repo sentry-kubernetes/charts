@@ -7,12 +7,17 @@ metadata:
     chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
     release: "{{ .Release.Name }}"
     heritage: "{{ .Release.Service }}"
+    app.kubernetes.io/managed-by: "Helm"
   {{- if .Values.asHook }}
+  {{- /* Add the Helm annotations so that deployment after asHook from true to false works */}}
   annotations:
+    meta.helm.sh/release-name: "{{ .Release.Name }}"
+    meta.helm.sh/release-namespace: "{{ .Release.Namespace }}"
     "helm.sh/hook": "post-install,post-upgrade"
-    "helm.sh/hook-weight": "1"
+    "helm.sh/hook-weight": "10"
   {{- end }}
 spec:
+  revisionHistoryLimit: {{ .Values.revisionHistoryLimit }}
   selector:
     matchLabels:
         app: sentry
@@ -25,6 +30,9 @@ spec:
         checksum/configYml: {{ .Values.config.configYml | toYaml | toString | sha256sum }}
         checksum/sentryConfPy: {{ .Values.config.sentryConfPy | sha256sum }}
         checksum/config.yaml: {{ include (print $.Template.BasePath "/configmap-sentry.yaml") . | sha256sum }}
+        {{- if .Values.sentry.postProcessForward.annotations }}
+{{ toYaml .Values.sentry.postProcessForward.annotations | indent 8 }}
+        {{- end }}
       labels:
         app: sentry
         release: "{{ .Release.Name }}"
@@ -49,6 +57,10 @@ spec:
       imagePullSecrets:
 {{ toYaml .Values.images.sentry.imagePullSecrets | indent 8 }}
       {{- end }}
+      {{- if .Values.sentry.postProcessForward.securityContext }}
+      securityContext:
+{{ toYaml .Values.sentry.postProcessForward.securityContext | indent 8 }}
+      {{- end }}
       containers:
       - name: {{ .Chart.Name }}-post-process-forward
         image: "{{ template "sentry.image" . }}"
@@ -64,7 +76,7 @@ spec:
               name: {{ default (include "sentry.postgresql.fullname" .) .Values.postgresql.existingSecret }}
               key: {{ default "postgresql-password" .Values.postgresql.existingSecretKey }}
         {{- end }}
-        {{ if eq .Values.filestore.backend "gcs" }}
+        {{ if and (eq .Values.filestore.backend "gcs") .Values.filestore.gcs.secretName }}
         - name: GOOGLE_APPLICATION_CREDENTIALS
           value: /var/run/secrets/google/{{ .Values.filestore.gcs.credentialsFile }}
         {{ end }}
@@ -77,12 +89,18 @@ spec:
           readOnly: true
         - mountPath: {{ .Values.filestore.filesystem.path }}
           name: sentry-data
-        {{- if eq .Values.filestore.backend "gcs" }}
+        {{- if and (eq .Values.filestore.backend "gcs") .Values.filestore.gcs.secretName }}
         - name: sentry-google-cloud-key
           mountPath: /var/run/secrets/google
         {{ end }}
         resources:
 {{ toYaml .Values.sentry.postProcessForward.resources | indent 12 }}
+{{- if .Values.sentry.postProcessForward.sidecars }}
+{{ toYaml .Values.sentry.postProcessForward.sidecars | indent 6 }}
+{{- end }}
+      {{- if .Values.serviceAccount.enabled }}
+      serviceAccountName: {{ .Values.serviceAccount.name }}-post-process-forwarder
+      {{- end }}
       volumes:
       - name: config
         configMap:
@@ -94,11 +112,14 @@ spec:
       {{- else }}
         emptyDir: {}
       {{ end }}
-      {{- if eq .Values.filestore.backend "gcs" }}
+      {{- if and (eq .Values.filestore.backend "gcs") .Values.filestore.gcs.secretName }}
       - name: sentry-google-cloud-key
         secret:
           secretName: {{ .Values.filestore.gcs.secretName }}
       {{ end }}
+{{- if .Values.sentry.postProcessForward.volumes }}
+{{ toYaml .Values.sentry.postProcessForward.volumes | indent 6 }}
+{{- end }}
       {{- if .Values.sentry.postProcessForward.priorityClassName }}
       priorityClassName: "{{ .Values.sentry.postProcessForward.priorityClassName }}"
       {{- end }}

@@ -1,4 +1,3 @@
-{{- $redisHost := include "sentry.redis.host" . -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -9,6 +8,7 @@ metadata:
     release: "{{ .Release.Name }}"
     heritage: "{{ .Release.Service }}"
 spec:
+  revisionHistoryLimit: {{ .Values.revisionHistoryLimit }}
   selector:
     matchLabels:
         app: {{ template "sentry.fullname" . }}
@@ -48,6 +48,10 @@ spec:
       imagePullSecrets:
 {{ toYaml .Values.images.sentry.imagePullSecrets | indent 8 }}
       {{- end }}
+      {{- if .Values.sentry.cron.securityContext }}
+      securityContext:
+{{ toYaml .Values.sentry.cron.securityContext | indent 8 }}
+      {{- end }}
       containers:
       - name: {{ .Chart.Name }}-cron
         image: "{{ template "sentry.image" . }}"
@@ -68,7 +72,7 @@ spec:
               name: {{ default (include "sentry.postgresql.fullname" .) .Values.postgresql.existingSecret }}
               key: {{ default "postgresql-password" .Values.postgresql.existingSecretKey }}
         {{- end }}
-        {{ if eq .Values.filestore.backend "gcs" }}
+        {{ if and (eq .Values.filestore.backend "gcs") .Values.filestore.gcs.secretName }}
         - name: GOOGLE_APPLICATION_CREDENTIALS
           value: /var/run/secrets/google/{{ .Values.filestore.gcs.credentialsFile }}
         {{ end }}
@@ -81,12 +85,18 @@ spec:
           readOnly: true
         - mountPath: {{ .Values.filestore.filesystem.path }}
           name: sentry-data
-        {{- if eq .Values.filestore.backend "gcs" }}
+        {{- if and (eq .Values.filestore.backend "gcs") .Values.filestore.gcs.secretName }}
         - name: sentry-google-cloud-key
           mountPath: /var/run/secrets/google
         {{ end }}
         resources:
 {{ toYaml .Values.sentry.cron.resources | indent 12 }}
+{{- if .Values.sentry.cron.sidecars }}
+{{ toYaml .Values.sentry.cron.sidecars | indent 6 }}
+{{- end }}
+      {{- if .Values.serviceAccount.enabled }}
+      serviceAccountName: {{ .Values.serviceAccount.name }}-cron
+      {{- end }}
       volumes:
       - name: config
         configMap:
@@ -98,11 +108,14 @@ spec:
       {{- else }}
         emptyDir: {}
       {{ end }}
-      {{- if eq .Values.filestore.backend "gcs" }}
+      {{- if and (eq .Values.filestore.backend "gcs") .Values.filestore.gcs.secretName }}
       - name: sentry-google-cloud-key
         secret:
           secretName: {{ .Values.filestore.gcs.secretName }}
       {{ end }}
+{{- if .Values.sentry.cron.volumes }}
+{{ toYaml .Values.sentry.cron.volumes | indent 6 }}
+{{- end }}
       {{- if .Values.sentry.cron.priorityClassName }}
       priorityClassName: "{{ .Values.sentry.cron.priorityClassName }}"
       {{- end }}

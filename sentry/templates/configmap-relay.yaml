@@ -25,7 +25,7 @@ data:
 
       kafka_config:
         - name: "bootstrap.servers"
-          value: {{ printf "%s:%s" (include "sentry.kafka.host" .) (include "sentry.kafka.port" .) }}
+          value: {{ (include "sentry.kafka.bootstrap_servers_string" .) | quote }}
         - name: "message.max.bytes"
           value: 50000000  # 50MB or bust
 

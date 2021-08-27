@@ -19,7 +19,6 @@ data:
     {{- if .Values.system.url }}
     system.url-prefix: {{ .Values.system.url | quote }}
     {{- end }}
-    postprocess.use-cache-key: 1.0
 
     # This URL will be used to tell Symbolicator where to obtain the Sentry source.
     # See https://getsentry.github.io/symbolicator/api/
@@ -30,41 +29,49 @@ data:
       url: "http://{{ template "sentry.fullname" . }}-symbolicator:{{ template "symbolicator.port" }}"
     {{- end }}
 
+    ##########
+    # Github #
+    ##########
     {{- if .Values.github.appId }}
     github-app.id: {{ .Values.github.appId }}
-    {{ end }}
+    {{- end }}
     {{- if .Values.github.appName }}
     github-app.name: {{ .Values.github.appName | quote }}
-    {{ end }}
+    {{- end }}
     {{- if .Values.github.privateKey }}
     github-app.private-key: |-
-      {{ .Values.github.privateKey | nindent 8 }}"
-    {{ end }}
+{{ .Values.github.privateKey | indent 8 }}
+    {{- end }}
     {{- if .Values.github.webhookSecret }}
     github-app.webhook-secret: {{ .Values.github.webhookSecret | quote }}
-    {{ end }}
+    {{- end }}
     {{- if .Values.github.clientId }}
     github-app.client-id: {{ .Values.github.clientId | quote }}
-    {{ end }}
+    {{- end }}
     {{- if .Values.github.clientSecret }}
     github-app.client-secret: {{ .Values.github.clientSecret | quote }}
+    {{- end }}
+
+    ##########
+    # Google #
+    ##########
+    {{- if .Values.google.clientId }}
+    auth-google.client-id: {{ .Values.google.clientId | quote }}
+    auth-google.client-secret: {{ .Values.google.clientSecret | quote }}
     {{ end }}
 
+    #########
+    # Slack #
+    #########
     {{- if .Values.slack.clientId }}
     slack.client-id: {{ .Values.slack.clientId | quote }}
     slack.client-secret: {{ .Values.slack.clientSecret | quote }}
-    {{- if .Values.slack.legacyApp }}
-    slack.legacy-app: True
-    slack.verification-token: {{ .Values.slack.verificationToken | quote }}
-    {{- else }}
-    slack.legacy-app: False
     slack.signing-secret: {{ .Values.slack.signingSecret | quote }}
     {{ end }}
-    {{ end }}
 
-    ################
-    #    Redis     #
-    ################
+    #########
+    # Redis #
+    #########
     redis.clusters:
       default:
         hosts:
@@ -160,7 +167,7 @@ data:
     # on a Python framework called Celery to manage queues.
 
     {{- if or (.Values.rabbitmq.enabled) (.Values.rabbitmq.host) }}
-    BROKER_URL = os.environ.get("BROKER_URL", "amqp://{{ .Values.rabbitmq.rabbitmqUsername }}:{{ .Values.rabbitmq.rabbitmqPassword }}@{{ template "sentry.rabbitmq.host" . }}:5672//")
+    BROKER_URL = os.environ.get("BROKER_URL", "amqp://{{ .Values.rabbitmq.auth.username }}:{{ .Values.rabbitmq.auth.password }}@{{ template "sentry.rabbitmq.host" . }}:5672//")
     {{- else if $redisPass }}
     BROKER_URL = os.environ.get("BROKER_URL", "redis://:{{ $redisPass }}@{{ $redisHost }}:{{ $redisPort }}/0")
     {{- else }}
@@ -186,7 +193,7 @@ data:
     SENTRY_CACHE = "sentry.cache.redis.RedisCache"
 
     DEFAULT_KAFKA_OPTIONS = {
-        "bootstrap.servers": {{ printf "%s:%s" (include "sentry.kafka.host" .) (include "sentry.kafka.port" .) | quote }},
+        "bootstrap.servers": {{ (include "sentry.kafka.bootstrap_servers_string" .) | quote }},
         "message.max.bytes": 50000000,
         "socket.timeout.ms": 1000,
     }
@@ -262,9 +269,31 @@ data:
         "protocol": "uwsgi",
         # This is needed to prevent https://git.io/fj7Lw
         "uwsgi-socket": None,
+
+        # These ase for proper HTTP/1.1 support from uWSGI
+        # Without these it doesn't do keep-alives causing
+        # issues with Relay's direct requests.
         "http-keepalive": True,
+        "http-chunked-input": True,
+        # the number of web workers
+        'workers': 3,
+        # Turn off memory reporting
         "memory-report": False,
-        # 'workers': 3,  # the number of web workers
+        # Some stuff so uwsgi will cycle workers sensibly
+        'max-requests': 100000,
+        'max-requests-delta': 500,
+        'max-worker-lifetime': 86400,
+        # Duplicate options from sentry default just so we don't get
+        # bit by sentry changing a default value that we depend on.
+        'thunder-lock': True,
+        'log-x-forwarded-for': False,
+        'buffer-size': 32768,
+        'limit-post': 209715200,
+        'disable-logging': True,
+        'reload-on-rss': 600,
+        'ignore-sigpipe': True,
+        'ignore-write-errors': True,
+        'disable-write-exception': True,
     }
 
     ###########
@@ -301,6 +330,7 @@ data:
                 {{- if .Values.sentry.features.orgSubdomains }}
                 "organizations:org-subdomains",
                 {{ end -}}
+
                 "organizations:advanced-search",
                 "organizations:android-mappings",
                 "organizations:api-keys",
@@ -308,6 +338,8 @@ data:
                 "organizations:related-events",
                 "organizations:alert-filters",
                 "organizations:custom-symbol-sources",
+                "organizations:dashboards-basic",
+                "organizations:dashboards-edit",
                 "organizations:data-forwarding",
                 "organizations:discover",
                 "organizations:discover-basic",
@@ -326,7 +358,11 @@ data:
                 "organizations:integrations-chat-unfurl",
                 "organizations:integrations-incident-management",
                 "organizations:integrations-ticket-rules",
+
+                {{- if .Values.sentry.features.vstsLimitedScopes }}
                 "organizations:integrations-vsts-limited-scopes",
+                {{ end -}}
+
                 "organizations:integrations-stacktrace-link",
                 "organizations:internal-catchall",
                 "organizations:invite-members",
