@@ -65,7 +65,14 @@ spec:
       - name: {{ .Chart.Name }}-subscription-consumer-events
         image: "{{ template "sentry.image" . }}"
         imagePullPolicy: {{ default "IfNotPresent" .Values.images.sentry.pullPolicy }}
-        command: ["sentry", "run", "query-subscription-consumer", "--topic events-subscription-results", "--commit-batch-size", "{{ default "1" .Values.sentry.subscriptionConsumerEvents.commitBatchSize }}"]
+        command: ["sentry"]
+        args:
+          - "run"
+          - "query-subscription-consumer"
+          - "--topic"
+          - "events-subscription-results"
+          - "--commit-batch-size"
+          - "{{ default "1" .Values.sentry.subscriptionConsumerEvents.commitBatchSize }}"
         env:
         - name: SNUBA
           value: http://{{ template "sentry.fullname" . }}-snuba:{{ template "snuba.port" }}
