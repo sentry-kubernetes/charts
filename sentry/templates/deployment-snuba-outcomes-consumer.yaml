@@ -69,7 +69,8 @@ spec:
           - "consumer"
           - "--storage"
           - "outcomes_raw"
-          - "--auto-offset-reset=earliest"
+          - "--auto-offset-reset"
+          - "{{ .Values.snuba.outcomesConsumer.autoOffsetReset }}"
           - "--max-batch-size"
           - "{{ default "3" .Values.snuba.outcomesConsumer.maxBatchSize }}"
           {{- if .Values.snuba.outcomesConsumer.processes }}
