@@ -98,6 +98,8 @@ spec:
 {{- end }}
       {{- if .Values.serviceAccount.enabled }}
       serviceAccountName: {{ .Values.serviceAccount.name }}-snuba
+      {{- else if .Values.externalServiceAccount.enabled }}
+      serviceAccount: {{ .Values.externalServiceAccount.name }}
       {{- end }}
       volumes:
         - name: config
