@@ -59,8 +59,7 @@ spec:
                 - "--clickhouse-port"
                 - {{ include "sentry.clickhouse.port" . | quote }}
             env:
-              - name: SNUBA_SETTINGS
-                value: /etc/snuba/settings.py
+{{ include "sentry.snuba.env" . | indent 12 }}
 {{- if .Values.snuba.cleanupTransactions.env }}
 {{ toYaml .Values.snuba.cleanupTransactions.env | indent 12 }}
 {{- end }}
