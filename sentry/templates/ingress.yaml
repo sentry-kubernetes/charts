@@ -57,7 +57,7 @@ spec:
               service:
                 name: ssl-redirect
                 port:
-                  number: use-annotation
+                  name: use-annotation
               {{- else }}
               serviceName: ssl-redirect
               servicePort: use-annotation
