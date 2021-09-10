@@ -61,9 +61,9 @@ spec:
             env:
               - name: SNUBA_SETTINGS
                 value: /etc/snuba/settings.py
-{{- if .Values.snuba.cleanupErrors.env }}
-{{ toYaml .Values.snuba.cleanupErrors.env | indent 12 }}
-{{- end }}
+              {{- if .Values.snuba.cleanupErrors.env }}
+{{ toYaml .Values.snuba.cleanupErrors.env | indent 14 }}
+              {{- end }}
             envFrom:
                 - secretRef:
                       name: {{ template "sentry.fullname" . }}-snuba-env
