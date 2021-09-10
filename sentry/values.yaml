@@ -301,6 +301,7 @@ snuba:
     securityContext: {}
     # tolerations: []
     # podLabels: []
+    autoOffsetReset: "earliest"
 
   subscriptionConsumerTransactions:
     replicas: 1
@@ -311,6 +312,7 @@ snuba:
     securityContext: {}
     # tolerations: []
     # podLabels: []
+    autoOffsetReset: "earliest"
 
   sessionsConsumer:
     replicas: 1

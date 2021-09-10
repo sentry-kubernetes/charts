@@ -67,7 +67,8 @@ spec:
         command:
           - "snuba"
           - "subscriptions"
-          - "--auto-offset-reset=latest"
+          - "--auto-offset-reset"
+          - "{{ .Values.snuba.subscriptionConsumerTransactions.autoOffsetReset }}"
           - "--consumer-group=snuba-events-subscriptions-consumers"
           - "--topic=events"
           - "--result-topic=events-subscription-results"
