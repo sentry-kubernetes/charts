@@ -95,6 +95,17 @@ spec:
         - name: sentry-google-cloud-key
           mountPath: /var/run/secrets/google
         {{ end }}
+        livenessProbe:
+          periodSeconds: 60
+          initialDelaySeconds: 10
+          timeoutSeconds: 10
+          failureThreshold: 3
+          exec:
+            command:
+              - sentry
+              - exec
+              - -c
+              - 'import celery, os; dest="celery@{}".format(os.environ["HOSTNAME"]); print(celery.task.control.ping(destination=[dest], timeout=5)[0][dest]["ok"])'
         resources:
 {{ toYaml .Values.sentry.worker.resources | indent 12 }}
 {{- if .Values.sentry.worker.sidecars }}
