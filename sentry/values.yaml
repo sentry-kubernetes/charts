@@ -210,6 +210,7 @@ snuba:
     securityContext: {}
     # tolerations: []
     # podLabels: []
+    autoOffsetReset: "earliest"
     # maxBatchSize: ""
     # processes: ""
     # inputBlockSize: ""
@@ -235,6 +236,7 @@ snuba:
     securityContext: {}
     # tolerations: []
     # podLabels: []
+    autoOffsetReset: "earliest"
     maxBatchSize: "3"
     # processes: ""
     # inputBlockSize: ""
@@ -260,6 +262,7 @@ snuba:
     securityContext: {}
     # tolerations: []
     # podLabels: []
+    autoOffsetReset: "earliest"
     maxBatchSize: "3"
     # maxBatchTimeMs: ""
     # queuedMaxMessagesKbytes: ""
@@ -274,6 +277,7 @@ snuba:
     securityContext: {}
     # tolerations: []
     # podLabels: []
+    autoOffsetReset: "earliest"
     # maxBatchSize: ""
     # processes: ""
     # inputBlockSize: ""
@@ -299,6 +303,7 @@ snuba:
     securityContext: {}
     # tolerations: []
     # podLabels: []
+    autoOffsetReset: "earliest"
     # maxBatchSize: ""
     # processes: ""
     # inputBlockSize: ""

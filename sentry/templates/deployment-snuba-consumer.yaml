@@ -69,7 +69,8 @@ spec:
           - "consumer"
           - "--storage"
           - "errors"
-          - "--auto-offset-reset=earliest"
+          - "--auto-offset-reset"
+          - "{{ .Values.snuba.consumer.autoOffsetReset }}"
           - "--max-batch-time-ms"
           - "750"
           {{- if .Values.snuba.consumer.maxBatchSize }}
