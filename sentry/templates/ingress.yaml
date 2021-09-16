@@ -24,7 +24,14 @@ spec:
   ingressClassName: {{ .Values.ingress.ingressClassName | quote }}
   {{- end }}
   rules:
-    - host: {{ .Values.ingress.hostname }}
+{{- $hosts := list .Values.ingress.hostname }}
+{{- range .Values.ingress.additionalHostNames -}}
+{{- $hosts = append $hosts . -}}
+{{- end -}}
+{{- $outer := . -}}
+{{- range $idx, $host := $hosts }}
+{{- with $outer }}
+    - host: {{ $host }}
       http:
         paths:
     {{- if .Values.nginx.enabled }}
@@ -165,6 +172,8 @@ spec:
               servicePort: {{ .Values.service.externalPort }}
               {{- end }}
     {{- end }}
+{{- end -}}
+{{- end -}}
 {{- if .Values.ingress.tls }}
   tls:
 {{ toYaml .Values.ingress.tls | indent 4 }}
