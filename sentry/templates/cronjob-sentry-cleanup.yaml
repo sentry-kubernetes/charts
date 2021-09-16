@@ -40,6 +40,13 @@ spec:
           tolerations:
 {{ toYaml .Values.sentry.cleanup.tolerations | indent 12 }}
             {{- end }}
+            {{- if .Values.dnsPolicy }}
+          dnsPolicy: {{ .Values.dnsPolicy | quote }}
+            {{- end }}
+            {{- if .Values.dnsConfig }}
+          dnsConfig:
+{{ toYaml .Values.dnsConfig | indent 12 }}
+            {{- end }}
             {{- if .Values.images.sentry.imagePullSecrets }}
           imagePullSecrets:
 {{ toYaml .Values.images.sentry.imagePullSecrets | indent 12 }}

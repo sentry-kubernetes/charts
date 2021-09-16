@@ -49,6 +49,13 @@ spec:
       imagePullSecrets:
 {{ toYaml .Values.images.symbolicator.imagePullSecrets | indent 8 }}
       {{- end }}
+      {{- if .Values.dnsPolicy }}
+      dnsPolicy: {{ .Values.dnsPolicy | quote }}
+      {{- end }}
+      {{- if .Values.dnsConfig }}
+      dnsConfig:
+{{ toYaml .Values.dnsConfig | indent 8 }}
+      {{- end }}
       {{- if .Values.symbolicator.api.securityContext }}
       securityContext:
 {{ toYaml .Values.symbolicator.api.securityContext | indent 8 }}
