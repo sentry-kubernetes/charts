@@ -1,0 +1,102 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "sentry.fullname" . }}-snuba-subscription-consumer-transactions
+  labels:
+    app: {{ template "sentry.fullname" . }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
+    release: "{{ .Release.Name }}"
+    heritage: "{{ .Release.Service }}"
+    app.kubernetes.io/managed-by: "Helm"
+  {{- if .Values.asHook }}
+  {{- /* Add the Helm annotations so that deployment after asHook from true to false works */}}
+  annotations:
+    meta.helm.sh/release-name: "{{ .Release.Name }}"
+    meta.helm.sh/release-namespace: "{{ .Release.Namespace }}"
+    "helm.sh/hook": "post-install,post-upgrade"
+    "helm.sh/hook-weight": "18"
+  {{- end }}
+spec:
+  revisionHistoryLimit: {{ .Values.revisionHistoryLimit }}
+  selector:
+    matchLabels:
+        app: {{ template "sentry.fullname" . }}
+        release: "{{ .Release.Name }}"
+        role: snuba-subscription-consumer-transactions
+  replicas: {{ .Values.snuba.subscriptionConsumerTransactions.replicas }}
+  template:
+    metadata:
+      annotations:
+        checksum/snubaSettingsPy: {{ .Values.config.snubaSettingsPy | sha256sum }}
+        checksum/config.yaml: {{ include (print $.Template.BasePath "/configmap-snuba.yaml") . | sha256sum }}
+        {{- if .Values.snuba.subscriptionConsumerTransactions.annotations }}
+{{ toYaml .Values.snuba.subscriptionConsumerTransactions.annotations | indent 8 }}
+        {{- end }}
+      labels:
+        app: {{ template "sentry.fullname" . }}
+        release: "{{ .Release.Name }}"
+        role: snuba-subscription-consumer-transactions
+        {{- if .Values.snuba.subscriptionConsumerTransactions.podLabels }}
+{{ toYaml .Values.snuba.subscriptionConsumerTransactions.podLabels | indent 8 }}
+        {{- end }}
+    spec:
+      affinity:
+      {{- if .Values.snuba.subscriptionConsumerTransactions.affinity }}
+{{ toYaml .Values.snuba.subscriptionConsumerTransactions.affinity | indent 8 }}
+      {{- end }}
+      {{- if .Values.snuba.subscriptionConsumerTransactions.nodeSelector }}
+      nodeSelector:
+{{ toYaml .Values.snuba.subscriptionConsumerTransactions.nodeSelector | indent 8 }}
+      {{- end }}
+      {{- if .Values.snuba.subscriptionConsumerTransactions.tolerations }}
+      tolerations:
+{{ toYaml .Values.snuba.subscriptionConsumerTransactions.tolerations | indent 8 }}
+      {{- end }}
+      {{- if .Values.images.snuba.imagePullSecrets }}
+      imagePullSecrets:
+{{ toYaml .Values.images.snuba.imagePullSecrets | indent 8 }}
+      {{- end }}
+      {{- if .Values.snuba.subscriptionConsumerTransactions.securityContext }}
+      securityContext:
+{{ toYaml .Values.snuba.subscriptionConsumerTransactions.securityContext | indent 8 }}
+      {{- end }}
+      containers:
+      - name: {{ .Chart.Name }}-snuba
+        image: "{{ template "snuba.image" . }}"
+        imagePullPolicy: {{ default "IfNotPresent" .Values.images.snuba.pullPolicy }}
+        command:
+          - "snuba"
+          - "subscriptions"
+          - "--auto-offset-reset"
+          - "{{ .Values.snuba.subscriptionConsumerTransactions.autoOffsetReset }}"
+          - "--consumer-group=snuba-events-subscriptions-consumers"
+          - "--topic=events"
+          - "--result-topic=events-subscription-results"
+          - "--dataset=transactions"
+          - "--commit-log-topic=snuba-commit-log"
+          - "--commit-log-group=snuba-transactions-consumers"
+          - "--delay-seconds=60"
+          - "--schedule-ttl=60"
+        ports:
+        - containerPort: {{ template "snuba.port" }}
+        env:
+{{ include "sentry.snuba.env" . | indent 8 }}
+{{- if .Values.snuba.subscriptionConsumerTransactions.env }}
+{{ toYaml .Values.snuba.subscriptionConsumerTransactions.env | indent 8 }}
+{{- end }}
+        envFrom:
+        - secretRef:
+            name: {{ template "sentry.fullname" . }}-snuba-env
+        volumeMounts:
+        - mountPath: /etc/snuba
+          name: config
+          readOnly: true
+        resources:
+{{ toYaml .Values.snuba.subscriptionConsumerTransactions.resources | indent 12 }}
+      {{- if .Values.serviceAccount.enabled }}
+      serviceAccountName: {{ .Values.serviceAccount.name }}-snuba
+      {{- end }}
+      volumes:
+        - name: config
+          configMap:
+            name: {{ template "sentry.fullname" . }}-snuba
