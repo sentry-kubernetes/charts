@@ -29,7 +29,7 @@ images:
     imagePullSecrets: []
   symbolicator:
     # repository: getsentry/symbolicator
-    tag: 0.3.3
+    tag: 0.3.4
     # pullPolicy: IfNotPresent
     imagePullSecrets: []
 
@@ -163,6 +163,30 @@ sentry:
     # podLabels: []
     sidecars: [ ]
     volumes: [ ]
+  subscriptionConsumerEvents:
+    replicas: 1
+    env: []
+    resources: {}
+    affinity: {}
+    nodeSelector: {}
+    securityContext: {}
+    # tolerations: []
+    # podLabels: []
+    # commitBatchSize: 1
+    sidecars: [ ]
+    volumes: [ ]
+  subscriptionConsumerTransactions:
+    replicas: 1
+    env: []
+    resources: {}
+    affinity: {}
+    nodeSelector: {}
+    securityContext: {}
+    # tolerations: []
+    # podLabels: []
+    # commitBatchSize: 1
+    sidecars: [ ]
+    volumes: [ ]
   postProcessForward:
     replicas: 1
     env: []
@@ -272,6 +296,28 @@ snuba:
     # maxBatchTimeMs: ""
     # queuedMaxMessagesKbytes: ""
     # queuedMinMessages: ""
+
+  subscriptionConsumerEvents:
+    replicas: 1
+    env: []
+    resources: {}
+    affinity: {}
+    nodeSelector: {}
+    securityContext: {}
+    # tolerations: []
+    # podLabels: []
+    autoOffsetReset: "earliest"
+
+  subscriptionConsumerTransactions:
+    replicas: 1
+    env: []
+    resources: {}
+    affinity: {}
+    nodeSelector: {}
+    securityContext: {}
+    # tolerations: []
+    # podLabels: []
+    autoOffsetReset: "earliest"
 
   sessionsConsumer:
     replicas: 1
@@ -524,6 +570,7 @@ ingress:
   #   nginx.ingress.kubernetes.io/use-regex: "true"
   #
   # hostname:
+  # additionalHostNames: []
   #
   # tls:
   # - secretName:
@@ -863,3 +910,9 @@ metrics:
     # honorLabels: true
 
 revisionHistoryLimit: 10
+
+# dnsPolicy: "ClusterFirst"
+# dnsConfig:
+#   nameservers: []
+#   searches: []
+#   options: []
