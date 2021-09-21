@@ -110,4 +110,3 @@ Note: If you need to run or cannot avoid running sentry-worker and sentry-web on
 So you would want to create and use a `StorageClass` with a supported volume driver like [AWS EFS](https://github.com/kubernetes-sigs/aws-efs-csi-driver)
 
 Its also important having `connect_to_reserved_ips: true` in the symbolicator config file, which this Chart defaults to.
-
