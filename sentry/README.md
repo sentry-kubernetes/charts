@@ -1,3 +1,13 @@
+## Upgrading from 11.x.x version of this Chart to 12.0.0
+
+Redis chart was upgraded to newer version. If you are using external redis, you don't need to do anything.
+
+Otherwise, when upgrading to chart version 12.x.x from 11.x.x you need to either run `helm upgrade` with `--force` flag, or prior to upgrade delete statefulsets for redis master and redis slave. Then run upgrade and it will roll out new statefulsets. Your master redis data will not be lost (PVC is not deleted when you delete statefulset). Your redis slave will now be named redis replica and you can delete PVCs that were used by redis slave after the upgrade.
+
+## Upgrading from 10.x.x version of this Chart to 11.0.0
+
+If you were using clickhouse tabix externally, we disabled it per default.
+
 ### Upgrading from deprecated 9.0 -> 10.0 Chart
 
 As this chart runs in helm 3 and also tries its best to follow on from the original Sentry chart. There are some steps that needs to be taken in order to correctly upgrade.
@@ -110,4 +120,3 @@ Note: If you need to run or cannot avoid running sentry-worker and sentry-web on
 So you would want to create and use a `StorageClass` with a supported volume driver like [AWS EFS](https://github.com/kubernetes-sigs/aws-efs-csi-driver)
 
 Its also important having `connect_to_reserved_ips: true` in the symbolicator config file, which this Chart defaults to.
-
