@@ -70,6 +70,10 @@ spec:
         - -c
         - |
           mkdir -p /etc/clickhouse-server/metrica.d
+        {{- if .Values.clickhouse.init.resources }}
+        resources:
+{{ toYaml .Values.clickhouse.init.resources | indent 10 }}
+        {{- end }}
       containers:
       - name: {{ include "clickhouse.fullname" . }}-replica
         image: {{ .Values.clickhouse.image }}:{{ .Values.clickhouse.imageVersion }}
