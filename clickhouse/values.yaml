@@ -50,10 +50,7 @@ clickhouse:
   # rollingUpdatePartition:
   
   # Security Context
-  securityContext:
-    enabled: false
-    privileged: true
-    runAsUser: 0
+  securityContext: {}
     
   ## Prometheus Exporter / Metrics
   ##
