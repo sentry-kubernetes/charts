@@ -116,11 +116,10 @@ spec:
           mountPath: /etc/clickhouse-server/metrica.d
         - name: {{ include "clickhouse.fullname" . }}-users
           mountPath: /etc/clickhouse-server/users.d
-        {{- if .Values.clickhouse.securityContext.enabled }}
+      {{- with .Values.clickhouse.securityContext }}
         securityContext:
-          privileged: {{ .Values.clickhouse.securityContext.privileged }}
-          runAsUser: {{ .Values.clickhouse.securityContext.runAsUser }}
-        {{- end }}   
+          {{- toYaml . | nindent 10 }}
+      {{- end }}
         {{- if .Values.clickhouse.metrics.enabled }}
       - name: prom-exporter
         image: "{{ .Values.clickhouse.metrics.image.registry }}/{{ .Values.clickhouse.metrics.image.repository }}:{{ .Values.clickhouse.metrics.image.tag }}"
