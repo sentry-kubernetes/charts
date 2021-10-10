@@ -48,7 +48,10 @@ clickhouse:
   ## https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/#partitions
   ##
   # rollingUpdatePartition:
-
+  
+  # Security Context
+  securityContext: {}
+    
   ## Prometheus Exporter / Metrics
   ##
   metrics:
