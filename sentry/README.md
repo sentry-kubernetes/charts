@@ -1,3 +1,18 @@
+# Install
+## Add repo
+```
+helm repo add sentry https://sentry-kubernetes.github.io/charts
+```
+## Without overrides
+```
+helm install sentry sentry/sentry
+```
+## With your own vaLues file
+``` 
+helm install sentry sentry/sentry -f values.yaml
+```
+
+
 ## Upgrading from 11.x.x version of this Chart to 12.0.0
 
 Redis chart was upgraded to newer version. If you are using external redis, you don't need to do anything.
