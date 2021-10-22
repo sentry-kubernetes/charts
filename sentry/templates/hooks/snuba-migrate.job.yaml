@@ -82,8 +82,6 @@ spec:
         env:
         - name: LOG_LEVEL
           value: debug
-        - name: CLICKHOUSE_SINGLE_NODE
-          value: "true"
 {{ include "sentry.snuba.env" . | indent 8 }}
 {{- if .Values.snuba.migrateJob.env }}
 {{ toYaml .Values.snuba.migrateJob.env | indent 8 }}
