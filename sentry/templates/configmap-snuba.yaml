@@ -25,6 +25,7 @@ data:
     CLUSTERS[0]["database"] = env("CLICKHOUSE_DATABASE", "default")
     CLUSTERS[0]["user"] = env("CLICKHOUSE_USER", "default")
     CLUSTERS[0]["password"] = env("CLICKHOUSE_PASSWORD", "")
+    CLUSTERS[0]["single_node"] = False
 
     # Redis Options
     REDIS_HOST = {{ include "sentry.redis.host" . | quote }}
