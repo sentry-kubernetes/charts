@@ -25,7 +25,11 @@ data:
     CLUSTERS[0]["database"] = env("CLICKHOUSE_DATABASE", "default")
     CLUSTERS[0]["user"] = env("CLICKHOUSE_USER", "default")
     CLUSTERS[0]["password"] = env("CLICKHOUSE_PASSWORD", "")
+    {{- if .Values.clickhouse.enabled }}
     CLUSTERS[0]["single_node"] = False
+    CLUSTERS[0]["cluster_name"] = "{{ include "sentry.clickhouse.fullname" . }}"
+    CLUSTERS[0]["distributed_cluster_name"] = "{{ include "sentry.clickhouse.fullname" . }}"
+    {{- end }}
 
     # Redis Options
     REDIS_HOST = {{ include "sentry.redis.host" . | quote }}
