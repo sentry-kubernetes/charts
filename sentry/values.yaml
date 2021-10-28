@@ -609,6 +609,10 @@ filestore:
       ## different nodes.
       persistentWorkers: false
 
+      ## If existingClaim is specified, no PVC will be created and this claim will
+      ## be used
+      existingClaim: ""
+
   gcs: {}
     ## Point this at a pre-configured secret containing a service account. The resulting
     ## secret will be mounted at /var/run/secrets/google
