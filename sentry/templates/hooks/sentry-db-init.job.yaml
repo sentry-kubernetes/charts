@@ -71,7 +71,7 @@ spec:
               key: {{ default "postgresql-password" .Values.postgresql.existingSecretKey }}
         {{- end }}
         {{- if .Values.hooks.dbInit.env }}
-{{ toYaml .Values.hooks.dbInit.env | indent 8 }}
+{{ toYaml .Values.hooks.dbInit.env | indent 10 }}
         {{- end }}
         volumeMounts:
         - mountPath: /etc/sentry
