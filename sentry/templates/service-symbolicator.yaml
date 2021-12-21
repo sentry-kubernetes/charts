@@ -1,0 +1,36 @@
+{{- if .Values.symbolicator.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "sentry.fullname" . }}-symbolicator
+  annotations:
+   {{- range $key, $value := .Values.service.annotations }}
+     {{ $key }}: {{ $value | quote }}
+   {{- end }}
+  labels:
+    app: {{ template "sentry.fullname" . }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
+    release: "{{ .Release.Name }}"
+    heritage: "{{ .Release.Service }}"
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+  - port: {{ template "symbolicator.port" }}
+    targetPort: {{ template "symbolicator.port" }}
+    protocol: TCP
+    name: {{ .Values.service.name }}
+{{- if and (.Values.service.nodePort) (eq .Values.service.type "NodePort") }}
+    nodePort: {{ .Values.service.nodePort }}
+{{- end }}
+{{- if .Values.service.externalIPs }}
+  externalIPs:
+{{ toYaml .Values.service.externalIPs | indent 4 }}
+{{- end }}
+  selector:
+    app: {{ template "sentry.fullname" . }}
+    role: symbolicator-api
+  {{- with .Values.service.loadBalancerSourceRanges }}
+  loadBalancerSourceRanges:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+{{- end }}

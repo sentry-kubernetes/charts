@@ -1,0 +1,21 @@
+{{- if and (.Values.ingress.enabled) (eq (default "nginx" .Values.ingress.regexPathStyle) "gke") }}
+apiVersion: cloud.google.com/v1beta1
+kind: BackendConfig
+metadata:
+  name: {{ include "sentry.fullname" . }}-web
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+    app: {{ template "sentry.fullname" . }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
+    release: "{{ .Release.Name }}"
+    heritage: "{{ .Release.Service }}"
+spec:
+  healthCheck:
+    checkIntervalSec: {{ .Values.sentry.web.probePeriodSeconds }}
+    timeoutSec: {{ .Values.sentry.web.probeTimeoutSeconds }}
+    healthyThreshold: {{ .Values.sentry.web.probeSuccessThreshold }}
+    unhealthyThreshold: {{ .Values.sentry.web.probeFailureThreshold }}  
+    type: HTTP
+    requestPath: {{ template "sentry.healthCheck.requestPath" }}
+    port: {{ .Values.service.externalPort }}
+{{- end }}

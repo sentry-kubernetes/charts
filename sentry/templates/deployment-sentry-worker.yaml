@@ -8,6 +8,7 @@ metadata:
     release: "{{ .Release.Name }}"
     heritage: "{{ .Release.Service }}"
 spec:
+  revisionHistoryLimit: {{ .Values.revisionHistoryLimit }}
   selector:
     matchLabels:
         app: {{ template "sentry.fullname" . }}
@@ -19,7 +20,7 @@ spec:
   template:
     metadata:
       annotations:
-        checksum/configYml: {{ .Values.config.configYml | sha256sum }}
+        checksum/configYml: {{ .Values.config.configYml | toYaml | toString | sha256sum }}
         checksum/sentryConfPy: {{ .Values.config.sentryConfPy | sha256sum }}
         checksum/config.yaml: {{ include (print $.Template.BasePath "/configmap-sentry.yaml") . | sha256sum }}
         {{- if .Values.sentry.worker.annotations }}
@@ -49,10 +50,21 @@ spec:
       imagePullSecrets:
 {{ toYaml .Values.images.sentry.imagePullSecrets | indent 8 }}
       {{- end }}
+      {{- if .Values.dnsPolicy }}
+      dnsPolicy: {{ .Values.dnsPolicy | quote }}
+      {{- end }}
+      {{- if .Values.dnsConfig }}
+      dnsConfig:
+{{ toYaml .Values.dnsConfig | indent 8 }}
+      {{- end }}
+      {{- if .Values.sentry.worker.securityContext }}
+      securityContext:
+{{ toYaml .Values.sentry.worker.securityContext | indent 8 }}
+      {{- end }}
       containers:
       - name: {{ .Chart.Name }}-worker
-        image: "{{ .Values.images.sentry.repository }}:{{ .Values.images.sentry.tag }}"
-        imagePullPolicy: {{ .Values.images.sentry.pullPolicy }}
+        image: "{{ template "sentry.image" . }}"
+        imagePullPolicy: {{ default "IfNotPresent" .Values.images.sentry.pullPolicy }}
         command: ["sentry"]
         args:
           - "run"
@@ -70,10 +82,10 @@ spec:
         - name: POSTGRES_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: {{ include "sentry.postgresql.fullname" . }}
-              key: postgresql-password
+              name: {{ default (include "sentry.postgresql.fullname" .) .Values.postgresql.existingSecret }}
+              key: {{ default "postgresql-password" .Values.postgresql.existingSecretKey }}
         {{- end }}
-        {{ if eq .Values.filestore.backend "gcs" }}
+        {{ if and (eq .Values.filestore.backend "gcs") .Values.filestore.gcs.secretName }}
         - name: GOOGLE_APPLICATION_CREDENTIALS
           value: /var/run/secrets/google/{{ .Values.filestore.gcs.credentialsFile }}
         {{ end }}
@@ -86,24 +98,48 @@ spec:
           readOnly: true
         - mountPath: {{ .Values.filestore.filesystem.path }}
           name: sentry-data
-        {{- if eq .Values.filestore.backend "gcs" }}
+        {{- if and (eq .Values.filestore.backend "gcs") .Values.filestore.gcs.secretName }}
         - name: sentry-google-cloud-key
           mountPath: /var/run/secrets/google
         {{ end }}
+  {{- if .Values.sentry.worker.livenessProbe.enabled }}
+        livenessProbe:
+          periodSeconds: {{ .Values.sentry.worker.livenessProbe.periodSeconds }}
+          initialDelaySeconds: 10
+          timeoutSeconds: {{ .Values.sentry.worker.livenessProbe.timeoutSeconds }}
+          failureThreshold: {{ .Values.sentry.worker.livenessProbe.failureThreshold }}
+          exec:
+            command:
+              - sentry
+              - exec
+              - -c
+              - 'import celery, os; dest="celery@{}".format(os.environ["HOSTNAME"]); print(celery.task.control.ping(destination=[dest], timeout=5)[0][dest]["ok"])'
+{{- end }}
         resources:
 {{ toYaml .Values.sentry.worker.resources | indent 12 }}
+{{- if .Values.sentry.worker.sidecars }}
+{{ toYaml .Values.sentry.worker.sidecars | indent 6 }}
+{{- end }}
+      {{- if .Values.serviceAccount.enabled }}
+      serviceAccountName: {{ .Values.serviceAccount.name }}-worker
+      {{- end }}
       volumes:
       - name: config
         configMap:
           name: {{ template "sentry.fullname" . }}-sentry
       - name: sentry-data
       {{- if and (eq .Values.filestore.backend "filesystem") .Values.filestore.filesystem.persistence.enabled (.Values.filestore.filesystem.persistence.persistentWorkers) }}
+      {{- if .Values.filestore.filesystem.persistence.existingClaim }}
+        persistentVolumeClaim:
+          claimName: {{ .Values.filestore.filesystem.persistence.existingClaim }}
+      {{- else }}
         persistentVolumeClaim:
           claimName: {{ template "sentry.fullname" . }}-data
+      {{- end }}
       {{- else }}
         emptyDir: {}
       {{ end }}
-      {{- if eq .Values.filestore.backend "gcs" }}
+      {{- if and (eq .Values.filestore.backend "gcs") .Values.filestore.gcs.secretName }}
       - name: sentry-google-cloud-key
         secret:
           secretName: {{ .Values.filestore.gcs.secretName }}
@@ -111,3 +147,6 @@ spec:
       {{- if .Values.sentry.worker.priorityClassName }}
       priorityClassName: "{{ .Values.sentry.worker.priorityClassName }}"
       {{- end }}
+{{- if .Values.sentry.worker.volumes }}
+{{ toYaml .Values.sentry.worker.volumes | indent 6 }}
+{{- end }}

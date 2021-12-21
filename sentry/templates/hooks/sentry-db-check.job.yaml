@@ -1,0 +1,136 @@
+{{- if .Values.hooks.enabled -}}
+{{- $clickhouseHost := include "sentry.clickhouse.host" . -}}
+{{- $clickhousePort := include "sentry.clickhouse.port" . -}}
+{{- $kafkaHost := include "sentry.kafka.host" . -}}
+{{- $kafkaPort := include "sentry.kafka.port" . -}}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ template "sentry.fullname" . }}-db-check
+  labels:
+    app: sentry
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
+    release: "{{ .Release.Name }}"
+    heritage: "{{ .Release.Service }}"
+  annotations:
+    # This is what defines this resource as a hook. Without this line, the
+    # job is considered part of the release.
+    "helm.sh/hook": "post-install,post-upgrade"
+    "helm.sh/hook-delete-policy": "{{ if .Values.hooks.removeOnSuccess }}hook-succeeded,{{ end }}before-hook-creation"
+    "helm.sh/hook-weight": "-1"
+spec:
+  template:
+    metadata:
+      name: {{ template "sentry.fullname" . }}-db-check
+      annotations:
+        {{- if .Values.sentry.worker.annotations }}
+{{ toYaml .Values.sentry.worker.annotations | indent 8 }}
+        {{- end }}
+        {{- if .Values.hooks.dbCheck.podAnnotations }}
+{{ toYaml .Values.hooks.dbCheck.podAnnotations | indent 8 }}
+        {{- end }}
+      labels:
+        app: sentry
+        release: "{{ .Release.Name }}"
+        {{- if .Values.sentry.worker.podLabels }}
+{{ toYaml .Values.sentry.worker.podLabels | indent 8 }}
+        {{- end }}
+    spec:
+      {{- if .Values.hooks.dbCheck.affinity }}
+      affinity:
+{{ toYaml .Values.hooks.dbCheck.affinity | indent 8 }}
+      {{- end }}
+      {{- if .Values.hooks.dbCheck.nodeSelector }}
+      nodeSelector:
+{{ toYaml .Values.hooks.dbCheck.nodeSelector | indent 8 }}
+      {{- end }}
+      {{- if .Values.hooks.dbCheck.tolerations }}
+      tolerations:
+{{ toYaml .Values.hooks.dbCheck.tolerations | indent 8 }}
+      {{- end }}
+      restartPolicy: Never
+      {{- if .Values.hooks.dbCheck.image.imagePullSecrets }}
+      imagePullSecrets:
+{{ toYaml .Values.hooks.dbCheck.image.imagePullSecrets | indent 8 }}
+      {{- end }}
+      containers:
+      - name: db-check
+        image: {{ template "dbCheck.image" . }}
+        imagePullPolicy: {{ default "IfNotPresent" .Values.hooks.dbCheck.image.pullPolicy }}
+        command:
+          - /bin/sh
+          - -c
+          - |
+            echo "Checking if clickhouse is up"
+            CLICKHOUSE_STATUS=0
+            while [ $CLICKHOUSE_STATUS -eq 0 ]; do
+              CLICKHOUSE_STATUS=1
+              CLICKHOUSE_REPLICAS={{ .Values.clickhouse.enabled | ternary .Values.clickhouse.clickhouse.replicas "1" }}
+              i=0; while [ $i -lt $CLICKHOUSE_REPLICAS ]; do
+                {{- if .Values.clickhouse.enabled }}
+                CLICKHOUSE_HOST={{ $clickhouseHost }}-$i.{{ $clickhouseHost }}-headless
+                {{- else }}
+                CLICKHOUSE_HOST={{ .Values.externalClickhouse.host }}
+                {{- end }}
+                if ! nc -z "$CLICKHOUSE_HOST" {{ $clickhousePort }}; then
+                  CLICKHOUSE_STATUS=0
+                  echo "$CLICKHOUSE_HOST is not available yet"
+                fi
+                {{- if and .Values.clickhouse.enabled .Values.clickhouse.clickhouse.configmap.remote_servers.replica.backup.enabled }}
+                CLICKHOUSE_HOST={{ $clickhouseHost }}-replica-$i.{{ $clickhouseHost }}-replica-headless
+                if ! nc -z "$CLICKHOUSE_HOST" {{ $clickhousePort }}; then
+                  CLICKHOUSE_STATUS=0
+                  echo "$CLICKHOUSE_HOST is not available yet"
+                fi
+                {{- end }}
+                i=$((i+1))
+              done
+              if [ "$CLICKHOUSE_STATUS" -eq 0 ]; then
+                echo "Clickhouse not ready. Sleeping for 10s before trying again"
+                sleep 10;
+              fi
+            done
+            echo "Clickhouse is up"
+
+            echo "Checking if kafka is up"
+            KAFKA_STATUS=0
+            while [ $KAFKA_STATUS -eq 0 ]; do
+              KAFKA_STATUS=1
+              {{- if .Values.kafka.enabled }}
+              KAFKA_REPLICAS={{ .Values.kafka.replicaCount }}
+              i=0; while [ $i -lt $KAFKA_REPLICAS ]; do
+                KAFKA_HOST={{ $kafkaHost }}-$i.{{ $kafkaHost }}-headless
+                if ! nc -z "$KAFKA_HOST" {{ $kafkaPort }}; then
+                  KAFKA_STATUS=0
+                  echo "$KAFKA_HOST is not available yet"
+                fi
+                i=$((i+1))
+              done
+              {{- else if (not (kindIs "slice" .Values.externalKafka)) }}
+              KAFKA_HOST={{ .Values.externalKafka.host }}
+              if ! nc -z "$KAFKA_HOST" {{ $kafkaPort }}; then
+                KAFKA_STATUS=0
+                echo "$KAFKA_HOST is not available yet"
+              fi
+              {{- else }}
+              {{- range $elem := .Values.externalKafka }}
+              KAFKA_HOST={{ $elem.host }}
+              if ! nc -z "$KAFKA_HOST" {{ $elem.port }}; then
+                KAFKA_STATUS=0
+                echo "$KAFKA_HOST is not available yet"
+              fi
+              {{- end }}
+              {{- end }}
+              if [ "$KAFKA_STATUS" -eq 0 ]; then
+                echo "Kafka not ready. Sleeping for 10s before trying again"
+                sleep 10;
+              fi
+            done
+            echo "Kafka is up"
+        env:
+{{- if .Values.hooks.dbCheck.env }}
+{{ toYaml .Values.hooks.dbCheck.env | indent 8 }}
+{{- end }}
+        resources:
+{{ toYaml .Values.hooks.dbCheck.resources | indent 10 }}
+{{- end }}

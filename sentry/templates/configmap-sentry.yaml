@@ -1,6 +1,6 @@
 {{- $redisHost := include "sentry.redis.host" . -}}
 {{- $redisPort := include "sentry.redis.port" . -}}
-{{- $redisPass := .Values.redis.password -}}
+{{- $redisPass := include "sentry.redis.password" . -}}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -13,54 +13,73 @@ metadata:
 data:
   config.yml: |-
     {{- if .Values.system.adminEmail }}
-    system.admin-email: {{ .Values.system.adminEmail }}
+    system.admin-email: {{ .Values.system.adminEmail | quote }}
     {{- end }}
-    system.secret-key: {{ .Values.system.secretKey }}
+    system.secret-key: {{ .Values.system.secretKey | default (randAlphaNum 50) | quote }}
     {{- if .Values.system.url }}
-    system.url-prefix: {{ .Values.system.url }}
+    system.url-prefix: {{ .Values.system.url | quote }}
     {{- end }}
 
+    # This URL will be used to tell Symbolicator where to obtain the Sentry source.
+    # See https://getsentry.github.io/symbolicator/api/
+    system.internal-url-prefix: 'http://{{ template "sentry.fullname" . }}-web:{{ .Values.service.externalPort }}'
     symbolicator.enabled: {{ .Values.symbolicator.enabled }}
+    {{- if .Values.symbolicator.enabled }}
     symbolicator.options:
-      url: "http://{{ template "sentry.fullname" . }}-symbolicator:3021"
+      url: "http://{{ template "sentry.fullname" . }}-symbolicator:{{ template "symbolicator.port" }}"
+    {{- end }}
 
+    ##########
+    # Github #
+    ##########
     {{- if .Values.github.appId }}
     github-app.id: {{ .Values.github.appId }}
-    {{ end }}
+    {{- end }}
     {{- if .Values.github.appName }}
-    github-app.name: "{{ .Values.github.appName }}"
-    {{ end }}
+    github-app.name: {{ .Values.github.appName | quote }}
+    {{- end }}
     {{- if .Values.github.privateKey }}
     github-app.private-key: |-
-      {{ .Values.github.privateKey | nindent 8 }}"
-    {{ end }}
+{{ .Values.github.privateKey | indent 8 }}
+    {{- end }}
     {{- if .Values.github.webhookSecret }}
-    github-app.webhook-secret: "{{ .Values.github.webhookSecret }}"
-    {{ end }}
+    github-app.webhook-secret: {{ .Values.github.webhookSecret | quote }}
+    {{- end }}
     {{- if .Values.github.clientId }}
-    github-app.client-id: "{{ .Values.github.clientId }}"
-    {{ end }}
+    github-app.client-id: {{ .Values.github.clientId | quote }}
+    {{- end }}
     {{- if .Values.github.clientSecret }}
-    github-app.client-secret: "{{ .Values.github.clientSecret }}"
+    github-app.client-secret: {{ .Values.github.clientSecret | quote }}
+    {{- end }}
+
+    ##########
+    # Google #
+    ##########
+    {{- if .Values.google.clientId }}
+    auth-google.client-id: {{ .Values.google.clientId | quote }}
+    auth-google.client-secret: {{ .Values.google.clientSecret | quote }}
     {{ end }}
 
+    #########
+    # Slack #
+    #########
     {{- if .Values.slack.clientId }}
-    slack.client-id: "{{ .Values.slack.clientId }}"
-    slack.client-secret: "{{ .Values.slack.clientSecret }}"
-    slack.verification-token: "{{ .Values.slack.verificationToken }}"
+    slack.client-id: {{ .Values.slack.clientId | quote }}
+    slack.client-secret: {{ .Values.slack.clientSecret | quote }}
+    slack.signing-secret: {{ .Values.slack.signingSecret | quote }}
     {{ end }}
 
-    ################
-    #    Redis     #
-    ################
+    #########
+    # Redis #
+    #########
     redis.clusters:
       default:
         hosts:
           0:
-            host: "{{ $redisHost }}"
+            host: {{ $redisHost | quote }}
             port: {{ $redisPort }}
             {{- if $redisPass }}
-            password: "{{ $redisPass }}"
+            password: {{ $redisPass | quote }}
             {{- end }}
 
     ################
@@ -68,41 +87,43 @@ data:
     ################
     # Uploaded media uses these `filestore` settings. The available
     # backends are either `filesystem` or `s3`.
-    filestore.backend: '{{ .Values.filestore.backend }}'
+    filestore.backend: {{ .Values.filestore.backend | quote }}
     {{- if eq .Values.filestore.backend "filesystem" }}
     filestore.options:
-      location: '{{ .Values.filestore.filesystem.path }}'
+      location: {{ .Values.filestore.filesystem.path | quote }}
     {{ end }}
     {{- if eq .Values.filestore.backend "gcs" }}
     filestore.options:
-      bucket_name: '{{ .Values.filestore.gcs.bucketName }}'
+      bucket_name: {{ .Values.filestore.gcs.bucketName | quote }}
     {{ end }}
     {{- if eq .Values.filestore.backend "s3" }}
     filestore.options:
       {{- if .Values.filestore.s3.accessKey }}
-      access_key: '{{ .Values.filestore.s3.accessKey }}'
+      access_key: {{ .Values.filestore.s3.accessKey | quote }}
       {{- end }}
       {{- if .Values.filestore.s3.secretKey }}
-      secret_key: '{{ .Values.filestore.s3.secretKey }}'
+      secret_key: {{ .Values.filestore.s3.secretKey | quote }}
       {{- end }}
       {{- if .Values.filestore.s3.bucketName }}
-      bucket_name: '{{ .Values.filestore.s3.bucketName }}'
+      bucket_name: {{ .Values.filestore.s3.bucketName | quote }}
       {{- end }}
       {{- if .Values.filestore.s3.endpointUrl }}
-      endpoint_url: '{{ .Values.filestore.s3.endpointUrl }}'
+      endpoint_url: {{ .Values.filestore.s3.endpointUrl | quote }}
       {{- end }}
       {{- if .Values.filestore.s3.signature_version }}
-      signature_version: '{{ .Values.filestore.s3.signature_version }}'
+      signature_version: {{ .Values.filestore.s3.signature_version | quote }}
       {{- end }}
       {{- if .Values.filestore.s3.region_name }}
-      region_name: '{{ .Values.filestore.s3.region_name }}'
+      region_name: {{ .Values.filestore.s3.region_name | quote }}
       {{- end }}
       {{- if .Values.filestore.s3.default_acl }}
-      default_acl: '{{ .Values.filestore.s3.default_acl }}'
+      default_acl: {{ .Values.filestore.s3.default_acl | quote }}
       {{- end }}
     {{ end }}
 
-{{ .Values.config.configYml | indent 4 }}
+    {{- if .Values.config.configYml }}
+{{ .Values.config.configYml | toYaml | indent 4 }}
+    {{- end }}
   sentry.conf.py: |-
     from sentry.conf.server import *  # NOQA
     from distutils.util import strtobool
@@ -110,14 +131,14 @@ data:
     DATABASES = {
         "default": {
             "ENGINE": "sentry.db.postgres",
-            "NAME": "{{ .Values.postgresql.postgresqlDatabase }}",
-            "USER": "{{ .Values.postgresql.postgresqlUsername }}",
-            "PASSWORD": os.environ.get("POSTGRES_PASSWORD", "{{ .Values.postgresql.postgresqlPassword }}"),
-            "HOST": "{{ default ( include "sentry.postgresql.host" .) .Values.postgresql.hostOverride }}",
+            "NAME": {{ include "sentry.postgresql.database" . | quote }},
+            "USER": {{ include "sentry.postgresql.username" . | quote }},
+            "PASSWORD": os.environ.get("POSTGRES_PASSWORD", {{ include "sentry.postgresql.password" . | quote }}),
+            "HOST": {{ include "sentry.postgresql.host" . | quote }},
             "PORT": {{ template "sentry.postgresql.port" . }},
-            {{- if .Values.postgresql.postgresSslMode }}
+            {{- if .Values.externalPostgresql.sslMode }}
             'OPTIONS': {
-                'sslmode': '{{ .Values.postgresql.postgresSslMode }}',
+                'sslmode': '{{ .Values.externalPostgresql.sslMode }}',
             },
             {{- end }}
         }
@@ -133,9 +154,9 @@ data:
 
     # Instruct Sentry that this install intends to be run by a single organization
     # and thus various UI optimizations should be enabled.
-    SENTRY_SINGLE_ORGANIZATION = True
+    SENTRY_SINGLE_ORGANIZATION = {{ if .Values.sentry.singleOrganization }}True{{ else }}False{{ end }}
 
-    SENTRY_OPTIONS["system.event-retention-days"] = int(env('SENTRY_EVENT_RETENTION_DAYS') or 90)
+    SENTRY_OPTIONS["system.event-retention-days"] = int(env('SENTRY_EVENT_RETENTION_DAYS') or {{ .Values.sentry.cleanup.days | quote }})
 
     #########
     # Queue #
@@ -144,15 +165,15 @@ data:
     # See https://docs.getsentry.com/on-premise/server/queue/ for more
     # information on configuring your queue broker and workers. Sentry relies
     # on a Python framework called Celery to manage queues.
-    
+
     {{- if or (.Values.rabbitmq.enabled) (.Values.rabbitmq.host) }}
-    BROKER_URL = os.environ.get("BROKER_URL", "amqp://{{ .Values.rabbitmq.rabbitmqUsername }}:{{ .Values.rabbitmq.rabbitmqPassword }}@{{ template "sentry.rabbitmq.host" . }}:5672//")
-    {{- else if .Values.redis.usePassword }}
+    BROKER_URL = os.environ.get("BROKER_URL", "amqp://{{ .Values.rabbitmq.auth.username }}:{{ .Values.rabbitmq.auth.password }}@{{ template "sentry.rabbitmq.host" . }}:5672//")
+    {{- else if $redisPass }}
     BROKER_URL = os.environ.get("BROKER_URL", "redis://:{{ $redisPass }}@{{ $redisHost }}:{{ $redisPort }}/0")
     {{- else }}
     BROKER_URL = os.environ.get("BROKER_URL", "redis://{{ $redisHost }}:{{ $redisPort }}/0")
     {{- end }}
-      
+
     #########
     # Cache #
     #########
@@ -172,7 +193,7 @@ data:
     SENTRY_CACHE = "sentry.cache.redis.RedisCache"
 
     DEFAULT_KAFKA_OPTIONS = {
-        "bootstrap.servers": "{{ printf "%s:%s" (include "sentry.kafka.host" .) (include "sentry.kafka.port" .) }}",
+        "bootstrap.servers": {{ (include "sentry.kafka.bootstrap_servers_string" .) | quote }},
         "message.max.bytes": 50000000,
         "socket.timeout.ms": 1000,
     }
@@ -248,9 +269,31 @@ data:
         "protocol": "uwsgi",
         # This is needed to prevent https://git.io/fj7Lw
         "uwsgi-socket": None,
+
+        # These ase for proper HTTP/1.1 support from uWSGI
+        # Without these it doesn't do keep-alives causing
+        # issues with Relay's direct requests.
         "http-keepalive": True,
+        "http-chunked-input": True,
+        # the number of web workers
+        'workers': 3,
+        # Turn off memory reporting
         "memory-report": False,
-        # 'workers': 3,  # the number of web workers
+        # Some stuff so uwsgi will cycle workers sensibly
+        'max-requests': 100000,
+        'max-requests-delta': 500,
+        'max-worker-lifetime': 86400,
+        # Duplicate options from sentry default just so we don't get
+        # bit by sentry changing a default value that we depend on.
+        'thunder-lock': True,
+        'log-x-forwarded-for': False,
+        'buffer-size': 32768,
+        'limit-post': 209715200,
+        'disable-logging': True,
+        'reload-on-rss': 600,
+        'ignore-sigpipe': True,
+        'ignore-write-errors': True,
+        'disable-write-exception': True,
     }
 
     ###########
@@ -280,26 +323,90 @@ data:
         {
             feature: True
             for feature in (
+                {{- if not .Values.sentry.singleOrganization }}
+                "organizations:create",
+                {{ end -}}
+
+                {{- if .Values.sentry.features.orgSubdomains }}
+                "organizations:org-subdomains",
+                {{ end -}}
+
+                "organizations:advanced-search",
+                "organizations:android-mappings",
+                "organizations:api-keys",
+                "organizations:boolean-search",
+                "organizations:related-events",
+                "organizations:alert-filters",
+                "organizations:custom-symbol-sources",
+                "organizations:dashboards-basic",
+                "organizations:dashboards-edit",
+                "organizations:data-forwarding",
                 "organizations:discover",
+                "organizations:discover-basic",
+                "organizations:discover-query",
+                "organizations:enterprise-perf",
+                "organizations:event-attachments",
                 "organizations:events",
                 "organizations:global-views",
+                "organizations:incidents",
+                "organizations:metric-alert-builder-aggregate",
+                "organizations:metric-alert-gui-filters",
+                "organizations:integrations-event-hooks",
                 "organizations:integrations-issue-basic",
                 "organizations:integrations-issue-sync",
+                "organizations:integrations-alert-rule",
+                "organizations:integrations-chat-unfurl",
+                "organizations:integrations-incident-management",
+                "organizations:integrations-ticket-rules",
+
+                {{- if .Values.sentry.features.vstsLimitedScopes }}
+                "organizations:integrations-vsts-limited-scopes",
+                {{ end -}}
+
+                "organizations:integrations-stacktrace-link",
+                "organizations:internal-catchall",
                 "organizations:invite-members",
-                "organizations:new-issue-ui",
-                "organizations:repos",
-                "organizations:require-2fa",
-                "organizations:sentry10",
+                "organizations:large-debug-files",
+                "organizations:monitors",
+                "organizations:onboarding",
+                "organizations:org-saved-searches",
+                "organizations:performance-view",
+                "organizations:project-detail",
+                "organizations:relay",
+                "organizations:release-performance-views",
+                "organizations:rule-page",
+                "organizations:set-grouping-config",
+                "organizations:custom-event-title",
+                "organizations:slack-migration",
                 "organizations:sso-basic",
                 "organizations:sso-rippling",
                 "organizations:sso-saml2",
-                "organizations:suggested-commits",
+                "organizations:sso-migration",
+                "organizations:stacktrace-hover-preview",
+                "organizations:symbol-sources",
+                "organizations:transaction-comparison",
+                "organizations:usage-stats-graph",
+                "organizations:inbox",
+                "organizations:unhandled-issue-flag",
+                "organizations:invite-members-rate-limits",
+                "organizations:dashboards-v2",
+
+                "projects:alert-filters",
                 "projects:custom-inbound-filters",
                 "projects:data-forwarding",
                 "projects:discard-groups",
-                "projects:plugins",
+                "projects:issue-alerts-targeting",
+                "projects:minidump",
                 "projects:rate-limits",
+                "projects:sample-events",
                 "projects:servicehooks",
+                "projects:similarity-view",
+                "projects:similarity-indexing",
+                "projects:similarity-view-v2",
+                "projects:similarity-indexing-v2",
+                "projects:reprocessing-v2",
+
+                "projects:plugins",
             )
         }
     )
@@ -307,20 +414,14 @@ data:
     #######################
     # Email Configuration #
     #######################
-    SENTRY_OPTIONS['mail.backend'] = os.getenv("SENTRY_EMAIL_BACKEND", "{{ .Values.mail.backend }}")
-    SENTRY_OPTIONS['mail.use-tls'] = bool(strtobool(os.getenv("SENTRY_EMAIL_USE_TLS", "{{ .Values.mail.useTls }}")))
-    SENTRY_OPTIONS['mail.username'] = os.getenv("SENTRY_EMAIL_USERNAME", "{{ .Values.mail.username }}")
-    SENTRY_OPTIONS['mail.password'] = os.getenv("SENTRY_EMAIL_PASSWORD", "{{ .Values.mail.password }}")
-    SENTRY_OPTIONS['mail.port'] = int(os.getenv("SENTRY_EMAIL_PORT", {{ .Values.mail.port }}))
-    SENTRY_OPTIONS['mail.host'] = os.getenv("SENTRY_EMAIL_HOST", "{{ .Values.mail.host }}")
-    SENTRY_OPTIONS['mail.from'] = os.getenv("SENTRY_EMAIL_FROM", "{{ .Values.mail.from }}")
-
-    ######################
-    # GitHub Integration #
-    #####################
-
-    GITHUB_APP_ID = '{{ .Values.githubSso.clientId }}'
-    GITHUB_API_SECRET = '{{ .Values.githubSso.clientSecret }}'
+    SENTRY_OPTIONS['mail.backend'] = os.getenv("SENTRY_EMAIL_BACKEND", {{ .Values.mail.backend | quote }})
+    SENTRY_OPTIONS['mail.use-tls'] = bool(strtobool(os.getenv("SENTRY_EMAIL_USE_TLS", {{ .Values.mail.useTls | quote }})))
+    SENTRY_OPTIONS['mail.use-ssl'] = bool(strtobool(os.getenv("SENTRY_EMAIL_USE_SSL", {{ .Values.mail.useSsl | quote }})))
+    SENTRY_OPTIONS['mail.username'] = os.getenv("SENTRY_EMAIL_USERNAME", {{ .Values.mail.username | quote }})
+    SENTRY_OPTIONS['mail.password'] = os.getenv("SENTRY_EMAIL_PASSWORD", {{ .Values.mail.password | quote }})
+    SENTRY_OPTIONS['mail.port'] = int(os.getenv("SENTRY_EMAIL_PORT", {{ .Values.mail.port | quote }}))
+    SENTRY_OPTIONS['mail.host'] = os.getenv("SENTRY_EMAIL_HOST", {{ .Values.mail.host | quote }})
+    SENTRY_OPTIONS['mail.from'] = os.getenv("SENTRY_EMAIL_FROM", {{ .Values.mail.from | quote }})
 
     #########################
     # Bitbucket Integration #
@@ -328,5 +429,19 @@ data:
 
     # BITBUCKET_CONSUMER_KEY = 'YOUR_BITBUCKET_CONSUMER_KEY'
     # BITBUCKET_CONSUMER_SECRET = 'YOUR_BITBUCKET_CONSUMER_SECRET'
+
+    #########
+    # Relay #
+    #########
+    SENTRY_RELAY_WHITELIST_PK = []
+    SENTRY_RELAY_OPEN_REGISTRATION = True
+
+{{- if .Values.metrics.enabled }}
+    SENTRY_METRICS_BACKEND = 'sentry.metrics.statsd.StatsdMetricsBackend'
+    SENTRY_METRICS_OPTIONS = {
+        'host': '{{ template "sentry.fullname" . }}-metrics',
+        'port': 9125,
+    }
+{{- end }}
 
 {{ .Values.config.sentryConfPy | indent 4 }}

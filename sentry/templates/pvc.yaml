@@ -1,3 +1,4 @@
+{{- if eq .Values.filestore.backend "filesystem" -}}
 {{- if and .Values.filestore.filesystem.persistence.enabled (not .Values.filestore.filesystem.persistence.existingClaim) -}}
 kind: PersistentVolumeClaim
 apiVersion: v1
@@ -21,4 +22,5 @@ spec:
   storageClassName: "{{ .Values.filestore.filesystem.persistence.storageClass }}"
 {{- end }}
 {{- end }}
+{{- end -}}
 {{- end -}}

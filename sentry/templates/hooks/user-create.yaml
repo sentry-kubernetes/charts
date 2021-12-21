@@ -10,8 +10,8 @@ metadata:
     heritage: "{{ .Release.Service }}"
   annotations:
     "helm.sh/hook": "post-install,post-upgrade"
-    "helm.sh/hook-delete-policy": "hook-succeeded,before-hook-creation"
-    "helm.sh/hook-weight": "10"
+    "helm.sh/hook-delete-policy": "{{ if .Values.hooks.removeOnSuccess }}hook-succeeded,{{ end }}before-hook-creation"
+    "helm.sh/hook-weight": "9"
 spec:
   template:
     metadata:
@@ -20,6 +20,9 @@ spec:
         checksum/configmap.yaml: {{ include (print $.Template.BasePath "/configmap-sentry.yaml") . | sha256sum }}
         {{- if .Values.sentry.worker.annotations }}
 {{ toYaml .Values.sentry.worker.annotations | indent 8 }}
+        {{- end }}
+        {{- if .Values.hooks.dbInit.podAnnotations }}
+{{ toYaml .Values.hooks.dbInit.podAnnotations | indent 8 }}
         {{- end }}
       labels:
         app: sentry
@@ -33,9 +36,17 @@ spec:
       imagePullSecrets:
 {{ toYaml .Values.images.sentry.imagePullSecrets | indent 8 }}
       {{- end }}
+      {{- if .Values.dnsPolicy }}
+      dnsPolicy: {{ .Values.dnsPolicy | quote }}
+      {{- end }}
+      {{- if .Values.dnsConfig }}
+      dnsConfig:
+{{ toYaml .Values.dnsConfig | indent 8 }}
+      {{- end }}
       containers:
       - name: user-create-job
-        image: "{{ .Values.images.sentry.repository }}:{{ .Values.images.sentry.tag }}"
+        image: "{{ template "sentry.image" . }}"
+        imagePullPolicy: {{ default "IfNotPresent" .Values.images.sentry.pullPolicy }}
         command: ["/bin/bash", "-c"]
         # Create user but do not exit 1 when user already exists (exit code 3 from createuser command)
         # https://docs.sentry.io/server/cli/createuser/
@@ -44,20 +55,23 @@ spec:
             sentry createuser \
               --no-input \
               --superuser \
-              --email {{ .Values.user.email }} \
-              --password {{ .Values.user.password }} || true; \
+              --email "{{ .Values.user.email }}" \
+              --password "{{ .Values.user.password }}" || true; \
             if [ $? -eq 0 ] || [ $? -eq 3 ]; then \
               exit 0; \
             else \
               exit 1; \
             fi
-        {{- if .Values.postgresql.enabled }}
         env:
+        {{- if .Values.postgresql.enabled }}
         - name: POSTGRES_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: {{ include "sentry.postgresql.fullname" . }}
-              key: postgresql-password
+              name: {{ default (include "sentry.postgresql.fullname" .) .Values.postgresql.existingSecret }}
+              key: {{ default "postgresql-password" .Values.postgresql.existingSecretKey }}
+        {{- end }}
+        {{- if .Values.hooks.dbInit.env }}
+{{ toYaml .Values.hooks.dbInit.env | indent 10 }}
         {{- end }}
         volumeMounts:
         - mountPath: /etc/sentry

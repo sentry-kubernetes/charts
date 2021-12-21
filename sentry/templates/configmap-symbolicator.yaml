@@ -1,0 +1,13 @@
+{{- if .Values.symbolicator.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "sentry.fullname" . }}-symbolicator
+  labels:
+    app: sentry
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
+    release: "{{ .Release.Name }}"
+    heritage: "{{ .Release.Service }}"
+data:
+  config.yml: {{ toYaml .Values.symbolicator.api.config | indent 2 }}
+{{- end }}

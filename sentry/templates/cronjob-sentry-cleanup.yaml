@@ -1,0 +1,125 @@
+{{- if .Values.sentry.cleanup.enabled }}
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: {{ template "sentry.fullname" . }}-sentry-cleanup
+  labels:
+    app: {{ template "sentry.fullname" . }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
+    release: "{{ .Release.Name }}"
+    heritage: "{{ .Release.Service }}"
+spec:
+  schedule: "{{ .Values.sentry.cleanup.schedule }}"
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          annotations:
+            checksum/configYml: {{ .Values.config.configYml | toYaml | toString | sha256sum }}
+            checksum/sentryConfPy: {{ .Values.config.sentryConfPy | sha256sum }}
+            checksum/config.yaml: {{ include (print $.Template.BasePath "/configmap-sentry.yaml") . | sha256sum }}
+            {{- if .Values.sentry.cleanup.annotations }}
+{{ toYaml .Values.sentry.cleanup.annotations | indent 12 }}
+            {{- end }}
+          labels:
+            app: {{ template "sentry.fullname" . }}
+            release: "{{ .Release.Name }}"
+            {{- if .Values.sentry.cleanup.podLabels }}
+{{ toYaml .Values.sentry.cleanup.podLabels | indent 12 }}
+            {{- end }}
+        spec:
+          affinity:
+            {{- if .Values.sentry.cleanup.affinity }}
+{{ toYaml .Values.sentry.cleanup.affinity | indent 12 }}
+            {{- end }}
+            {{- if .Values.sentry.cleanup.nodeSelector }}
+          nodeSelector:
+{{ toYaml .Values.sentry.cleanup.nodeSelector | indent 12 }}
+            {{- end }}
+            {{- if .Values.sentry.cleanup.tolerations }}
+          tolerations:
+{{ toYaml .Values.sentry.cleanup.tolerations | indent 12 }}
+            {{- end }}
+            {{- if .Values.dnsPolicy }}
+          dnsPolicy: {{ .Values.dnsPolicy | quote }}
+            {{- end }}
+            {{- if .Values.dnsConfig }}
+          dnsConfig:
+{{ toYaml .Values.dnsConfig | indent 12 }}
+            {{- end }}
+            {{- if .Values.images.sentry.imagePullSecrets }}
+          imagePullSecrets:
+{{ toYaml .Values.images.sentry.imagePullSecrets | indent 12 }}
+            {{- end }}
+          containers:
+          - name: {{ .Chart.Name }}-sentry-cleanup
+            image: "{{ template "sentry.image" . }}"
+            imagePullPolicy: {{ default "IfNotPresent" .Values.images.sentry.pullPolicy }}
+            command: ["sentry"]
+            args:
+              - "cleanup"
+              - "--days"
+              - "{{ .Values.sentry.cleanup.days }}"
+            env:
+            - name: SNUBA
+              value: http://{{ template "sentry.fullname" . }}-snuba:{{ template "snuba.port" }}
+            - name: C_FORCE_ROOT
+              value: "true"
+            {{- if .Values.postgresql.enabled }}
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ default (include "sentry.postgresql.fullname" .) .Values.postgresql.existingSecret }}
+                  key: {{ default "postgresql-password" .Values.postgresql.existingSecretKey }}
+            {{- end }}
+            {{- if and (eq .Values.filestore.backend "gcs") .Values.filestore.gcs.secretName }}
+            - name: GOOGLE_APPLICATION_CREDENTIALS
+              value: /var/run/secrets/google/{{ .Values.filestore.gcs.credentialsFile }}
+            {{- end }}
+            {{- if .Values.sentry.cleanup.env }}
+{{ toYaml .Values.sentry.cleanup.env | indent 12 }}
+            {{- end }}
+            volumeMounts:
+            - mountPath: /etc/sentry
+              name: config
+              readOnly: true
+            - mountPath: {{ .Values.filestore.filesystem.path }}
+              name: sentry-data
+            {{- if and (eq .Values.filestore.backend "gcs") .Values.filestore.gcs.secretName }}
+            - name: sentry-google-cloud-key
+              mountPath: /var/run/secrets/google
+            {{ end }}
+            resources:
+{{ toYaml .Values.sentry.cleanup.resources | indent 14 }}
+{{- if .Values.sentry.cleanup.sidecars }}
+{{ toYaml .Values.sentry.cleanup.sidecars | indent 10 }}
+{{- end }}
+          restartPolicy: Never
+          volumes:
+          - name: config
+            configMap:
+              name: {{ template "sentry.fullname" . }}-sentry
+          - name: sentry-data
+          {{- if and (eq .Values.filestore.backend "filesystem") .Values.filestore.filesystem.persistence.enabled (.Values.filestore.filesystem.persistence.persistentWorkers) }}
+          {{- if .Values.filestore.filesystem.persistence.existingClaim }}
+            persistentVolumeClaim:
+              claimName: {{ .Values.filestore.filesystem.persistence.existingClaim }}
+          {{- else }}
+            persistentVolumeClaim:
+              claimName: {{ template "sentry.fullname" . }}-data
+          {{- end }}
+          {{- else }}
+            emptyDir: {}
+          {{ end }}
+          {{- if and (eq .Values.filestore.backend "gcs") .Values.filestore.gcs.secretName }}
+          - name: sentry-google-cloud-key
+            secret:
+              secretName: {{ .Values.filestore.gcs.secretName }}
+          {{ end }}
+{{- if .Values.sentry.cleanup.volumes }}
+{{ toYaml .Values.sentry.cleanup.volumes | indent 10 }}
+{{- end }}
+          {{- if .Values.sentry.cleanup.priorityClassName }}
+          priorityClassName: "{{ .Values.sentry.cleanup.priorityClassName }}"
+          {{- end }}
+{{- end }}

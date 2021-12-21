@@ -1,0 +1,141 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "sentry.fullname" . }}-snuba-transactions-consumer
+  labels:
+    app: {{ template "sentry.fullname" . }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
+    release: "{{ .Release.Name }}"
+    heritage: "{{ .Release.Service }}"
+    app.kubernetes.io/managed-by: "Helm"
+  {{- if .Values.asHook }}
+  {{- /* Add the Helm annotations so that deployment after asHook from true to false works */}}
+  annotations:
+    meta.helm.sh/release-name: "{{ .Release.Name }}"
+    meta.helm.sh/release-namespace: "{{ .Release.Namespace }}"
+    "helm.sh/hook": "post-install,post-upgrade"
+    "helm.sh/hook-weight": "12"
+  {{- end }}
+spec:
+  revisionHistoryLimit: {{ .Values.revisionHistoryLimit }}
+  selector:
+    matchLabels:
+        app: {{ template "sentry.fullname" . }}
+        release: "{{ .Release.Name }}"
+        role: snuba-transactions-consumer
+  replicas: {{ .Values.snuba.transactionsConsumer.replicas }}
+  template:
+    metadata:
+      annotations:
+        checksum/snubaSettingsPy: {{ .Values.config.snubaSettingsPy | sha256sum }}
+        checksum/config.yaml: {{ include (print $.Template.BasePath "/configmap-snuba.yaml") . | sha256sum }}
+        {{- if .Values.snuba.transactionsConsumer.annotations }}
+{{ toYaml .Values.snuba.transactionsConsumer.annotations | indent 8 }}
+        {{- end }}
+      labels:
+        app: {{ template "sentry.fullname" . }}
+        release: "{{ .Release.Name }}"
+        role: snuba-transactions-consumer
+        {{- if .Values.snuba.transactionsConsumer.podLabels }}
+{{ toYaml .Values.snuba.transactionsConsumer.podLabels | indent 8 }}
+        {{- end }}
+    spec:
+      affinity:
+      {{- if .Values.snuba.transactionsConsumer.affinity }}
+{{ toYaml .Values.snuba.transactionsConsumer.affinity | indent 8 }}
+      {{- end }}
+      {{- if .Values.snuba.transactionsConsumer.nodeSelector }}
+      nodeSelector:
+{{ toYaml .Values.snuba.transactionsConsumer.nodeSelector | indent 8 }}
+      {{- end }}
+      {{- if .Values.snuba.transactionsConsumer.tolerations }}
+      tolerations:
+{{ toYaml .Values.snuba.transactionsConsumer.tolerations | indent 8 }}
+      {{- end }}
+      {{- if .Values.images.snuba.imagePullSecrets }}
+      imagePullSecrets:
+{{ toYaml .Values.images.snuba.imagePullSecrets | indent 8 }}
+      {{- end }}
+      {{- if .Values.dnsPolicy }}
+      dnsPolicy: {{ .Values.dnsPolicy | quote }}
+      {{- end }}
+      {{- if .Values.dnsConfig }}
+      dnsConfig:
+{{ toYaml .Values.dnsConfig | indent 8 }}
+      {{- end }}
+      {{- if .Values.snuba.transactionsConsumer.securityContext }}
+      securityContext:
+{{ toYaml .Values.snuba.transactionsConsumer.securityContext | indent 8 }}
+      {{- end }}
+      containers:
+      - name: {{ .Chart.Name }}-snuba
+        image: "{{ template "snuba.image" . }}"
+        imagePullPolicy: {{ default "IfNotPresent" .Values.images.snuba.pullPolicy }}
+        command:
+          - "snuba"
+          - "consumer"
+          - "--storage"
+          - "transactions"
+          - "--consumer-group"
+          - "transactions_group"
+          - "--auto-offset-reset"
+          - "{{ .Values.snuba.transactionsConsumer.autoOffsetReset }}"
+          - "--max-batch-time-ms"
+          - "750"
+          {{- if .Values.snuba.transactionsConsumer.maxBatchSize }}
+          - "--max-batch-size"
+          - "{{ .Values.snuba.transactionsConsumer.maxBatchSize }}"
+          {{- end }}
+          {{- if .Values.snuba.transactionsConsumer.processes }}
+          - "--processes"
+          - "{{ .Values.snuba.transactionsConsumer.processes }}"
+          {{- end }}
+          {{- if .Values.snuba.transactionsConsumer.inputBlockSize }}
+          - "--input-block-size"
+          - "{{ .Values.snuba.transactionsConsumer.inputBlockSize }}"
+          {{- end }}
+          {{- if .Values.snuba.transactionsConsumer.outputBlockSize }}
+          - "--output-block-size"
+          - "{{ .Values.snuba.transactionsConsumer.outputBlockSize }}"
+          {{- end }}
+          {{- if .Values.snuba.transactionsConsumer.maxBatchTimeMs }}
+          - "--max-batch-time-ms"
+          - "{{ .Values.snuba.transactionsConsumer.maxBatchTimeMs }}"
+          {{- end }}
+          {{- if .Values.snuba.transactionsConsumer.queuedMaxMessagesKbytes }}
+          - "--queued-max-messages-kbytes"
+          - "{{ .Values.snuba.transactionsConsumer.queuedMaxMessagesKbytes }}"
+          {{- end }}
+          {{- if .Values.snuba.transactionsConsumer.queuedMinMessages }}
+          - "--queued-min-messages"
+          - "{{ .Values.snuba.transactionsConsumer.queuedMinMessages }}"
+          {{- end }}
+        ports:
+        - containerPort: {{ template "snuba.port" }}
+        env:
+{{ include "sentry.snuba.env" . | indent 8 }}
+{{- if .Values.snuba.transactionsConsumer.env }}
+{{ toYaml .Values.snuba.transactionsConsumer.env | indent 8 }}
+{{- end }}
+        envFrom:
+        - secretRef:
+            name: {{ template "sentry.fullname" . }}-snuba-env
+        volumeMounts:
+        - mountPath: /etc/snuba
+          name: config
+          readOnly: true
+{{- if .Values.snuba.transactionsConsumer.volumeMounts }}
+{{ toYaml .Values.snuba.transactionsConsumer.volumeMounts | indent 8 }}
+{{- end }}
+        resources:
+{{ toYaml .Values.snuba.transactionsConsumer.resources | indent 12 }}
+      {{- if .Values.serviceAccount.enabled }}
+      serviceAccountName: {{ .Values.serviceAccount.name }}-snuba
+      {{- end }}
+      volumes:
+        - name: config
+          configMap:
+            name: {{ template "sentry.fullname" . }}-snuba
+{{- if .Values.snuba.transactionsConsumer.volumes }}
+{{ toYaml .Values.snuba.transactionsConsumer.volumes | indent 8 }}
+{{- end }}

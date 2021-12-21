@@ -19,17 +19,33 @@ spec:
       partition: {{ .Values.clickhouse.rollingUpdatePartition }}
     {{- end }}
   serviceName: {{ include "clickhouse.fullname" . }}-replica-headless
-  selector: 
-    matchLabels: 
+  selector:
+    matchLabels:
       app.kubernetes.io/name: {{ include "clickhouse.name" . }}-replica
       app.kubernetes.io/instance: {{ .Release.Name }}-replica
   template:
     metadata:
       annotations:
         checksum/config: {{ include (print $.Template.BasePath "/configmap-config.yaml") . | sha256sum }}
+      {{- if and .Values.clickhouse.metrics.enabled .Values.clickhouse.metrics.podAnnotations }}
+      {{- toYaml .Values.clickhouse.metrics.podAnnotations | nindent 8 }}
+      {{- end }}
+      {{- if .Values.clickhouse.podAnnotations }}
+      {{- range $key, $value := .Values.clickhouse.podAnnotations }}
+        {{ $key }}: {{ $value | quote }}
+      {{- end }}
+      {{- end }}
       labels:
         app.kubernetes.io/name: {{ include "clickhouse.name" . }}-replica
         app.kubernetes.io/instance: {{ .Release.Name }}-replica
+      {{- if and .Values.clickhouse.metrics.enabled .Values.clickhouse.metrics.podLabels }}
+      {{- toYaml .Values.clickhouse.metrics.podLabels | nindent 8 }}
+      {{- end }}
+      {{- if .Values.clickhouse.podLabels }}
+      {{- range $key, $value := .Values.clickhouse.podLabels }}
+        {{ $key }}: {{ $value | quote }}
+      {{- end }}
+      {{- end }}
     spec:
     {{- if .Values.affinity }}
       affinity:
@@ -54,19 +70,23 @@ spec:
         - -c
         - |
           mkdir -p /etc/clickhouse-server/metrica.d
+        {{- if .Values.clickhouse.init.resources }}
+        resources:
+{{ toYaml .Values.clickhouse.init.resources | indent 10 }}
+        {{- end }}
       containers:
       - name: {{ include "clickhouse.fullname" . }}-replica
         image: {{ .Values.clickhouse.image }}:{{ .Values.clickhouse.imageVersion }}
         imagePullPolicy: {{ .Values.clickhouse.imagePullPolicy }}
         ports:
         - name: http-port
-          containerPort: {{ .Values.clickhouse.http_port | default "8123" }} 
+          containerPort: {{ .Values.clickhouse.http_port | default "8123" }}
         - name: tcp-port
           containerPort: {{ .Values.clickhouse.tcp_port | default "9000" }}
         - name: inter-http-port
           containerPort: {{ .Values.clickhouse.interserver_http_port | default "9009" }}
       {{- if .Values.clickhouse.livenessProbe.enabled }}
-        livenessProbe: 
+        livenessProbe:
           tcpSocket:
             port: {{ .Values.clickhouse.tcp_port }}
           initialDelaySeconds: {{ .Values.clickhouse.livenessProbe.initialDelaySeconds }}
@@ -85,6 +105,10 @@ spec:
           failureThreshold: {{ .Values.clickhouse.readinessProbe.failureThreshold }}
           successThreshold: {{ .Values.clickhouse.readinessProbe.successThreshold }}
       {{- end }}
+      {{- if .Values.clickhouse.resources }}
+        resources:
+{{ toYaml .Values.clickhouse.resources | indent 10 }}
+      {{- end }}
         volumeMounts:
         - name: {{ include "clickhouse.fullname" . }}-replica-data
           mountPath: {{ include "clickhouse.fullpath" . }}
@@ -96,18 +120,27 @@ spec:
           mountPath: /etc/clickhouse-server/metrica.d
         - name: {{ include "clickhouse.fullname" . }}-users
           mountPath: /etc/clickhouse-server/users.d
+      {{- with .Values.clickhouse.securityContext }}
         securityContext:
-          privileged: true
-          runAsUser: 0
-    {{- if .Values.clickhouse.imagePullSecrets }}
-      imagePullSecrets: 
-      - name: {{ .Values.clickhouse.imagePullSecrets }}
-    {{- end }}
+          {{- toYaml . | nindent 10 }}
+      {{- end }}
+        {{- if .Values.clickhouse.metrics.enabled }}
+      - name: prom-exporter
+        image: "{{ .Values.clickhouse.metrics.image.registry }}/{{ .Values.clickhouse.metrics.image.repository }}:{{ .Values.clickhouse.metrics.image.tag }}"
+        imagePullPolicy: {{ .Values.clickhouse.metrics.image.pullPolicy | quote }}
+        ports:
+          - name: metrics
+            containerPort: {{ .Values.clickhouse.metrics.image.port }}
+            protocol: TCP
+        {{- if .Values.clickhouse.metrics.resources }}
+        resources: {{- toYaml .Values.clickhouse.metrics.resources | nindent 8 }}
+        {{- end }}
+      {{- end }}
     {{- if .Values.clickhouse.nodeSelector }}
       nodeSelector:
 {{ toYaml .Values.clickhouse.nodeSelector | indent 8 }}
     {{- end }}
-      volumes: 
+      volumes:
       - name: {{ include "clickhouse.fullname" . }}-replica-data
       {{- if .Values.clickhouse.persistentVolumeClaim.dataPersistentVolume.enabled }}
         persistentVolumeClaim:
@@ -142,6 +175,9 @@ spec:
           - key: users.xml
             path: users.xml
       {{- end }}
+      {{- if .Values.serviceAccount.enabled }}
+      serviceAccountName: {{ .Values.serviceAccount.name }}-replica
+      {{- end }}
 {{- if .Values.clickhouse.persistentVolumeClaim.enabled }}
   volumeClaimTemplates:
 {{- if .Values.clickhouse.persistentVolumeClaim.dataPersistentVolume.enabled }}
@@ -152,7 +188,7 @@ spec:
         app.kubernetes.io/instance: {{ .Release.Name }}-replica-data
         app.kubernetes.io/managed-by: {{ .Release.Service }}
     spec:
-      accessModes: 
+      accessModes:
     {{- range .Values.clickhouse.persistentVolumeClaim.dataPersistentVolume.accessModes }}
       - {{ . | quote }}
     {{- end }}
@@ -171,7 +207,7 @@ spec:
         app.kubernetes.io/instance: {{ .Release.Name }}-replica-logs
         app.kubernetes.io/managed-by: {{ .Release.Service }}
     spec:
-      accessModes: 
+      accessModes:
     {{- range .Values.clickhouse.persistentVolumeClaim.logsPersistentVolume.accessModes }}
       - {{ . | quote }}
     {{- end }}

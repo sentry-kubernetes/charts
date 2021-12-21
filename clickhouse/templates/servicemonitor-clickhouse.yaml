@@ -1,0 +1,26 @@
+{{- if .Values.clickhouse.metrics.serviceMonitor.enabled }}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ include "clickhouse.fullname" . }}
+  {{- if .Values.clickhouse.metrics.serviceMonitor.namespace }}
+  namespace: {{ .Values.clickhouse.metrics.serviceMonitor.namespace }}
+  {{- end }}
+  labels:
+    app.kubernetes.io/name: {{ include "clickhouse.name" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    {{- if .Values.clickhouse.metrics.serviceMonitor.selector}}
+    {{- toYaml .Values.clickhouse.metrics.serviceMonitor.selector | nindent 4 }}
+    {{- end }}
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "clickhouse.name" . }}-metrics
+  endpoints:
+    - port: metrics
+      {{- if .Values.clickhouse.metrics.serviceMonitor.interval }}
+      interval: {{ .Values.clickhouse.metrics.serviceMonitor.interval }}
+  {{- end }}
+---
+{{- end}}

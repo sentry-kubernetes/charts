@@ -12,7 +12,7 @@ metadata:
     # This is what defines this resource as a hook. Without this line, the
     # job is considered part of the release.
     "helm.sh/hook": "post-install,post-upgrade"
-    "helm.sh/hook-delete-policy": "hook-succeeded,before-hook-creation"
+    "helm.sh/hook-delete-policy": "{{ if .Values.hooks.removeOnSuccess }}hook-succeeded,{{ end }}before-hook-creation"
     "helm.sh/hook-weight": "6"
 spec:
   template:
@@ -23,6 +23,9 @@ spec:
         {{- if .Values.sentry.worker.annotations }}
 {{ toYaml .Values.sentry.worker.annotations | indent 8 }}
         {{- end }}
+        {{- if .Values.hooks.dbInit.podAnnotations }}
+{{ toYaml .Values.hooks.dbInit.podAnnotations | indent 8 }}
+        {{- end }}
       labels:
         app: sentry
         release: "{{ .Release.Name }}"
@@ -30,22 +33,45 @@ spec:
 {{ toYaml .Values.sentry.worker.podLabels | indent 8 }}
         {{- end }}
     spec:
+      {{- if .Values.hooks.dbInit.affinity }}
+      affinity:
+{{ toYaml .Values.hooks.dbInit.affinity | indent 8 }}
+      {{- end }}
+      {{- if .Values.hooks.dbInit.nodeSelector }}
+      nodeSelector:
+{{ toYaml .Values.hooks.dbInit.nodeSelector | indent 8 }}
+      {{- end }}
+      {{- if .Values.hooks.dbInit.tolerations }}
+      tolerations:
+{{ toYaml .Values.hooks.dbInit.tolerations | indent 8 }}
+      {{- end }}
       restartPolicy: Never
       {{- if .Values.images.sentry.imagePullSecrets }}
       imagePullSecrets:
 {{ toYaml .Values.images.sentry.imagePullSecrets | indent 8 }}
       {{- end }}
+      {{- if .Values.dnsPolicy }}
+      dnsPolicy: {{ .Values.dnsPolicy | quote }}
+      {{- end }}
+      {{- if .Values.dnsConfig }}
+      dnsConfig:
+{{ toYaml .Values.dnsConfig | indent 8 }}
+      {{- end }}
       containers:
       - name: db-init-job
-        image: "{{ .Values.images.sentry.repository }}:{{ .Values.images.sentry.tag }}"
+        image: "{{ template "sentry.image" . }}"
+        imagePullPolicy: {{ default "IfNotPresent" .Values.images.sentry.pullPolicy }}
         command: ["sentry","upgrade","--noinput"]
-        {{- if .Values.postgresql.enabled }}
         env:
+        {{- if .Values.postgresql.enabled }}
         - name: POSTGRES_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: {{ include "sentry.postgresql.fullname" . }}
-              key: postgresql-password
+              name: {{ default (include "sentry.postgresql.fullname" .) .Values.postgresql.existingSecret }}
+              key: {{ default "postgresql-password" .Values.postgresql.existingSecretKey }}
+        {{- end }}
+        {{- if .Values.hooks.dbInit.env }}
+{{ toYaml .Values.hooks.dbInit.env | indent 10 }}
         {{- end }}
         volumeMounts:
         - mountPath: /etc/sentry
@@ -53,8 +79,14 @@ spec:
           readOnly: true
         resources:
 {{ toYaml .Values.hooks.dbInit.resources | indent 10 }}
+{{- if .Values.hooks.dbInit.sidecars }}
+{{ toYaml .Values.hooks.dbInit.sidecars | indent 6 }}
+{{- end }}
       volumes:
       - name: config
         configMap:
           name: {{ template "sentry.fullname" . }}-sentry
+{{- if .Values.hooks.dbInit.volumes }}
+{{ toYaml .Values.hooks.dbInit.volumes | indent 6 }}
+{{- end }}
 {{- end -}}

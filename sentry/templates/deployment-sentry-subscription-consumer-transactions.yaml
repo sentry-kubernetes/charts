@@ -1,0 +1,137 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "sentry.fullname" . }}-subscription-consumer-transactions
+  labels:
+    app: sentry
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
+    release: "{{ .Release.Name }}"
+    heritage: "{{ .Release.Service }}"
+    app.kubernetes.io/managed-by: "Helm"
+  {{- if .Values.asHook }}
+  {{- /* Add the Helm annotations so that deployment after asHook from true to false works */}}
+  annotations:
+    meta.helm.sh/release-name: "{{ .Release.Name }}"
+    meta.helm.sh/release-namespace: "{{ .Release.Namespace }}"
+    "helm.sh/hook": "post-install,post-upgrade"
+    "helm.sh/hook-weight": "10"
+  {{- end }}
+spec:
+  revisionHistoryLimit: {{ .Values.revisionHistoryLimit }}
+  selector:
+    matchLabels:
+        app: sentry
+        release: "{{ .Release.Name }}"
+        role: sentry-subscription-consumer-transactions
+  replicas: {{ .Values.sentry.subscriptionConsumerTransactions.replicas }}
+  template:
+    metadata:
+      annotations:
+        checksum/configYml: {{ .Values.config.configYml | toYaml | toString | sha256sum }}
+        checksum/sentryConfPy: {{ .Values.config.sentryConfPy | sha256sum }}
+        checksum/config.yaml: {{ include (print $.Template.BasePath "/configmap-sentry.yaml") . | sha256sum }}
+        {{- if .Values.sentry.subscriptionConsumerTransactions.annotations }}
+{{ toYaml .Values.sentry.subscriptionConsumerTransactions.annotations | indent 8 }}
+        {{- end }}
+      labels:
+        app: sentry
+        release: "{{ .Release.Name }}"
+        role: sentry-subscription-consumer-transactions
+        {{- if .Values.sentry.subscriptionConsumerTransactions.podLabels }}
+{{ toYaml .Values.sentry.subscriptionConsumerTransactions.podLabels | indent 8 }}
+        {{- end }}
+    spec:
+      affinity:
+      {{- if .Values.sentry.subscriptionConsumerTransactions.affinity }}
+{{ toYaml .Values.sentry.subscriptionConsumerTransactions.affinity | indent 8 }}
+      {{- end }}
+      {{- if .Values.sentry.subscriptionConsumerTransactions.nodeSelector }}
+      nodeSelector:
+{{ toYaml .Values.sentry.subscriptionConsumerTransactions.nodeSelector | indent 8 }}
+      {{- end }}
+      {{- if .Values.sentry.subscriptionConsumerTransactions.tolerations }}
+      tolerations:
+{{ toYaml .Values.sentry.subscriptionConsumerTransactions.tolerations | indent 8 }}
+      {{- end }}
+      {{- if .Values.images.sentry.imagePullSecrets }}
+      imagePullSecrets:
+{{ toYaml .Values.images.sentry.imagePullSecrets | indent 8 }}
+      {{- end }}
+      {{- if .Values.sentry.subscriptionConsumerTransactions.securityContext }}
+      securityContext:
+{{ toYaml .Values.sentry.subscriptionConsumerTransactions.securityContext | indent 8 }}
+      {{- end }}
+      containers:
+      - name: {{ .Chart.Name }}-subscription-consumer-transactions
+        image: "{{ template "sentry.image" . }}"
+        imagePullPolicy: {{ default "IfNotPresent" .Values.images.sentry.pullPolicy }}
+        command: ["sentry"]
+        args:
+          - "run"
+          - "query-subscription-consumer"
+          - "--topic"
+          - "transactions-subscription-results"
+          - "--commit-batch-size"
+          - "{{ default "1" .Values.sentry.subscriptionConsumerEvents.commitBatchSize }}"
+        env:
+        - name: SNUBA
+          value: http://{{ template "sentry.fullname" . }}-snuba:{{ template "snuba.port" }}
+        {{- if .Values.postgresql.enabled }}
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ default (include "sentry.postgresql.fullname" .) .Values.postgresql.existingSecret }}
+              key: {{ default "postgresql-password" .Values.postgresql.existingSecretKey }}
+        {{- end }}
+        {{ if and (eq .Values.filestore.backend "gcs") .Values.filestore.gcs.secretName }}
+        - name: GOOGLE_APPLICATION_CREDENTIALS
+          value: /var/run/secrets/google/{{ .Values.filestore.gcs.credentialsFile }}
+        {{ end }}
+{{- if .Values.sentry.subscriptionConsumerTransactions.env }}
+{{ toYaml .Values.sentry.subscriptionConsumerTransactions.env | indent 8 }}
+{{- end }}
+        volumeMounts:
+        - mountPath: /etc/sentry
+          name: config
+          readOnly: true
+        - mountPath: {{ .Values.filestore.filesystem.path }}
+          name: sentry-data
+        {{- if and (eq .Values.filestore.backend "gcs") .Values.filestore.gcs.secretName }}
+        - name: sentry-google-cloud-key
+          mountPath: /var/run/secrets/google
+        {{ end }}
+        resources:
+{{ toYaml .Values.sentry.subscriptionConsumerTransactions.resources | indent 12 }}
+{{- if .Values.sentry.subscriptionConsumerTransactions.sidecars }}
+{{ toYaml .Values.sentry.subscriptionConsumerTransactions.sidecars | indent 6 }}
+{{- end }}
+      {{- if .Values.serviceAccount.enabled }}
+      serviceAccountName: {{ .Values.serviceAccount.name }}-subscription-consumer-transactions
+      {{- end }}
+      volumes:
+      - name: config
+        configMap:
+          name: {{ template "sentry.fullname" . }}-sentry
+      - name: sentry-data
+      {{- if and (eq .Values.filestore.backend "filesystem") .Values.filestore.filesystem.persistence.enabled (.Values.filestore.filesystem.persistence.persistentWorkers) }}
+      {{- if .Values.filestore.filesystem.persistence.existingClaim }}
+        persistentVolumeClaim:
+          claimName: {{ .Values.filestore.filesystem.persistence.existingClaim }}
+      {{- else }}
+        persistentVolumeClaim:
+          claimName: {{ template "sentry.fullname" . }}-data
+      {{- end }}
+      {{- else }}
+        emptyDir: {}
+      {{ end }}
+      {{- if and (eq .Values.filestore.backend "gcs") .Values.filestore.gcs.secretName }}
+      - name: sentry-google-cloud-key
+        secret:
+          secretName: {{ .Values.filestore.gcs.secretName }}
+      {{ end }}
+{{- if .Values.sentry.subscriptionConsumerTransactions.volumes }}
+{{ toYaml .Values.sentry.subscriptionConsumerTransactions.volumes | indent 6 }}
+{{- end }}
+      {{- if .Values.sentry.subscriptionConsumerTransactions.priorityClassName }}
+      priorityClassName: "{{ .Values.sentry.subscriptionConsumerTransactions.priorityClassName }}"
+      {{- end }}

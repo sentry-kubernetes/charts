@@ -13,7 +13,7 @@ metadata:
     # This is what defines this resource as a hook. Without this line, the
     # job is considered part of the release.
     "helm.sh/hook": "post-install,post-upgrade"
-    "helm.sh/hook-delete-policy": "hook-succeeded,before-hook-creation"
+    "helm.sh/hook-delete-policy": "{{ if .Values.hooks.removeOnSuccess }}hook-succeeded,{{ end }}before-hook-creation"
     "helm.sh/hook-weight": "5"
 spec:
   template:
@@ -25,6 +25,9 @@ spec:
         {{- if .Values.snuba.annotations }}
 {{ toYaml .Values.snuba.annotations | indent 8 }}
         {{- end }}
+        {{- if .Values.hooks.snubaInit.podAnnotations }}
+{{ toYaml .Values.hooks.snubaInit.podAnnotations | indent 8 }}
+        {{- end }}
       labels:
         app: sentry
         release: "{{ .Release.Name }}"
@@ -32,35 +35,62 @@ spec:
 {{ toYaml .Values.snuba.podLabels | indent 8 }}
         {{- end }}
     spec:
+      {{- if .Values.hooks.snubaInit.affinity }}
+      affinity:
+{{ toYaml .Values.hooks.snubaInit.affinity | indent 8 }}
+      {{- end }}
+      {{- if .Values.hooks.snubaInit.nodeSelector }}
+      nodeSelector:
+{{ toYaml .Values.hooks.snubaInit.nodeSelector | indent 8 }}
+      {{- end }}
+      {{- if .Values.hooks.snubaInit.tolerations }}
+      tolerations:
+{{ toYaml .Values.hooks.snubaInit.tolerations | indent 8 }}
+      {{- end }}
       restartPolicy: Never
       {{- if .Values.images.snuba.imagePullSecrets }}
       imagePullSecrets:
 {{ toYaml .Values.images.snuba.imagePullSecrets | indent 8 }}
       {{- end }}
+      {{- if .Values.dnsPolicy }}
+      dnsPolicy: {{ .Values.dnsPolicy | quote }}
+      {{- end }}
+      {{- if .Values.dnsConfig }}
+      dnsConfig:
+{{ toYaml .Values.dnsConfig | indent 8 }}
+      {{- end }}
       containers:
       - name: snuba-migrate
-        image: "{{ .Values.images.snuba.repository }}:{{ .Values.images.snuba.tag }}"
-        # command: ["./docker_entrypoint.sh", "replacer","--auto-offset-reset=latest","--max-batch-size", "3"]
+        image: "{{ template "snuba.image" . }}"
         command:
           - /bin/bash
           - -ec
           - >-
+            {{- if .Values.clickhouse.enabled }}
             for ((i=0;i<{{ .Values.clickhouse.clickhouse.replicas }};i++)); do
               export CLICKHOUSE_HOST={{ $clickhouseHost }}-$i.{{ $clickhouseHost }}-headless;
-              snuba migrate;
+              snuba migrations migrate --force;
+              {{- if .Values.clickhouse.clickhouse.configmap.remote_servers.replica.backup.enabled }}
               export CLICKHOUSE_HOST={{ $clickhouseHost }}-replica-$i.{{ $clickhouseHost }}-replica-headless;
-              snuba migrate;
+              snuba migrations migrate --force;
+              {{- end }}
             done
+            {{- else }}
+            export CLICKHOUSE_HOST={{ $clickhouseHost }};
+            snuba migrations migrate --force;
+            {{- end }}
         env:
         - name: LOG_LEVEL
           value: debug
-        - name: SNUBA_SETTINGS
-          value: /etc/snuba/settings.py
         - name: CLICKHOUSE_SINGLE_NODE
           value: "true"
+{{ include "sentry.snuba.env" . | indent 8 }}
 {{- if .Values.snuba.migrateJob.env }}
 {{ toYaml .Values.snuba.migrateJob.env | indent 8 }}
 {{- end }}
+        envFrom:
+        - secretRef:
+            name: {{ template "sentry.fullname" . }}-snuba-env
         volumeMounts:
         - mountPath: /etc/snuba
           name: config

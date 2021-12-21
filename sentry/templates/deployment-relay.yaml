@@ -1,0 +1,148 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "sentry.fullname" . }}-relay
+  labels:
+    app: {{ template "sentry.fullname" . }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
+    release: "{{ .Release.Name }}"
+    heritage: "{{ .Release.Service }}"
+    app.kubernetes.io/managed-by: "Helm"
+  {{- if .Values.asHook }}
+  {{- /* Add the Helm annotations so that deployment after asHook from true to false works */}}
+  annotations:
+    meta.helm.sh/release-name: "{{ .Release.Name }}"
+    meta.helm.sh/release-namespace: "{{ .Release.Namespace }}"
+    "helm.sh/hook": "post-install,post-upgrade"
+    "helm.sh/hook-weight": "25"
+  {{- end }}
+spec:
+  selector:
+    matchLabels:
+      app: {{ template "sentry.fullname" . }}
+      release: "{{ .Release.Name }}"
+      role: relay
+{{- if not .Values.relay.autoscaling.enabled }}
+  replicas: {{ .Values.relay.replicas }}
+{{- end }}
+  revisionHistoryLimit: {{ .Values.revisionHistoryLimit }}
+  template:
+    metadata:
+      annotations:
+        checksum/relay: {{ .Values.config.relay | sha256sum }}
+        checksum/config.yaml: {{ include (print $.Template.BasePath "/configmap-relay.yaml") . | sha256sum }}
+        {{- if .Values.relay.annotations }}
+{{ toYaml .Values.relay.annotations | indent 8 }}
+        {{- end }}
+      labels:
+        app: {{ template "sentry.fullname" . }}
+        release: "{{ .Release.Name }}"
+        role: relay
+        {{- if .Values.relay.podLabels }}
+{{ toYaml .Values.relay.podLabels | indent 8 }}
+        {{- end }}
+    spec:
+      affinity:
+      {{- if .Values.relay.affinity }}
+{{ toYaml .Values.relay.affinity | indent 8 }}
+      {{- end }}
+      {{- if .Values.relay.nodeSelector }}
+      nodeSelector:
+{{ toYaml .Values.relay.nodeSelector | indent 8 }}
+      {{- end }}
+      {{- if .Values.relay.tolerations }}
+      tolerations:
+{{ toYaml .Values.relay.tolerations | indent 8 }}
+      {{- end }}
+      {{- if .Values.images.relay.imagePullSecrets }}
+      imagePullSecrets:
+{{ toYaml .Values.images.relay.imagePullSecrets | indent 8 }}
+      {{- end }}
+      {{- if .Values.relay.securityContext }}
+      securityContext:
+{{ toYaml .Values.relay.securityContext | indent 8 }}
+      {{- end }}
+      initContainers:
+        - name: {{ .Chart.Name }}-relay-init
+          image: "{{ template "relay.image" . }}"
+          imagePullPolicy: {{ default "IfNotPresent" .Values.images.sentry.pullPolicy }}
+          args:
+            - "credentials"
+            - "generate"
+          env:
+            - name: RELAY_PORT
+              value: '{{ template "relay.port" }}'
+          volumeMounts:
+            - name: credentials
+              mountPath: /work/.relay
+            - name: config
+              mountPath: /work/.relay/config.yml
+              subPath: config.yml
+              readOnly: true
+      {{- if .Values.dnsPolicy }}
+      dnsPolicy: {{ .Values.dnsPolicy | quote }}
+      {{- end }}
+      {{- if .Values.dnsConfig }}
+      dnsConfig:
+{{ toYaml .Values.dnsConfig | indent 8 }}
+      {{- end }}
+      containers:
+      - name: {{ .Chart.Name }}-relay
+        image: "{{ template "relay.image" . }}"
+        imagePullPolicy: {{ default "IfNotPresent" .Values.images.sentry.pullPolicy }}
+        ports:
+        - containerPort: {{ template "relay.port" }}
+        env:
+        - name: RELAY_PORT
+          value: '{{ template "relay.port" }}'
+{{- if .Values.relay.env }}
+{{ toYaml .Values.relay.env | indent 8 }}
+{{- end }}
+        volumeMounts:
+          - name: credentials
+            mountPath: /work/.relay
+          - name: config
+            mountPath: /work/.relay/config.yml
+            subPath: config.yml
+            readOnly: true
+        livenessProbe:
+          failureThreshold: {{ .Values.relay.probeFailureThreshold }}
+          httpGet:
+            path: {{ template "relay.healthCheck.requestPath" }}
+            port: {{ template "relay.port" }}
+            scheme: HTTP
+          initialDelaySeconds: {{ .Values.relay.probeInitialDelaySeconds }}
+          periodSeconds: {{ .Values.relay.probePeriodSeconds }}
+          successThreshold: {{ .Values.relay.probeSuccessThreshold }}
+          timeoutSeconds: {{ .Values.relay.probeTimeoutSeconds }}
+        readinessProbe:
+          failureThreshold: {{ .Values.relay.probeFailureThreshold }}
+          httpGet:
+            path: {{ template "relay.healthCheck.requestPath" }}
+            port: {{ template "relay.port" }}
+            scheme: HTTP
+          initialDelaySeconds: {{ .Values.relay.probeInitialDelaySeconds }}
+          periodSeconds: {{ .Values.relay.probePeriodSeconds }}
+          successThreshold: {{ .Values.relay.probeSuccessThreshold }}
+          timeoutSeconds: {{ .Values.relay.probeTimeoutSeconds }}
+        resources:
+{{ toYaml .Values.relay.resources | indent 12 }}
+{{- if .Values.relay.sidecars }}
+{{ toYaml .Values.relay.sidecars | indent 6 }}
+{{- end }}
+      {{- if .Values.serviceAccount.enabled }}
+      serviceAccountName: {{ .Values.serviceAccount.name }}-relay
+      {{- end }}
+      volumes:
+      - name: config
+        configMap:
+          name: {{ template "sentry.fullname" . }}-relay
+          defaultMode: 0644
+      - name: credentials
+        emptyDir: {}
+{{- if .Values.relay.volumes }}
+{{ toYaml .Values.relay.volumes | indent 6 }}
+{{- end }}
+      {{- if .Values.relay.priorityClassName }}
+      priorityClassName: "{{ .Values.relay.priorityClassName }}"
+      {{- end }}

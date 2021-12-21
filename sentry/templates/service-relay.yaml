@@ -1,0 +1,26 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "sentry.fullname" . }}-relay
+  annotations:
+    {{- range $key, $value := .Values.service.annotations }}
+      {{ $key }}: {{ $value | quote }}
+    {{- end }}
+    {{- if and (.Values.ingress.enabled) (eq (default "nginx" .Values.ingress.regexPathStyle) "gke") }}
+      cloud.google.com/backend-config: '{"ports": {"{{ template "relay.port" . }}":"{{ include "sentry.fullname" . }}-relay"}}'
+    {{- end }}
+  labels:
+    app: {{ template "sentry.fullname" . }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
+    release: "{{ .Release.Name }}"
+    heritage: "{{ .Release.Service }}"
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+  - port: {{ template "relay.port" . }}
+    targetPort: {{ template "relay.port" }}
+    protocol: TCP
+    name: {{ .Values.service.name }}-relay
+  selector:
+    app: {{ template "sentry.fullname" . }}
+    role: relay

@@ -15,11 +15,11 @@ data:
         <tmp_path>{{ printf "%s/tmp/" (include "clickhouse.fullpath" .) }}</tmp_path>
         <user_files_path>{{ printf "%s/user_files/" (include "clickhouse.fullpath" .) }}</user_files_path>
         <format_schema_path>{{ printf "%s/format_schemas/" (include "clickhouse.fullpath" .) }}</format_schema_path>
-        
+
         <include_from>/etc/clickhouse-server/metrica.d/metrica.xml</include_from>
 
         <users_config>users.xml</users_config>
-        
+
         <display_name>{{ template "clickhouse.fullname" . }}</display_name>
         <listen_host>0.0.0.0</listen_host>
         <http_port>{{ .Values.clickhouse.http_port | default "8123" }}</http_port>
@@ -40,6 +40,10 @@ data:
         <max_session_timeout>{{ .Values.clickhouse.configmap.max_session_timeout | default "3600" }}</max_session_timeout>
         <default_session_timeout>{{ .Values.clickhouse.configmap.default_session_timeout | default "60" }}</default_session_timeout>
         <disable_internal_dns_cache>{{ .Values.clickhouse.configmap.disable_internal_dns_cache | default "1" }}</disable_internal_dns_cache>
+
+        {{- if .Values.clickhouse.configmap.max_server_memory_usage }}
+        <max_server_memory_usage>{{ .Values.clickhouse.configmap.max_server_memory_usage | default "0" }}</max_server_memory_usage>
+        {{- end }}
 
         <query_log>
             <database>system</database>
@@ -66,6 +70,9 @@ data:
             <errorlog>{{ printf "%s/%s" (include "clickhouse.logpath" .) "clickhouse-server.err.log" }}</errorlog>
             <size>{{ .Values.clickhouse.configmap.logger.size | default "1000M" }}</size>
             <count>{{ .Values.clickhouse.configmap.logger.count | default "10" }}</count>
+            {{- if .Values.clickhouse.configmap.logger.stdoutLogsEnabled }}
+            <console>1</console>
+            {{- end }}
         </logger>
         {{- end }}
 

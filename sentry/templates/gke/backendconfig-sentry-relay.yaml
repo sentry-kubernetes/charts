@@ -1,0 +1,21 @@
+{{- if and (.Values.ingress.enabled) (eq (default "nginx" .Values.ingress.regexPathStyle) "gke") }}
+apiVersion: cloud.google.com/v1beta1
+kind: BackendConfig
+metadata:
+  name: {{ include "sentry.fullname" . }}-relay
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+    app: {{ template "sentry.fullname" . }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
+    release: "{{ .Release.Name }}"
+    heritage: "{{ .Release.Service }}"
+spec:
+  healthCheck:
+    checkIntervalSec: {{ .Values.relay.probePeriodSeconds }}
+    timeoutSec: {{ .Values.relay.probeTimeoutSeconds }}
+    healthyThreshold: {{ .Values.relay.probeSuccessThreshold }}
+    unhealthyThreshold: {{ .Values.relay.probeFailureThreshold }}
+    type: HTTP
+    requestPath: {{ template "relay.healthCheck.requestPath" }}
+    port: {{ template "relay.port" . }}
+{{- end }}

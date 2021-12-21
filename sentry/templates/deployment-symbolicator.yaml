@@ -1,0 +1,127 @@
+{{- if .Values.symbolicator.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "sentry.fullname" . }}-symbolicator-api
+  labels:
+    app: {{ template "sentry.fullname" . }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
+    release: "{{ .Release.Name }}"
+    heritage: "{{ .Release.Service }}"
+spec:
+  revisionHistoryLimit: {{ .Values.revisionHistoryLimit }}
+  selector:
+    matchLabels:
+      app: {{ template "sentry.fullname" . }}
+      release: "{{ .Release.Name }}"
+      role: symbolicator-api
+{{- if not .Values.symbolicator.api.autoscaling.enabled }}
+  replicas: {{ .Values.symbolicator.api.replicas }}
+{{- end }}
+  template:
+    metadata:
+      annotations:
+        checksum/config.yaml: {{ include (print $.Template.BasePath "/configmap-symbolicator.yaml") . | sha256sum }}
+        {{- if .Values.symbolicator.api.annotations }}
+{{ toYaml .Values.symbolicator.api.annotations | indent 8 }}
+        {{- end }}
+      labels:
+        app: {{ template "sentry.fullname" . }}
+        release: "{{ .Release.Name }}"
+        role: symbolicator-api
+        {{- if .Values.symbolicator.api.podLabels }}
+{{ toYaml .Values.symbolicator.api.podLabels | indent 8 }}
+        {{- end }}
+    spec:
+      {{- if .Values.symbolicator.api.affinity }}
+      affinity:
+{{ toYaml .Values.symbolicator.api.affinity | indent 8 }}
+      {{- end }}
+      {{- if .Values.symbolicator.api.nodeSelector }}
+      nodeSelector:
+{{ toYaml .Values.symbolicator.api.nodeSelector | indent 8 }}
+      {{- end }}
+      {{- if .Values.symbolicator.api.tolerations }}
+      tolerations:
+{{ toYaml .Values.symbolicator.api.tolerations | indent 8 }}
+      {{- end }}
+      {{- if .Values.images.symbolicator.imagePullSecrets }}
+      imagePullSecrets:
+{{ toYaml .Values.images.symbolicator.imagePullSecrets | indent 8 }}
+      {{- end }}
+      {{- if .Values.dnsPolicy }}
+      dnsPolicy: {{ .Values.dnsPolicy | quote }}
+      {{- end }}
+      {{- if .Values.dnsConfig }}
+      dnsConfig:
+{{ toYaml .Values.dnsConfig | indent 8 }}
+      {{- end }}
+      {{- if .Values.symbolicator.api.securityContext }}
+      securityContext:
+{{ toYaml .Values.symbolicator.api.securityContext | indent 8 }}
+      {{- end }}
+      containers:
+      - name: {{ .Chart.Name }}-symbolicator
+        image: "{{ template "symbolicator.image" . }}"
+        imagePullPolicy: {{ default "IfNotPresent" .Values.images.symbolicator.pullPolicy }}
+        args: ["run", "-c", "/etc/symbolicator/config.yml"]
+        ports:
+        - containerPort: {{ template "symbolicator.port" }}
+        env:
+        {{ if and (eq .Values.filestore.backend "gcs") .Values.filestore.gcs.secretName }}
+        - name: GOOGLE_APPLICATION_CREDENTIALS
+          value: /var/run/secrets/google/{{ .Values.filestore.gcs.credentialsFile }}
+        {{ end }}
+{{- if .Values.symbolicator.api.env }}
+{{ toYaml .Values.symbolicator.api.env | indent 8 }}
+{{- end }}
+        volumeMounts:
+        - mountPath: /etc/symbolicator
+          name: config
+          readOnly: true
+        - mountPath: /data
+          name: symbolicator-data
+        {{- if and (eq .Values.filestore.backend "gcs") .Values.filestore.gcs.secretName }}
+        - name: sentry-google-cloud-key
+          mountPath: /var/run/secrets/google
+        {{ end }}
+        livenessProbe:
+          failureThreshold: 5
+          httpGet:
+            path: /healthcheck
+            port: {{ template "symbolicator.port" }}
+            scheme: HTTP
+          initialDelaySeconds: {{ .Values.symbolicator.api.probeInitialDelaySeconds }}
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 2
+        readinessProbe:
+          failureThreshold: 10
+          httpGet:
+            path: /healthcheck
+            port: {{ template "symbolicator.port" }}
+            scheme: HTTP
+          initialDelaySeconds: {{ .Values.symbolicator.api.probeInitialDelaySeconds }}
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 2
+        resources:
+{{ toYaml .Values.symbolicator.api.resources | indent 12 }}
+      {{- if .Values.serviceAccount.enabled }}
+      serviceAccountName: {{ .Values.serviceAccount.name }}-symbolicator-api
+      {{- end }}
+      volumes:
+      - name: config
+        configMap:
+          name: {{ template "sentry.fullname" . }}-symbolicator
+      - name: symbolicator-data
+        emptyDir: {}
+      {{- if and (eq .Values.filestore.backend "gcs") .Values.filestore.gcs.secretName }}
+      - name: sentry-google-cloud-key
+        secret:
+          secretName: {{ .Values.filestore.gcs.secretName }}
+      {{ end }}
+      {{- if .Values.symbolicator.api.priorityClassName }}
+      priorityClassName: "{{ .Values.symbolicator.api.priorityClassName }}"
+      {{- end }}
+{{- end }}
