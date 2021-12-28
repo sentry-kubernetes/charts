@@ -2,21 +2,20 @@ name: Build and push Chart
 
 on:
   push:
-    branches:    
+    branches:
       - develop
 
 jobs:
   build-push:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v2
+        with:
+          path: "main"
 
       - uses: actions/checkout@v2
         with:
-          path: 'main'
-
-      - uses: actions/checkout@v2
-        with:
-          path: 'gh-pages'
+          path: "gh-pages"
 
       - run: |
           cd gh-pages
@@ -34,7 +33,6 @@ jobs:
         uses: yeouchien/helm3-action@f3a7c239c5c60777210c8e631839edf5dd3fa29c
         with:
           command: package main/sentry --destination gh-pages/charts
-
 
       - name: Build zips
         uses: yeouchien/helm3-action@f3a7c239c5c60777210c8e631839edf5dd3fa29c

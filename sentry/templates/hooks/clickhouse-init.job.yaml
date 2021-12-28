@@ -47,6 +47,10 @@ spec:
       tolerations:
 {{ toYaml .Values.hooks.clickhouseInit.tolerations | indent 8 }}
       {{- end }}
+      {{- if .Values.hooks.clickhouseInit.securityContext }}
+      securityContext:
+{{ toYaml .Values.hooks.clickhouseInit.securityContext | indent 8 }}
+      {{- end }}
       restartPolicy: Never
       {{- if .Values.clickhouse.clickhouse.imagePullSecrets }}
       imagePullSecrets:
