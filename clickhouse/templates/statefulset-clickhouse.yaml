@@ -64,6 +64,10 @@ spec:
       - name: init
         image: {{ .Values.clickhouse.init.image }}:{{ .Values.clickhouse.init.imageVersion }}
         imagePullPolicy: {{ .Values.clickhouse.init.imagePullPolicy }}
+        {{- if .Values.clickhouse.init.securityContext }}
+        securityContext:
+{{ toYaml .Values.clickhouse.init.securityContext | indent 10 }}
+        {{- end }}
         args:
         - /bin/sh
         - -c
