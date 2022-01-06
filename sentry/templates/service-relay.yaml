@@ -6,6 +6,10 @@ metadata:
     {{- range $key, $value := .Values.service.annotations }}
       {{ $key }}: {{ $value | quote }}
     {{- end }}
+    {{- if and (.Values.ingress.enabled) (eq (default "nginx" .Values.ingress.regexPathStyle) "aws-alb") }}
+      alb.ingress.kubernetes.io/healthcheck-path: "{{ template "relay.healthCheck.requestPath" . }}"
+      alb.ingress.kubernetes.io/healthcheck-port: "{{ template "relay.port" . }}"
+    {{- end }}
     {{- if and (.Values.ingress.enabled) (eq (default "nginx" .Values.ingress.regexPathStyle) "gke") }}
       cloud.google.com/backend-config: '{"ports": {"{{ template "relay.port" . }}":"{{ include "sentry.fullname" . }}-relay"}}'
     {{- end }}
