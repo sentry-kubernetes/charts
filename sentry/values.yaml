@@ -201,8 +201,12 @@ sentry:
     volumes: [ ]
   cleanup:
     enabled: true
-    schedule: "0 0 * * *"
     days: 90
+    nodestore:
+      # if nodestore days is different than days it will create a second container
+      days: 90
+    schedule: "0 0 * * *"
+    logLevel: debug
     sidecars: []
     volumes: []
 

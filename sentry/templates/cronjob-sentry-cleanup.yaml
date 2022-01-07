@@ -94,6 +94,52 @@ spec:
 {{- if .Values.sentry.cleanup.sidecars }}
 {{ toYaml .Values.sentry.cleanup.sidecars | indent 10 }}
 {{- end }}
+          {{- if ne .Values.sentry.cleanup.days .Values.sentry.cleanup.nodestore.days }}
+          - name: {{ .Chart.Name }}-sentry-cleanup-nodestore
+            image: "{{ template "sentry.image" . }}"
+            imagePullPolicy: {{ default "IfNotPresent" .Values.images.sentry.pullPolicy }}
+            command: ["sentry"]
+            args:
+              - "cleanup"
+              - "--days"
+              - "{{ .Values.sentry.cleanup.nodestore.days }}"
+              - "-m nodestore"
+              - "-l {{ .Values.sentry.cleanup.logLevel }}"
+            env:
+            - name: SNUBA
+              value: http://{{ template "sentry.fullname" . }}-snuba:{{ template "snuba.port" }}
+            - name: C_FORCE_ROOT
+              value: "true"
+            {{- if .Values.postgresql.enabled }}
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ default (include "sentry.postgresql.fullname" .) .Values.postgresql.existingSecret }}
+                  key: {{ default "postgresql-password" .Values.postgresql.existingSecretKey }}
+            {{- end }}
+            {{- if and (eq .Values.filestore.backend "gcs") .Values.filestore.gcs.secretName }}
+            - name: GOOGLE_APPLICATION_CREDENTIALS
+              value: /var/run/secrets/google/{{ .Values.filestore.gcs.credentialsFile }}
+            {{- end }}
+            {{- if .Values.sentry.cleanup.env }}
+{{ toYaml .Values.sentry.cleanup.env | indent 12 }}
+            {{- end }}
+            volumeMounts:
+            - mountPath: /etc/sentry
+              name: config
+              readOnly: true
+            - mountPath: {{ .Values.filestore.filesystem.path }}
+              name: sentry-data
+            {{- if and (eq .Values.filestore.backend "gcs") .Values.filestore.gcs.secretName }}
+            - name: sentry-google-cloud-key
+              mountPath: /var/run/secrets/google
+            {{ end }}
+            resources:
+{{ toYaml .Values.sentry.cleanup.resources | indent 14 }}
+{{- if .Values.sentry.cleanup.sidecars }}
+{{ toYaml .Values.sentry.cleanup.sidecars | indent 10 }}
+{{- end }}
+          {{- end }}
           restartPolicy: Never
           volumes:
           - name: config
