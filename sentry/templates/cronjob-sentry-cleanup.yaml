@@ -60,6 +60,7 @@ spec:
               - "cleanup"
               - "--days"
               - "{{ .Values.sentry.cleanup.days }}"
+              - "-l {{ .Values.sentry.cleanup.logLevel }}"
             env:
             - name: SNUBA
               value: http://{{ template "sentry.fullname" . }}-snuba:{{ template "snuba.port" }}
