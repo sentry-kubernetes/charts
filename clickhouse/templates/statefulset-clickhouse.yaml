@@ -117,7 +117,8 @@ spec:
             containerPort: {{ .Values.clickhouse.metrics.image.port }}
             protocol: TCP
         {{- if .Values.clickhouse.metrics.resources }}
-        resources: {{- toYaml .Values.clickhouse.metrics.resources | nindent 8 }}
+        resources:
+{{ toYaml .Values.clickhouse.metrics.resources | indent 10 }}
       {{- end }}
       {{- end }}
     {{- if .Values.clickhouse.nodeSelector }}
