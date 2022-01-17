@@ -125,7 +125,7 @@ clickhouse:
 
   init:
     image: "busybox"
-    imageVersion: "1.31.0"
+    imageVersion: "1.34.1"
     imagePullPolicy: "IfNotPresent"
     securityContext: {}
     #imagePullSecrets:

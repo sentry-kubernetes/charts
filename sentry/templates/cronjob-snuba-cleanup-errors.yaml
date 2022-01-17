@@ -50,7 +50,7 @@ spec:
           imagePullSecrets:
 {{ toYaml .Values.images.snuba.imagePullSecrets | indent 12 }}
             {{- end }}
-          {{- if .Values.images.snuba.imagePullSecrets }}
+          {{- if .Values.snuba.cleanupErrors.securityContext }}
           securityContext:
 {{ toYaml .Values.snuba.cleanupErrors.securityContext | indent 12}}
           {{- end }}

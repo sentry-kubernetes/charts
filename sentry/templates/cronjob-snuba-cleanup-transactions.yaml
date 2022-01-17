@@ -82,6 +82,10 @@ spec:
                 - mountPath: /etc/snuba
                   name: config
                   readOnly: true
+            {{- if .Values.snuba.cleanupTransactions.securityContext }}
+            securityContext:
+{{ toYaml .Values.snuba.cleanupTransactions.securityContext | indent 14}}
+            {{- end }}
             resources:
 {{ toYaml .Values.snuba.cleanupTransactions.resources | indent 14 }}
 {{- if .Values.snuba.cleanupTransactions.sidecars }}

@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: debug-deployment
+spec:
+  selector:
+    matchLabels:
+      app: debug-deployment
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: debug-deployment
+    spec:
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        runAsNonRoot: true
+      containers:
+        - name: debug-deployment
+          image: registry.app.corpintra.net/dockerhub/library/nginx
+          imagePullPolicy: IfNotPresent
+          command:
+            - sleep
+            - "3600"

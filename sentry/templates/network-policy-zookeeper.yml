@@ -1,0 +1,36 @@
+{{- if .Values.kafka.zookeeper.networkPolicy.customEnabled }}
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  annotations:
+    #meta.helm.sh/release-name: {{ .Release.Name }}
+    meta.helm.sh/release-namespace: cmy-sentry
+  labels:
+    #app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: zookeeper
+    helm.sh/chart: zookeeper-6.0.0
+  name: sentry-dhc-zookeeper
+  namespace: cmy-sentry
+spec:
+  egress:
+    - ports:
+        - port: 2888
+          protocol: TCP
+        - port: 3888
+          protocol: TCP
+  ingress:
+    - ports:
+        - port: 2181
+          protocol: TCP
+        - port: 2888
+          protocol: TCP
+        - port: 3888
+          protocol: TCP
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: zookeeper
+  policyTypes:
+    - Ingress
+    - Egress
+{{- end }}

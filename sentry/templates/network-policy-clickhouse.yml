@@ -1,0 +1,20 @@
+---
+{{- if .Values.clickhouse.networkPolicy.enabled }}
+kind: NetworkPolicy
+apiVersion: networking.k8s.io/v1
+metadata:
+  name: allow-ingress-clickhouse
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/component: clickhouse
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  ingress:
+    - ports:
+      {{- range .Values.clickhouse.networkPolicy.ports }}
+        - port: {{ . }}
+          protocol: TCP
+      {{- end }}
+  policyTypes:
+  - Ingress
+{{- end }}
