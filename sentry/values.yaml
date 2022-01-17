@@ -641,11 +641,20 @@ config:
   relay: |
     # No YAML relay config given
 
+zookeeper:
+  nameOverride: zookeeper-clickhouse
+  replicaCount: 3
 clickhouse:
   enabled: true
   clickhouse:
     imageVersion: "20.8.9.6"
     configmap:
+      zookeeper_servers:
+        enabled: true
+        config:
+        - index: "clickhouse"
+          host: "sentrytest-zookeeper-clickhouse"
+          port: "2181"
       remote_servers:
         internal_replication: true
         replica:

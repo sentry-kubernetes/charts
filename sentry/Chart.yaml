@@ -17,6 +17,10 @@ dependencies:
     repository: https://sentry-kubernetes.github.io/charts
     version: 3.0.0
     condition: clickhouse.enabled
+  - name: zookeeper
+    repository: https://charts.bitnami.com/bitnami
+    version: 7.6.1
+    condition: clickhouse.enabled
   - name: rabbitmq
     repository: https://charts.bitnami.com/bitnami
     version: 8.9.1
