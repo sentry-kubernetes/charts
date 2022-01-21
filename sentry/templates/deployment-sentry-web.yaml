@@ -67,7 +67,7 @@ spec:
       - name: {{ .Chart.Name }}-web
         image: "{{ template "sentry.image" . }}"
         imagePullPolicy: {{ default "IfNotPresent" .Values.images.sentry.pullPolicy }}
-        command: ["sentry", "run", "web"]
+        command: ["sentry", "run", "web", "-l", "DEBUG"]
         ports:
         - containerPort: {{ template "sentry.port" }}
         env:

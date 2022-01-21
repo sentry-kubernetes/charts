@@ -60,6 +60,7 @@ spec:
       - name: {{ . | quote }}
     {{- end }}
     {{- end }}
+  {{- if .Values.clickhouse.init.enabled }}
       initContainers:
       - name: init
         image: {{ .Values.clickhouse.init.image }}:{{ .Values.clickhouse.init.imageVersion }}
@@ -77,10 +78,14 @@ spec:
         resources:
 {{ toYaml .Values.clickhouse.init.resources | indent 10 }}
         {{- end }}
+      {{- end }}
       containers:
       - name: {{ include "clickhouse.fullname" . }}
         image: {{ .Values.clickhouse.image }}:{{ .Values.clickhouse.imageVersion }}
         imagePullPolicy: {{ .Values.clickhouse.imagePullPolicy }}
+        env:
+        - name: CLICKHOUSE_DO_NOT_CHOWN
+          value: "1"
         ports:
         - name: http-port
           containerPort: {{ .Values.clickhouse.http_port | default "8123" }}

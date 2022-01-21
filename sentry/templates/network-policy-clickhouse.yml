@@ -7,7 +7,7 @@ metadata:
 spec:
   podSelector:
     matchLabels:
-      app.kubernetes.io/component: clickhouse
+      app.kubernetes.io/name: clickhouse
       app.kubernetes.io/instance: {{ .Release.Name }}
   ingress:
     - ports:

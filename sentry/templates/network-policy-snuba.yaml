@@ -1,16 +1,16 @@
 ---
-{{- if .Values.sentry.web.networkPolicy.enabled }}
+{{- if .Values.snuba.networkPolicy.enabled }}
 kind: NetworkPolicy
 apiVersion: networking.k8s.io/v1
 metadata:
-  name: allow-ingress-web
+  name: allow-snuba
 spec:
   podSelector:
     matchLabels:
-      role: web
+      role: snuba
   ingress:
     - ports:
-        - port: 9000
+        - port: 1218
           protocol: TCP
   policyTypes:
   - Ingress

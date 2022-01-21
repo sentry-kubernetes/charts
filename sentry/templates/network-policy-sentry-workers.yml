@@ -3,11 +3,12 @@
 kind: NetworkPolicy
 apiVersion: networking.k8s.io/v1
 metadata:
-  name: allow-ingress-web
+  name: allow-ingress-sentry-workers
 spec:
   podSelector:
     matchLabels:
-      role: web
+      role: worker
+      release: {{ .Release.Name }}
   ingress:
     - ports:
         - port: 9000
