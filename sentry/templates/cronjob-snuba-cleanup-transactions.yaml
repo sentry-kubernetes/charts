@@ -10,6 +10,7 @@ metadata:
     heritage: "{{ .Release.Service }}"
 spec:
   schedule: "{{ .Values.snuba.cleanupTransactions.schedule }}"
+  concurrencyPolicy: "{{ .Values.snuba.cleanupTransactions.concurrencyPolicy }}"
   jobTemplate:
     spec:
       template:
