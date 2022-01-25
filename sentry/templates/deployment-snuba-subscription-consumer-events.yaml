@@ -56,9 +56,9 @@ spec:
       imagePullSecrets:
 {{ toYaml .Values.images.snuba.imagePullSecrets | indent 8 }}
       {{- end }}
-      {{- if .Values.snuba.subscriptionConsumerEvents.securityContext }}
+      {{- if .Values.snuba.securityContext }}
       securityContext:
-{{ toYaml .Values.snuba.subscriptionConsumerEvents.securityContext | indent 8 }}
+{{ toYaml .Values.snuba.securityContext | indent 8 }}
       {{- end }}
       containers:
       - name: {{ .Chart.Name }}-snuba

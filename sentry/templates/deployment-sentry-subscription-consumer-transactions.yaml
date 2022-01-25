@@ -57,9 +57,9 @@ spec:
       imagePullSecrets:
 {{ toYaml .Values.images.sentry.imagePullSecrets | indent 8 }}
       {{- end }}
-      {{- if .Values.sentry.subscriptionConsumerTransactions.securityContext }}
+      {{- if .Values.sentry.securityContext }}
       securityContext:
-{{ toYaml .Values.sentry.subscriptionConsumerTransactions.securityContext | indent 8 }}
+{{ toYaml .Values.sentry.securityContext | indent 8 }}
       {{- end }}
       containers:
       - name: {{ .Chart.Name }}-subscription-consumer-transactions

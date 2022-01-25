@@ -10,9 +10,10 @@ spec:
       role: worker
       release: {{ .Release.Name }}
   ingress:
-    - ports:
-        - port: 9000
-          protocol: TCP
+    - {}
+  egress:
+    - {}
   policyTypes:
   - Ingress
+  - Egress
 {{- end }}

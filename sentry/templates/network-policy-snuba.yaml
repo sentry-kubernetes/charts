@@ -7,11 +7,12 @@ metadata:
 spec:
   podSelector:
     matchLabels:
-      role: snuba
+      app: sentry
   ingress:
-    - ports:
-        - port: 1218
-          protocol: TCP
+    - {}
+  egress:
+    - {}
   policyTypes:
   - Ingress
+  - Egress
 {{- end }}

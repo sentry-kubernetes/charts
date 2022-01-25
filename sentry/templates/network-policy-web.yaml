@@ -9,9 +9,10 @@ spec:
     matchLabels:
       role: web
   ingress:
-    - ports:
-        - port: 9000
-          protocol: TCP
+    - {}
+  egress:
+    - {}
   policyTypes:
   - Ingress
+  - Egress
 {{- end }}

@@ -57,12 +57,18 @@ spec:
       dnsConfig:
 {{ toYaml .Values.dnsConfig | indent 8 }}
       {{- end }}
+      {{- if .Values.hooks.dbInit.securityContext }}
+      securityContext:
+{{ toYaml .Values.hooks.dbInit.securityContext | indent 8 }}
+      {{- end }}
       containers:
       - name: db-init-job
         image: "{{ template "sentry.image" . }}"
         imagePullPolicy: {{ default "IfNotPresent" .Values.images.sentry.pullPolicy }}
         command: ["sentry","upgrade","--noinput"]
         env:
+        - name: SENTRY_LOG_LEVEL
+          value: "DEBUG"
         {{- if .Values.postgresql.enabled }}
         - name: POSTGRES_PASSWORD
           valueFrom:

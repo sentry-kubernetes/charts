@@ -66,9 +66,9 @@ spec:
       dnsConfig:
 {{ toYaml .Values.dnsConfig | indent 8 }}
       {{- end }}
-      {{- if .Values.sentry.ingestConsumer.securityContext }}
+      {{- if .Values.sentry.securityContext }}
       securityContext:
-{{ toYaml .Values.sentry.ingestConsumer.securityContext | indent 8 }}
+{{ toYaml .Values.sentry.securityContext | indent 8 }}
       {{- end }}
       containers:
       - name: {{ .Chart.Name }}-ingest-consumer

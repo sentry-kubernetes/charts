@@ -59,9 +59,9 @@ spec:
       dnsConfig:
 {{ toYaml .Values.dnsConfig | indent 8 }}
       {{- end }}
-      {{- if .Values.snuba.migrateJob.securityContext }}
+      {{- if .Values.snuba.securityContext }}
       securityContext:
-{{ toYaml .Values.snuba.migrateJob.securityContext | indent 8 }}
+{{ toYaml .Values.snuba.securityContext | indent 8 }}
       {{- end }}
       containers:
       - name: snuba-migrate

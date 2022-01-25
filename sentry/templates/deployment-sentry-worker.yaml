@@ -57,9 +57,9 @@ spec:
       dnsConfig:
 {{ toYaml .Values.dnsConfig | indent 8 }}
       {{- end }}
-      {{- if .Values.sentry.worker.securityContext }}
+      {{- if .Values.sentry.securityContext }}
       securityContext:
-{{ toYaml .Values.sentry.worker.securityContext | indent 8 }}
+{{ toYaml .Values.sentry.securityContext | indent 8 }}
       {{- end }}
       containers:
       - name: {{ .Chart.Name }}-worker
