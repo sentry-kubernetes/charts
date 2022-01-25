@@ -199,6 +199,7 @@ sentry:
     sidecars: []
     volumes: []
   cleanup:
+    concurrencyPolicy: Allow
     enabled: true
     schedule: "0 0 * * *"
     days: 90
@@ -377,6 +378,7 @@ snuba:
     env: []
 
   cleanupErrors:
+    concurrencyPolicy: Allow
     enabled: true
     schedule: "0 * * * *"
     sidecars: []
@@ -384,6 +386,7 @@ snuba:
     securityContext: {}
 
   cleanupTransactions:
+    concurrencyPolicy: Allow
     enabled: true
     schedule: "0 * * * *"
     sidecars: []
