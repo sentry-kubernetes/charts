@@ -34,6 +34,13 @@ serviceAccount:
   automountServiceAccountToken: true
 
 clickhouse:
+  ## Network policy
+  networkPolicy:
+    enabled: true
+    ports:
+      - 9000
+      - 8123
+      - 9009
   ## StatefulSet controller supports relax its ordering guarantees while preserving its uniqueness and identity guarantees. There are two valid pod management policies: OrderedReady and Parallel
   ## ref: https://kubernetes.io/docs/tutorials/stateful-application/basic-stateful-set/#pod-management-policy
   ##
@@ -124,6 +131,7 @@ clickhouse:
   resources: {}
 
   init:
+    enabled: true
     image: "busybox"
     imageVersion: "1.34.1"
     imagePullPolicy: "IfNotPresent"

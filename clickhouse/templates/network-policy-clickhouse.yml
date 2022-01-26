@@ -3,7 +3,11 @@
 kind: NetworkPolicy
 apiVersion: networking.k8s.io/v1
 metadata:
-  name: allow-ingress-clickhouse
+  name: {{ include "clickhouse.fullname" . }}-clickhouse-network-policy
+  labels:
+    app.kubernetes.io/name: {{ include "clickhouse.name" . }}-tabix
+    app.kubernetes.io/instance: {{ .Release.Name }}-network-policy
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
 spec:
   podSelector:
     matchLabels:

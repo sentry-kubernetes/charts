@@ -128,6 +128,8 @@ data:
     from sentry.conf.server import *  # NOQA
     from distutils.util import strtobool
 
+    LOGGING['default_level'] = 'DEBUG'
+
     DATABASES = {
         "default": {
             "ENGINE": "sentry.db.postgres",
@@ -287,7 +289,7 @@ data:
         "log-x-forwarded-for": False,
         "buffer-size": 32768,
         "limit-post": 209715200,
-        "disable-logging": True,
+        "disable-logging": False,
         "reload-on-rss": 600,
         "ignore-sigpipe": True,
         "ignore-write-errors": True,
@@ -433,6 +435,8 @@ data:
     #########
     SENTRY_RELAY_WHITELIST_PK = []
     SENTRY_RELAY_OPEN_REGISTRATION = True
+
+    GEOIP_PATH_MMDB = '/geoip/GeoLite2.mmdb'
 
 {{- if .Values.metrics.enabled }}
     SENTRY_METRICS_BACKEND = 'sentry.metrics.statsd.StatsdMetricsBackend'

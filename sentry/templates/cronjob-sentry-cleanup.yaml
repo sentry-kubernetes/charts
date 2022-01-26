@@ -8,6 +8,7 @@ metadata:
     chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
     release: "{{ .Release.Name }}"
     heritage: "{{ .Release.Service }}"
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
 spec:
   schedule: "{{ .Values.sentry.cleanup.schedule }}"
   concurrencyPolicy: "{{ .Values.sentry.cleanup.concurrencyPolicy }}"
@@ -52,6 +53,10 @@ spec:
           imagePullSecrets:
 {{ toYaml .Values.images.sentry.imagePullSecrets | indent 12 }}
             {{- end }}
+          {{- if .Values.sentry.securityContext }}
+          securityContext:
+{{ toYaml .Values.sentry.securityContext | indent 12}}
+          {{- end }}
           containers:
           - name: {{ .Chart.Name }}-sentry-cleanup
             image: "{{ template "sentry.image" . }}"

@@ -8,6 +8,7 @@ metadata:
     chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
     release: "{{ .Release.Name }}"
     heritage: "{{ .Release.Service }}"
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
 spec:
   schedule: "{{ .Values.snuba.cleanupErrors.schedule }}"
   concurrencyPolicy: "{{ .Values.snuba.cleanupErrors.concurrencyPolicy }}"
