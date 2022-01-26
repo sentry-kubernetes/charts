@@ -97,6 +97,7 @@ sentry:
       targetCPUUtilizationPercentage: 50
     sidecars: []
     volumes: []
+    networkPolicy: {}
 
   features:
     orgSubdomains: false
@@ -207,6 +208,7 @@ sentry:
     volumes: []
 
 snuba:
+  networkPolicy: {}
   api:
     replicas: 1
     env: []
@@ -704,6 +706,7 @@ externalClickhouse:
 # Settings for Kafka.
 # See https://github.com/bitnami/charts/tree/master/bitnami/kafka
 kafka:
+  networkPolicy: {}
   enabled: true
   replicaCount: 3
   allowPlaintextListener: true

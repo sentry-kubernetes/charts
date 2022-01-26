@@ -15,6 +15,10 @@ jobs:
         uses: WyriHaximus/github-action-helm3@v2
         with:
           command: helm lint ./sentry-kubernetes
+      - name: Lint Helm
+        uses: WyriHaximus/github-action-helm3@v2
+        with:
+          command: helm lint ./clickhouse
       # - name: Create kind cluster
       #   uses: helm/kind-action@v1.0.0-alpha.3
       #   with:
