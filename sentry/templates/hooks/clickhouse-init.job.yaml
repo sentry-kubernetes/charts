@@ -47,6 +47,7 @@ spec:
       tolerations:
 {{ toYaml .Values.hooks.clickhouseInit.tolerations | indent 8 }}
       {{- end }}
+
       restartPolicy: Never
       {{- if .Values.clickhouse.clickhouse.imagePullSecrets }}
       imagePullSecrets:
@@ -57,6 +58,10 @@ spec:
       containers:
       - name: clickhouse-init
         image: "{{ .Values.clickhouse.clickhouse.image }}:{{ .Values.clickhouse.clickhouse.imageVersion }}"
+        {{- if .Values.hooks.clickhouseInit.securityContext }}
+        securityContext:
+{{ toYaml .Values.hooks.clickhouseInit.securityContext | indent 10 }}
+        {{- end }}
         command:
           - /bin/bash
           - -ec

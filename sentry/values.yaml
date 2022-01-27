@@ -64,8 +64,8 @@ relay:
     minReplicas: 2
     maxReplicas: 5
     targetCPUUtilizationPercentage: 50
-  sidecars: [ ]
-  volumes: [ ]
+  sidecars: []
+  volumes: []
 
 sentry:
   singleOrganization: true
@@ -95,8 +95,9 @@ sentry:
       minReplicas: 2
       maxReplicas: 5
       targetCPUUtilizationPercentage: 50
-    sidecars: [ ]
-    volumes: [ ]
+    sidecars: []
+    volumes: []
+    networkPolicy: {}
 
   features:
     orgSubdomains: false
@@ -124,8 +125,8 @@ sentry:
       periodSeconds: 60
       timeoutSeconds: 10
       failureThreshold: 3
-    sidecars: [ ]
-    volumes: [ ]
+    sidecars: []
+    volumes: []
 
   ingestConsumer:
     replicas: 1
@@ -146,13 +147,12 @@ sentry:
       minReplicas: 1
       maxReplicas: 3
       targetCPUUtilizationPercentage: 50
-    sidecars: [ ]
-    volumes: [ ]
+    sidecars: []
+    volumes: []
 
     # volumeMounts:
     #   - mountPath: /dev/shm
     #     name: dshm
-
   cron:
     replicas: 1
     env: []
@@ -161,8 +161,8 @@ sentry:
     nodeSelector: {}
     # tolerations: []
     # podLabels: []
-    sidecars: [ ]
-    volumes: [ ]
+    sidecars: []
+    volumes: []
   subscriptionConsumerEvents:
     replicas: 1
     env: []
@@ -173,8 +173,8 @@ sentry:
     # tolerations: []
     # podLabels: []
     # commitBatchSize: 1
-    sidecars: [ ]
-    volumes: [ ]
+    sidecars: []
+    volumes: []
   subscriptionConsumerTransactions:
     replicas: 1
     env: []
@@ -185,8 +185,8 @@ sentry:
     # tolerations: []
     # podLabels: []
     # commitBatchSize: 1
-    sidecars: [ ]
-    volumes: [ ]
+    sidecars: []
+    volumes: []
   postProcessForward:
     replicas: 1
     env: []
@@ -197,8 +197,8 @@ sentry:
     # tolerations: []
     # podLabels: []
     # commitBatchSize: 1
-    sidecars: [ ]
-    volumes: [ ]
+    sidecars: []
+    volumes: []
   cleanup:
     concurrencyPolicy: Allow
     enabled: true
@@ -208,6 +208,7 @@ sentry:
     volumes: []
 
 snuba:
+  networkPolicy: {}
   api:
     replicas: 1
     env: []
@@ -228,8 +229,8 @@ snuba:
       minReplicas: 2
       maxReplicas: 5
       targetCPUUtilizationPercentage: 50
-    sidecars: [ ]
-    volumes: [ ]
+    sidecars: []
+    volumes: []
 
   consumer:
     replicas: 1
@@ -384,6 +385,7 @@ snuba:
     schedule: "0 * * * *"
     sidecars: []
     volumes: []
+    securityContext: {}
 
   cleanupTransactions:
     concurrencyPolicy: Allow
@@ -391,6 +393,7 @@ snuba:
     schedule: "0 * * * *"
     sidecars: []
     volumes: []
+    securityContext: {}
 
 hooks:
   enabled: true
@@ -399,6 +402,7 @@ hooks:
     podAnnotations: {}
     affinity: {}
     nodeSelector: {}
+    securityContext:
     # tolerations: []
   dbCheck:
     image:
@@ -426,8 +430,8 @@ hooks:
       requests:
         cpu: 300m
         memory: 2048Mi
-    sidecars: [ ]
-    volumes: [ ]
+    sidecars: []
+    volumes: []
     affinity: {}
     nodeSelector: {}
     # tolerations: []
@@ -617,7 +621,8 @@ filestore:
       ## be used
       existingClaim: ""
 
-  gcs: {}
+  gcs:
+    {}
     ## Point this at a pre-configured secret containing a service account. The resulting
     ## secret will be mounted at /var/run/secrets/google
     # secretName:
@@ -647,7 +652,7 @@ config:
 clickhouse:
   enabled: true
   clickhouse:
-    imageVersion: "20.8.9.6"
+    imageVersion: "21.11.9.1"
     configmap:
       remote_servers:
         internal_replication: true
@@ -657,21 +662,21 @@ clickhouse:
       users:
         enabled: false
         user:
-        # the first user will be used if enabled
-        - name: default
-          config:
-            password: ""
-            networks:
-            - ::/0
-            profile: default
-            quota: default
+          # the first user will be used if enabled
+          - name: default
+            config:
+              password: ""
+              networks:
+                - ::/0
+              profile: default
+              quota: default
 
     persistentVolumeClaim:
       enabled: true
       dataPersistentVolume:
         enabled: true
         accessModes:
-        - "ReadWriteOnce"
+          - "ReadWriteOnce"
         storage: "30Gi"
 
   ## Use this to enable an extra service account
@@ -701,6 +706,7 @@ externalClickhouse:
 # Settings for Kafka.
 # See https://github.com/bitnami/charts/tree/master/bitnami/kafka
 kafka:
+  networkPolicy: {}
   enabled: true
   replicaCount: 3
   allowPlaintextListener: true
@@ -805,7 +811,8 @@ rabbitmq:
   persistence:
     enabled: true
   resources: {}
-  memoryHighWatermark: {}
+  memoryHighWatermark:
+    {}
     # enabled: true
     # type: relative
     # value: 0.4
@@ -918,7 +925,6 @@ metrics:
     # honorLabels: true
 
 revisionHistoryLimit: 10
-
 # dnsPolicy: "ClusterFirst"
 # dnsConfig:
 #   nameservers: []

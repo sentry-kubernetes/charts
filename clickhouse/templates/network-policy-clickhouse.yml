@@ -1,0 +1,24 @@
+---
+{{- if .Values.clickhouse.networkPolicy.enabled }}
+kind: NetworkPolicy
+apiVersion: networking.k8s.io/v1
+metadata:
+  name: {{ include "clickhouse.fullname" . }}-clickhouse-network-policy
+  labels:
+    app.kubernetes.io/name: {{ include "clickhouse.name" . }}-tabix
+    app.kubernetes.io/instance: {{ .Release.Name }}-network-policy
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: clickhouse
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  ingress:
+    - ports:
+      {{- range .Values.clickhouse.networkPolicy.ports }}
+        - port: {{ . }}
+          protocol: TCP
+      {{- end }}
+  policyTypes:
+  - Ingress
+{{- end }}

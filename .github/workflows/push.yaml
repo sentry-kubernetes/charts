@@ -2,21 +2,20 @@ name: Build and push Chart
 
 on:
   push:
-    branches:    
+    branches:
       - develop
 
 jobs:
   build-push:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v2
+        with:
+          path: "main"
 
       - uses: actions/checkout@v2
         with:
-          path: 'main'
-
-      - uses: actions/checkout@v2
-        with:
-          path: 'gh-pages'
+          path: "gh-pages"
 
       - run: |
           cd gh-pages
@@ -35,7 +34,6 @@ jobs:
         with:
           command: package main/sentry --destination gh-pages/charts
 
-
       - name: Build zips
         uses: yeouchien/helm3-action@f3a7c239c5c60777210c8e631839edf5dd3fa29c
         with:
@@ -49,7 +47,7 @@ jobs:
       - name: Create index file
         uses: yeouchien/helm3-action@f3a7c239c5c60777210c8e631839edf5dd3fa29c
         with:
-          command: repo index --url https://sentry-kubernetes.github.io/charts ./gh-pages/charts
+          command: repo index --url http://rubemlrm.com/sentry-kubernetes-charts ./gh-pages/charts
 
       - name: Commit files
         run: |

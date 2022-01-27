@@ -8,7 +8,7 @@ helm repo add sentry https://sentry-kubernetes.github.io/charts
 helm install sentry sentry/sentry
 ```
 ## With your own vaLues file
-``` 
+```
 helm install sentry sentry/sentry -f values.yaml
 ```
 
@@ -58,46 +58,52 @@ The following table lists the configurable parameters of the Sentry chart and th
 
 Note: this table is incomplete, so have a look at the values.yaml in case you miss something
 
-Parameter                          | Description                                                                                                | Default
-:--------------------------------- | :--------------------------------------------------------------------------------------------------------- | :---------------------------------------------------
-`user.create` | if `true`, creates a default admin user defined from `email` and `password` | `true`
-`user.email` | Admin user email | `admin@sentry.local`
-`user.password` | Admin user password| `aaaa`
-`ingress.enabled` | Enabling Ingress | `false`
-`ingress.regexPathStyle` | Allows setting the style the regex paths are rendered in the ingress for the ingress controller in use. Possible values are `nginx`, `aws-alb`, `gke` and `traefik` | `nginx`
-`nginx.enabled` | Enabling NGINX | `true`
-`metrics.enabled`| if `true`, enable Prometheus metrics | `false`
-`metrics.image.repository`         | Metrics exporter image repository                                                                          | `prom/statsd-exporter`
-`metrics.image.tag`                | Metrics exporter image tag                                                                                 | `v0.10.5`
-`metrics.image.PullPolicy`         | Metrics exporter image pull policy                                                                         | `IfNotPresent`
-`metrics.nodeSelector`| Node labels for metrics pod assignment| `{}`
-`metrics.tolerations` | Toleration labels for metrics pod assignment| `[]`
-`metrics.affinity` | Affinity settings for metrics | `{}`
-`metrics.resources`| Metrics resource requests/limit| `{}`
-`metrics.service.annotations` | annotations for Prometheus metrics service | `{}`
-`metrics.service.clusterIP` | cluster IP address to assign to service (set to `"-"` to pass an empty value) | `nil`
-`metrics.service.omitClusterIP` | (Deprecated) To omit the `clusterIP` from the metrics service | `false`
-`metrics.service.externalIPs` | Prometheus metrics service external IP addresses | `[]`
-`metrics.service.additionalLabels` | labels for metrics service | `{}`
-`metrics.service.loadBalancerIP` | IP address to assign to load balancer (if supported) | `""`
-`metrics.service.loadBalancerSourceRanges` | list of IP CIDRs allowed access to load balancer (if supported) | `[]`
-`metrics.service.servicePort` | Prometheus metrics service port | `9913`
-`metrics.service.type` | type of Prometheus metrics service to create | `ClusterIP`
-`metrics.serviceMonitor.enabled` | Set this to `true` to create ServiceMonitor for Prometheus operator | `false`
-`metrics.serviceMonitor.additionalLabels` | Additional labels that can be used so ServiceMonitor will be discovered by Prometheus | `{}`
-`metrics.serviceMonitor.honorLabels` | honorLabels chooses the metric's labels on collisions with target labels. | `false`
-`metrics.serviceMonitor.namespace` | namespace where servicemonitor resource should be created | `the same namespace as sentry`
-`metrics.serviceMonitor.scrapeInterval` | interval between Prometheus scraping | `30s`
-`serviceAccount.annotations` |  Additional Service Account annotations. | `{}`
-`serviceAccount.enabled` | If `true`, a custom Service Account will be used. | `false`
-`serviceAccount.name` | The base name of the ServiceAccount to use. Will be appended with e.g. `snuba` or `web` for the pods accordingly. | `"sentry"`
-`serviceAccount.automountServiceAccountToken` | Automount API credentials for a Service Account. | `true`
-`system.secretKey` | secret key for the session cookie ([documentation](https://develop.sentry.dev/config/#general)) | `nil`
-`sentry.features.vstsLimitedScopes` | Disables the azdo-integrations with limited scopes that is the cause of so much pain | `true`
-`sentry.web.customCA.secretName` | Allows mounting a custom CA secret | `nil`
-`sentry.web.customCA.item` | Key of CA cert object within the secret | `ca.crt`
-`symbolicator.api.enabled` | Enable Symbolicator | `false`
-`symbolicator.api.config` | Config file for Symbolicator, see [its docs](https://getsentry.github.io/symbolicator/#configuration) | see values.yaml
+| Parameter                              | Description                                                                 | Default              |
+| :------------------------------------- | :-------------------------------------------------------------------------- | :------------------- |
+| `user.create`                          | if `true`, creates a default admin user defined from `email` and `password` | `true`               |
+| `user.email`                           | Admin user email                                                            | `admin@sentry.local` |
+| `user.password`                        | Admin user password                                                         | `aaaa`               |
+| `hooks.clickhouseInit.securityContext` | Set security context for the job                                            | `{}`                 |
+
+| `ingress.enabled`                             | Enabling Ingress                                                                                                                                                    | `false`                        |
+| `ingress.regexPathStyle`                      | Allows setting the style the regex paths are rendered in the ingress for the ingress controller in use. Possible values are `nginx`, `aws-alb`, `gke` and `traefik` | `nginx`                        |
+| `nginx.enabled`                               | Enabling NGINX                                                                                                                                                      | `true`                         |
+| `metrics.enabled`                             | if `true`, enable Prometheus metrics                                                                                                                                | `false`                        |
+| `metrics.image.repository`                    | Metrics exporter image repository                                                                                                                                   | `prom/statsd-exporter`         |
+| `metrics.image.tag`                           | Metrics exporter image tag                                                                                                                                          | `v0.10.5`                      |
+| `metrics.image.PullPolicy`                    | Metrics exporter image pull policy                                                                                                                                  | `IfNotPresent`                 |
+| `metrics.nodeSelector`                        | Node labels for metrics pod assignment                                                                                                                              | `{}`                           |
+| `metrics.tolerations`                         | Toleration labels for metrics pod assignment                                                                                                                        | `[]`                           |
+| `metrics.affinity`                            | Affinity settings for metrics                                                                                                                                       | `{}`                           |
+| `metrics.resources`                           | Metrics resource requests/limit                                                                                                                                     | `{}`                           |
+| `metrics.service.annotations`                 | annotations for Prometheus metrics service                                                                                                                          | `{}`                           |
+| `metrics.service.clusterIP`                   | cluster IP address to assign to service (set to `"-"` to pass an empty value)                                                                                       | `nil`                          |
+| `metrics.service.omitClusterIP`               | (Deprecated) To omit the `clusterIP` from the metrics service                                                                                                       | `false`                        |
+| `metrics.service.externalIPs`                 | Prometheus metrics service external IP addresses                                                                                                                    | `[]`                           |
+| `metrics.service.additionalLabels`            | labels for metrics service                                                                                                                                          | `{}`                           |
+| `metrics.service.loadBalancerIP`              | IP address to assign to load balancer (if supported)                                                                                                                | `""`                           |
+| `metrics.service.loadBalancerSourceRanges`    | list of IP CIDRs allowed access to load balancer (if supported)                                                                                                     | `[]`                           |
+| `metrics.service.servicePort`                 | Prometheus metrics service port                                                                                                                                     | `9913`                         |
+| `metrics.service.type`                        | type of Prometheus metrics service to create                                                                                                                        | `ClusterIP`                    |
+| `metrics.serviceMonitor.enabled`              | Set this to `true` to create ServiceMonitor for Prometheus operator                                                                                                 | `false`                        |
+| `metrics.serviceMonitor.additionalLabels`     | Additional labels that can be used so ServiceMonitor will be discovered by Prometheus                                                                               | `{}`                           |
+| `metrics.serviceMonitor.honorLabels`          | honorLabels chooses the metric's labels on collisions with target labels.                                                                                           | `false`                        |
+| `metrics.serviceMonitor.namespace`            | namespace where servicemonitor resource should be created                                                                                                           | `the same namespace as sentry` |
+| `metrics.serviceMonitor.scrapeInterval`       | interval between Prometheus scraping                                                                                                                                | `30s`                          |
+| `serviceAccount.annotations`                  | Additional Service Account annotations.                                                                                                                             | `{}`                           |
+| `serviceAccount.enabled`                      | If `true`, a custom Service Account will be used.                                                                                                                   | `false`                        |
+| `serviceAccount.name`                         | The base name of the ServiceAccount to use. Will be appended with e.g. `snuba` or `web` for the pods accordingly.                                                   | `"sentry"`                     |
+| `serviceAccount.automountServiceAccountToken` | Automount API credentials for a Service Account.                                                                                                                    | `true`                         |
+
+| `snuba.cleanupErrors.securityContext`         | Set security context for the cleanup errors job                                      | `{}` |
+| `snuba.cleanupTransactions.securityContext`         | Set security context for the cleanup transactions job                                        | `{}` |
+| `system.secretKey`                            | secret key for the session cookie ([documentation](https://develop.sentry.dev/config/#general))                                                                     | `nil`                          |
+| `sentry.features.vstsLimitedScopes`           | Disables the azdo-integrations with limited scopes that is the cause of so much pain                                                                                | `true`                         |
+| `sentry.web.customCA.secretName`              | Allows mounting a custom CA secret                                                                                                                                  | `nil`                          |
+| `sentry.web.customCA.item`                    | Key of CA cert object within the secret                                                                                                                             | `ca.crt`                       |
+| `symbolicator.api.enabled`                    | Enable Symbolicator                                                                                                                                                 | `false`                        |
+| `symbolicator.api.config`                     | Config file for Symbolicator, see [its docs](https://getsentry.github.io/symbolicator/#configuration)                                                               | see values.yaml                |
+
 
 ## NGINX and/or Ingress
 

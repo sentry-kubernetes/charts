@@ -2,7 +2,7 @@ apiVersion: v2
 name: sentry
 description: A Helm chart for Kubernetes
 type: application
-version: 12.0.0
+version: 12.0.4
 appVersion: 21.8.0
 dependencies:
   - name: redis
@@ -11,11 +11,11 @@ dependencies:
     condition: redis.enabled
   - name: kafka
     repository: https://charts.bitnami.com/bitnami
-    version: 12.0.0
+    version: ~14.2.1
     condition: kafka.enabled
   - name: clickhouse
-    repository: https://sentry-kubernetes.github.io/charts
-    version: 3.1.0
+    repository: https://rubemlrm.com/sentry-kubernetes-charts/charts
+    version: 3.1.1
     condition: clickhouse.enabled
   - name: rabbitmq
     repository: https://charts.bitnami.com/bitnami

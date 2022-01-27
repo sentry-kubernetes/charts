@@ -8,6 +8,7 @@ metadata:
     chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
     release: "{{ .Release.Name }}"
     heritage: "{{ .Release.Service }}"
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
 spec:
   schedule: "{{ .Values.snuba.cleanupTransactions.schedule }}"
   concurrencyPolicy: "{{ .Values.snuba.cleanupTransactions.concurrencyPolicy }}"
@@ -51,6 +52,10 @@ spec:
           imagePullSecrets:
 {{ toYaml .Values.images.snuba.imagePullSecrets | indent 12 }}
             {{- end }}
+          {{- if .Values.snuba.securityContext }}
+          securityContext:
+{{ toYaml .Values.snuba.securityContext | indent 12}}
+          {{- end }}
           containers:
           - name: {{ .Chart.Name }}-snuba-cleanup-errors
             image: "{{ template "snuba.image" . }}"
@@ -79,6 +84,10 @@ spec:
                 - mountPath: /etc/snuba
                   name: config
                   readOnly: true
+            {{- if .Values.snuba.cleanupTransactions.securityContext }}
+            securityContext:
+{{ toYaml .Values.snuba.cleanupTransactions.securityContext | indent 14}}
+            {{- end }}
             resources:
 {{ toYaml .Values.snuba.cleanupTransactions.resources | indent 14 }}
 {{- if .Values.snuba.cleanupTransactions.sidecars }}

@@ -34,6 +34,13 @@ serviceAccount:
   automountServiceAccountToken: true
 
 clickhouse:
+  ## Network policy
+  networkPolicy:
+    enabled: true
+    ports:
+      - 9000
+      - 8123
+      - 9009
   ## StatefulSet controller supports relax its ordering guarantees while preserving its uniqueness and identity guarantees. There are two valid pod management policies: OrderedReady and Parallel
   ## ref: https://kubernetes.io/docs/tutorials/stateful-application/basic-stateful-set/#pod-management-policy
   ##
@@ -48,10 +55,10 @@ clickhouse:
   ## https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/#partitions
   ##
   # rollingUpdatePartition:
-  
+
   # Security Context
   securityContext: {}
-    
+
   ## Prometheus Exporter / Metrics
   ##
   metrics:
@@ -91,7 +98,6 @@ clickhouse:
       namespace: ""
       rules: []
 
-
     service:
       type: ClusterIP
       ## Use serviceLoadBalancerIP to request a specific static IP,
@@ -99,7 +105,6 @@ clickhouse:
       # loadBalancerIP:
       annotations: {}
       labels: {}
-
 
   ##
   ## The path to the directory containing data.
@@ -126,12 +131,14 @@ clickhouse:
   resources: {}
 
   init:
+    enabled: true
     image: "busybox"
-    imageVersion: "1.31.0"
+    imageVersion: "1.34.1"
     imagePullPolicy: "IfNotPresent"
-  #imagePullSecrets:
-  ## Periodic probe of container liveness. Container will be restarted if the probe fails. Cannot be updated.
-  ## More info: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle#container-probes
+    securityContext: {}
+    #imagePullSecrets:
+    ## Periodic probe of container liveness. Container will be restarted if the probe fails. Cannot be updated.
+    ## More info: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle#container-probes
     resources: {}
   livenessProbe:
     enabled: true
@@ -159,13 +166,13 @@ clickhouse:
     dataPersistentVolume:
       enabled: false
       accessModes:
-      - "ReadWriteOnce"
+        - "ReadWriteOnce"
       storage: "500Gi"
     ## Clickhouse logs volume
     logsPersistentVolume:
       enabled: false
       accessModes:
-      - "ReadWriteOnce"
+        - "ReadWriteOnce"
       storage: "50Gi"
 
   ##
@@ -259,9 +266,9 @@ clickhouse:
     compression:
       enabled: false
       cases:
-      - min_part_size: "10000000000"
-        min_part_size_ratio: "0.01"
-        method: "zstd"
+        - min_part_size: "10000000000"
+          min_part_size_ratio: "0.01"
+          method: "zstd"
     ##
     ## Contains settings that allow ClickHouse to interact with a ZooKeeper cluster.
     ## ClickHouse uses ZooKeeper for storing metadata of replicas when using replicated tables. If replicated tables are not used, this section of parameters can be omitted.
@@ -276,9 +283,9 @@ clickhouse:
       #root: "/path/to/zookeeper/node"
       #identity: "user:password"
       config:
-      - index: ""
-        host: ""
-        port: ""
+        - index: ""
+          host: ""
+          port: ""
     ##
     ## Configuration of clusters used by the Distributed table engine.
     ## The parameters host, port, and optionally user, password, secure, compression are specified for each server:
@@ -309,13 +316,13 @@ clickhouse:
     graphite:
       enabled: false
       config:
-      - timeout: "0.1"
-        interval: "60"
-        root_path: "one_min"
-        metrics: true
-        events: true
-        events_cumulative: true
-        asynchronous_metrics: true
+        - timeout: "0.1"
+          interval: "60"
+          root_path: "one_min"
+          metrics: true
+          events: true
+          events_cumulative: true
+          asynchronous_metrics: true
     ##
     ## A settings profile is a collection of settings grouped under the same name.
     ## Each ClickHouse user has a profile.
@@ -324,24 +331,24 @@ clickhouse:
     profiles:
       enabled: false
       profile:
-      - name: "default"
-        config:
-          max_memory_usage: "10000000000"
-          use_uncompressed_cache: "0"
-          load_balancing: "random"
+        - name: "default"
+          config:
+            max_memory_usage: "10000000000"
+            use_uncompressed_cache: "0"
+            load_balancing: "random"
     ##
     ## The users section of the user.xml configuration file contains user settings.
     ## More info: https://clickhouse.yandex/docs/en/operations/settings/settings_users/
     users:
       enabled: false
       user:
-      - name: "default"
-        config:
-          #password: ""
-          networks:
-          - "::/0"
-          profile: "default"
-          quota: "default"
+        - name: "default"
+          config:
+            #password: ""
+            networks:
+              - "::/0"
+            profile: "default"
+            quota: "default"
     ##
     ## Quotas allow you to limit resource usage over a period of time, or simply track the use of resources.
     ## Quotas are set up in the user config. This is usually 'users.xml'.
@@ -349,14 +356,14 @@ clickhouse:
     quotas:
       enabled: false
       quota:
-      - name: "default"
-        config:
-        - duration: "3600"
-          queries: "0"
-          errors: "0"
-          result_rows: "0"
-          read_rows: "0"
-          execution_time: "0"
+        - name: "default"
+          config:
+            - duration: "3600"
+              queries: "0"
+              errors: "0"
+              result_rows: "0"
+              read_rows: "0"
+              execution_time: "0"
 
 ##
 ## Web interface for ClickHouse in the Tabix project.
