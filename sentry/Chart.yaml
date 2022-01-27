@@ -15,7 +15,7 @@ dependencies:
     condition: kafka.enabled
   - name: clickhouse
     repository: https://rubemlrm.com/sentry-kubernetes-charts/charts
-    version: 3.1.1
+    version: 3.1.2
     condition: clickhouse.enabled
   - name: rabbitmq
     repository: https://charts.bitnami.com/bitnami
