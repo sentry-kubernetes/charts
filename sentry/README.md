@@ -262,3 +262,5 @@ relay:
       alb.ingress.kubernetes.io/healthcheck-path: /api/relay/healthcheck/ready/
       alb.ingress.kubernetes.io/healthcheck-port: traffic-port
 ```
+
+Which are load balancer annotations specified in the service configuration for the load balancer to pick while creating the target groups.
