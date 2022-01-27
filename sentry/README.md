@@ -146,7 +146,7 @@ Its also important having `connect_to_reserved_ips: true` in the symbolicator co
 
 ## Example using Terraform and AWS
 
-`templates/values.yaml` file
+`./templates/sentry_values.yaml` file
 
 ```yaml
 prefix: ${module_prefix}
@@ -201,9 +201,9 @@ ingress:
     external-dns.alpha.kubernetes.io/hostname: ${sentry_dns_name}
 ```
 
-`helm.tf` file
+`./helm.tf` file
 
-```hcl
+```terraform
 resource "helm_release" "sentry" {
   name  = "sentry"
   chart = "${path.module}/helm_sentry/"
