@@ -144,7 +144,7 @@ So you would want to create and use a `StorageClass` with a supported volume dri
 
 Its also important having `connect_to_reserved_ips: true` in the symbolicator config file, which this Chart defaults to.
 
-## Example using Terraform and AWS
+# Usage with Terraform + AWS
 
 `./templates/sentry_values.yaml` file
 
@@ -242,7 +242,7 @@ resource "helm_release" "sentry" {
 }
 ```
 
-notes:
+### Notes
 
 1. Ensure the control plane and node security groups are appropriately configured as documented [here](https://docs.aws.amazon.com/eks/latest/userguide/sec-group-reqs.html#control-plane-worker-node-sgs).
 2. Annotations for ingress are as mentioned [here](https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.2/guide/ingress/annotations/)
