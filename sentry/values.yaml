@@ -209,6 +209,8 @@ sentry:
 
 snuba:
   networkPolicy: {}
+  migrate:
+    networkPolicy: {}
   api:
     replicas: 1
     env: []
