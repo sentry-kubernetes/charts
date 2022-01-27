@@ -14,6 +14,34 @@ Big thanks to the maintainers of the [deprecated chart](https://github.com/helm/
 
 For now the full list of values is not documented but you can get inspired by the values.yaml specific to each directory.
 
+## Upgrading from 12.x.x version of this Chart to 13.0.0
+
+The service annotions have been moved from the `service` section to the respective service's service sub-section. So what was:
+
+```yaml
+service:
+  annotations:
+    alb.ingress.kubernetes.io/healthcheck-path: /_health/
+    alb.ingress.kubernetes.io/healthcheck-port: traffic-port
+```
+
+will now be set per service:
+
+```yaml
+sentry:
+  web:
+    service:
+      annotations:
+        alb.ingress.kubernetes.io/healthcheck-path: /_health/
+        alb.ingress.kubernetes.io/healthcheck-port: traffic-port
+
+relay:
+  service:
+    annotations:
+      alb.ingress.kubernetes.io/healthcheck-path: /api/relay/healthcheck/ready/
+      alb.ingress.kubernetes.io/healthcheck-port: traffic-port
+```
+
 ## Upgrading from 10.x.x version of this Chart to 11.0.0
 
 If you were using clickhouse tabix externally, we disabled it per default.
@@ -42,7 +70,6 @@ clickhouse.clickhouse.configmap.remote_servers.replica.backup
 - The sentry.configYml value is now in a real yaml format
 - If you were previously using `relay.asHook`, the value is now `asHook`
 
-
 ## Upgrading from 4.x.x version of this Chart to 5.0.0
 
 As Relay is now part of this chart your need to make sure you enable either Nginx or the Ingress. Please read the next paragraph for more informations.
@@ -68,28 +95,30 @@ resources moved to separate config branches: `externalClickhouse`, `externalKafk
 
 Here is a mapping table of old values and new values:
 
-| Before                          | After                                |
-| ------------------------------- | ------------------------------------ |
-| `postgresql.postgresqlHost`     | `externalPostgresql.host`            |
-| `postgresql.postgresqlPort`     | `externalPostgresql.port`            |
-| `postgresql.postgresqlUsername` | `externalPostgresql.username`        |
-| `postgresql.postgresqlPassword` | `externalPostgresql.password`        |
-| `postgresql.postgresqlDatabase` | `externalPostgresql.database`        |
-| `postgresql.postgresSslMode`    | `externalPostgresql.sslMode`         |
-| `redis.host`                    | `externalRedis.host`                 |
-| `redis.port`                    | `externalRedis.port`                 |
-| `redis.password`                | `externalRedis.password`             |
-
+| Before                          | After                         |
+| ------------------------------- | ----------------------------- |
+| `postgresql.postgresqlHost`     | `externalPostgresql.host`     |
+| `postgresql.postgresqlPort`     | `externalPostgresql.port`     |
+| `postgresql.postgresqlUsername` | `externalPostgresql.username` |
+| `postgresql.postgresqlPassword` | `externalPostgresql.password` |
+| `postgresql.postgresqlDatabase` | `externalPostgresql.database` |
+| `postgresql.postgresSslMode`    | `externalPostgresql.sslMode`  |
+| `redis.host`                    | `externalRedis.host`          |
+| `redis.port`                    | `externalRedis.port`          |
+| `redis.password`                | `externalRedis.password`      |
 
 ## Upgrading from deprecated 9.0 -> 10.0 Chart
-As this chart runs in helm 3 and also tries its best to follow on from the original Sentry chart. There are some steps that needs to be taken in order to correctly upgrade. 
+
+As this chart runs in helm 3 and also tries its best to follow on from the original Sentry chart. There are some steps that needs to be taken in order to correctly upgrade.
 
 From the previous upgrade, make sure to get the following from your previous installation:
- - Redis Password (If Redis auth was enabled)
- - Postgresql Password 
-Both should be in the `secrets` of your original 9.0 release. Make a note of both of these values.
+
+- Redis Password (If Redis auth was enabled)
+- Postgresql Password
+  Both should be in the `secrets` of your original 9.0 release. Make a note of both of these values.
 
 #### Upgrade Steps
+
 Due to an issue where transferring from Helm 2 to 3. Statefulsets that use the following: `heritage: {{ .Release.Service }}` in the metadata field will error out with a `Forbidden` error during the upgrade. The only workaround is to delete the existing statefulsets (Don't worry, PVC will be retained):
 
 > `kubectl delete --all sts -n <Sentry Namespace>`
@@ -105,8 +134,9 @@ If Redis auth enabled:
 > `helm upgrade -n <Sentry namespace> <Sentry Release> . --set redis.usePassword=true --set redis.password=<Redis Password> --set postgresql.postgresqlPassword=<Postgresql Password>`
 
 If Redis auth is disabled:
+
 > `helm upgrade -n <Sentry namespace> <Sentry Release> . --set postgresql.postgresqlPassword=<Postgresql Password>`
- 
+
 Please also follow the steps for Major version 3 to 4 migration
 
 ## PostgresSQL
@@ -123,9 +153,9 @@ You may enable mounting of the sentry-data PV across worker and cron pods by cha
 
 ## Roadmap
 
-- [X] Lint in Pull requests
-- [X] Public availability through Github Pages
-- [X] Automatic deployment through Github Actions
+- [x] Lint in Pull requests
+- [x] Public availability through Github Pages
+- [x] Automatic deployment through Github Actions
 - [ ] Symbolicator deployment
-- [X] Testing the chart in a production environment
+- [x] Testing the chart in a production environment
 - [ ] Improving the README

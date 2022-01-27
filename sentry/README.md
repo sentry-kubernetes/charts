@@ -264,3 +264,5 @@ relay:
 ```
 
 Which are load balancer annotations specified in the service configuration for the load balancer to pick while creating the target groups.
+
+NOTE: AWS ALB Controller's Service annotations don't apply here as we want the `aws-load-balancer-controller` to pick-up the services and apply the appropriate healthcheck-path per service and not create a load balancer for the service itself. The service annotations will only apply when you want the service to be load balanced.
