@@ -52,9 +52,9 @@ spec:
           imagePullSecrets:
 {{ toYaml .Values.images.snuba.imagePullSecrets | indent 12 }}
             {{- end }}
-          {{- if .Values.snuba.snubaErrors.securityContext }}
+          {{- if .Values.snuba.cleanupErrors.securityContext }}
           securityContext:
-{{ toYaml .Values.snuba.snubaErrors.securityContext | indent 12}}
+{{ toYaml .Values.snuba.cleanupErrors.securityContext | indent 12}}
           {{- end }}
           containers:
           - name: {{ .Chart.Name }}-snuba-cleanup-errors
