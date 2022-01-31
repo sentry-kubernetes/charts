@@ -1,17 +1,21 @@
 # Install
+
 ## Add repo
+
 ```
 helm repo add sentry https://sentry-kubernetes.github.io/charts
 ```
+
 ## Without overrides
+
 ```
 helm install sentry sentry/sentry
 ```
+
 ## With your own vaLues file
 ```
 helm install sentry sentry/sentry -f values.yaml
 ```
-
 
 ## Upgrading from 11.x.x version of this Chart to 12.0.0
 
@@ -31,7 +35,7 @@ From the previous upgrade, make sure to get the following from your previous ins
 
 - Redis Password (If Redis auth was enabled)
 - Postgresql Password
-Both should be in the `secrets` of your original 9.0 release. Make a note of both of these values.
+  Both should be in the `secrets` of your original 9.0 release. Make a note of both of these values.
 
 #### Upgrade Steps
 
@@ -50,6 +54,7 @@ If Redis auth enabled:
 > helm upgrade -n <Sentry namespace> <Sentry Release> . --set redis.usePassword=true --set redis.password=<Redis Password>
 
 If Redis auth is disabled:
+
 > helm upgrade -n <Sentry namespace> <Sentry Release> .
 
 ## Configuration
@@ -104,7 +109,6 @@ Note: this table is incomplete, so have a look at the values.yaml in case you mi
 | `symbolicator.api.enabled`                    | Enable Symbolicator                                                                                                                                                 | `false`                        |
 | `symbolicator.api.config`                     | Config file for Symbolicator, see [its docs](https://getsentry.github.io/symbolicator/#configuration)                                                               | see values.yaml                |
 
-
 ## NGINX and/or Ingress
 
 By default, NGINX is enabled to allow sending the incoming requests to [Sentry Relay](https://getsentry.github.io/relay/) or the Django backend depending on the path. When Sentry is meant to be exposed outside of the Kubernetes cluster, it is recommended to disable NGINX and let the Ingress do the same. It's recommended to go with the go to Ingress Controller, [NGINX Ingress](https://kubernetes.github.io/ingress-nginx/) but others should work as well.
@@ -120,6 +124,7 @@ helm upgrade ... --set system.secretKey=xx
 ## Symbolicator
 
 For getting native stacktraces and minidumps symbolicated with debug symbols (e.g. iOS/Android), you need to enable Symbolicator via
+
 ```yaml
 symbolicator:
   enabled: true
@@ -137,7 +142,131 @@ filestore:
       persistentWorkers: true
       # storageClass: 'efs-storage' # see note below
 ```
+
 Note: If you need to run or cannot avoid running sentry-worker and sentry-web on different cluster nodes, you need to set `filestore.filesystem.persistence.accessMode: ReadWriteMany` or might get problems. HOWEVER, [not all volume drivers support it](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#access-modes), like AWS EBS or GCP disks.
 So you would want to create and use a `StorageClass` with a supported volume driver like [AWS EFS](https://github.com/kubernetes-sigs/aws-efs-csi-driver)
 
 Its also important having `connect_to_reserved_ips: true` in the symbolicator config file, which this Chart defaults to.
+
+# Usage with Terraform + AWS
+
+`./templates/sentry_values.yaml` file
+
+```yaml
+prefix: ${module_prefix}
+
+user:
+  create: true
+  email: ${sentry_email}
+  password: ${sentry_password}
+
+nginx:
+  enabled: false
+
+rabbitmq:
+  enabled: false
+
+sentry:
+  web:
+    service:
+      annotations:
+        alb.ingress.kubernetes.io/healthcheck-path: /_health/
+        alb.ingress.kubernetes.io/healthcheck-port: traffic-port
+
+relay:
+  service:
+    annotations:
+      alb.ingress.kubernetes.io/healthcheck-path: /api/relay/healthcheck/ready/
+      alb.ingress.kubernetes.io/healthcheck-port: traffic-port
+
+postgresql:
+  enabled: true
+  nameOverride: sentry-postgresql
+  postgresqlUsername: postgres
+  postgresqlPassword: ${postgres_password}
+  postgresqlDatabase: sentry
+  replication:
+    enabled: false
+
+ingress:
+  enabled: true
+  hostname: ${sentry_dns_name}
+  regexPathStyle: aws-alb
+  annotations:
+    kubernetes.io/ingress.class: alb
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/tags: ${tags}
+    alb.ingress.kubernetes.io/inbound-cidrs: ${allowed_cidr_blocks_str}
+    alb.ingress.kubernetes.io/subnets: ${public_subnet_ids_str}
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTPS": 443}]'
+    alb.ingress.kubernetes.io/ssl-redirect: "443"
+    alb.ingress.kubernetes.io/certificate-arn: ${subdomain_cert_arn}
+    external-dns.alpha.kubernetes.io/hostname: ${sentry_dns_name}
+```
+
+`./helm.tf` file
+
+```terraform
+resource "helm_release" "sentry" {
+  name  = "sentry"
+  chart = "${path.module}/helm_sentry/"
+  repository = "https://sentry-kubernetes.github.io/charts"
+  version    = "13.0.0"
+  timeout           = 600
+  wait              = false
+  dependency_update = true
+
+  values = [
+    templatefile(
+      "${path.module}/templates/sentry_values.yaml",
+      {
+        module_prefix   = "${var.module_prefix}",
+        sentry_email    = "${var.sentry_email}",
+        sentry_password = "${var.sentry_password}",
+
+        sentry_dns_name         = "${local.sentry_dns_name}",
+        subdomain_cert_arn      = "${var.subdomain_cert_arn}",
+        allowed_cidr_blocks_str = "${join(",", var.allowed_cidr_blocks)}",
+        private_subnet_ids_str  = "${join(",", var.private_subnet_ids)}",
+        public_subnet_ids_str   = "${join(",", var.public_subnet_ids)}",
+        tags                    = "environment=${var.env}"
+        # postgres_db_host        = "${module.sentry_rds_pg.this_rds_cluster_endpoint}",
+        # postgres_db_name        = "${local.db_name}",
+        postgres_username = "${local.db_user}",
+        postgres_password = "${local.db_pass}",
+      }
+    )
+  ]
+
+  depends_on = [
+    helm_release.lb_controller,
+    helm_release.external_dns,
+  ]
+}
+```
+
+### Notes
+
+1. Ensure the control plane and node security groups are appropriately configured as documented [here](https://docs.aws.amazon.com/eks/latest/userguide/sec-group-reqs.html#control-plane-worker-node-sgs).
+2. Annotations for ingress are as mentioned [here](https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.2/guide/ingress/annotations/)
+3. `healthcheck-path` and `healthcheck-port` annotations can be setup per target group using the alb annotations in the corresponding services as mentioned [here](https://github.com/kubernetes-sigs/aws-load-balancer-controller/issues/1056#issuecomment-551585078). For example, here we have:
+
+```yaml
+sentry:
+  web:
+    service:
+      annotations:
+        alb.ingress.kubernetes.io/healthcheck-path: /_health/
+        alb.ingress.kubernetes.io/healthcheck-port: traffic-port
+
+relay:
+  service:
+    annotations:
+      alb.ingress.kubernetes.io/healthcheck-path: /api/relay/healthcheck/ready/
+      alb.ingress.kubernetes.io/healthcheck-port: traffic-port
+```
+
+Which are load balancer annotations specified in the service configuration for the load balancer to pick while creating the target groups.
+
+NOTE: AWS ALB Controller's Service annotations don't apply here as we want the `aws-load-balancer-controller` to pick-up the services and apply the appropriate healthcheck-path per service and not create a load balancer for the service itself. The service annotations will only apply when you want the service to be load balanced.

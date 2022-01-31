@@ -56,6 +56,8 @@ relay:
   affinity: {}
   nodeSelector: {}
   securityContext: {}
+  service:
+    annotations: {}
   # tolerations: []
   # podLabels: []
 
@@ -83,6 +85,8 @@ sentry:
     affinity: {}
     nodeSelector: {}
     securityContext: {}
+    service:
+      annotations: {}
     # tolerations: []
     # podLabels: []
     # Mount and use custom CA
@@ -224,6 +228,8 @@ snuba:
     affinity: {}
     nodeSelector: {}
     securityContext: {}
+    service:
+      annotations: {}
     # tolerations: []
     # podLabels: []
 
