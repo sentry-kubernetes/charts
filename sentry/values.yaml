@@ -314,6 +314,7 @@ snuba:
     # tolerations: []
     # podLabels: []
     autoOffsetReset: "earliest"
+    partitions: 1
 
   subscriptionConsumerTransactions:
     replicas: 1
