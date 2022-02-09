@@ -9,11 +9,11 @@ jobs:
       - uses: actions/checkout@v2
         with:
           fetch-depth: "0"
-      - name: Lint Helm
+      - name: Lint Sentry Helm Chart
         uses: WyriHaximus/github-action-helm3@v2
         with:
           exec: helm lint ./sentry
-      - name: Lint Helm
+      - name: Lint Sentry Kubernetes Helm Chart
         uses: WyriHaximus/github-action-helm3@v2
         with:
           exec: helm lint ./sentry-kubernetes
