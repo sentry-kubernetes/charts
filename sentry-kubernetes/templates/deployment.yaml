@@ -47,6 +47,8 @@ spec:
           - name: LOG_LEVEL
             value: {{ .Values.sentry.logLevel }}
           {{ end }}
+          - name: BREAKING_CHART
+            value: "explicitly adding something to be caught by the linter"
         resources:
 {{ toYaml .Values.resources | indent 10 }}
     {{- if .Values.nodeSelector }}
