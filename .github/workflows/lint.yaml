@@ -12,11 +12,11 @@ jobs:
       - name: Lint Helm
         uses: WyriHaximus/github-action-helm3@v2
         with:
-          command: helm lint ./sentry
+          entryPoint: helm lint ./sentry
       - name: Lint Helm
         uses: WyriHaximus/github-action-helm3@v2
         with:
-          command: helm lint ./sentry-kubernetes
+          entryPoint: helm lint ./sentry-kubernetes
       - name: Set up chart-testing
         uses: helm/chart-testing-action@v2.1.0
       - name: Run chart-testing (list-changed)
