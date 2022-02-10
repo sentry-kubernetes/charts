@@ -20,12 +20,10 @@ jobs:
           fi
       - name: Lint Sentry Helm Chart
         uses: WyriHaximus/github-action-helm3@v2
-        needs: list-changed
         if: steps.list-changed.outputs.changed == 'true'
         with:
           exec: for chart in $(ls -d ./*/); do helm lint $chart; done
       - name: Run chart-testing (lint)
-        needs: list-changed
         if: steps.list-changed.outputs.changed == 'true'
         run: ct lint --target-branch=develop --chart-dirs=.
      # It would be nice to turn on this testing, but it is hard to get right and
