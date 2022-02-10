@@ -25,7 +25,11 @@ jobs:
           exec: for chart in $(ls -d ./*/); do helm lint $chart; done
       - name: Run chart-testing (lint)
         if: steps.list-changed.outputs.changed == 'true'
-        run: ct lint --target-branch=develop --chart-dirs=.
+        run: |
+          ct lint \
+            --target-branch=develop \
+            --chart-dirs=. \
+            --chart-repos=bitnami=https://charts.bitnami.com/bitnami,sentry-kubernetes=https://sentry-kubernetes.github.io/charts
      # It would be nice to turn on this testing, but it is hard to get right and
      # rather complex (as well as expensive in terms of runner compute time).
      # Additionally, this is out of scope of fixing the issue brought up in #456
