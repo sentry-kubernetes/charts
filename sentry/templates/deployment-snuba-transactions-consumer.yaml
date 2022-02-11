@@ -82,6 +82,8 @@ spec:
           - "{{ .Values.snuba.transactionsConsumer.autoOffsetReset }}"
           - "--max-batch-time-ms"
           - "750"
+          - "--commit-log-topic"
+          - "snuba-commit-log"
           {{- if .Values.snuba.transactionsConsumer.maxBatchSize }}
           - "--max-batch-size"
           - "{{ .Values.snuba.transactionsConsumer.maxBatchSize }}"
