@@ -95,8 +95,10 @@ spec:
         - mountPath: /etc/sentry
           name: config
           readOnly: true
+{{- if eq .Values.filestore.backend "filesystem"}}
         - mountPath: {{ .Values.filestore.filesystem.path }}
           name: sentry-data
+{{- end }}
         {{- if and (eq .Values.filestore.backend "gcs") .Values.filestore.gcs.secretName }}
         - name: sentry-google-cloud-key
           mountPath: /var/run/secrets/google
@@ -137,8 +139,9 @@ spec:
       - name: config
         configMap:
           name: {{ template "sentry.fullname" . }}-sentry
+      {{- if eq .Values.filestore.backend "filesystem"}}
       - name: sentry-data
-      {{- if and (eq .Values.filestore.backend "filesystem") .Values.filestore.filesystem.persistence.enabled }}
+      {{- if .Values.filestore.filesystem.persistence.enabled }}
       {{- if .Values.filestore.filesystem.persistence.existingClaim }}
         persistentVolumeClaim:
           claimName: {{ .Values.filestore.filesystem.persistence.existingClaim }}
@@ -148,7 +151,8 @@ spec:
       {{- end }}
       {{- else }}
         emptyDir: {}
-      {{ end }}
+      {{- end }}
+      {{- end }}
       {{- if and (eq .Values.filestore.backend "gcs") .Values.filestore.gcs.secretName }}
       - name: sentry-google-cloud-key
         secret:
