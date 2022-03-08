@@ -25,8 +25,11 @@ data:
     CLUSTERS[0]["database"] = env("CLICKHOUSE_DATABASE", "default")
     CLUSTERS[0]["user"] = env("CLICKHOUSE_USER", "default")
     CLUSTERS[0]["password"] = env("CLICKHOUSE_PASSWORD", "")
-    # FIXME: Snuba will be able to migrate multi node clusters in the future
-    CLUSTERS[0]["single_node"] = env("CLICKHOUSE_SINGLE_NODE", "false").lower() == "true"
+    {{- if .Values.clickhouse.enabled }}
+    CLUSTERS[0]["single_node"] = False
+    CLUSTERS[0]["cluster_name"] = "{{ include "sentry.clickhouse.fullname" . }}"
+    CLUSTERS[0]["distributed_cluster_name"] = "{{ include "sentry.clickhouse.fullname" . }}"
+    {{- end }}
 
     # Redis Options
     REDIS_HOST = {{ include "sentry.redis.host" . | quote }}
