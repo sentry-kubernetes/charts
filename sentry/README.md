@@ -12,51 +12,16 @@ helm repo add sentry https://sentry-kubernetes.github.io/charts
 helm install sentry sentry/sentry
 ```
 
-## With your own vaLues file
+## With your own values file
 
 ```
 helm install sentry sentry/sentry -f values.yaml
 ```
 
-## Upgrading from 11.x.x version of this Chart to 12.0.0
+# Upgrade
 
-Redis chart was upgraded to newer version. If you are using external redis, you don't need to do anything.
-
-Otherwise, when upgrading to chart version 12.x.x from 11.x.x you need to either run `helm upgrade` with `--force` flag, or prior to upgrade delete statefulsets for redis master and redis slave. Then run upgrade and it will roll out new statefulsets. Your master redis data will not be lost (PVC is not deleted when you delete statefulset). Your redis slave will now be named redis replica and you can delete PVCs that were used by redis slave after the upgrade.
-
-## Upgrading from 10.x.x version of this Chart to 11.0.0
-
-If you were using clickhouse tabix externally, we disabled it per default.
-
-### Upgrading from deprecated 9.0 -> 10.0 Chart
-
-As this chart runs in helm 3 and also tries its best to follow on from the original Sentry chart. There are some steps that needs to be taken in order to correctly upgrade.
-
-From the previous upgrade, make sure to get the following from your previous installation:
-
-- Redis Password (If Redis auth was enabled)
-- Postgresql Password
-  Both should be in the `secrets` of your original 9.0 release. Make a note of both of these values.
-
-#### Upgrade Steps
-
-Due to an issue where transferring from Helm 2 to 3. Statefulsets that use the following: `heritage: {{ .Release.Service }}` in the metadata field will error out with a `Forbidden` error during the upgrade. The only workaround is to delete the existing statefulsets (Don't worry, PVC will be retained):
-
-> kubectl delete --all sts -n <Sentry Namespace>
-
-Once the statefulsets are deleted. Next steps is to convert the helm release from version 2 to 3 using the helm 3 plugin:
-
-> helm3 2to3 convert <Sentry Release Name>
-
-Finally, it's just a case of upgrading and ensuring the correct params are used:
-
-If Redis auth enabled:
-
-> helm upgrade -n <Sentry namespace> <Sentry Release> . --set redis.usePassword=true --set redis.password=<Redis Password>
-
-If Redis auth is disabled:
-
-> helm upgrade -n <Sentry namespace> <Sentry Release> .
+Read the upgrade guide before upgrading to major versions of the chart.
+[Upgrade Guide](docs/UPGRADE.md)
 
 ## Configuration
 
@@ -144,125 +109,7 @@ So you would want to create and use a `StorageClass` with a supported volume dri
 
 Its also important having `connect_to_reserved_ips: true` in the symbolicator config file, which this Chart defaults to.
 
-# Usage with Terraform + AWS
+# Usage
 
-`./templates/sentry_values.yaml` file
-
-```yaml
-prefix: ${module_prefix}
-
-user:
-  create: true
-  email: ${sentry_email}
-  password: ${sentry_password}
-
-nginx:
-  enabled: false
-
-rabbitmq:
-  enabled: false
-
-sentry:
-  web:
-    service:
-      annotations:
-        alb.ingress.kubernetes.io/healthcheck-path: /_health/
-        alb.ingress.kubernetes.io/healthcheck-port: traffic-port
-
-relay:
-  service:
-    annotations:
-      alb.ingress.kubernetes.io/healthcheck-path: /api/relay/healthcheck/ready/
-      alb.ingress.kubernetes.io/healthcheck-port: traffic-port
-
-postgresql:
-  enabled: true
-  nameOverride: sentry-postgresql
-  postgresqlUsername: postgres
-  postgresqlPassword: ${postgres_password}
-  postgresqlDatabase: sentry
-  replication:
-    enabled: false
-
-ingress:
-  enabled: true
-  hostname: ${sentry_dns_name}
-  regexPathStyle: aws-alb
-  annotations:
-    kubernetes.io/ingress.class: alb
-    alb.ingress.kubernetes.io/scheme: internet-facing
-    alb.ingress.kubernetes.io/target-type: ip
-    alb.ingress.kubernetes.io/tags: ${tags}
-    alb.ingress.kubernetes.io/inbound-cidrs: ${allowed_cidr_blocks_str}
-    alb.ingress.kubernetes.io/subnets: ${public_subnet_ids_str}
-    alb.ingress.kubernetes.io/listen-ports: '[{"HTTPS": 443}]'
-    alb.ingress.kubernetes.io/ssl-redirect: "443"
-    alb.ingress.kubernetes.io/certificate-arn: ${subdomain_cert_arn}
-    external-dns.alpha.kubernetes.io/hostname: ${sentry_dns_name}
-```
-
-`./helm.tf` file
-
-```terraform
-resource "helm_release" "sentry" {
-  name  = "sentry"
-  chart = "${path.module}/helm_sentry/"
-  repository = "https://sentry-kubernetes.github.io/charts"
-  version    = "13.0.0"
-  timeout           = 600
-  wait              = false
-  dependency_update = true
-
-  values = [
-    templatefile(
-      "${path.module}/templates/sentry_values.yaml",
-      {
-        module_prefix   = "${var.module_prefix}",
-        sentry_email    = "${var.sentry_email}",
-        sentry_password = "${var.sentry_password}",
-
-        sentry_dns_name         = "${local.sentry_dns_name}",
-        subdomain_cert_arn      = "${var.subdomain_cert_arn}",
-        allowed_cidr_blocks_str = "${join(",", var.allowed_cidr_blocks)}",
-        private_subnet_ids_str  = "${join(",", var.private_subnet_ids)}",
-        public_subnet_ids_str   = "${join(",", var.public_subnet_ids)}",
-        tags                    = "environment=${var.env}"
-        # postgres_db_host        = "${module.sentry_rds_pg.this_rds_cluster_endpoint}",
-        # postgres_db_name        = "${local.db_name}",
-        postgres_username = "${local.db_user}",
-        postgres_password = "${local.db_pass}",
-      }
-    )
-  ]
-
-  depends_on = [
-    helm_release.lb_controller,
-    helm_release.external_dns,
-  ]
-}
-```
-
-### Notes
-
-1. Ensure the control plane and node security groups are appropriately configured as documented [here](https://docs.aws.amazon.com/eks/latest/userguide/sec-group-reqs.html#control-plane-worker-node-sgs).
-2. Annotations for ingress are as mentioned [here](https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.2/guide/ingress/annotations/)
-3. `healthcheck-path` and `healthcheck-port` annotations can be setup per target group using the alb annotations in the corresponding services as mentioned [here](https://github.com/kubernetes-sigs/aws-load-balancer-controller/issues/1056#issuecomment-551585078). For example, here we have:
-
-```yaml
-sentry:
-  web:
-    service:
-      annotations:
-        alb.ingress.kubernetes.io/healthcheck-path: /_health/
-        alb.ingress.kubernetes.io/healthcheck-port: traffic-port
-
-relay:
-  service:
-    annotations:
-      alb.ingress.kubernetes.io/healthcheck-path: /api/relay/healthcheck/ready/
-      alb.ingress.kubernetes.io/healthcheck-port: traffic-port
-```
-
-Which are load balancer annotations specified in the service configuration for the load balancer to pick while creating the target groups.
-
-NOTE: AWS ALB Controller's Service annotations don't apply here as we want the `aws-load-balancer-controller` to pick-up the services and apply the appropriate healthcheck-path per service and not create a load balancer for the service itself. The service annotations will only apply when you want the service to be load balanced.
+- [AWS + Terraform](docs/usage-aws-terraform.md)
+- [DigitalOcean](docs/usage-digitalocean.md)
