@@ -86,6 +86,8 @@ spec:
       dnsConfig:
 {{ toYaml .Values.dnsConfig | indent 8 }}
       {{- end }}
+          resources:
+{{ toYaml .Values.relay.init.resources | indent 12 }}
       containers:
       - name: {{ .Chart.Name }}-relay
         image: "{{ template "relay.image" . }}"

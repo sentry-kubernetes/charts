@@ -100,4 +100,6 @@ spec:
 
             echo "clickhouse-init finished"
             {{- end }}
+        resources:
+{{ toYaml .Values.hooks.clickhouseInit.resources | indent 10 }}
 {{- end }}
