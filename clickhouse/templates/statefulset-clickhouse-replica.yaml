@@ -78,6 +78,10 @@ spec:
       - name: {{ include "clickhouse.fullname" . }}-replica
         image: {{ .Values.clickhouse.image }}:{{ .Values.clickhouse.imageVersion }}
         imagePullPolicy: {{ .Values.clickhouse.imagePullPolicy }}
+        command:
+          - /bin/bash
+          - -c
+          - export SHARD=${HOSTNAME##*-} && /entrypoint.sh
         ports:
         - name: http-port
           containerPort: {{ .Values.clickhouse.http_port | default "8123" }}

@@ -402,11 +402,6 @@ snuba:
 hooks:
   enabled: true
   removeOnSuccess: true
-  clickhouseInit:
-    podAnnotations: {}
-    affinity: {}
-    nodeSelector: {}
-    # tolerations: []
   dbCheck:
     image:
       # repository: subfuzion/netcat
@@ -654,13 +649,19 @@ config:
 clickhouse:
   enabled: true
   clickhouse:
-    imageVersion: "20.8.9.6"
+    imageVersion: "20.8.19.4"
     configmap:
       remote_servers:
         internal_replication: true
         replica:
           backup:
             enabled: false
+      zookeeper_servers:
+        enabled: true
+        config:
+          - index: "clickhouse"
+            hostTemplate: "{{ .Release.Name }}-zookeeper-clickhouse"
+            port: "2181"
       users:
         enabled: false
         user:
@@ -699,11 +700,19 @@ externalClickhouse:
   username: default
   password: ""
   database: default
+  singleNode: true
   ## Cluster name, can be found in config
   ## (https://clickhouse.tech/docs/en/operations/server-configuration-parameters/settings/#server-settings-remote-servers)
   ## or by executing `select * from system.clusters`
   ##
   # clusterName: test_shard_localhost
+
+# Settings for Zookeeper.
+# See https://github.com/bitnami/charts/tree/master/bitnami/zookeeper
+zookeeper:
+  enabled: true
+  nameOverride: zookeeper-clickhouse
+  replicaCount: 3
 
 # Settings for Kafka.
 # See https://github.com/bitnami/charts/tree/master/bitnami/kafka
