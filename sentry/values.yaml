@@ -66,8 +66,8 @@ relay:
     minReplicas: 2
     maxReplicas: 5
     targetCPUUtilizationPercentage: 50
-  sidecars: [ ]
-  volumes: [ ]
+  sidecars: []
+  volumes: []
 
 sentry:
   singleOrganization: true
@@ -99,8 +99,8 @@ sentry:
       minReplicas: 2
       maxReplicas: 5
       targetCPUUtilizationPercentage: 50
-    sidecars: [ ]
-    volumes: [ ]
+    sidecars: []
+    volumes: []
 
   features:
     orgSubdomains: false
@@ -128,8 +128,8 @@ sentry:
       periodSeconds: 60
       timeoutSeconds: 10
       failureThreshold: 3
-    sidecars: [ ]
-    volumes: [ ]
+    sidecars: []
+    volumes: []
 
   ingestConsumer:
     replicas: 1
@@ -150,8 +150,8 @@ sentry:
       minReplicas: 1
       maxReplicas: 3
       targetCPUUtilizationPercentage: 50
-    sidecars: [ ]
-    volumes: [ ]
+    sidecars: []
+    volumes: []
 
     # volumeMounts:
     #   - mountPath: /dev/shm
@@ -165,8 +165,8 @@ sentry:
     nodeSelector: {}
     # tolerations: []
     # podLabels: []
-    sidecars: [ ]
-    volumes: [ ]
+    sidecars: []
+    volumes: []
   subscriptionConsumerEvents:
     replicas: 1
     env: []
@@ -177,8 +177,8 @@ sentry:
     # tolerations: []
     # podLabels: []
     # commitBatchSize: 1
-    sidecars: [ ]
-    volumes: [ ]
+    sidecars: []
+    volumes: []
   subscriptionConsumerTransactions:
     replicas: 1
     env: []
@@ -189,8 +189,8 @@ sentry:
     # tolerations: []
     # podLabels: []
     # commitBatchSize: 1
-    sidecars: [ ]
-    volumes: [ ]
+    sidecars: []
+    volumes: []
   postProcessForward:
     replicas: 1
     env: []
@@ -201,8 +201,8 @@ sentry:
     # tolerations: []
     # podLabels: []
     # commitBatchSize: 1
-    sidecars: [ ]
-    volumes: [ ]
+    sidecars: []
+    volumes: []
   cleanup:
     concurrencyPolicy: Allow
     enabled: true
@@ -234,8 +234,8 @@ snuba:
       minReplicas: 2
       maxReplicas: 5
       targetCPUUtilizationPercentage: 50
-    sidecars: [ ]
-    volumes: [ ]
+    sidecars: []
+    volumes: []
 
   consumer:
     replicas: 1
@@ -428,8 +428,8 @@ hooks:
       requests:
         cpu: 300m
         memory: 2048Mi
-    sidecars: [ ]
-    volumes: [ ]
+    sidecars: []
+    volumes: []
     affinity: {}
     nodeSelector: {}
     # tolerations: []
@@ -624,7 +624,7 @@ filestore:
     ## secret will be mounted at /var/run/secrets/google
     # secretName:
     # credentialsFile: credentials.json
-    # bucketName:
+  # bucketName:
 
   ## Currently unconfigured and changing this has no impact on the template configuration.
   s3: {}
@@ -665,21 +665,21 @@ clickhouse:
       users:
         enabled: false
         user:
-        # the first user will be used if enabled
-        - name: default
-          config:
-            password: ""
-            networks:
-            - ::/0
-            profile: default
-            quota: default
+          # the first user will be used if enabled
+          - name: default
+            config:
+              password: ""
+              networks:
+                - ::/0
+              profile: default
+              quota: default
 
     persistentVolumeClaim:
       enabled: true
       dataPersistentVolume:
         enabled: true
         accessModes:
-        - "ReadWriteOnce"
+          - "ReadWriteOnce"
         storage: "30Gi"
 
   ## Use this to enable an extra service account
