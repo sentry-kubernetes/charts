@@ -1,5 +1,12 @@
 # Upgrade
 
+## Upgrading from 12.x.x version of this Chart to 13.0.0
+
+ClickHouse was reconfigured with sharding and replication in-mind, If you are using external ClickHouse, you don't need to do anything.
+
+**WARNING**: You will lose current event data<br>
+Otherwise, you should delete the old ClickHouse volumes in-order to upgrade to this version.
+
 ## Upgrading from 11.x.x version of this Chart to 12.0.0
 
 Redis chart was upgraded to newer version. If you are using external redis, you don't need to do anything.

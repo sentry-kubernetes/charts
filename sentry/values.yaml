@@ -66,8 +66,8 @@ relay:
     minReplicas: 2
     maxReplicas: 5
     targetCPUUtilizationPercentage: 50
-  sidecars: [ ]
-  volumes: [ ]
+  sidecars: []
+  volumes: []
 
 sentry:
   singleOrganization: true
@@ -99,8 +99,8 @@ sentry:
       minReplicas: 2
       maxReplicas: 5
       targetCPUUtilizationPercentage: 50
-    sidecars: [ ]
-    volumes: [ ]
+    sidecars: []
+    volumes: []
 
   features:
     orgSubdomains: false
@@ -128,8 +128,8 @@ sentry:
       periodSeconds: 60
       timeoutSeconds: 10
       failureThreshold: 3
-    sidecars: [ ]
-    volumes: [ ]
+    sidecars: []
+    volumes: []
 
   ingestConsumer:
     replicas: 1
@@ -150,8 +150,8 @@ sentry:
       minReplicas: 1
       maxReplicas: 3
       targetCPUUtilizationPercentage: 50
-    sidecars: [ ]
-    volumes: [ ]
+    sidecars: []
+    volumes: []
 
     # volumeMounts:
     #   - mountPath: /dev/shm
@@ -165,8 +165,8 @@ sentry:
     nodeSelector: {}
     # tolerations: []
     # podLabels: []
-    sidecars: [ ]
-    volumes: [ ]
+    sidecars: []
+    volumes: []
   subscriptionConsumerEvents:
     replicas: 1
     env: []
@@ -177,8 +177,8 @@ sentry:
     # tolerations: []
     # podLabels: []
     # commitBatchSize: 1
-    sidecars: [ ]
-    volumes: [ ]
+    sidecars: []
+    volumes: []
   subscriptionConsumerTransactions:
     replicas: 1
     env: []
@@ -189,8 +189,8 @@ sentry:
     # tolerations: []
     # podLabels: []
     # commitBatchSize: 1
-    sidecars: [ ]
-    volumes: [ ]
+    sidecars: []
+    volumes: []
   postProcessForward:
     replicas: 1
     env: []
@@ -201,8 +201,8 @@ sentry:
     # tolerations: []
     # podLabels: []
     # commitBatchSize: 1
-    sidecars: [ ]
-    volumes: [ ]
+    sidecars: []
+    volumes: []
   cleanup:
     concurrencyPolicy: Allow
     enabled: true
@@ -234,8 +234,8 @@ snuba:
       minReplicas: 2
       maxReplicas: 5
       targetCPUUtilizationPercentage: 50
-    sidecars: [ ]
-    volumes: [ ]
+    sidecars: []
+    volumes: []
 
   consumer:
     replicas: 1
@@ -402,11 +402,6 @@ snuba:
 hooks:
   enabled: true
   removeOnSuccess: true
-  clickhouseInit:
-    podAnnotations: {}
-    affinity: {}
-    nodeSelector: {}
-    # tolerations: []
   dbCheck:
     image:
       # repository: subfuzion/netcat
@@ -433,8 +428,8 @@ hooks:
       requests:
         cpu: 300m
         memory: 2048Mi
-    sidecars: [ ]
-    volumes: [ ]
+    sidecars: []
+    volumes: []
     affinity: {}
     nodeSelector: {}
     # tolerations: []
@@ -458,10 +453,11 @@ system:
   ## This should only be used if you’re installing Sentry behind your company’s firewall.
   public: false
   ## This will generate one for you (it's must be given upon updates)
-  #secretKey: "xx"
+  # secretKey: "xx"
 
 mail:
-  backend: dummy # smtp
+  # For example: smtp
+  backend: dummy
   useTls: false
   useSsl: false
   username: ""
@@ -531,7 +527,8 @@ service:
   # - 192.168.0.1
   # loadBalancerSourceRanges: []
 
-github: {} # https://github.com/settings/apps (Create a Github App)
+# https://github.com/settings/apps (Create a Github App)
+github: {}
 # github:
 #   appId: "xxxx"
 #   appName: MyAppName
@@ -540,7 +537,8 @@ github: {} # https://github.com/settings/apps (Create a Github App)
 #   privateKey: "-----BEGIN RSA PRIVATE KEY-----\nMIIEpA" !!!! Don't forget a trailing \n
 #   webhookSecret:  "xxxxx`"
 
-google: {} # https://developers.google.com/identity/sign-in/web/server-side-flow#step_1_create_a_client_id_and_client_secret
+# https://developers.google.com/identity/sign-in/web/server-side-flow#step_1_create_a_client_id_and_client_secret
+google: {}
 # google:
 #   clientId:
 #   clientSecret:
@@ -572,7 +570,7 @@ ingress:
   # if you are using AWS ALB Ingress controller, switch this to 'aws-alb'
   # if you are using GKE Ingress controller, switch this to 'gke'
   regexPathStyle: nginx
-  #If you are using AWS ALB Ingress controller, switch to true if you want activate the http to https redirection.
+  # If you are using AWS ALB Ingress controller, switch to true if you want activate the http to https redirection.
   alb:
     httpRedirect: false
   # annotations:
@@ -629,7 +627,7 @@ filestore:
     ## secret will be mounted at /var/run/secrets/google
     # secretName:
     # credentialsFile: credentials.json
-    # bucketName:
+  # bucketName:
 
   ## Currently unconfigured and changing this has no impact on the template configuration.
   s3: {}
@@ -654,31 +652,37 @@ config:
 clickhouse:
   enabled: true
   clickhouse:
-    imageVersion: "20.8.9.6"
+    imageVersion: "20.8.19.4"
     configmap:
       remote_servers:
         internal_replication: true
         replica:
           backup:
             enabled: false
+      zookeeper_servers:
+        enabled: true
+        config:
+          - index: "clickhouse"
+            hostTemplate: "{{ .Release.Name }}-zookeeper-clickhouse"
+            port: "2181"
       users:
         enabled: false
         user:
-        # the first user will be used if enabled
-        - name: default
-          config:
-            password: ""
-            networks:
-            - ::/0
-            profile: default
-            quota: default
+          # the first user will be used if enabled
+          - name: default
+            config:
+              password: ""
+              networks:
+                - ::/0
+              profile: default
+              quota: default
 
     persistentVolumeClaim:
       enabled: true
       dataPersistentVolume:
         enabled: true
         accessModes:
-        - "ReadWriteOnce"
+          - "ReadWriteOnce"
         storage: "30Gi"
 
   ## Use this to enable an extra service account
@@ -699,11 +703,19 @@ externalClickhouse:
   username: default
   password: ""
   database: default
+  singleNode: true
   ## Cluster name, can be found in config
   ## (https://clickhouse.tech/docs/en/operations/server-configuration-parameters/settings/#server-settings-remote-servers)
   ## or by executing `select * from system.clusters`
   ##
   # clusterName: test_shard_localhost
+
+# Settings for Zookeeper.
+# See https://github.com/bitnami/charts/tree/master/bitnami/zookeeper
+zookeeper:
+  enabled: true
+  nameOverride: zookeeper-clickhouse
+  replicaCount: 3
 
 # Settings for Kafka.
 # See https://github.com/bitnami/charts/tree/master/bitnami/kafka

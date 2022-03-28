@@ -19,14 +19,38 @@ data:
     DEBUG = env("DEBUG", "0").lower() in ("1", "true")
 
     # Clickhouse Options
-    CLUSTERS[0]["host"] = env("CLICKHOUSE_HOST", {{ include "sentry.clickhouse.host" . | quote }})
-    CLUSTERS[0]["port"] = int({{ include "sentry.clickhouse.port" . }})
-    CLUSTERS[0]["http_port"] = int({{ include "sentry.clickhouse.http_port" . }})
-    CLUSTERS[0]["database"] = env("CLICKHOUSE_DATABASE", "default")
-    CLUSTERS[0]["user"] = env("CLICKHOUSE_USER", "default")
-    CLUSTERS[0]["password"] = env("CLICKHOUSE_PASSWORD", "")
-    # FIXME: Snuba will be able to migrate multi node clusters in the future
-    CLUSTERS[0]["single_node"] = env("CLICKHOUSE_SINGLE_NODE", "false").lower() == "true"
+    CLUSTERS = [
+      {
+        "host": env("CLICKHOUSE_HOST", {{ include "sentry.clickhouse.host" . | quote }}),
+        "port": int({{ include "sentry.clickhouse.port" . }}),
+        "user":  env("CLICKHOUSE_USER", "default"),
+        "password": env("CLICKHOUSE_PASSWORD", ""),
+        "database": env("CLICKHOUSE_DATABASE", "default"),
+        "http_port": {{ include "sentry.clickhouse.http_port" . }},
+        "storage_sets": {
+            "cdc",
+            "discover",
+            "events",
+            "events_ro",
+            "metrics",
+            "migrations",
+            "outcomes",
+            "querylog",
+            "sessions",
+            "transactions",
+            "transactions_ro",
+            "transactions_v2",
+            "errors_v2",
+            "errors_v2_ro",
+            "profiles",
+        },
+        {{- if or .Values.clickhouse.enabled (not .Values.externalClickhouse.singleNode) }}
+        "single_node": False,
+        "cluster_name": {{ include "sentry.clickhouse.cluster.name" . | quote }},
+        "distributed_cluster_name": {{ include "sentry.clickhouse.cluster.name" . | quote }},
+        {{- end }}
+      },
+    ]
 
     # Redis Options
     REDIS_HOST = {{ include "sentry.redis.host" . | quote }}
