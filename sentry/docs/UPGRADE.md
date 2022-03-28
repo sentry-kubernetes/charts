@@ -1,11 +1,40 @@
 # Upgrade
 
-## Upgrading from 12.x.x version of this Chart to 14.0.0
+## Upgrading from 13.x.x version of this Chart to 14.0.0
 
 ClickHouse was reconfigured with sharding and replication in-mind, If you are using external ClickHouse, you don't need to do anything.
 
 **WARNING**: You will lose current event data<br>
 Otherwise, you should delete the old ClickHouse volumes in-order to upgrade to this version.
+
+
+## Upgrading from 12.x.x version of this Chart to 13.0.0
+
+The service annotions have been moved from the `service` section to the respective service's service sub-section. So what was:
+
+```yaml
+service:
+  annotations:
+    alb.ingress.kubernetes.io/healthcheck-path: /_health/
+    alb.ingress.kubernetes.io/healthcheck-port: traffic-port
+```
+
+will now be set per service:
+
+```yaml
+sentry:
+  web:
+    service:
+      annotations:
+        alb.ingress.kubernetes.io/healthcheck-path: /_health/
+        alb.ingress.kubernetes.io/healthcheck-port: traffic-port
+
+relay:
+  service:
+    annotations:
+      alb.ingress.kubernetes.io/healthcheck-path: /api/relay/healthcheck/ready/
+      alb.ingress.kubernetes.io/healthcheck-port: traffic-port
+```
 
 ## Upgrading from 11.x.x version of this Chart to 12.0.0
 
