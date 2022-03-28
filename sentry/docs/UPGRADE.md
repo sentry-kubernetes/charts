@@ -1,6 +1,6 @@
 # Upgrade
 
-## Upgrading from 12.x.x version of this Chart to 13.0.0
+## Upgrading from 12.x.x version of this Chart to 14.0.0
 
 ClickHouse was reconfigured with sharding and replication in-mind, If you are using external ClickHouse, you don't need to do anything.
 
