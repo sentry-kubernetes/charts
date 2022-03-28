@@ -6,7 +6,7 @@ dependencies:
   repository: https://charts.bitnami.com/bitnami
   version: 12.0.0
 - name: clickhouse
-  repository: file://../clickhouse
+  repository: https://sentry-kubernetes.github.io/charts
   version: 3.1.1
 - name: zookeeper
   repository: https://charts.bitnami.com/bitnami
@@ -20,5 +20,5 @@ dependencies:
 - name: nginx
   repository: https://charts.bitnami.com/bitnami
   version: 9.3.3
-digest: sha256:59cf3fbe91914e7d63ad3af5d37a6c6f27e9260b01cfd62d7c9e6170737a2c70
-generated: "2022-03-23T17:48:48.7547078Z"
+digest: sha256:77d86b49065350d4999a182b6412c956a746ab9b19bf91b6c42f4dc90cf7d47c
+generated: "2022-03-28T12:51:00.964768+02:00"
