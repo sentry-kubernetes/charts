@@ -48,10 +48,21 @@ clickhouse:
   ## https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/#partitions
   ##
   # rollingUpdatePartition:
-  
+
   # Security Context
   securityContext: {}
-    
+
+
+  ## Configure the clickhouse service.
+
+  service:
+    type: ClusterIP
+    NodePorts:
+      ## Uncomment when NodePort is selected.
+      # tcp_port: 30010
+      # http_port: 30011
+      # interserver_http_port: 30012
+
   ## Prometheus Exporter / Metrics
   ##
   metrics:

@@ -6,20 +6,36 @@ metadata:
     app.kubernetes.io/name: {{ include "clickhouse.name" . }}
     app.kubernetes.io/instance: {{ .Release.Name }}
     app.kubernetes.io/managed-by: {{ .Release.Service }}
+  annotations:
+    {{ .Values.annotations }}
 spec:
+  {{ if eq .Values.clickhouse.service.type "NodePort"}}
+  type: NodePort
+  {{ else }}
+  type: ClusterIP
+  {{ end }}
   ports:
   - port: {{ .Values.clickhouse.tcp_port }}
     targetPort: tcp-port
     protocol: TCP
     name: tcp-port
+    {{ if eq .Values.clickhouse.service.type "NodePort"}}
+    nodePort: {{ .Values.clickhouse.service.NodePorts.tcp_port }}
+    {{ end }}
   - port: {{ .Values.clickhouse.http_port }}
     targetPort: http-port
     protocol: TCP
     name: http-port
+    {{ if eq .Values.clickhouse.service.type "NodePort"}}
+    nodePort: {{ .Values.clickhouse.service.NodePorts.http_port }}
+    {{ end }}
   - port: {{ .Values.clickhouse.interserver_http_port }}
     targetPort: inter-http-port
     protocol: TCP
     name: inter-http-port
+    {{ if eq .Values.clickhouse.service.type "NodePort"}}
+    nodePort: {{ .Values.clickhouse.service.NodePorts.interserver_http_port }}
+    {{ end }}
   selector:
     app.kubernetes.io/name: {{ include "clickhouse.name" . }}
     app.kubernetes.io/instance: {{ .Release.Name }}
