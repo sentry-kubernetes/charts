@@ -66,28 +66,10 @@ spec:
       containers:
       - name: snuba-init
         image: "{{ template "snuba.image" . }}"
-        command:
-          - /bin/bash
-          - -ec
-          - >-
-            {{- if .Values.clickhouse.enabled }}
-            for ((i=0;i<{{ .Values.clickhouse.clickhouse.replicas }};i++)); do
-              export CLICKHOUSE_HOST={{ $clickhouseHost }}-$i.{{ $clickhouseHost }}-headless;
-              snuba bootstrap --force;
-              {{- if .Values.clickhouse.clickhouse.configmap.remote_servers.replica.backup.enabled }}
-              export CLICKHOUSE_HOST={{ $clickhouseHost }}-replica-$i.{{ $clickhouseHost }}-replica-headless;
-              snuba bootstrap --force;
-              {{- end }}
-            done
-            {{- else }}
-            export CLICKHOUSE_HOST={{ $clickhouseHost }};
-            snuba bootstrap --force;
-            {{- end }}
+        command: [snuba, bootstrap, --no-migrate, --force]
         env:
         - name: LOG_LEVEL
           value: debug
-        - name: CLICKHOUSE_SINGLE_NODE
-          value: "true"
 {{ include "sentry.snuba.env" . | indent 8 }}
 {{- if .Values.snuba.dbInitJob.env }}
 {{ toYaml .Values.snuba.dbInitJob.env | indent 8 }}

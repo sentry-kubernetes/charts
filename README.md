@@ -14,6 +14,14 @@ Big thanks to the maintainers of the [deprecated chart](https://github.com/helm/
 
 For now the full list of values is not documented but you can get inspired by the values.yaml specific to each directory.
 
+## Upgrading from 13.x.x version of this Chart to 14.0.0
+
+ClickHouse was reconfigured with sharding and replication in-mind, If you are using external ClickHouse, you don't need to do anything.
+
+**WARNING**: You will lose current event data<br>
+Otherwise, you should delete the old ClickHouse volumes in-order to upgrade to this version.
+
+
 ## Upgrading from 12.x.x version of this Chart to 13.0.0
 
 The service annotions have been moved from the `service` section to the respective service's service sub-section. So what was:
@@ -41,6 +49,7 @@ relay:
       alb.ingress.kubernetes.io/healthcheck-path: /api/relay/healthcheck/ready/
       alb.ingress.kubernetes.io/healthcheck-port: traffic-port
 ```
+
 
 ## Upgrading from 10.x.x version of this Chart to 11.0.0
 
