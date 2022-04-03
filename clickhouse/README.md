@@ -15,9 +15,9 @@ This chart bootstraps a [ClickHouse](https://clickhouse.yandex/) replication clu
 To install the chart with the release name `my-release`:
 
 ```bash
-$ helm repo add liwenhe https://liwenhe1993.github.io/charts/
+$ helm repo add sentry-kubernetes https://sentry-kubernetes.github.io/charts/
 $ helm repo update
-$ helm install --name clickhouse liwenhe/clickhouse
+$ helm install my-release sentry-kubernetes/clickhouse
 ```
 These commands deploy Clickhouse on the Kubernetes cluster in the default configuration. The [configuration](#configuration) section lists the parameters that can be configured during installation.
 
@@ -25,10 +25,10 @@ These commands deploy Clickhouse on the Kubernetes cluster in the default config
 
 ## Uninstalling the Chart
 
-To uninstall/delete the `clickhouse` deployment:
+To uninstall/delete the `my-release` deployment:
 
 ```bash
-$ helm delete --purge clickhouse
+$ helm delete my-release
 ```
 
 The command removes all the Kubernetes components associated with the chart and deletes the release.
@@ -158,7 +158,7 @@ The following tables lists the configurable parameters of the Clickhouse chart a
 | `tabix.readinessProbe.timeoutSeconds`                                             | When the probe times out                                                                                                       | `5`                                                   |
 | `tabix.readinessProbe.failureThreshold`                                           | Minimum consecutive successes for the probe                                                                                    | `3`                                                   |
 | `tabix.readinessProbe.successThreshold`                                           | Minimum consecutive failures for the probe                                                                                     | `1`                                                   |
-|`tabix.resources`                                                                  | The resource requests and limits for Tabix pods                                                                                |`{}`                                                   |
+| `tabix.resources`                                                                 | The resource requests and limits for Tabix pods                                                                                |`{}`                                                   |
 | `tabix.security.user`                                                             | Tabix login username                                                                                                           | `admin`                                               |
 | `tabix.security.password`                                                         | Tabix login password                                                                                                           | `admin`                                               |
 | `tabix.automaticConnection.chName`                                                | Automatic connection Clickhouse name                                                                                           | ``                                                    |
@@ -172,4 +172,4 @@ The following tables lists the configurable parameters of the Clickhouse chart a
 | `tabix.ingress.tls.enabled`                                                       | Enable ingress tls                                                                                                             | `false`                                               |
 | `tabix.ingress.tls.hosts`                                                         | Ingress tls hosts                                                                                                              | `[]`                                                  |
 
-For more information please refer to the [liwenhe1993/charts](https://github.com/liwenhe1993/charts.git) documentation.
+For more information please refer to the [sentry-kubernetes/charts](https://github.com/sentry-kubernetes/charts.git) documentation.
