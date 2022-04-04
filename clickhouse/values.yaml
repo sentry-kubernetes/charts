@@ -13,7 +13,7 @@ clusterDomain: "cluster.local"
 # tolerations: []
 ## Clickhouse pod/node affinity/anti-affinity
 ##
-#affinity:
+# affinity:
 #  nodeAffinity:
 #    requiredDuringSchedulingIgnoredDuringExecution:
 #      nodeSelectorTerms:
@@ -48,10 +48,14 @@ clickhouse:
   ## https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/#partitions
   ##
   # rollingUpdatePartition:
-  
+
+  # pod Security Context
+  podSecurityContext: {}
+  #  fsGroup: 101
+
   # Security Context
   securityContext: {}
-    
+
   ## Prometheus Exporter / Metrics
   ##
   metrics:
@@ -129,7 +133,7 @@ clickhouse:
     image: "busybox"
     imageVersion: "1.31.0"
     imagePullPolicy: "IfNotPresent"
-  #imagePullSecrets:
+  # imagePullSecrets:
   ## Periodic probe of container liveness. Container will be restarted if the probe fails. Cannot be updated.
   ## More info: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle#container-probes
     resources: {}
@@ -228,16 +232,16 @@ clickhouse:
     disable_internal_dns_cache: "1"
     ##
     ## Limits total RAM usage by the ClickHouse server. (0 is Auto)
-    #max_server_memory_usage: "0"
+    # max_server_memory_usage: "0"
     ##
     ## The maximum number of open files.
     ## We recommend using this option in Mac OS X, since the getrlimit() function returns an incorrect value.
-    #max_open_files:
+    # max_open_files:
     ##
     ## The host name that can be used by other servers to access this server.
     ## If omitted, it is defined in the same way as the hostname-f command.
     ## Useful for breaking away from a specific network interface.
-    #interserver_http_host:
+    # interserver_http_host:
     ##
     ## Logging settings.
     # path – The log path. Default value: /var/log/clickhouse-server.
@@ -273,8 +277,8 @@ clickhouse:
       enabled: false
       session_timeout_ms: "30000"
       operation_timeout_ms: "10000"
-      #root: "/path/to/zookeeper/node"
-      #identity: "user:password"
+      # root: "/path/to/zookeeper/node"
+      # identity: "user:password"
       config:
       - index: ""
         host: ""
@@ -293,7 +297,7 @@ clickhouse:
       internal_replication: false
       replica:
         user: "default"
-        #password: ""
+        # password: ""
         compression: true
         backup:
           enabled: true
@@ -337,7 +341,7 @@ clickhouse:
       user:
       - name: "default"
         config:
-          #password: ""
+          # password: ""
           networks:
           - "::/0"
           profile: "default"
@@ -419,7 +423,7 @@ tabix:
   ## If specified, these secrets will be passed to individual puller implementations for them to use.
   ## For example, in the case of docker, only DockerConfig type secrets are honored.
   ## More info: https://kubernetes.io/docs/concepts/containers/images#specifying-imagepullsecrets-on-a-pod
-  #imagePullSecrets:
+  # imagePullSecrets:
   ##
   ## You can limit access to your tabix.ui application on the proxy level.
   ## User and Password parameters to restrict access only for specified user.
@@ -428,7 +432,7 @@ tabix:
     password: "admin"
   ##
   ## You can automatically connect to a Clickhouse server by specifying chName, chHost, chHost, chPassword and/or chParams environment variables.
-  #automaticConnection:
+  # automaticConnection:
   #  chName: "test"
   #  chHost: "test"
   #  chLogin: "test"
