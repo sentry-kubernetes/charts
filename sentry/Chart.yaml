@@ -2,7 +2,7 @@ apiVersion: v2
 name: sentry
 description: A Helm chart for Kubernetes
 type: application
-version: 14.0.0
+version: 14.0.1
 appVersion: 22.3.0
 dependencies:
   - name: redis
@@ -15,7 +15,7 @@ dependencies:
     condition: kafka.enabled
   - name: clickhouse
     repository: https://sentry-kubernetes.github.io/charts
-    version: 3.1.1
+    version: 3.1.2
     condition: clickhouse.enabled
   - name: zookeeper
     repository: https://charts.bitnami.com/bitnami
