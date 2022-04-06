@@ -2,7 +2,7 @@ apiVersion: v2
 name: sentry
 description: A Helm chart for Kubernetes
 type: application
-version: 14.0.1
+version: 14.0.2
 appVersion: 22.3.0
 dependencies:
   - name: redis
@@ -34,3 +34,5 @@ dependencies:
     repository: https://charts.bitnami.com/bitnami
     version: 9.3.3
     condition: nginx.enabled
+maintainers:
+  - name: sentry-kubernetes
