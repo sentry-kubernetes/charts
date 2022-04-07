@@ -1,5 +1,9 @@
 {{- if .Values.snuba.cleanupTransactions.enabled }}
+{{- if semverCompare "<1.21-0" .Capabilities.KubeVersion.GitVersion }}
 apiVersion: batch/v1beta1
+{{- else }}
+apiVersion: batch/v1
+{{- end }}
 kind: CronJob
 metadata:
   name: {{ template "sentry.fullname" . }}-snuba-cleanup-transactions
