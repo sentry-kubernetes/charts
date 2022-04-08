@@ -47,7 +47,7 @@ jobs:
       - name: Create index file
         uses: yeouchien/helm3-action@f3a7c239c5c60777210c8e631839edf5dd3fa29c
         with:
-          command: repo index --url http://rubemlrm.com/sentry-kubernetes-charts/ ./gh-pages/
+          command: repo index --url http://rubemlrm.com/sentry-kubernetes-charts/charts ./gh-pages/
 
       - name: Commit files
         run: |
@@ -67,4 +67,4 @@ jobs:
         with:
           publish_branch: gh-pages
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./gh-pages/
+          publish_dir: ./gh-pages/charts
