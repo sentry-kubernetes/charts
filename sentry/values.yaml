@@ -101,6 +101,7 @@ sentry:
       targetCPUUtilizationPercentage: 50
     sidecars: []
     volumes: []
+    networkPolicy: {}
 
   features:
     orgSubdomains: false
@@ -156,7 +157,6 @@ sentry:
     # volumeMounts:
     #   - mountPath: /dev/shm
     #     name: dshm
-
   cron:
     replicas: 1
     env: []
@@ -212,6 +212,10 @@ sentry:
     volumes: []
 
 snuba:
+  networkPolicy: {}
+
+  migrate:
+    networkPolicy: {}
   api:
     replicas: 1
     env: []
@@ -391,6 +395,7 @@ snuba:
     schedule: "0 * * * *"
     sidecars: []
     volumes: []
+    securityContext: {}
 
   cleanupTransactions:
     concurrencyPolicy: Allow
@@ -398,10 +403,17 @@ snuba:
     schedule: "0 * * * *"
     sidecars: []
     volumes: []
+    securityContext: {}
 
 hooks:
   enabled: true
   removeOnSuccess: true
+  clickhouseInit:
+    podAnnotations: {}
+    affinity: {}
+    nodeSelector: {}
+    securityContext:
+    # tolerations: []
   dbCheck:
     image:
       # repository: subfuzion/netcat
@@ -622,7 +634,8 @@ filestore:
       ## be used
       existingClaim: ""
 
-  gcs: {}
+  gcs:
+    {}
     ## Point this at a pre-configured secret containing a service account. The resulting
     ## secret will be mounted at /var/run/secrets/google
     # secretName:
@@ -652,7 +665,7 @@ config:
 clickhouse:
   enabled: true
   clickhouse:
-    imageVersion: "20.8.19.4"
+    imageVersion: "21.11.9.1"
     configmap:
       remote_servers:
         internal_replication: true
@@ -720,6 +733,7 @@ zookeeper:
 # Settings for Kafka.
 # See https://github.com/bitnami/charts/tree/master/bitnami/kafka
 kafka:
+  networkPolicy: {}
   enabled: true
   replicaCount: 3
   allowPlaintextListener: true
@@ -824,7 +838,8 @@ rabbitmq:
   persistence:
     enabled: true
   resources: {}
-  memoryHighWatermark: {}
+  memoryHighWatermark:
+    {}
     # enabled: true
     # type: relative
     # value: 0.4
@@ -937,7 +952,6 @@ metrics:
     # honorLabels: true
 
 revisionHistoryLimit: 10
-
 # dnsPolicy: "ClusterFirst"
 # dnsConfig:
 #   nameservers: []

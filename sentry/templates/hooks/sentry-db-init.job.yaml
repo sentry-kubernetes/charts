@@ -57,6 +57,10 @@ spec:
       dnsConfig:
 {{ toYaml .Values.dnsConfig | indent 8 }}
       {{- end }}
+      {{- if .Values.hooks.dbInit.securityContext }}
+      securityContext:
+{{ toYaml .Values.hooks.dbInit.securityContext | indent 8 }}
+      {{- end }}
       containers:
       - name: db-init-job
         image: "{{ template "sentry.image" . }}"

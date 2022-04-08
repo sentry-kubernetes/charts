@@ -57,6 +57,10 @@ spec:
       - name: db-check
         image: {{ template "dbCheck.image" . }}
         imagePullPolicy: {{ default "IfNotPresent" .Values.hooks.dbCheck.image.pullPolicy }}
+      {{- if .Values.hooks.dbCheck.securityContext }}
+        securityContext:
+{{ toYaml .Values.hooks.dbCheck.securityContext | indent 10 }}
+      {{- end }}
         command:
           - /bin/sh
           - -c

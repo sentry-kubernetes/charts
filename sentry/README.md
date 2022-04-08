@@ -29,11 +29,13 @@ The following table lists the configurable parameters of the Sentry chart and th
 
 Note: this table is incomplete, so have a look at the values.yaml in case you miss something
 
-| Parameter                                     | Description                                                                                                                                                         | Default                        |
-| :-------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------ | :----------------------------- |
-| `user.create`                                 | if `true`, creates a default admin user defined from `email` and `password`                                                                                         | `true`                         |
-| `user.email`                                  | Admin user email                                                                                                                                                    | `admin@sentry.local`           |
-| `user.password`                               | Admin user password                                                                                                                                                 | `aaaa`                         |
+| Parameter                              | Description                                                                 | Default              |
+| :------------------------------------- | :-------------------------------------------------------------------------- | :------------------- |
+| `user.create`                          | if `true`, creates a default admin user defined from `email` and `password` | `true`               |
+| `user.email`                           | Admin user email                                                            | `admin@sentry.local` |
+| `user.password`                        | Admin user password                                                         | `aaaa`               |
+| `hooks.clickhouseInit.securityContext` | Set security context for the job                                            | `{}`                 |
+
 | `ingress.enabled`                             | Enabling Ingress                                                                                                                                                    | `false`                        |
 | `ingress.regexPathStyle`                      | Allows setting the style the regex paths are rendered in the ingress for the ingress controller in use. Possible values are `nginx`, `aws-alb`, `gke` and `traefik` | `nginx`                        |
 | `nginx.enabled`                               | Enabling NGINX                                                                                                                                                      | `true`                         |
@@ -63,6 +65,9 @@ Note: this table is incomplete, so have a look at the values.yaml in case you mi
 | `serviceAccount.enabled`                      | If `true`, a custom Service Account will be used.                                                                                                                   | `false`                        |
 | `serviceAccount.name`                         | The base name of the ServiceAccount to use. Will be appended with e.g. `snuba` or `web` for the pods accordingly.                                                   | `"sentry"`                     |
 | `serviceAccount.automountServiceAccountToken` | Automount API credentials for a Service Account.                                                                                                                    | `true`                         |
+
+| `snuba.cleanupErrors.securityContext`         | Set security context for the cleanup errors job                                      | `{}` |
+| `snuba.cleanupTransactions.securityContext`         | Set security context for the cleanup transactions job                                        | `{}` |
 | `system.secretKey`                            | secret key for the session cookie ([documentation](https://develop.sentry.dev/config/#general))                                                                     | `nil`                          |
 | `sentry.features.vstsLimitedScopes`           | Disables the azdo-integrations with limited scopes that is the cause of so much pain                                                                                | `true`                         |
 | `sentry.web.customCA.secretName`              | Allows mounting a custom CA secret                                                                                                                                  | `nil`                          |

@@ -1,5 +1,9 @@
 {{- if .Values.snuba.cleanupErrors.enabled }}
+{{- if semverCompare "<1.21-0" .Capabilities.KubeVersion.GitVersion }}
 apiVersion: batch/v1beta1
+{{- else }}
+apiVersion: batch/v1
+{{- end }}
 kind: CronJob
 metadata:
   name: {{ template "sentry.fullname" . }}-snuba-cleanup-errors
@@ -8,6 +12,7 @@ metadata:
     chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
     release: "{{ .Release.Name }}"
     heritage: "{{ .Release.Service }}"
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
 spec:
   schedule: "{{ .Values.snuba.cleanupErrors.schedule }}"
   concurrencyPolicy: "{{ .Values.snuba.cleanupErrors.concurrencyPolicy }}"
@@ -51,6 +56,10 @@ spec:
           imagePullSecrets:
 {{ toYaml .Values.images.snuba.imagePullSecrets | indent 12 }}
             {{- end }}
+          {{- if .Values.snuba.cleanupErrors.securityContext }}
+          securityContext:
+{{ toYaml .Values.snuba.cleanupErrors.securityContext | indent 12}}
+          {{- end }}
           containers:
           - name: {{ .Chart.Name }}-snuba-cleanup-errors
             image: "{{ template "snuba.image" . }}"

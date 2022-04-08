@@ -1,0 +1,23 @@
+---
+{{- if .Values.kafka.networkPolicy.enabled }}
+kind: NetworkPolicy
+apiVersion: networking.k8s.io/v1
+metadata:
+  name: allow-ingress-kafka
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/component: kafka
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  ingress:
+    - ports:
+        - port: {{ .Values.kafka.service.port }}
+          protocol: TCP
+        - port: {{ .Values.kafka.service.internalPort }}
+          protocol: TCP
+        - port: {{ .Values.kafka.service.externalPort }}
+          protocol: TCP
+  policyTypes:
+  - Ingress
+
+{{- end }}
