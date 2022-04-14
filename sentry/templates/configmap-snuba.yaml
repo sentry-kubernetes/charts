@@ -44,8 +44,12 @@ data:
             "errors_v2_ro",
             "profiles",
         },
-        {{- if or .Values.clickhouse.enabled (not .Values.externalClickhouse.singleNode) }}
+        {{- if .Values.externalClickhouse.singleNode }}
+        "single_node": True,
+        {{- else }}
         "single_node": False,
+        {{- end }}
+        {{- if or .Values.clickhouse.enabled (not .Values.externalClickhouse.singleNode) }}
         "cluster_name": {{ include "sentry.clickhouse.cluster.name" . | quote }},
         "distributed_cluster_name": {{ include "sentry.clickhouse.cluster.name" . | quote }},
         {{- end }}
