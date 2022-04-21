@@ -123,7 +123,7 @@ As this chart runs in helm 3 and also tries its best to follow on from the origi
 From the previous upgrade, make sure to get the following from your previous installation:
 
 - Redis Password (If Redis auth was enabled)
-- Postgresql Password
+- PostgreSQL Password
   Both should be in the `secrets` of your original 9.0 release. Make a note of both of these values.
 
 #### Upgrade Steps
@@ -148,7 +148,7 @@ If Redis auth is disabled:
 
 Please also follow the steps for Major version 3 to 4 migration
 
-## PostgresSQL
+## PostgreSQL
 
 By default, PostgreSQL is installed as part of the chart. To use an external PostgreSQL server set `postgresql.enabled` to `false` and then set `postgresql.postgresHost` and `postgresql.postgresqlPassword`. The other options (`postgresql.postgresqlDatabase`, `postgresql.postgresqlUsername` and `postgresql.postgresqlPort`) may also want changing from their default values.
 
