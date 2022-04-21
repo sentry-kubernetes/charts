@@ -13,6 +13,7 @@
 {{- define "relay.healthCheck.livenessRequestPath" -}}/api/relay/healthcheck/live/{{- end -}}
 {{- define "sentry.port" -}}9000{{- end -}}
 {{- define "sentry.healthCheck.requestPath" -}}/_health/{{- end -}}
+{{- define "relay.healthCheck.requestPath" -}}/api/relay/healthcheck/live/{{- end -}}
 {{- define "snuba.port" -}}1218{{- end -}}
 {{- define "symbolicator.port" -}}3021{{- end -}}
 
