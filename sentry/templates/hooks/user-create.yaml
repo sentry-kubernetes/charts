@@ -32,6 +32,10 @@ spec:
         {{- end }}
     spec:
       restartPolicy: Never
+      {{- if .Values.hooks.dbInit.tolerations }}
+      tolerations:
+{{ toYaml .Values.hooks.dbInit.tolerations | indent 8 }}
+      {{- end }}
       {{- if .Values.images.sentry.imagePullSecrets }}
       imagePullSecrets:
 {{ toYaml .Values.images.sentry.imagePullSecrets | indent 8 }}
