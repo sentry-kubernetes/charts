@@ -332,13 +332,6 @@ default
 {{- end -}}
 
 {{/*
-Set ClickHouse Authorization
-*/}}
-{{- define "sentry.clickhouse.auth" -}}
---user {{ include "sentry.clickhouse.username" . }} --password {{ include "sentry.clickhouse.password" .| quote }}
-{{- end -}}
-
-{{/*
 Set ClickHouse User
 */}}
 {{- define "sentry.clickhouse.username" -}}
