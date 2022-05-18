@@ -334,16 +334,18 @@ default
 {{/*
 Set ClickHouse User
 */}}
-{{- define "sentry.clickhouse.username" -}}
-{{- if .Values.clickhouse.enabled -}}
-  {{- if .Values.clickhouse.clickhouse.configmap.users.enabled -}}
-{{ (index .Values.clickhouse.clickhouse.configmap.users.user 0).name }}
-  {{- else -}}
-default
-  {{- end -}}
-{{- else -}}
-{{ required "A valid .Values.externalClickhouse.username is required" .Values.externalClickhouse.username }}
-{{- end -}}
+{{- if .Values.createSnubaEnvSecret -}}
+    {{- define "sentry.clickhouse.username" -}}
+    {{- if .Values.clickhouse.enabled -}}
+      {{- if .Values.clickhouse.clickhouse.configmap.users.enabled -}}
+    {{ (index .Values.clickhouse.clickhouse.configmap.users.user 0).name }}
+      {{- else -}}
+    default
+      {{- end -}}
+    {{- else -}}
+    {{ required "A valid .Values.externalClickhouse.username is required" .Values.externalClickhouse.username }}
+    {{- end -}}
+    {{- end -}}
 {{- end -}}
 
 {{/*
