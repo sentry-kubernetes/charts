@@ -74,7 +74,7 @@ spec:
           - "--result-topic=transactions-subscription-results"
           - "--dataset=transactions"
           - "--commit-log-topic=snuba-commit-log"
-          - "--commit-log-group=snuba-transactions-consumers"
+          - "--commit-log-group=transactions_group"
           - "--delay-seconds=60"
           - "--schedule-ttl=60"
         ports:
