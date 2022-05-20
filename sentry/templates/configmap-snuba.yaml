@@ -44,7 +44,11 @@ data:
             "errors_v2_ro",
             "profiles",
         },
-        {{- if .Values.externalClickhouse.singleNode }}
+        {{- /*
+          The default clickhouse installation runs in distributed mode, while the external
+          clickhouse configured can be configured any way you choose
+        */}}
+        {{- if and .Values.externalClickhouse.singleNode (not .Values.clickhouse.enabled) }}
         "single_node": True,
         {{- else }}
         "single_node": False,
