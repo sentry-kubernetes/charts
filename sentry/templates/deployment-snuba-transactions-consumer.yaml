@@ -78,6 +78,8 @@ spec:
           - "transactions"
           - "--consumer-group"
           - "transactions_group"
+          - "--commit-log-topic"
+          - "snuba-commit-log"
           - "--auto-offset-reset"
           - "{{ .Values.snuba.transactionsConsumer.autoOffsetReset }}"
           - "--max-batch-time-ms"
