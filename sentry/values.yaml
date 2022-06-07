@@ -326,6 +326,7 @@ snuba:
     # tolerations: []
     # podLabels: []
     autoOffsetReset: "earliest"
+    partitions: 1
 
   sessionsConsumer:
     replicas: 1
