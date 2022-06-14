@@ -64,19 +64,10 @@ spec:
       - name: {{ . | quote }}
     {{- end }}
     {{- end }}
+    {{- if .Values.clickhouse.initContainers }}
       initContainers:
-      - name: init
-        image: {{ .Values.clickhouse.init.image }}:{{ .Values.clickhouse.init.imageVersion }}
-        imagePullPolicy: {{ .Values.clickhouse.init.imagePullPolicy }}
-        args:
-        - /bin/sh
-        - -c
-        - |
-          mkdir -p /etc/clickhouse-server/metrica.d
-        {{- if .Values.clickhouse.init.resources }}
-        resources:
-{{ toYaml .Values.clickhouse.init.resources | indent 10 }}
-        {{- end }}
+{{ toYaml .Values.clickhouse.initContainers | indent 6 }}
+    {{- end }}
       containers:
       - name: {{ include "clickhouse.fullname" . }}
         image: {{ .Values.clickhouse.image }}:{{ .Values.clickhouse.imageVersion }}
