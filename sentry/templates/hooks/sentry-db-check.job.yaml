@@ -53,6 +53,10 @@ spec:
       imagePullSecrets:
 {{ toYaml .Values.hooks.dbCheck.image.imagePullSecrets | indent 8 }}
       {{- end }}
+      {{- if .Values.hooks.securityContext }}
+      securityContext:
+{{ toYaml .Values.hooks.securityContext | indent 8 }}
+      {{- end }}
       containers:
       - name: db-check
         image: {{ template "dbCheck.image" . }}

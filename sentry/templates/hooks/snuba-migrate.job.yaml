@@ -59,6 +59,10 @@ spec:
       dnsConfig:
 {{ toYaml .Values.dnsConfig | indent 8 }}
       {{- end }}
+      {{- if .Values.hooks.securityContext }}
+      securityContext:
+{{ toYaml .Values.hooks.securityContext | indent 8 }}
+      {{- end }}
       containers:
       - name: snuba-migrate
         image: "{{ template "snuba.image" . }}"
