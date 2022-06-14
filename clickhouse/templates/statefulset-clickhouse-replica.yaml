@@ -74,9 +74,7 @@ spec:
         image: {{ .Values.clickhouse.image }}:{{ .Values.clickhouse.imageVersion }}
         imagePullPolicy: {{ .Values.clickhouse.imagePullPolicy }}
         command:
-          - /bin/bash
-          - -c
-          - export SHARD=${HOSTNAME##*-} && /entrypoint.sh
+{{ toYaml .Values.clickhouse.command | indent 10 }}
         ports:
         - name: http-port
           containerPort: {{ .Values.clickhouse.http_port | default "8123" }}

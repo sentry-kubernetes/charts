@@ -56,6 +56,26 @@ clickhouse:
   # Security Context
   securityContext: {}
 
+  # Command
+  #
+  # clickhouse < 21.2 entrypoint checks if /var/lib/clickhouse is owned by the clickhouse user
+  # but kubernetes only allows to control the filesystem group - the owner will always be "root"
+  #
+  # the permission check can be dropped with this workaround:
+  #
+  # command:
+  #   - /bin/bash
+  #   - -c
+  #   - |
+  #     export SHARD=${HOSTNAME##*-}
+  #     cp /entrypoint.sh /tmp/entrypoint.sh
+  #     sed -i '/elif [ "$(stat -c %u "$dir")" != "$USER" ]/,+2d' /tmp/entrypoint.sh
+  #     /tmp/entrypoint.sh
+  command:
+    - /bin/bash
+    - -c
+    - export SHARD=${HOSTNAME##*-} && /entrypoint.sh
+
   ## Prometheus Exporter / Metrics
   ##
   metrics:
