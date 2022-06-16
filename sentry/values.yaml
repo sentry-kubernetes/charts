@@ -424,6 +424,7 @@ hooks:
         memory: 64Mi
     affinity: {}
     nodeSelector: {}
+    securityContext: {}
     # tolerations: []
   dbInit:
     env: []
