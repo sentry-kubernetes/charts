@@ -214,6 +214,11 @@ sentry:
 snuba:
   api:
     replicas: 1
+    # set command to ["snuba","api"] if securityContext.runAsUser > 0
+    # see: https://github.com/getsentry/snuba/issues/956
+    command: {}
+    #   - snuba
+    #   - api
     env: []
     probeInitialDelaySeconds: 10
     liveness:
