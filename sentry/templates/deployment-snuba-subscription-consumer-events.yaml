@@ -67,7 +67,6 @@ spec:
         command:
           - "snuba"
           - "subscriptions-scheduler-executor"
-          - "--partitions={{ .Values.snuba.subscriptionConsumerEvents.partitions}}"
           - "--auto-offset-reset={{ .Values.snuba.subscriptionConsumerEvents.autoOffsetReset }}"
           - "--dataset=events"
           - "--entity=events"
