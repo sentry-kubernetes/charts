@@ -35,7 +35,7 @@ images:
     imagePullSecrets: []
   symbolicator:
     # repository: getsentry/symbolicator
-    tag: 0.5.0
+    tag: 0.5.1
     # pullPolicy: IfNotPresent
     imagePullSecrets: []
 
@@ -325,7 +325,6 @@ snuba:
     # tolerations: []
     # podLabels: []
     autoOffsetReset: "earliest"
-    partitions: 1
 
   subscriptionConsumerTransactions:
     replicas: 1
@@ -337,7 +336,6 @@ snuba:
     # tolerations: []
     # podLabels: []
     autoOffsetReset: "earliest"
-    partitions: 1
 
   sessionsConsumer:
     replicas: 1

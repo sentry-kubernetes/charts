@@ -43,6 +43,8 @@ data:
             "errors_v2",
             "errors_v2_ro",
             "profiles",
+            "replays",
+            "generic_metrics_sets",
         },
         {{- /*
           The default clickhouse installation runs in distributed mode, while the external
