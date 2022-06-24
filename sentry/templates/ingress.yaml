@@ -47,14 +47,14 @@ spec:
               service:
                 name: {{ template "sentry.fullname" . }}-nginx
                 port:
-                  {{- if kindIs "float64" .Values.nginx.service.port }}
-                  number: {{ .Values.nginx.service.port }}
+                  {{- if kindIs "float64" .Values.nginx.service.ports.http }}
+                  number: {{ .Values.nginx.service.ports.http }}
                   {{- else }}
-                  name: {{ .Values.nginx.service.port }}
+                  name: {{ .Values.nginx.service.ports.http }}
                   {{- end }}
               {{- else }}
               serviceName: {{ template "sentry.fullname" . }}-nginx
-              servicePort: {{ .Values.nginx.service.port }}
+              servicePort: {{ .Values.nginx.service.ports.http }}
               {{- end }}
     {{- else if or (eq (default "nginx" .Values.ingress.regexPathStyle) "aws-alb") (eq (default "nginx" .Values.ingress.regexPathStyle) "gke") }}
     {{- if .Values.ingress.alb.httpRedirect }}

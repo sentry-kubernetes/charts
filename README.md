@@ -14,6 +14,20 @@ Big thanks to the maintainers of the [deprecated chart](https://github.com/helm/
 
 For now the full list of values is not documented but you can get inspired by the values.yaml specific to each directory.
 
+## Upgrading from 14.x.x version of this Chart to 15.x.x
+
+Chart dependencies has been upgraded because of bitnami charts removal. 
+Changes:
+- `nginx.service.port: 80` > `nginx.service.ports.http: 80`
+- `kafka.service.port` > `kafka.service.ports.client`
+
+Bumped dependencies:
+- redis > 16.12.1 - latest version of chart
+- kafka > 16.3.2 - chart aligned with zookeeper dependency, upgraded kafka to 3.11
+- rabbit > 8.32.2 - latest 3.9.* image version of chart
+- postgresql > 10.16.2 - latest wersion of chart with postgres 11
+- nginx > 12.0.4 - latest version of chart
+
 ## Upgrading from 13.x.x version of this Chart to 14.0.0
 
 ClickHouse was reconfigured with sharding and replication in-mind, If you are using external ClickHouse, you don't need to do anything.
