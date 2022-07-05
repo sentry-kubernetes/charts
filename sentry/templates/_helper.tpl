@@ -394,8 +394,8 @@ Set Kafka Confluent host
 Set Kafka Confluent port
 */}}
 {{- define "sentry.kafka.port" -}}
-{{- if and (.Values.kafka.enabled) (.Values.kafka.service.port) -}}
-{{- .Values.kafka.service.port }}
+{{- if and (.Values.kafka.enabled) (.Values.kafka.service.ports.client) -}}
+{{- .Values.kafka.service.ports.client }}
 {{- else if and (.Values.externalKafka) (not (kindIs "slice" .Values.externalKafka)) -}}
 {{ required "A valid .Values.externalKafka.port is required" .Values.externalKafka.port }}
 {{- end -}}

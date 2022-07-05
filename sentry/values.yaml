@@ -569,7 +569,8 @@ nginx:
   replicaCount: 1
   service:
     type: ClusterIP
-    port: 80
+    ports: 
+      http: 80
   ## Use this to enable an extra service account
   # serviceAccount:
   #   create: false
@@ -744,7 +745,8 @@ kafka:
   socketRequestMaxBytes: "50000000"
 
   service:
-    port: 9092
+    ports: 
+      client: 9092
 
   ## Use this to enable an extra service account
   # serviceAccount:
