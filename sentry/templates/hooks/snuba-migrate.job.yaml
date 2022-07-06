@@ -34,6 +34,9 @@ spec:
         {{- if .Values.snuba.podLabels }}
 {{ toYaml .Values.snuba.podLabels | indent 8 }}
         {{- end }}
+        {{- if .Values.hooks.snubaMigrate.podLabels }}
+{{ toYaml .Values.hooks.snubaMigrate.podLabels | indent 8 }}
+        {{- end }}
     spec:
       {{- if .Values.hooks.snubaInit.affinity }}
       affinity:
