@@ -5,6 +5,10 @@ type: application
 version: 15.0.0
 appVersion: 22.6.0
 dependencies:
+  - name: memcached
+    repository: https://charts.bitnami.com/bitnami
+    version: 6.1.5
+    condition: sourcemaps.enabled
   - name: redis
     repository: https://charts.bitnami.com/bitnami
     version: 16.12.1

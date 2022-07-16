@@ -128,6 +128,18 @@ data:
     from sentry.conf.server import *  # NOQA
     from distutils.util import strtobool
 
+    
+    {{- if .Values.sourcemaps.enabled }}
+    CACHES = {
+        "default": {
+            "BACKEND": "django.core.cache.backends.memcached.MemcachedCache",
+            "LOCATION": [
+                "sentry-memcached:11211"
+            ]
+        }
+    }
+    {{- end }}
+
     DATABASES = {
         "default": {
             "ENGINE": "sentry.db.postgres",
