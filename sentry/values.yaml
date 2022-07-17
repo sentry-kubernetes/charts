@@ -75,6 +75,11 @@ relay:
   sidecars: []
   volumes: []
 
+geodata:
+  path: ""
+  volumeName: ""
+  mountPath: ""
+
 sentry:
   singleOrganization: true
   web:

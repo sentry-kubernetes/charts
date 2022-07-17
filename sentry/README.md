@@ -109,6 +109,51 @@ So you would want to create and use a `StorageClass` with a supported volume dri
 
 Its also important having `connect_to_reserved_ips: true` in the symbolicator config file, which this Chart defaults to.
 
+## Geolocation
+
+[Geolocation of IP addresses](https://develop.sentry.dev/self-hosted/geolocation/) is supported if you provide a GeoIP database:
+
+Example values.yaml:
+
+```yaml
+
+relay:
+  # provide a volume for relay that contains the geoip database
+  volumes:
+    - name: geoip
+      hostPath:
+        path: /geodata
+        type: Directory
+
+
+sentry:
+  web:
+    # provide a volume for sentry-web that contains the geoip database
+    volumes:
+      - name: geoip
+        hostPath:
+          path: /geodata
+          type: Directory
+
+  worker:
+    # provide a volume for sentry-worker that contains the geoip database
+    volumes:
+      - name: geoip
+        hostPath:
+          path: /geodata
+          type: Directory
+
+
+# enable and reference the volume
+geodata:
+  volumeName: geoip
+  # mountPath of the volume containing the database
+  mountPath: /geodata
+  # path to the geoip database inside the volumemount
+  path: /geodata/GeoLite2-City.mmdb
+```
+
+
 # Usage
 
 - [AWS + Terraform](docs/usage-aws-terraform.md)
