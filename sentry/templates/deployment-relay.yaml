@@ -62,23 +62,6 @@ spec:
       securityContext:
 {{ toYaml .Values.relay.securityContext | indent 8 }}
       {{- end }}
-      initContainers:
-        - name: {{ .Chart.Name }}-relay-init
-          image: "{{ template "relay.image" . }}"
-          imagePullPolicy: {{ default "IfNotPresent" .Values.images.sentry.pullPolicy }}
-          args:
-            - "credentials"
-            - "generate"
-          env:
-            - name: RELAY_PORT
-              value: '{{ template "relay.port" }}'
-          volumeMounts:
-            - name: credentials
-              mountPath: /work/.relay
-            - name: config
-              mountPath: /work/.relay/config.yml
-              subPath: config.yml
-              readOnly: true
       {{- if .Values.dnsPolicy }}
       dnsPolicy: {{ .Values.dnsPolicy | quote }}
       {{- end }}
@@ -99,7 +82,7 @@ spec:
 {{ toYaml .Values.relay.env | indent 8 }}
 {{- end }}
         volumeMounts:
-          - name: credentials
+          - name: relay-credentials
             mountPath: /work/.relay
           - name: config
             mountPath: /work/.relay/config.yml
@@ -138,8 +121,9 @@ spec:
         configMap:
           name: {{ template "sentry.fullname" . }}-relay
           defaultMode: 0644
-      - name: credentials
-        emptyDir: {}
+      - name: relay-credentials
+        persistentVolumeClaim:
+          claimName: {{ template "sentry.fullname" . }}-relay-credentials
 {{- if .Values.relay.volumes }}
 {{ toYaml .Values.relay.volumes | indent 6 }}
 {{- end }}

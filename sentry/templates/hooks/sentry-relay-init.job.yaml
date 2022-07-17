@@ -1,0 +1,98 @@
+{{- if .Values.hooks.enabled -}}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ template "sentry.fullname" . }}-relay-init
+  labels:
+    app: sentry
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
+    release: "{{ .Release.Name }}"
+    heritage: "{{ .Release.Service }}"
+  annotations:
+    # This is what defines this resource as a hook. Without this line, the
+    # job is considered part of the release.
+    # only run this on install since regeneration would invalidate created relays in sentry
+    "helm.sh/hook": "post-install"
+    "helm.sh/hook-delete-policy": "{{ if .Values.hooks.removeOnSuccess }}hook-succeeded,{{ end }}before-hook-creation"
+    "helm.sh/hook-weight": "6"
+spec:
+  template:
+    metadata:
+      name: {{ template "sentry.fullname" . }}-relay-init
+      annotations:
+        checksum/configmap.yaml: {{ include (print $.Template.BasePath "/configmap-sentry.yaml") . | sha256sum }}
+        {{- if .Values.hooks.relayInit.annotations }}
+{{ toYaml .Values.hooks.relayInit.annotations | indent 8 }}
+        {{- end }}
+      labels:
+        app: sentry
+        release: "{{ .Release.Name }}"
+        {{- if .Values.hooks.relayInit.podLabels }}
+{{ toYaml .Values.sentry.relayInit.podLabels | indent 8 }}
+        {{- end }}
+    spec:
+      {{- if .Values.hooks.relayInit.affinity }}
+      affinity:
+{{ toYaml .Values.hooks.relayInit.affinity | indent 8 }}
+      {{- end }}
+      {{- if .Values.hooks.relayInit.nodeSelector }}
+      nodeSelector:
+{{ toYaml .Values.hooks.relayInit.nodeSelector | indent 8 }}
+      {{- end }}
+      {{- if .Values.hooks.relayInit.tolerations }}
+      tolerations:
+{{ toYaml .Values.hooks.relayInit.tolerations | indent 8 }}
+      {{- end }}
+      restartPolicy: Never
+      {{- if .Values.images.sentry.imagePullSecrets }}
+      imagePullSecrets:
+{{ toYaml .Values.images.sentry.imagePullSecrets | indent 8 }}
+      {{- end }}
+      {{- if .Values.dnsPolicy }}
+      dnsPolicy: {{ .Values.dnsPolicy | quote }}
+      {{- end }}
+      {{- if .Values.dnsConfig }}
+      dnsConfig:
+{{ toYaml .Values.dnsConfig | indent 8 }}
+      {{- end }}
+      {{- if .Values.hooks.securityContext }}
+      securityContext:
+{{ toYaml .Values.hooks.securityContext | indent 8 }}
+      {{- end }}
+      containers:
+      - name: {{ .Chart.Name }}-relay-init
+        image: "{{ template "relay.image" . }}"
+        imagePullPolicy: {{ default "IfNotPresent" .Values.images.sentry.pullPolicy }}
+        args:
+          - "credentials"
+          - "generate"
+        env:
+          - name: RELAY_PORT
+            value: '{{ template "relay.port" }}'
+        volumeMounts:
+          - name: relay-credentials
+            mountPath: /work/.relay
+          - name: config
+            mountPath: /work/.relay/config.yml
+            subPath: config.yml
+            readOnly: true
+        {{- if .Values.hooks.relayInit.env }}
+{{ toYaml .Values.hooks.relayInit.env | indent 8 }}
+        {{- end }}
+        resources:
+{{ toYaml .Values.hooks.relayInit.resources | indent 10 }}
+{{- if .Values.hooks.relayInit.sidecars }}
+{{ toYaml .Values.hooks.relayInit.sidecars | indent 6 }}
+{{- end }}
+      volumes:
+      - name: config
+        configMap:
+          name: {{ template "sentry.fullname" . }}-relay
+          defaultMode: 0644
+      - name: relay-credentials
+        persistentVolumeClaim:
+          claimName: {{ template "sentry.fullname" . }}-relay-credentials
+{{- if .Values.hooks.relayInit.volumes }}
+{{ toYaml .Values.hooks.relayInit.volumes | indent 6 }}
+{{- end }}
+{{- end -}}

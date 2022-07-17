@@ -456,6 +456,17 @@ hooks:
     affinity: {}
     nodeSelector: {}
     # tolerations: []
+  relayInit:
+    podAnnotations: {}
+    resources:
+      limits:
+        memory: 128Mi
+      requests:
+        cpu: 100m
+        memory: 128Mi
+    affinity: {}
+    nodeSelector: {}
+    # tolerations: []
 
 system:
   ## be sure to include the scheme on the url, for example: "https://sentry.example.com"
