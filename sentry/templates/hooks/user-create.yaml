@@ -71,6 +71,19 @@ spec:
               exit 1; \
             fi
         env:
+        {{- if .Values.sentry.existingSecret }}
+        - name: SENTRY_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.sentry.existingSecret }}
+              key: {{ default "key" .Values.sentry.existingSecretKey }}
+        {{- else }}
+        - name: SENTRY_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: {{ template "sentry.fullname" . }}-sentry-secret
+              key: "key"
+        {{- end }}
         {{- if .Values.user.existingSecret }}
         - name: ADMIN_PASSWORD
           valueFrom:
