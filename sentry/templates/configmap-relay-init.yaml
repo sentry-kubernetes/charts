@@ -1,23 +1,18 @@
----
 apiVersion: v1
-items:
-- apiVersion: v1
-  data:
-    relay-init.sh: |
-      echo "relay-init.sh"
-      date
-      if [[ -f /work/.relay/credentials.json ]]
-      then
-         echo "credentials already present."
-      else
-         echo "Generating credentials now"
-         /bin/bash /docker-entrypoint.sh credentials generate
-      fi
-      sleep 1
-      echo "done"
-  kind: ConfigMap
-  metadata:
-    creationTimestamp: null
-    name:  relay-init-command-script
-kind: List
-metadata: {}
+kind: ConfigMap
+metadata:
+  name: {{ template "sentry.fullname" . }}-relay-init-script
+  labels:
+    app: sentry
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
+    release: "{{ .Release.Name }}"
+    heritage: "{{ .Release.Service }}"
+data:
+  relay-init.sh: |
+    if [[ -f /work/.relay/credentials.json ]]
+    then
+       echo "/work/.relay/credentials.json already present, using existing relay credentials."
+    else
+       echo "/work/.relay/credentials.json not present, generating new relay credentials now."
+       /bin/bash /docker-entrypoint.sh credentials generate
+    fi

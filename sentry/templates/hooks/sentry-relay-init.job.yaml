@@ -11,7 +11,6 @@ metadata:
   annotations:
     # This is what defines this resource as a hook. Without this line, the
     # job is considered part of the release.
-    # only run this on install since regeneration would invalidate created relays in sentry
     "helm.sh/hook": "post-install,post-upgrade"
     "helm.sh/hook-delete-policy": "{{ if .Values.hooks.removeOnSuccess }}hook-succeeded,{{ end }}before-hook-creation"
     "helm.sh/hook-weight": "6"
@@ -67,17 +66,8 @@ spec:
         - /bin/sh
         - -c
         - |
-          echo "scripts in /relay-init-scripts"
-          ls -lh /relay-init-scripts
-          echo "copy scripts to /tmp"
           cp /relay-init-scripts/*.sh /tmp
-          echo "apply 'chmod +x' to /tmp/*.sh"
-          chmod +x /tmp/*.sh
-          echo "execute relay-init.sh now"
-          /tmp/relay-init.sh
-        #args:
-        #  - "credentials"
-        #  - "generate"
+          /bin/bash /tmp/relay-init.sh
         env:
           - name: RELAY_PORT
             value: '{{ template "relay.port" }}'
@@ -101,7 +91,7 @@ spec:
       volumes:
       - name: relay-init-scripts-volume
         configMap:
-          name: relay-init-command-script
+          name: {{ template "sentry.fullname" . }}-relay-init-script
       - name: config
         configMap:
           name: {{ template "sentry.fullname" . }}-relay
