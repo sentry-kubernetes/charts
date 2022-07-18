@@ -12,7 +12,7 @@ metadata:
     # This is what defines this resource as a hook. Without this line, the
     # job is considered part of the release.
     # only run this on install since regeneration would invalidate created relays in sentry
-    "helm.sh/hook": "post-install"
+    "helm.sh/hook": "post-install,post-upgrade"
     "helm.sh/hook-delete-policy": "{{ if .Values.hooks.removeOnSuccess }}hook-succeeded,{{ end }}before-hook-creation"
     "helm.sh/hook-weight": "6"
 spec:
@@ -63,13 +63,27 @@ spec:
       - name: {{ .Chart.Name }}-relay-init
         image: "{{ template "relay.image" . }}"
         imagePullPolicy: {{ default "IfNotPresent" .Values.images.sentry.pullPolicy }}
-        args:
-          - "credentials"
-          - "generate"
+        command:
+        - /bin/sh
+        - -c
+        - |
+          echo "scripts in /relay-init-scripts"
+          ls -lh /relay-init-scripts
+          echo "copy scripts to /tmp"
+          cp /relay-init-scripts/*.sh /tmp
+          echo "apply 'chmod +x' to /tmp/*.sh"
+          chmod +x /tmp/*.sh
+          echo "execute relay-init.sh now"
+          /tmp/relay-init.sh
+        #args:
+        #  - "credentials"
+        #  - "generate"
         env:
           - name: RELAY_PORT
             value: '{{ template "relay.port" }}'
         volumeMounts:
+          - mountPath: /relay-init-scripts
+            name: relay-init-scripts-volume
           - name: relay-credentials
             mountPath: /work/.relay
           - name: config
@@ -85,6 +99,9 @@ spec:
 {{ toYaml .Values.hooks.relayInit.sidecars | indent 6 }}
 {{- end }}
       volumes:
+      - name: relay-init-scripts-volume
+        configMap:
+          name: relay-init-command-script
       - name: config
         configMap:
           name: {{ template "sentry.fullname" . }}-relay
