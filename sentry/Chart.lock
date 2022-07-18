@@ -1,4 +1,7 @@
 dependencies:
+- name: memcached
+  repository: https://charts.bitnami.com/bitnami
+  version: 6.1.5
 - name: redis
   repository: https://charts.bitnami.com/bitnami
   version: 16.12.1
@@ -20,5 +23,5 @@ dependencies:
 - name: nginx
   repository: https://charts.bitnami.com/bitnami
   version: 12.0.4
-digest: sha256:01e5cd6d09d041b87a02a8a0dd2b430cca80ed9787cfde6eec2ec498cf3f1867
-generated: "2022-06-20T13:33:04.710482554+02:00"
+digest: sha256:5aa28a73d7a983a60887a63b85cf5ae3b35cede1b25e19c184d912a705cdced1
+generated: "2022-07-16T21:41:22.831533442+02:00"

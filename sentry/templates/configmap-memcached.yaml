@@ -1,0 +1,8 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "sentry.fullname" . }}-memcached
+data:
+  MEMCACHED_MEMORY_LIMIT: "{{ .Values.memcached.memoryLimit }}"
+  MEMCACHED_MAX_ITEM_SIZE: "{{ .Values.memcached.maxItemSize }}"
