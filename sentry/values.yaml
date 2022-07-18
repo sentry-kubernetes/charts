@@ -77,8 +77,8 @@ relay:
 
 sentry:
   # to not generate a sentry-secret, use these 2 values to reference an existing secret
-  #existingSecret: "my-secret"
-  #existingSecretKey: "my-secret-key"
+  # existingSecret: "my-secret"
+  # existingSecretKey: "my-secret-key"
   singleOrganization: true
   web:
     # if using filestore backend filesystem with RWO access, set strategyType to Recreate
