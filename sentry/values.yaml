@@ -7,7 +7,7 @@ user:
 
   ## set this value to an existingSecret name to create the admin user with the password in the secret
   # existingSecret: sentry-admin-password
-  
+
   ## set this value to an existingSecretKey which holds the password to be used for sentry admin user default key is `admin-password`
   # existingSecretKey: admin-password
 
@@ -572,7 +572,7 @@ nginx:
   replicaCount: 1
   service:
     type: ClusterIP
-    ports: 
+    ports:
       http: 80
   ## Use this to enable an extra service account
   # serviceAccount:
@@ -748,7 +748,7 @@ kafka:
   socketRequestMaxBytes: "50000000"
 
   service:
-    ports: 
+    ports:
       client: 9092
 
   ## Use this to enable an extra service account
