@@ -580,7 +580,7 @@ nginx:
   replicaCount: 1
   service:
     type: ClusterIP
-    ports: 
+    ports:
       http: 80
   ## Use this to enable an extra service account
   # serviceAccount:
