@@ -772,6 +772,9 @@ externalKafka:
   # host: "kafka-confluent"
   port: 9092
 
+sourcemaps:
+  enabled: false
+
 redis:
   enabled: true
   auth:
@@ -892,6 +895,18 @@ rabbitmq:
   # serviceAccount:
   #   create: false
   #   name: rabbitmq
+
+memcached:
+  memoryLimit: "2048"
+  maxItemSize: "26214400"
+  args:
+    - "memcached"
+    - "-u memcached"
+    - "-p 11211"
+    - "-v"
+    - "-m $(MEMCACHED_MEMORY_LIMIT)"
+    - "-I $(MEMCACHED_MAX_ITEM_SIZE)"
+  extraEnvVarsCM: "sentry-memcached"
 
 ## Prometheus Exporter / Metrics
 ##

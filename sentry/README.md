@@ -82,7 +82,7 @@ For your security, the [`system.secret-key`](https://develop.sentry.dev/config/#
 helm upgrade ... --set system.secretKey=xx
 ```
 
-## Symbolicator
+## Symbolicator and or JavaScript source maps
 
 For getting native stacktraces and minidumps symbolicated with debug symbols (e.g. iOS/Android), you need to enable Symbolicator via
 
@@ -108,6 +108,18 @@ Note: If you need to run or cannot avoid running sentry-worker and sentry-web on
 So you would want to create and use a `StorageClass` with a supported volume driver like [AWS EFS](https://github.com/kubernetes-sigs/aws-efs-csi-driver)
 
 Its also important having `connect_to_reserved_ips: true` in the symbolicator config file, which this Chart defaults to.
+
+#### Source Maps
+
+To get javascript source map processing working, you need to activate sourcemaps, which in turn activates the memcached dependency:
+
+```yaml
+sourcemaps:
+  enabled: true
+```
+
+For details on the background see this blog post: https://engblog.yext.com/post/sentry-js-source-maps
+
 
 ## Geolocation
 
