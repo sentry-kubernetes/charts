@@ -13,8 +13,11 @@ spec:
   resources:
     requests:
       storage: "10Mi"
+
+{{- if .Values.relay.persistence.storageClass }}
 {{- if (eq "-" .Values.relay.persistence.storageClass) }}
   storageClassName: ""
 {{- else }}
   storageClassName: "{{ .Values.relay.persistence.storageClass }}"
+{{- end }}
 {{- end }}
