@@ -68,7 +68,7 @@ relay:
   # podLabels: []
 
   persistence:
-    storageClass: "-"
+    storageClass: ""
   autoscaling:
     enabled: false
     minReplicas: 2

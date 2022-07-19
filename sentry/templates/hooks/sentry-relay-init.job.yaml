@@ -74,7 +74,7 @@ spec:
         volumeMounts:
           - mountPath: /relay-init-scripts
             name: relay-init-scripts-volume
-          - name: relay-credentials
+          - name: relay-credentials-volume
             mountPath: /work/.relay
           - name: config
             mountPath: /work/.relay/config.yml
@@ -96,7 +96,7 @@ spec:
         configMap:
           name: {{ template "sentry.fullname" . }}-relay
           defaultMode: 0644
-      - name: relay-credentials
+      - name: relay-credentials-volume
         persistentVolumeClaim:
           claimName: {{ template "sentry.fullname" . }}-relay-credentials
 {{- if .Values.hooks.relayInit.volumes }}

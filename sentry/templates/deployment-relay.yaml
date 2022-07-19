@@ -82,7 +82,7 @@ spec:
 {{ toYaml .Values.relay.env | indent 8 }}
 {{- end }}
         volumeMounts:
-          - name: relay-credentials
+          - name: relay-credentials-volume
             mountPath: /work/.relay
           - name: config
             mountPath: /work/.relay/config.yml
@@ -121,7 +121,7 @@ spec:
         configMap:
           name: {{ template "sentry.fullname" . }}-relay
           defaultMode: 0644
-      - name: relay-credentials
+      - name: relay-credentials-volume
         persistentVolumeClaim:
           claimName: {{ template "sentry.fullname" . }}-relay-credentials
 {{- if .Values.relay.volumes }}
