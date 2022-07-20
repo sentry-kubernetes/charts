@@ -67,8 +67,8 @@ relay:
   # tolerations: []
   # podLabels: []
 
-  # See README.md
-  #existingSecret: "secret-with-relay-credentials-as-json"
+  # see README.md
+  # existingSecret: "secret-with-relay-credentials-as-json"
   autoscaling:
     enabled: false
     minReplicas: 2
