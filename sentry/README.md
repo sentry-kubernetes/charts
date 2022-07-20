@@ -82,7 +82,7 @@ For your security, the [`system.secret-key`](https://develop.sentry.dev/config/#
 helm upgrade ... --set system.secretKey=xx
 ```
 
-## Symbolicator
+## Symbolicator and or JavaScript source maps
 
 For getting native stacktraces and minidumps symbolicated with debug symbols (e.g. iOS/Android), you need to enable Symbolicator via
 
@@ -198,6 +198,10 @@ geodata:
   path: /geodata/GeoLite2-City.mmdb
 ```
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> develop
 # Usage
 
 - [AWS + Terraform](docs/usage-aws-terraform.md)

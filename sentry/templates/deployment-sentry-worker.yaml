@@ -98,6 +98,10 @@ spec:
           readOnly: true
         - mountPath: {{ .Values.filestore.filesystem.path }}
           name: sentry-data
+        {{- if .Values.geodata.volumeName }}
+        - name: {{ .Values.geodata.volumeName }}
+          mountPath: {{ .Values.geodata.mountPath }}
+        {{- end }}
         {{- if and (eq .Values.filestore.backend "gcs") .Values.filestore.gcs.secretName }}
         - name: sentry-google-cloud-key
           mountPath: /var/run/secrets/google
