@@ -198,10 +198,7 @@ geodata:
   path: /geodata/GeoLite2-City.mmdb
 ```
 
-<<<<<<< HEAD
-=======
 
->>>>>>> develop
 # Usage
 
 - [AWS + Terraform](docs/usage-aws-terraform.md)
