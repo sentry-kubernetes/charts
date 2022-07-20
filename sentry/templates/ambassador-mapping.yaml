@@ -1,0 +1,23 @@
+apiVersion: getambassador.io/v2
+kind:  Mapping
+metadata:
+  name:  "{{ template "sentry.fullname" . }}-mapping"
+spec:
+  name:  "{{ template "sentry.fullname" . }}_mapping"
+  prefix: /
+  rewrite: /
+  host: {{ .Values.system.host }}
+  host_regex: false
+  service: "{{ template "sentry.fullname" . }}-web.{{.Release.Namespace}}:9000"
+  timeout_ms: 0
+  allow_upgrade:
+  - websocket
+  add_response_headers:
+    Cache-Control: no-cache
+    Content-Security-Policy: "frame-ancestors 'none'"
+    Strict-Transport-Security: max-age=31536000;
+    X-Frame-Options: deny
+    X-XSS-Protection: 1; mode=block
+    Referrer-Policy: strict-origin-when-cross-origin
+    Feature-Policy: "geolocation 'self'; camera 'self'"
+    X-Content-Type-Options: nosniff

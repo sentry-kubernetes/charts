@@ -92,6 +92,11 @@ spec:
           value: http://{{ template "sentry.fullname" . }}-snuba:{{ template "snuba.port" }}
         - name: C_FORCE_ROOT
           value: "true"
+        - name: SENTRY_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: {{ template "sentry.fullname" . }}-sentry-secret
+              key: "key"
         {{- if .Values.postgresql.enabled }}
         - name: POSTGRES_PASSWORD
           valueFrom:

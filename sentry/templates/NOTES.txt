@@ -1,3 +1,1 @@
-* When running upgrades, make sure to give back the `system.secretKey` value.
-
-kubectl -n {{ .Release.Namespace }} get configmap {{ template "sentry.fullname" . }}-sentry -o json | grep -m1 -Po '(?<=system.secret-key: )[^\\]*'
+Sentry installed in the {{ .Release.Namespace }} namespace. Browse to {{ .Values.system.url }}.

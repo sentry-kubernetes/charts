@@ -71,6 +71,11 @@ spec:
               exit 1; \
             fi
         env:
+        - name: SENTRY_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: {{ template "sentry.fullname" . }}-sentry-secret
+              key: "key"
         {{- if .Values.user.existingSecret }}
         - name: ADMIN_PASSWORD
           valueFrom:
@@ -80,7 +85,7 @@ spec:
         {{- else if .Values.user.password }}
         - name: ADMIN_PASSWORD
           value: {{ .Values.user.password | quote }}
-        {{- end }}        
+        {{- end }}
         {{- if .Values.postgresql.enabled }}
         - name: POSTGRES_PASSWORD
           valueFrom:

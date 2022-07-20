@@ -1,0 +1,11 @@
+steps:
+- name: 'us.gcr.io/terraform-254700/docai-cloud-build:v3.8.1'
+  id: helm-package
+  entrypoint: /bin/bash
+  args:
+    - -c
+    - |
+      helm plugin install https://github.com/chartmuseum/helm-push
+      helm package sentry
+      helm repo add --username=build-pusher --password=`gcloud secrets versions access --project terraform-254700 latest  --secret harbor-build-pusher` harbor https://harbor.docai.beer/chartrepo/sentry
+      helm cm-push sentry-*tgz harbor
