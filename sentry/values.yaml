@@ -67,8 +67,7 @@ relay:
   # tolerations: []
   # podLabels: []
 
-  persistence:
-    storageClass: ""
+  existingSecret: "secret-with-credentials.json"
   autoscaling:
     enabled: false
     minReplicas: 2

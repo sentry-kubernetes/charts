@@ -62,6 +62,31 @@ spec:
       securityContext:
 {{ toYaml .Values.relay.securityContext | indent 8 }}
       {{- end }}
+      initContainers:
+        - name: {{ .Chart.Name }}-relay-init
+          image: "{{ template "relay.image" . }}"
+          imagePullPolicy: {{ default "IfNotPresent" .Values.images.sentry.pullPolicy }}
+          command:
+          - /bin/sh
+          - -c
+          - |
+            ls -l /credentials
+            cp /relay-init-scripts/*.sh /tmp
+            /bin/bash /tmp/relay-init.sh
+          env:
+            - name: RELAY_PORT
+              value: '{{ template "relay.port" }}'
+          volumeMounts:
+            - name: credentials
+              mountPath: /work/.relay
+            - name: relay-init-scripts-volume
+              mountPath: /relay-init-scripts
+            - name: credentials-json
+              mountPath: /credentials
+            - name: config
+              mountPath: /work/.relay/config.yml
+              subPath: config.yml
+              readOnly: true
       {{- if .Values.dnsPolicy }}
       dnsPolicy: {{ .Values.dnsPolicy | quote }}
       {{- end }}
@@ -82,12 +107,20 @@ spec:
 {{ toYaml .Values.relay.env | indent 8 }}
 {{- end }}
         volumeMounts:
-          - name: relay-credentials-volume
+          - name: credentials
             mountPath: /work/.relay
+          - name: relay-init-scripts-volume
+            mountPath: /relay-init-scripts
           - name: config
             mountPath: /work/.relay/config.yml
             subPath: config.yml
             readOnly: true
+          - name: credentials-json
+            mountPath: /credentials
+          {{- if .Values.geodata.volumeName }}
+          - name: {{ .Values.geodata.volumeName }}
+            mountPath: {{ .Values.geodata.mountPath }}
+          {{- end }}
         livenessProbe:
           failureThreshold: {{ .Values.relay.probeFailureThreshold }}
           httpGet:
@@ -121,9 +154,20 @@ spec:
         configMap:
           name: {{ template "sentry.fullname" . }}-relay
           defaultMode: 0644
-      - name: relay-credentials-volume
-        persistentVolumeClaim:
-          claimName: {{ template "sentry.fullname" . }}-relay-credentials
+      - name: credentials
+        emptyDir: {}
+      - name: relay-init-scripts-volume
+        configMap:
+          name: {{ template "sentry.fullname" . }}-relay-init-script
+      {{- if .Values.relay.existingSecret }}
+      - name: credentials-json
+        secret:
+          secretName: {{ .Values.relay.existingSecret}}
+          optional: false
+      {{- else }}
+      - name: credentials-json
+        emptyDir: {}
+      {{- end }}
 {{- if .Values.relay.volumes }}
 {{ toYaml .Values.relay.volumes | indent 6 }}
 {{- end }}

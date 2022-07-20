@@ -109,6 +109,95 @@ So you would want to create and use a `StorageClass` with a supported volume dri
 
 Its also important having `connect_to_reserved_ips: true` in the symbolicator config file, which this Chart defaults to.
 
+#### Source Maps
+
+To get javascript source map processing working, you need to activate sourcemaps, which in turn activates the memcached dependency:
+
+```yaml
+sourcemaps:
+  enabled: true
+```
+
+For details on the background see this blog post: https://engblog.yext.com/post/sentry-js-source-maps
+
+## Relay credentials
+
+Relay must be [registered at sentry-web](https://docs.sentry.io/product/relay/getting-started) with it's generated public key. By default, the sentry-relay pods
+create a new credentials.json on each start, so it will not be possible to register itself
+at the upstream sentry-web pods. 
+
+Most things will still work, but any configuration changes that need to propagate to relay won't be applied,
+like rate-limits of inbound filters.
+
+To circumvent this, you can provide an `relay.existingSecret` value, that references a secret containing
+a pre-generated credentials.json file (see https://docs.sentry.io/product/relay/getting-started/#initializing-configuration):
+
+
+values.yaml:
+
+```yaml
+relay:
+  existingSecret: sentry-relay-credentials
+
+```yaml
+---
+apiVersion: v1
+data:
+  credentials.json: | 
+                    ewogICJzZWNyZXRfa2V5IjogIjVUNktzNGZyMF8xYmtQTlJpS2ktQVhRUWRNQ3cx
+                    SFotelhTY2lOTVdGb3ciLAogICJwdWJsaWNfa2V5IjogIjFsOVlDc21qU3VXTW9j
+                    aFhPU3JrUnpQQlQyWXpGM3p2MlRVZng5TE1xVVkiLAogICJpZCI6ICJlYWU3ODJi
+                    Ni00ZWE1LTQwNTAtYWQ2ZC05YzMyNmNkZmI3YTciCn0K
+kind: Secret
+metadata:
+  name: sentry-relay-credentials
+type: Opaque
+```
+
+## Geolocation
+
+[Geolocation of IP addresses](https://develop.sentry.dev/self-hosted/geolocation/) is supported if you provide a GeoIP database:
+
+Example values.yaml:
+
+```yaml
+
+relay:
+  # provide a volume for relay that contains the geoip database
+  volumes:
+    - name: geoip
+      hostPath:
+        path: /geodata
+        type: Directory
+
+
+sentry:
+  web:
+    # provide a volume for sentry-web that contains the geoip database
+    volumes:
+      - name: geoip
+        hostPath:
+          path: /geodata
+          type: Directory
+
+  worker:
+    # provide a volume for sentry-worker that contains the geoip database
+    volumes:
+      - name: geoip
+        hostPath:
+          path: /geodata
+          type: Directory
+
+
+# enable and reference the volume
+geodata:
+  volumeName: geoip
+  # mountPath of the volume containing the database
+  mountPath: /geodata
+  # path to the geoip database inside the volumemount
+  path: /geodata/GeoLite2-City.mmdb
+```
+
 # Usage
 
 - [AWS + Terraform](docs/usage-aws-terraform.md)
