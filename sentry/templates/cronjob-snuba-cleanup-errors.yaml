@@ -95,4 +95,7 @@ spec:
           {{- if .Values.snuba.cleanupErrors.priorityClassName }}
           priorityClassName: "{{ .Values.snuba.cleanupErrors.priorityClassName }}"
           {{- end }}
+          {{- if .Values.snuba.cleanupErrors.serviceAccount }}
+          serviceAccountName: {{ .Values.snuba.cleanupErrors.serviceAccount.name }}
+          {{- end }}
 {{- end }}

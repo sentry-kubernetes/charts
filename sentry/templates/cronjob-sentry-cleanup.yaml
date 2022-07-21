@@ -126,4 +126,7 @@ spec:
           {{- if .Values.sentry.cleanup.priorityClassName }}
           priorityClassName: "{{ .Values.sentry.cleanup.priorityClassName }}"
           {{- end }}
+          {{- if .Values.sentry.cleanup.serviceAccount }}
+          serviceAccountName: {{ .Values.sentry.cleanup.serviceAccount.name }}
+          {{- end }}
 {{- end }}

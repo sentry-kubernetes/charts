@@ -221,6 +221,7 @@ sentry:
     days: 90
     sidecars: []
     volumes: []
+    serviceAccount: {}
 
 snuba:
   api:
@@ -406,6 +407,7 @@ snuba:
     schedule: "0 * * * *"
     sidecars: []
     volumes: []
+    serviceAccount: {}
 
   cleanupTransactions:
     concurrencyPolicy: Allow
@@ -413,6 +415,7 @@ snuba:
     schedule: "0 * * * *"
     sidecars: []
     volumes: []
+    serviceAccount: {}
 
 hooks:
   enabled: true
