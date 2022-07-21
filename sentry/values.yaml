@@ -215,6 +215,8 @@ sentry:
     sidecars: []
     volumes: []
   cleanup:
+    successfulJobsHistoryLimit: 5
+    failedJobsHistoryLimit: 5
     concurrencyPolicy: Allow
     enabled: true
     schedule: "0 0 * * *"
@@ -401,6 +403,8 @@ snuba:
     env: []
 
   cleanupErrors:
+    successfulJobsHistoryLimit: 5
+    failedJobsHistoryLimit: 5
     concurrencyPolicy: Allow
     enabled: true
     schedule: "0 * * * *"
@@ -408,6 +412,8 @@ snuba:
     volumes: []
 
   cleanupTransactions:
+    successfulJobsHistoryLimit: 5
+    failedJobsHistoryLimit: 5
     concurrencyPolicy: Allow
     enabled: true
     schedule: "0 * * * *"
