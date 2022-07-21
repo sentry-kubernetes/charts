@@ -18,11 +18,12 @@ spec:
       name: {{ template "sentry.fullname" . }}-user-create
       annotations:
         checksum/configmap.yaml: {{ include (print $.Template.BasePath "/configmap-sentry.yaml") . | sha256sum }}
-        {{- if .Values.sentry.worker.annotations }}
-{{ toYaml .Values.sentry.worker.annotations | indent 8 }}
-        {{- end }}
-        {{- if .Values.hooks.dbInit.podAnnotations }}
+        {{- if .Values.hooks.userCreate.podAnnotations }}
+{{ toYaml .Values.hooks.userCreate.podAnnotations | indent 8 }}
+        {{- else if .Values.hooks.dbInit.podAnnotations }}
 {{ toYaml .Values.hooks.dbInit.podAnnotations | indent 8 }}
+        {{- else if .Values.sentry.worker.annotations }}
+{{ toYaml .Values.sentry.worker.annotations | indent 8 }}
         {{- end }}
       labels:
         app: sentry

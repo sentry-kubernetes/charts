@@ -461,6 +461,10 @@ hooks:
     affinity: {}
     nodeSelector: {}
     # tolerations: []
+  snubaMigrate:
+    podAnnotations: {}
+  userCreate:
+    podAnnotations: {}
 
 system:
   ## be sure to include the scheme on the url, for example: "https://sentry.example.com"
