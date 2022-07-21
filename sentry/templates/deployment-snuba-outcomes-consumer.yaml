@@ -124,7 +124,7 @@ spec:
         resources:
 {{ toYaml .Values.snuba.outcomesConsumer.resources | indent 12 }}
       {{- if .Values.serviceAccount.enabled }}
-      serviceAccountName: {{ .Values.serviceAccount.name }}-snuba
+      serviceAccountName: {{ or .Values.snuba.outcomesConsumer.serviceAccount.name (printf "%s-snuba" .Values.serviceAccount.name) }}
       {{- end }}
       volumes:
         - name: config
