@@ -22,6 +22,9 @@ data:
 
     processing:
       enabled: true
+      {{- if .Values.geodata.path }}
+      geoip_path: {{ .Values.geodata.path | quote }}
+      {{- end }}
 
       kafka_config:
         - name: "bootstrap.servers"
