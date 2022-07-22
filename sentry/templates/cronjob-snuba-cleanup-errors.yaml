@@ -13,6 +13,9 @@ spec:
   concurrencyPolicy: "{{ .Values.snuba.cleanupErrors.concurrencyPolicy }}"
   jobTemplate:
     spec:
+      {{- if .Values.snuba.cleanupErrors.activeDeadlineSeconds }}
+      activeDeadlineSeconds: {{ .Values.snuba.cleanupErrors.activeDeadlineSeconds }}
+      {{- end}}
       template:
         metadata:
           annotations:
