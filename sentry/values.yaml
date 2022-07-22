@@ -217,6 +217,7 @@ sentry:
   cleanup:
     successfulJobsHistoryLimit: 5
     failedJobsHistoryLimit: 5
+    activeDeadlineSeconds: 100
     concurrencyPolicy: Allow
     enabled: true
     schedule: "0 0 * * *"
@@ -404,7 +405,7 @@ snuba:
 
   cleanupErrors:
     successfulJobsHistoryLimit: 5
-    failedJobsHistoryLimit: 5
+    activeDeadlineSeconds: 100
     concurrencyPolicy: Allow
     enabled: true
     schedule: "0 * * * *"
@@ -414,6 +415,7 @@ snuba:
   cleanupTransactions:
     successfulJobsHistoryLimit: 5
     failedJobsHistoryLimit: 5
+    activeDeadlineSeconds: 100
     concurrencyPolicy: Allow
     enabled: true
     schedule: "0 * * * *"
@@ -423,6 +425,7 @@ snuba:
 hooks:
   enabled: true
   removeOnSuccess: true
+  activeDeadlineSeconds: 100
   dbCheck:
     image:
       # repository: subfuzion/netcat

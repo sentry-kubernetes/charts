@@ -15,6 +15,9 @@ spec:
   concurrencyPolicy: "{{ .Values.snuba.cleanupTransactions.concurrencyPolicy }}"
   jobTemplate:
     spec:
+      {{- if .Values.snuba.cleanupTransactions.activeDeadlineSeconds }}
+      activeDeadlineSeconds: {{ .Values.snuba.cleanupTransactions.activeDeadlineSeconds }}
+      {{- end}}
       template:
         metadata:
           annotations:
