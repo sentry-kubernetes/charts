@@ -90,4 +90,7 @@ spec:
         - name: config
           configMap:
             name: {{ template "sentry.fullname" . }}-snuba
+      {{- if .Values.hooks.snubaMigrate.serviceAccount }}
+      serviceAccountName: {{ .Values.hooks.snubaMigrate.serviceAccount.name }}
+      {{- end }}
 {{- end }}
