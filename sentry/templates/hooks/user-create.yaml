@@ -101,4 +101,7 @@ spec:
       - name: config
         configMap:
           name: {{ template "sentry.fullname" . }}-sentry
+      {{- if .Values.hooks.userCreate.sidecars }}
+      {{ toYaml .Values.hooks.userCreate.sidecars | indent 6 }}
+      {{- end }}
 {{- end -}}

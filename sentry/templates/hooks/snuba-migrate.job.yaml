@@ -87,4 +87,7 @@ spec:
         - name: config
           configMap:
             name: {{ template "sentry.fullname" . }}-snuba
+      {{- if .Values.hooks.migrateJob.sidecars }}
+      {{ toYaml .Values.hooks.migrateJob.sidecars | indent 6 }}
+      {{- end }}
 {{- end }}

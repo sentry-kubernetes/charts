@@ -435,6 +435,7 @@ hooks:
     nodeSelector: {}
     securityContext: {}
     # tolerations: []
+    sidecars: []
   dbInit:
     env: []
     podAnnotations: {}
@@ -461,6 +462,11 @@ hooks:
     affinity: {}
     nodeSelector: {}
     # tolerations: []
+    sidecars: []
+  snubaMigrate:
+    sidecars: []
+  userCreate:
+    sidecars: []
 
 system:
   ## be sure to include the scheme on the url, for example: "https://sentry.example.com"

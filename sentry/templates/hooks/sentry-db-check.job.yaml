@@ -137,4 +137,7 @@ spec:
 {{- end }}
         resources:
 {{ toYaml .Values.hooks.dbCheck.resources | indent 10 }}
+      {{- if .Values.hooks.dbCheck.sidecars }}
+      {{ toYaml .Values.hooks.dbCheck.sidecars | indent 6 }}
+      {{- end }}
 {{- end }}
