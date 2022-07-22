@@ -13,6 +13,9 @@ spec:
   concurrencyPolicy: "{{ .Values.sentry.cleanup.concurrencyPolicy }}"
   jobTemplate:
     spec:
+      {{- if .Values.sentry.cleanup.activeDeadlineSeconds }}
+      activeDeadlineSeconds: {{ .Values.sentry.cleanup.activeDeadlineSeconds }}
+      {{- end}}
       template:
         metadata:
           annotations:
