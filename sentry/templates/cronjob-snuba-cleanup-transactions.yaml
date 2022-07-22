@@ -100,4 +100,7 @@ spec:
           {{- if .Values.snuba.cleanupTransactions.priorityClassName }}
           priorityClassName: "{{ .Values.snuba.cleanupTransactions.priorityClassName }}"
           {{- end }}
+          {{- if .Values.snuba.cleanupTransactions.serviceAccount }}
+          serviceAccountName: {{ .Values.snuba.cleanupTransactions.serviceAccount.name }}
+          {{- end }}
 {{- end }}
