@@ -10,6 +10,8 @@ metadata:
     heritage: "{{ .Release.Service }}"
 spec:
   schedule: "{{ .Values.snuba.cleanupErrors.schedule }}"
+  successfulJobsHistoryLimit: {{ .Values.snuba.cleanupErrors.successfulJobsHistoryLimit }}
+  failedJobsHistoryLimit: {{ .Values.snuba.cleanupErrors.failedJobsHistoryLimit }}
   concurrencyPolicy: "{{ .Values.snuba.cleanupErrors.concurrencyPolicy }}"
   jobTemplate:
     spec:
