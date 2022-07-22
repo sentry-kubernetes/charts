@@ -256,6 +256,7 @@ snuba:
       targetCPUUtilizationPercentage: 50
     sidecars: []
     volumes: []
+    serviceAccount: {}
 
   consumer:
     replicas: 1
@@ -282,6 +283,7 @@ snuba:
     #   - name: dshm
     #     emptyDir:
     #       medium: Memory
+    serviceAccount: {}
 
   outcomesConsumer:
     replicas: 1
@@ -308,6 +310,7 @@ snuba:
     #   - name: dshm
     #     emptyDir:
     #       medium: Memory
+    serviceAccount: {}
 
   replacer:
     replicas: 1
@@ -323,6 +326,7 @@ snuba:
     # maxBatchTimeMs: ""
     # queuedMaxMessagesKbytes: ""
     # queuedMinMessages: ""
+    serviceAccount: {}
 
   subscriptionConsumerEvents:
     replicas: 1
@@ -334,6 +338,7 @@ snuba:
     # tolerations: []
     # podLabels: []
     autoOffsetReset: "earliest"
+    serviceAccount: {}
 
   subscriptionConsumerTransactions:
     replicas: 1
@@ -345,6 +350,7 @@ snuba:
     # tolerations: []
     # podLabels: []
     autoOffsetReset: "earliest"
+    serviceAccount: {}
 
   sessionsConsumer:
     replicas: 1
@@ -371,6 +377,7 @@ snuba:
     #   - name: dshm
     #     emptyDir:
     #       medium: Memory
+    serviceAccount: {}
 
   transactionsConsumer:
     replicas: 1
@@ -397,6 +404,7 @@ snuba:
     #   - name: dshm
     #     emptyDir:
     #       medium: Memory
+    serviceAccount: {}
 
   dbInitJob:
     env: []
