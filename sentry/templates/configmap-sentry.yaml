@@ -127,7 +127,7 @@ data:
     from sentry.conf.server import *  # NOQA
     from distutils.util import strtobool
 
-    
+
     {{- if .Values.sourcemaps.enabled }}
     CACHES = {
         "default": {
@@ -154,6 +154,10 @@ data:
             {{- end }}
         }
     }
+
+    {{- if .Values.geodata.path }}
+    GEOIP_PATH_MMDB = {{ .Values.geodata.path | quote }}
+    {{- end }}
 
     # You should not change this setting after your database has been created
     # unless you have altered all schemas first

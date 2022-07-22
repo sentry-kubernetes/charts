@@ -10,9 +10,14 @@ metadata:
     heritage: "{{ .Release.Service }}"
 spec:
   schedule: "{{ .Values.sentry.cleanup.schedule }}"
+  successfulJobsHistoryLimit: {{ .Values.sentry.cleanup.successfulJobsHistoryLimit }}
+  failedJobsHistoryLimit: {{ .Values.sentry.cleanup.failedJobsHistoryLimit }}
   concurrencyPolicy: "{{ .Values.sentry.cleanup.concurrencyPolicy }}"
   jobTemplate:
     spec:
+      {{- if .Values.sentry.cleanup.activeDeadlineSeconds }}
+      activeDeadlineSeconds: {{ .Values.sentry.cleanup.activeDeadlineSeconds }}
+      {{- end}}
       template:
         metadata:
           annotations:
@@ -138,5 +143,8 @@ spec:
 {{- end }}
           {{- if .Values.sentry.cleanup.priorityClassName }}
           priorityClassName: "{{ .Values.sentry.cleanup.priorityClassName }}"
+          {{- end }}
+          {{- if .Values.sentry.cleanup.serviceAccount }}
+          serviceAccountName: {{ .Values.sentry.cleanup.serviceAccount.name }}
           {{- end }}
 {{- end }}

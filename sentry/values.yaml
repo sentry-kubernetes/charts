@@ -75,6 +75,11 @@ relay:
   sidecars: []
   volumes: []
 
+geodata:
+  path: ""
+  volumeName: ""
+  mountPath: ""
+
 sentry:
   # to not generate a sentry-secret, use these 2 values to reference an existing secret
   # existingSecret: "my-secret"
@@ -213,12 +218,16 @@ sentry:
     sidecars: []
     volumes: []
   cleanup:
+    successfulJobsHistoryLimit: 5
+    failedJobsHistoryLimit: 5
+    activeDeadlineSeconds: 100
     concurrencyPolicy: Allow
     enabled: true
     schedule: "0 0 * * *"
     days: 90
     sidecars: []
     volumes: []
+    serviceAccount: {}
 
 snuba:
   api:
@@ -399,22 +408,30 @@ snuba:
     env: []
 
   cleanupErrors:
+    successfulJobsHistoryLimit: 5
+    activeDeadlineSeconds: 100
     concurrencyPolicy: Allow
     enabled: true
     schedule: "0 * * * *"
     sidecars: []
     volumes: []
+    serviceAccount: {}
 
   cleanupTransactions:
+    successfulJobsHistoryLimit: 5
+    failedJobsHistoryLimit: 5
+    activeDeadlineSeconds: 100
     concurrencyPolicy: Allow
     enabled: true
     schedule: "0 * * * *"
     sidecars: []
     volumes: []
+    serviceAccount: {}
 
 hooks:
   enabled: true
   removeOnSuccess: true
+  activeDeadlineSeconds: 100
   dbCheck:
     image:
       # repository: subfuzion/netcat
