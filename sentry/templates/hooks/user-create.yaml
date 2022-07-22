@@ -104,4 +104,7 @@ spec:
       - name: config
         configMap:
           name: {{ template "sentry.fullname" . }}-sentry
+      {{- if .Values.hooks.userCreate.serviceAccount }}
+      serviceAccountName: {{ .Values.hooks.userCreate.serviceAccount.name }}
+      {{- end }}
 {{- end -}}

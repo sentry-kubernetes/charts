@@ -96,4 +96,7 @@ spec:
 {{- if .Values.hooks.dbInit.volumes }}
 {{ toYaml .Values.hooks.dbInit.volumes | indent 6 }}
 {{- end }}
+      {{- if .Values.hooks.dbInit.serviceAccount }}
+      serviceAccountName: {{ .Values.hooks.dbInit.serviceAccount.name }}
+      {{- end }}
 {{- end -}}
