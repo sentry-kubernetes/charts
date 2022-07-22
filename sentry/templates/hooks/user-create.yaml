@@ -104,4 +104,7 @@ spec:
       - name: config
         configMap:
           name: {{ template "sentry.fullname" . }}-sentry
+      {{- if .Values.hooks.shareProcessNamespace }}
+      shareProcessNamespace: {{ .Values.hooks.shareProcessNamespace }}
+      {{- end }}
 {{- end -}}

@@ -140,4 +140,7 @@ spec:
 {{- end }}
         resources:
 {{ toYaml .Values.hooks.dbCheck.resources | indent 10 }}
+      {{- if .Values.hooks.shareProcessNamespace }}
+      shareProcessNamespace: {{ .Values.hooks.shareProcessNamespace }}
+      {{- end }}
 {{- end }}

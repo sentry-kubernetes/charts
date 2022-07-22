@@ -421,6 +421,7 @@ hooks:
   enabled: true
   removeOnSuccess: true
   activeDeadlineSeconds: 100
+  shareProcessNamespace: false
   dbCheck:
     image:
       # repository: subfuzion/netcat
