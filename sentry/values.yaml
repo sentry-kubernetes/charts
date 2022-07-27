@@ -436,6 +436,7 @@ hooks:
       # pullPolicy: IfNotPresent
       imagePullSecrets: []
     env: []
+    # podLabels: []
     podAnnotations: {}
     resources:
       limits:
@@ -449,6 +450,7 @@ hooks:
     # tolerations: []
   dbInit:
     env: []
+    # podLabels: []
     podAnnotations: {}
     resources:
       limits:
@@ -462,6 +464,7 @@ hooks:
     nodeSelector: {}
     # tolerations: []
   snubaInit:
+    # podLabels: []
     podAnnotations: {}
     resources:
       limits:
@@ -473,6 +476,8 @@ hooks:
     affinity: {}
     nodeSelector: {}
     # tolerations: []
+  snubaMigrate: {}
+    # podLabels: []
 
 system:
   ## be sure to include the scheme on the url, for example: "https://sentry.example.com"
