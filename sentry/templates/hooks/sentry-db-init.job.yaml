@@ -35,6 +35,9 @@ spec:
         {{- if .Values.sentry.worker.podLabels }}
 {{ toYaml .Values.sentry.worker.podLabels | indent 8 }}
         {{- end }}
+        {{- if .Values.hooks.dbInit.podLabels }}
+{{ toYaml .Values.hooks.dbInit.podLabels | indent 8 }}
+        {{- end }}
     spec:
       {{- if .Values.hooks.dbInit.affinity }}
       affinity:
