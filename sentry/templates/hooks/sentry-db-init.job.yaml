@@ -99,4 +99,7 @@ spec:
 {{- if .Values.hooks.dbInit.volumes }}
 {{ toYaml .Values.hooks.dbInit.volumes | indent 6 }}
 {{- end }}
+      {{- if .Values.hooks.shareProcessNamespace }}
+      shareProcessNamespace: {{ .Values.hooks.shareProcessNamespace }}
+      {{- end }}
 {{- end -}}
