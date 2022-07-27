@@ -14,13 +14,25 @@ metadata:
     {{- toYaml .Values.clickhouse.metrics.serviceMonitor.selector | nindent 4 }}
     {{- end }}
 spec:
+  namespaceSelector:
+    matchNames:
+      - {{ .Release.Namespace }}
   selector:
     matchLabels:
       app.kubernetes.io/name: {{ include "clickhouse.name" . }}-metrics
   endpoints:
     - port: metrics
+      path: /metrics
       {{- if .Values.clickhouse.metrics.serviceMonitor.interval }}
       interval: {{ .Values.clickhouse.metrics.serviceMonitor.interval }}
-  {{- end }}
+      {{- end }}
+{{- if .Values.clickhouse.metrics.serviceMonitor.metricRelabelings }}
+      metricRelabelings:
+{{ toYaml .Values.clickhouse.metrics.serviceMonitor.metricRelabelings | indent 6 }}
+{{- end }}
+{{- if .Values.clickhouse.metrics.serviceMonitor.relabelings }}
+      relabelings:
+{{ toYaml .Values.clickhouse.metrics.serviceMonitor.relabelings | nindent 6 }}
+{{- end }}
 ---
 {{- end}}
