@@ -165,6 +165,32 @@ geodata:
   path: /geodata/GeoLite2-City.mmdb
 ```
 
+## External Kafka configuration
+
+You can either provide a single host, which is there by default in `values.yaml`, like this:
+
+```yaml
+externalKafka:
+  ## Hostname or ip address of external kafka
+  ##
+  host: "kafka-confluent"
+  port: 9092
+```
+
+or you can feed in a cluster of Kafka instances like below:
+
+```yaml
+externalKafka:
+  ## List of Hostnames or ip addresses of external kafka
+  - host: "233.5.100.28"
+    port: 9092
+  - host: "233.5.100.29"
+    port: 9092
+  - host: "233.5.100.30"
+    port: 9092
+```
+
+
 
 # Usage
 
