@@ -21,7 +21,7 @@ data:
         <users_config>users.xml</users_config>
 
         <display_name>{{ template "clickhouse.fullname" . }}</display_name>
-        <listen_host>0.0.0.0</listen_host>
+        <listen_host>::</listen_host>
         <http_port>{{ .Values.clickhouse.http_port | default "8123" }}</http_port>
         <tcp_port>{{ .Values.clickhouse.tcp_port | default "9000" }}</tcp_port>
         <interserver_http_port>{{ .Values.clickhouse.interserver_http_port | default "9009" }}</interserver_http_port>
@@ -33,7 +33,7 @@ data:
         <timezone>{{ .Values.timezone | default "Asia/Shanghai" }}</timezone>
         <umask>{{ .Values.clickhouse.configmap.umask | default "027" }}</umask>
         <mlock_executable>{{ .Values.clickhouse.configmap.mlock_executable | default "false" }}</mlock_executable>
-        <remote_servers incl="clickhouse_remote_servers" optional="true" />
+        <remote_servers incl="clickhouse_remote_servers" replace="true" />
         <zookeeper incl="zookeeper-servers" optional="true" />
         <macros incl="macros" optional="true" />
         <builtin_dictionaries_reload_interval>{{ .Values.clickhouse.configmap.builtin_dictionaries_reload_interval | default "3600" }}</builtin_dictionaries_reload_interval>
