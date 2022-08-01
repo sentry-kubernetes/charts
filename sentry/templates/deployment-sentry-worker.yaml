@@ -152,14 +152,14 @@ spec:
         secret:
           secretName: {{ .Values.filestore.gcs.secretName }}
       {{ end }}
-      {{- if .Values.sentry.worker.priorityClassName }}
-      priorityClassName: "{{ .Values.sentry.worker.priorityClassName }}"
-      {{- end }}
       {{- if .Values.sentry.web.customCA }}
       - name: custom-ca
         secret:
 {{ toYaml .Values.sentry.web.customCA | indent 10 }}
       {{ end }}
+      {{- if .Values.sentry.worker.priorityClassName }}
+      priorityClassName: "{{ .Values.sentry.worker.priorityClassName }}"
+      {{- end }}
 {{- if .Values.sentry.worker.volumes }}
 {{ toYaml .Values.sentry.worker.volumes | indent 6 }}
 {{- end }}
