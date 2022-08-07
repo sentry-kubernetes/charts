@@ -99,6 +99,26 @@ Return if ingress is stable.
 {{- end -}}
 
 {{/*
+Return the appropriate apiVersion for batch (cronjobs and jobs).
+batch/v1beta1 will no longer be served in v1.25
+See more at https://kubernetes.io/docs/reference/using-api/deprecation-guide/#cronjob-v125
+*/}}
+{{- define "sentry.batch.apiVersion" -}}
+  {{- if and (.Capabilities.APIVersions.Has "batch/v1") (semverCompare ">= 1.21.x" (include "sentry.kubeVersion" .)) -}}
+      {{- print "batch/v1" -}}
+  {{- else if .Capabilities.APIVersions.Has "batch/v1beta1" -}}
+    {{- print "batch/v1beta1" -}}
+  {{- end -}}
+{{- end -}}
+
+{{/*
+Return if batch is stable.
+*/}}
+{{- define "sentry.batch.isStable" -}}
+  {{- eq (include "sentry.batch.apiVersion" .) "batch/v1" -}}
+{{- end -}}
+
+{{/*
 Return if ingress supports ingressClassName.
 */}}
 {{- define "sentry.ingress.supportsIngressClassName" -}}
