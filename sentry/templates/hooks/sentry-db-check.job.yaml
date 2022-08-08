@@ -3,7 +3,8 @@
 {{- $clickhousePort := include "sentry.clickhouse.port" . -}}
 {{- $kafkaHost := include "sentry.kafka.host" . -}}
 {{- $kafkaPort := include "sentry.kafka.port" . -}}
-apiVersion: batch/v1
+{{- $batchApiIsStable := eq (include "sentry.batch.isStable" .) "true" -}}
+apiVersion: {{ include "sentry.batch.apiVersion" . }}
 kind: Job
 metadata:
   name: {{ template "sentry.fullname" . }}-db-check
