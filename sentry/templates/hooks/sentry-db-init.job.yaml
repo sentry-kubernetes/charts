@@ -81,6 +81,9 @@ spec:
         - mountPath: /etc/sentry
           name: config
           readOnly: true
+{{- if .Values.hooks.dbInit.volumeMounts }}
+{{ toYaml .Values.hooks.dbInit.volumeMounts | indent 8 }}
+{{- end }}
         resources:
 {{ toYaml .Values.hooks.dbInit.resources | indent 10 }}
 {{- if .Values.hooks.dbInit.sidecars }}

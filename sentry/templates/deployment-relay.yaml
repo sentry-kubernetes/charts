@@ -87,6 +87,9 @@ spec:
               mountPath: /work/.relay/config.yml
               subPath: config.yml
               readOnly: true
+{{- if .Values.relay.init.volumeMounts }}
+{{ toYaml .Values.relay.volumeMounts | indent 12 }}
+{{- end }}
       {{- if .Values.dnsPolicy }}
       dnsPolicy: {{ .Values.dnsPolicy | quote }}
       {{- end }}
@@ -121,6 +124,9 @@ spec:
           - name: {{ .Values.geodata.volumeName }}
             mountPath: {{ .Values.geodata.mountPath }}
           {{- end }}
+{{- if .Values.relay.volumeMounts }}
+{{ toYaml .Values.relay.volumeMounts | indent 10 }}
+{{- end }}
         livenessProbe:
           failureThreshold: {{ .Values.relay.probeFailureThreshold }}
           httpGet:

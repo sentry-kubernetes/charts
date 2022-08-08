@@ -97,6 +97,9 @@ spec:
         - name: custom-ca
           mountPath: /etc/pki/ca-trust/custom
         {{ end }}
+{{- if .Values.sentry.web.volumeMounts }}
+{{ toYaml .Values.sentry.web.volumeMounts | indent 8 }}
+{{- end }}
         livenessProbe:
           failureThreshold: {{ .Values.sentry.web.probeFailureThreshold }}
           httpGet:

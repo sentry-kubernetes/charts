@@ -84,6 +84,9 @@ spec:
         - name: sentry-google-cloud-key
           mountPath: /var/run/secrets/google
         {{ end }}
+{{- if .Values.sentry.cron.volumeMounts }}
+{{ toYaml .Values.sentry.cron.volumeMounts | indent 8 }}
+{{- end }}
         resources:
 {{ toYaml .Values.sentry.cron.resources | indent 12 }}
 {{- if .Values.sentry.cron.sidecars }}

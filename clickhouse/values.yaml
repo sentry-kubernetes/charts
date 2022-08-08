@@ -56,6 +56,10 @@ clickhouse:
   # Security Context
   securityContext: {}
 
+  ## Additional Volumes
+  # volumes: []
+  # volumeMounts: []
+
   ## Prometheus Exporter / Metrics
   ##
   metrics:
@@ -69,6 +73,10 @@ clickhouse:
 
     ## Metrics exporter resource requests and limits
     # resources: {}
+
+    ## Additional Volumes
+    # volumes: []
+    # volumeMounts: []
 
     ## Metrics exporter pod Annotation and Labels
     podAnnotations:
@@ -460,3 +468,7 @@ tabix:
 
   ## Additional Labels
   podLabels:
+
+  ## Additional Volumes
+  # volumes: []
+  # volumeMounts: []

@@ -75,10 +75,13 @@ relay:
     targetCPUUtilizationPercentage: 50
   sidecars: []
   volumes: []
+  volumeMounts: []
   init:
     resources: {}
     # additionalArgs: []
     # env: []
+    # volumes: []
+    # volumeMounts: []
 
 geodata:
   path: ""
@@ -120,6 +123,7 @@ sentry:
       targetCPUUtilizationPercentage: 50
     sidecars: []
     volumes: []
+    volumeMounts: []
 
   features:
     orgSubdomains: false
@@ -149,6 +153,7 @@ sentry:
       failureThreshold: 3
     sidecars: []
     volumes: []
+    volumeMounts: []
 
   ingestConsumer:
     replicas: 1
@@ -186,6 +191,8 @@ sentry:
     # podLabels: []
     sidecars: []
     volumes: []
+    # volumeMounts: []
+
   subscriptionConsumerEvents:
     replicas: 1
     env: []
@@ -199,6 +206,8 @@ sentry:
     sidecars: []
     volumes: []
     # noStrictOffsetReset: false
+    # volumeMounts: []
+
   subscriptionConsumerTransactions:
     replicas: 1
     env: []
@@ -212,6 +221,8 @@ sentry:
     sidecars: []
     volumes: []
     # noStrictOffsetReset: false
+    # volumeMounts: []
+
   postProcessForwardErrors:
     replicas: 1
     env: []
@@ -224,6 +235,8 @@ sentry:
     # commitBatchSize: 1
     sidecars: []
     volumes: []
+    # volumeMounts: []
+
   postProcessForwardTransactions:
     replicas: 1
     env: []
@@ -236,6 +249,8 @@ sentry:
     # commitBatchSize: 1
     sidecars: []
     volumes: []
+    # volumeMounts: []
+
   cleanup:
     successfulJobsHistoryLimit: 5
     failedJobsHistoryLimit: 5
@@ -247,6 +262,7 @@ sentry:
     # securityContext: {}
     sidecars: []
     volumes: []
+    # volumeMounts: []
     serviceAccount: {}
 
 snuba:
@@ -279,6 +295,7 @@ snuba:
       targetCPUUtilizationPercentage: 50
     sidecars: []
     volumes: []
+    # volumeMounts: []
 
   consumer:
     replicas: 1
@@ -348,6 +365,8 @@ snuba:
     # maxBatchTimeMs: ""
     # queuedMaxMessagesKbytes: ""
     # queuedMinMessages: ""
+    # volumes: []
+    # volumeMounts: []
 
   subscriptionConsumerEvents:
     replicas: 1
@@ -359,6 +378,8 @@ snuba:
     # tolerations: []
     # podLabels: []
     autoOffsetReset: "earliest"
+    # volumes: []
+    # volumeMounts: []
 
   subscriptionConsumerTransactions:
     replicas: 1
@@ -370,6 +391,8 @@ snuba:
     # tolerations: []
     # podLabels: []
     autoOffsetReset: "earliest"
+    # volumes: []
+    # volumeMounts: []
 
   sessionsConsumer:
     replicas: 1
@@ -441,6 +464,8 @@ snuba:
     volumes: []
     # securityContext: {}
     serviceAccount: {}
+    # volumes: []
+    # volumeMounts: []
 
   cleanupTransactions:
     successfulJobsHistoryLimit: 5
@@ -453,6 +478,8 @@ snuba:
     volumes: []
     # securityContext: {}
     serviceAccount: {}
+    # volumes: []
+    # volumeMounts: []
 
 hooks:
   enabled: true
@@ -478,6 +505,8 @@ hooks:
     nodeSelector: {}
     securityContext: {}
     # tolerations: []
+    # volumes: []
+    # volumeMounts: []
   dbInit:
     env: []
     # podLabels: []
@@ -493,6 +522,8 @@ hooks:
     affinity: {}
     nodeSelector: {}
     # tolerations: []
+    # volumes: []
+    # volumeMounts: []
   snubaInit:
     # podLabels: []
     podAnnotations: {}
@@ -506,8 +537,12 @@ hooks:
     affinity: {}
     nodeSelector: {}
     # tolerations: []
+    # volumes: []
+    # volumeMounts: []
   snubaMigrate: {}
     # podLabels: []
+    # volumes: []
+    # volumeMounts: []
 
 system:
   ## be sure to include the scheme on the url, for example: "https://sentry.example.com"
@@ -574,6 +609,10 @@ symbolicator:
       minReplicas: 2
       maxReplicas: 5
       targetCPUUtilizationPercentage: 50
+
+    # volumes: []
+    # volumeMounts: []
+
   # TODO The cleanup cronjob is not yet implemented
   cleanup:
     enabled: false
