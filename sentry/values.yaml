@@ -424,6 +424,7 @@ snuba:
     schedule: "0 * * * *"
     sidecars: []
     volumes: []
+    # securityContext: {}
     serviceAccount: {}
 
   cleanupTransactions:
@@ -435,6 +436,7 @@ snuba:
     schedule: "0 * * * *"
     sidecars: []
     volumes: []
+    # securityContext: {}
     serviceAccount: {}
 
 hooks:
