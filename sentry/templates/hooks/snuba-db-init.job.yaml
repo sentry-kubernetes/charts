@@ -1,7 +1,6 @@
 {{- if .Values.hooks.enabled -}}
 {{- $clickhouseHost := include "sentry.clickhouse.host" . -}}
-{{- $batchApiIsStable := eq (include "sentry.batch.isStable" .) "true" -}}
-apiVersion: {{ include "sentry.batch.apiVersion" . }}
+apiVersion: batch/v1
 kind: Job
 metadata:
   name: {{ template "sentry.fullname" . }}-snuba-db-init

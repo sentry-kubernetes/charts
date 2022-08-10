@@ -1,6 +1,5 @@
 {{- if and .Values.user.create .Values.hooks.enabled -}}
-{{- $batchApiIsStable := eq (include "sentry.batch.isStable" .) "true" -}}
-apiVersion: {{ include "sentry.batch.apiVersion" . }}
+apiVersion: batch/v1
 kind: Job
 metadata:
   name: {{ template "sentry.fullname" . }}-user-create
