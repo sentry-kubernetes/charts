@@ -99,7 +99,7 @@ Return if ingress is stable.
 {{- end -}}
 
 {{/*
-Return the appropriate apiVersion for batch (cronjobs and jobs).
+Return the appropriate batch apiVersion for cronjobs.
 batch/v1beta1 will no longer be served in v1.25
 See more at https://kubernetes.io/docs/reference/using-api/deprecation-guide/#cronjob-v125
 */}}
