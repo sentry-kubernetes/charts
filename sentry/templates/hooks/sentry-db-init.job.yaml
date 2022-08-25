@@ -15,6 +15,9 @@ metadata:
     "helm.sh/hook-delete-policy": "{{ if .Values.hooks.removeOnSuccess }}hook-succeeded,{{ end }}before-hook-creation"
     "helm.sh/hook-weight": "6"
 spec:
+  {{- if .Values.hooks.activeDeadlineSeconds }}
+  activeDeadlineSeconds: {{ .Values.hooks.activeDeadlineSeconds }}
+  {{- end}}
   template:
     metadata:
       name: {{ template "sentry.fullname" . }}-db-init
@@ -31,6 +34,9 @@ spec:
         release: "{{ .Release.Name }}"
         {{- if .Values.sentry.worker.podLabels }}
 {{ toYaml .Values.sentry.worker.podLabels | indent 8 }}
+        {{- end }}
+        {{- if .Values.hooks.dbInit.podLabels }}
+{{ toYaml .Values.hooks.dbInit.podLabels | indent 8 }}
         {{- end }}
     spec:
       {{- if .Values.hooks.dbInit.affinity }}
@@ -56,6 +62,10 @@ spec:
       {{- if .Values.dnsConfig }}
       dnsConfig:
 {{ toYaml .Values.dnsConfig | indent 8 }}
+      {{- end }}
+      {{- if .Values.hooks.securityContext }}
+      securityContext:
+{{ toYaml .Values.hooks.securityContext | indent 8 }}
       {{- end }}
       containers:
       - name: db-init-job
@@ -98,4 +108,7 @@ spec:
 {{- if .Values.hooks.dbInit.volumes }}
 {{ toYaml .Values.hooks.dbInit.volumes | indent 6 }}
 {{- end }}
+      {{- if .Values.hooks.shareProcessNamespace }}
+      shareProcessNamespace: {{ .Values.hooks.shareProcessNamespace }}
+      {{- end }}
 {{- end -}}

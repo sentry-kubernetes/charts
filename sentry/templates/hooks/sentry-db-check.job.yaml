@@ -19,6 +19,9 @@ metadata:
     "helm.sh/hook-delete-policy": "{{ if .Values.hooks.removeOnSuccess }}hook-succeeded,{{ end }}before-hook-creation"
     "helm.sh/hook-weight": "-1"
 spec:
+  {{- if .Values.hooks.activeDeadlineSeconds }}
+  activeDeadlineSeconds: {{ .Values.hooks.activeDeadlineSeconds }}
+  {{- end}}
   template:
     metadata:
       name: {{ template "sentry.fullname" . }}-db-check
@@ -34,6 +37,9 @@ spec:
         release: "{{ .Release.Name }}"
         {{- if .Values.sentry.worker.podLabels }}
 {{ toYaml .Values.sentry.worker.podLabels | indent 8 }}
+        {{- end }}
+        {{- if .Values.hooks.dbCheck.podLabels }}
+{{ toYaml .Values.hooks.dbCheck.podLabels | indent 8 }}
         {{- end }}
     spec:
       {{- if .Values.hooks.dbCheck.affinity }}
@@ -52,6 +58,10 @@ spec:
       {{- if .Values.hooks.dbCheck.image.imagePullSecrets }}
       imagePullSecrets:
 {{ toYaml .Values.hooks.dbCheck.image.imagePullSecrets | indent 8 }}
+      {{- end }}
+      {{- if .Values.hooks.securityContext }}
+      securityContext:
+{{ toYaml .Values.hooks.securityContext | indent 8 }}
       {{- end }}
       containers:
       - name: db-check
@@ -133,4 +143,7 @@ spec:
 {{- end }}
         resources:
 {{ toYaml .Values.hooks.dbCheck.resources | indent 10 }}
+      {{- if .Values.hooks.shareProcessNamespace }}
+      shareProcessNamespace: {{ .Values.hooks.shareProcessNamespace }}
+      {{- end }}
 {{- end }}

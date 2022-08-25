@@ -13,6 +13,9 @@ metadata:
     "helm.sh/hook-delete-policy": "{{ if .Values.hooks.removeOnSuccess }}hook-succeeded,{{ end }}before-hook-creation"
     "helm.sh/hook-weight": "9"
 spec:
+  {{- if .Values.hooks.activeDeadlineSeconds }}
+  activeDeadlineSeconds: {{ .Values.hooks.activeDeadlineSeconds }}
+  {{- end}}
   template:
     metadata:
       name: {{ template "sentry.fullname" . }}-user-create
@@ -47,6 +50,10 @@ spec:
       dnsConfig:
 {{ toYaml .Values.dnsConfig | indent 8 }}
       {{- end }}
+      {{- if .Values.hooks.securityContext }}
+      securityContext:
+{{ toYaml .Values.hooks.securityContext | indent 8 }}
+      {{- end }}
       containers:
       - name: user-create-job
         image: "{{ template "sentry.image" . }}"
@@ -60,13 +67,23 @@ spec:
               --no-input \
               --superuser \
               --email "{{ .Values.user.email }}" \
-              --password "{{ .Values.user.password }}" || true; \
+              --password "$ADMIN_PASSWORD" || true; \
             if [ $? -eq 0 ] || [ $? -eq 3 ]; then \
               exit 0; \
             else \
               exit 1; \
             fi
         env:
+        {{- if .Values.user.existingSecret }}
+        - name: ADMIN_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.user.existingSecret }}
+              key: {{ default "admin-password" .Values.user.existingSecretKey }}
+        {{- else if .Values.user.password }}
+        - name: ADMIN_PASSWORD
+          value: {{ .Values.user.password | quote }}
+        {{- end }}        
         {{- if .Values.postgresql.enabled }}
         - name: POSTGRES_PASSWORD
           valueFrom:
@@ -84,7 +101,7 @@ spec:
               key: {{ default "postgresql-password" .Values.externalPostgresql.existingSecretKey }}
         {{- end }}
         {{- if .Values.hooks.dbInit.env }}
-{{ toYaml .Values.hooks.dbInit.env | indent 10 }}
+{{ toYaml .Values.hooks.dbInit.env | indent 8 }}
         {{- end }}
         volumeMounts:
         - mountPath: /etc/sentry
@@ -96,4 +113,7 @@ spec:
       - name: config
         configMap:
           name: {{ template "sentry.fullname" . }}-sentry
+      {{- if .Values.hooks.shareProcessNamespace }}
+      shareProcessNamespace: {{ .Values.hooks.shareProcessNamespace }}
+      {{- end }}
 {{- end -}}
