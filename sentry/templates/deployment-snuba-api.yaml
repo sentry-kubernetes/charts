@@ -64,6 +64,10 @@ spec:
       - name: {{ .Chart.Name }}-snuba
         image: "{{ template "snuba.image" . }}"
         imagePullPolicy: {{ default "IfNotPresent" .Values.images.snuba.pullPolicy }}
+      {{- if .Values.snuba.api.command }}
+        command:
+{{ toYaml .Values.snuba.api.command | indent 8 }}
+      {{- end }}
         ports:
         - containerPort: {{ template "snuba.port" }}
         env:

@@ -1,5 +1,6 @@
 {{- if .Values.snuba.cleanupErrors.enabled }}
-apiVersion: batch/v1beta1
+{{- $batchApiIsStable := eq (include "sentry.batch.isStable" .) "true" -}}
+apiVersion: {{ include "sentry.batch.apiVersion" . }}
 kind: CronJob
 metadata:
   name: {{ template "sentry.fullname" . }}-snuba-cleanup-errors
@@ -10,9 +11,14 @@ metadata:
     heritage: "{{ .Release.Service }}"
 spec:
   schedule: "{{ .Values.snuba.cleanupErrors.schedule }}"
+  successfulJobsHistoryLimit: {{ .Values.snuba.cleanupErrors.successfulJobsHistoryLimit }}
+  failedJobsHistoryLimit: {{ .Values.snuba.cleanupErrors.failedJobsHistoryLimit }}
   concurrencyPolicy: "{{ .Values.snuba.cleanupErrors.concurrencyPolicy }}"
   jobTemplate:
     spec:
+      {{- if .Values.snuba.cleanupErrors.activeDeadlineSeconds }}
+      activeDeadlineSeconds: {{ .Values.snuba.cleanupErrors.activeDeadlineSeconds }}
+      {{- end}}
       template:
         metadata:
           annotations:
@@ -94,5 +100,8 @@ spec:
 {{- end }}
           {{- if .Values.snuba.cleanupErrors.priorityClassName }}
           priorityClassName: "{{ .Values.snuba.cleanupErrors.priorityClassName }}"
+          {{- end }}
+          {{- if .Values.snuba.cleanupErrors.serviceAccount }}
+          serviceAccountName: {{ .Values.snuba.cleanupErrors.serviceAccount.name }}
           {{- end }}
 {{- end }}

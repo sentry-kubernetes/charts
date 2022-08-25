@@ -16,6 +16,9 @@ metadata:
     "helm.sh/hook-delete-policy": "{{ if .Values.hooks.removeOnSuccess }}hook-succeeded,{{ end }}before-hook-creation"
     "helm.sh/hook-weight": "3"
 spec:
+  {{- if .Values.hooks.activeDeadlineSeconds }}
+  activeDeadlineSeconds: {{ .Values.hooks.activeDeadlineSeconds }}
+  {{- end}}
   template:
     metadata:
       name: {{ template "sentry.fullname" . }}-snuba-db-init
@@ -33,6 +36,9 @@ spec:
         release: "{{ .Release.Name }}"
         {{- if .Values.snuba.podLabels }}
 {{ toYaml .Values.snuba.podLabels | indent 8 }}
+        {{- end }}
+        {{- if .Values.hooks.snubaInit.podLabels }}
+{{ toYaml .Values.hooks.snubaInit.podLabels | indent 8 }}
         {{- end }}
     spec:
       {{- if .Values.hooks.snubaInit.affinity }}
@@ -59,6 +65,10 @@ spec:
       dnsConfig:
 {{ toYaml .Values.dnsConfig | indent 8 }}
       {{- end }}
+      {{- if .Values.hooks.securityContext }}
+      securityContext:
+{{ toYaml .Values.hooks.securityContext | indent 8 }}
+      {{- end }}
       containers:
       - name: snuba-init
         image: "{{ template "snuba.image" . }}"
@@ -83,4 +93,7 @@ spec:
         - name: config
           configMap:
             name: {{ template "sentry.fullname" . }}-snuba
+      {{- if .Values.hooks.shareProcessNamespace }}
+      shareProcessNamespace: {{ .Values.hooks.shareProcessNamespace }}
+      {{- end }}
 {{- end }}
