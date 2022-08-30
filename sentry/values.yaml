@@ -74,6 +74,9 @@ relay:
     targetCPUUtilizationPercentage: 50
   sidecars: []
   volumes: []
+  init:
+    resources: {}
+    # env: []
 
 geodata:
   path: ""
