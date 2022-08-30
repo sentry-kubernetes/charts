@@ -108,6 +108,9 @@ spec:
           - "--queued-min-messages"
           - "{{ .Values.snuba.sessionsConsumer.queuedMinMessages }}"
           {{- end }}
+          {{- if .Values.snuba.sessionsConsumer.noStrictOffsetReset }}
+          - "--no-strict-offset-reset"
+          {{- end }}
         ports:
         - containerPort: {{ template "snuba.port" }}
         env:
