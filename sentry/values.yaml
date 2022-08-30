@@ -190,6 +190,7 @@ sentry:
     # commitBatchSize: 1
     sidecars: []
     volumes: []
+    # noStrictOffsetReset: false
   subscriptionConsumerTransactions:
     replicas: 1
     env: []
@@ -202,6 +203,7 @@ sentry:
     # commitBatchSize: 1
     sidecars: []
     volumes: []
+    # noStrictOffsetReset: false
   postProcessForward:
     replicas: 1
     env: []
@@ -267,6 +269,7 @@ snuba:
     # tolerations: []
     # podLabels: []
     autoOffsetReset: "earliest"
+    # noStrictOffsetReset: false
     # maxBatchSize: ""
     # processes: ""
     # inputBlockSize: ""
@@ -293,6 +296,7 @@ snuba:
     # tolerations: []
     # podLabels: []
     autoOffsetReset: "earliest"
+    # noStrictOffsetReset: false
     maxBatchSize: "3"
     # processes: ""
     # inputBlockSize: ""
@@ -356,6 +360,7 @@ snuba:
     # tolerations: []
     # podLabels: []
     autoOffsetReset: "earliest"
+    # noStrictOffsetReset: false
     # maxBatchSize: ""
     # processes: ""
     # inputBlockSize: ""
@@ -382,6 +387,7 @@ snuba:
     # tolerations: []
     # podLabels: []
     autoOffsetReset: "earliest"
+    # noStrictOffsetReset: false
     # maxBatchSize: ""
     # processes: ""
     # inputBlockSize: ""
