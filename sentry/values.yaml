@@ -850,6 +850,8 @@ externalPostgresql:
   username: postgres
   # password: postgres
   # existingSecret: secret-name
+  ## set existingSecretKey if key name inside existingSecret is different from 'postgres-password'
+  # existingSecretKey: secret-key-name
   database: sentry
   # sslMode: require
 
