@@ -70,7 +70,9 @@ spec:
           - "--auto-offset-reset={{ .Values.snuba.subscriptionConsumerTransactions.autoOffsetReset }}"
           - "--dataset=transactions"
           - "--entity=transactions"
+          {{- if .Values.snuba.subscriptionConsumerTransactions.noStrictOffsetReset }}
           - "--no-strict-offset-reset"
+          {{- end }}
           - "--consumer-group=snuba-transactions-subscriptions-consumers"
           - "--followed-consumer-group=transactions_group"
           - "--delay-seconds=60"
