@@ -35,6 +35,9 @@ spec:
         {{- if .Values.sentry.worker.podLabels }}
 {{ toYaml .Values.sentry.worker.podLabels | indent 8 }}
         {{- end }}
+        {{- if .Values.hooks.dbInit.podLabels }}
+{{ toYaml .Values.hooks.dbInit.podLabels | indent 8 }}
+        {{- end }}
     spec:
       {{- if .Values.hooks.dbInit.affinity }}
       affinity:
@@ -109,4 +112,7 @@ spec:
 {{- if .Values.hooks.dbInit.volumes }}
 {{ toYaml .Values.hooks.dbInit.volumes | indent 6 }}
 {{- end }}
+      {{- if .Values.hooks.shareProcessNamespace }}
+      shareProcessNamespace: {{ .Values.hooks.shareProcessNamespace }}
+      {{- end }}
 {{- end -}}

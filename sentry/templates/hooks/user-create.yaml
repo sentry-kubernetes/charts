@@ -105,7 +105,7 @@ spec:
               key: {{ default "postgresql-password" .Values.postgresql.existingSecretKey }}
         {{- end }}
         {{- if .Values.hooks.dbInit.env }}
-{{ toYaml .Values.hooks.dbInit.env | indent 10 }}
+{{ toYaml .Values.hooks.dbInit.env | indent 8 }}
         {{- end }}
         volumeMounts:
         - mountPath: /etc/sentry
@@ -117,4 +117,7 @@ spec:
       - name: config
         configMap:
           name: {{ template "sentry.fullname" . }}-sentry
+      {{- if .Values.hooks.shareProcessNamespace }}
+      shareProcessNamespace: {{ .Values.hooks.shareProcessNamespace }}
+      {{- end }}
 {{- end -}}

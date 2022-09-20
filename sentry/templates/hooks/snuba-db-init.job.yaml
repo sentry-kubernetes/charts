@@ -37,6 +37,9 @@ spec:
         {{- if .Values.snuba.podLabels }}
 {{ toYaml .Values.snuba.podLabels | indent 8 }}
         {{- end }}
+        {{- if .Values.hooks.snubaInit.podLabels }}
+{{ toYaml .Values.hooks.snubaInit.podLabels | indent 8 }}
+        {{- end }}
     spec:
       {{- if .Values.hooks.snubaInit.affinity }}
       affinity:
@@ -90,4 +93,7 @@ spec:
         - name: config
           configMap:
             name: {{ template "sentry.fullname" . }}-snuba
+      {{- if .Values.hooks.shareProcessNamespace }}
+      shareProcessNamespace: {{ .Values.hooks.shareProcessNamespace }}
+      {{- end }}
 {{- end }}
