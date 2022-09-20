@@ -1,5 +1,6 @@
 {{- if .Values.snuba.cleanupTransactions.enabled }}
-apiVersion: batch/v1beta1
+{{- $batchApiIsStable := eq (include "sentry.batch.isStable" .) "true" -}}
+apiVersion: {{ include "sentry.batch.apiVersion" . }}
 kind: CronJob
 metadata:
   name: {{ template "sentry.fullname" . }}-snuba-cleanup-transactions

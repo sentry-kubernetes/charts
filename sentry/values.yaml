@@ -192,6 +192,7 @@ sentry:
     # commitBatchSize: 1
     sidecars: []
     volumes: []
+    # noStrictOffsetReset: false
   subscriptionConsumerTransactions:
     replicas: 1
     env: []
@@ -204,6 +205,7 @@ sentry:
     # commitBatchSize: 1
     sidecars: []
     volumes: []
+    # noStrictOffsetReset: false
   postProcessForward:
     replicas: 1
     env: []
@@ -269,6 +271,7 @@ snuba:
     # tolerations: []
     # podLabels: []
     autoOffsetReset: "earliest"
+    # noStrictOffsetReset: false
     # maxBatchSize: ""
     # processes: ""
     # inputBlockSize: ""
@@ -295,6 +298,7 @@ snuba:
     # tolerations: []
     # podLabels: []
     autoOffsetReset: "earliest"
+    # noStrictOffsetReset: false
     maxBatchSize: "3"
     # processes: ""
     # inputBlockSize: ""
@@ -358,6 +362,7 @@ snuba:
     # tolerations: []
     # podLabels: []
     autoOffsetReset: "earliest"
+    # noStrictOffsetReset: false
     # maxBatchSize: ""
     # processes: ""
     # inputBlockSize: ""
@@ -384,6 +389,7 @@ snuba:
     # tolerations: []
     # podLabels: []
     autoOffsetReset: "earliest"
+    # noStrictOffsetReset: false
     # maxBatchSize: ""
     # processes: ""
     # inputBlockSize: ""
@@ -431,6 +437,7 @@ hooks:
   enabled: true
   removeOnSuccess: true
   activeDeadlineSeconds: 100
+  shareProcessNamespace: false
   dbCheck:
     image:
       # repository: subfuzion/netcat
@@ -438,6 +445,7 @@ hooks:
       # pullPolicy: IfNotPresent
       imagePullSecrets: []
     env: []
+    # podLabels: []
     podAnnotations: {}
     resources:
       limits:
@@ -451,6 +459,7 @@ hooks:
     # tolerations: []
   dbInit:
     env: []
+    # podLabels: []
     podAnnotations: {}
     resources:
       limits:
@@ -464,6 +473,7 @@ hooks:
     nodeSelector: {}
     # tolerations: []
   snubaInit:
+    # podLabels: []
     podAnnotations: {}
     resources:
       limits:
@@ -486,6 +496,8 @@ hooks:
     affinity: {}
     nodeSelector: {}
     # tolerations: []
+  snubaMigrate: {}
+    # podLabels: []
 
 system:
   ## be sure to include the scheme on the url, for example: "https://sentry.example.com"

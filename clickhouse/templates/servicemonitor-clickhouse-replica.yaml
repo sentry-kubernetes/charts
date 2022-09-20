@@ -1,3 +1,4 @@
+{{- if .Values.clickhouse.configmap.remote_servers.replica.backup.enabled }}
 {{- if .Values.clickhouse.metrics.serviceMonitor.enabled }}
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
@@ -14,13 +15,26 @@ metadata:
     {{- toYaml .Values.clickhouse.metrics.serviceMonitor.selector | nindent 4 }}
     {{- end }}
 spec:
+  namespaceSelector:
+    matchNames:
+      - {{ .Release.Namespace }}
   selector:
     matchLabels:
       app.kubernetes.io/name: {{ include "clickhouse.name" . }}-replica-metrics
   endpoints:
     - port: metrics
+      path: /metrics
       {{- if .Values.clickhouse.metrics.serviceMonitor.interval }}
       interval: {{ .Values.clickhouse.metrics.serviceMonitor.interval }}
       {{- end }}
+{{- if .Values.clickhouse.metrics.serviceMonitor.metricRelabelings }}
+      metricRelabelings:
+{{ toYaml .Values.clickhouse.metrics.serviceMonitor.metricRelabelings | indent 6 }}
+{{- end }}
+{{- if .Values.clickhouse.metrics.serviceMonitor.relabelings }}
+      relabelings:
+{{ toYaml .Values.clickhouse.metrics.serviceMonitor.relabelings | nindent 6 }}
+{{- end }}
 ---
+{{- end }}
 {{- end }}
