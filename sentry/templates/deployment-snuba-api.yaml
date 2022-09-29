@@ -103,7 +103,7 @@ spec:
           successThreshold: 1
           timeoutSeconds: {{ .Values.snuba.api.readiness.timeoutSeconds }}
         resources:
-{{ toYaml .Values.snuba.api.resources | indent 8 }}
+{{ toYaml .Values.snuba.api.resources | indent 10 }}
 {{- if .Values.snuba.api.sidecars }}
 {{ toYaml .Values.snuba.api.sidecars | indent 6 }}
 {{- end }}
