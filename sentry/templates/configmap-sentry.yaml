@@ -15,7 +15,6 @@ data:
     {{- if .Values.system.adminEmail }}
     system.admin-email: {{ .Values.system.adminEmail | quote }}
     {{- end }}
-    system.secret-key: {{ .Values.system.secretKey | default (randAlphaNum 50) | quote }}
     {{- if .Values.system.url }}
     system.url-prefix: {{ .Values.system.url | quote }}
     {{- end }}
@@ -167,6 +166,13 @@ data:
     ###########
     # General #
     ###########
+
+
+    secret_key = env('SENTRY_SECRET_KEY')
+    if not secret_key:
+      raise Exception('Error: SENTRY_SECRET_KEY is undefined')
+
+    SENTRY_OPTIONS['system.secret-key'] = secret_key
 
     # Instruct Sentry that this install intends to be run by a single organization
     # and thus various UI optimizations should be enabled.
