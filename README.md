@@ -14,6 +14,13 @@ Big thanks to the maintainers of the [deprecated chart](https://github.com/helm/
 
 For now the full list of values is not documented but you can get inspired by the values.yaml specific to each directory.
 
+## Upgrading from 15.x.x version of this Chart to 16.x.x
+
+system.secret-key is removed
+
+See https://github.com/sentry-kubernetes/charts/tree/develop/sentry#sentry-secret-key
+
+
 ## Upgrading from 14.x.x version of this Chart to 15.x.x
 
 Chart dependencies has been upgraded because of bitnami charts removal. 
