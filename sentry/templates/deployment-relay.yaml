@@ -69,9 +69,14 @@ spec:
           args:
             - "credentials"
             - "generate"
+          resources:
+{{ toYaml .Values.relay.init.resources | indent 12 }}
           env:
             - name: RELAY_PORT
               value: '{{ template "relay.port" }}'
+{{- if .Values.relay.init.env }}
+{{ toYaml .Values.relay.init.env | indent 12 }}
+{{- end }}
           volumeMounts:
             - name: credentials
               mountPath: /work/.relay
