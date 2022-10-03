@@ -76,6 +76,9 @@ relay:
     targetCPUUtilizationPercentage: 50
   sidecars: []
   volumes: []
+  init:
+    resources: {}
+    # env: []
 
 geodata:
   path: ""
@@ -855,12 +858,16 @@ postgresql:
   #   enabled: false
 
 ## This value is only used when postgresql.enabled is set to false
-##
+## Set either externalPostgresql.password or externalPostgresql.existingSecret to configure password
+## externalPostgresql.existingSecret should have a key of 'postgres-password' which holds the password
 externalPostgresql:
   # host: postgres
   port: 5432
   username: postgres
   # password: postgres
+  # existingSecret: secret-name
+  ## set existingSecretKey if key name inside existingSecret is different from 'postgres-password'
+  # existingSecretKey: secret-key-name
   database: sentry
   # sslMode: require
 

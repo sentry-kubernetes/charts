@@ -73,9 +73,14 @@ spec:
             ls -l /credentials
             cp /relay-init-scripts/*.sh /tmp
             /bin/bash /tmp/relay-init.sh
+          resources:
+{{ toYaml .Values.relay.init.resources | indent 12 }}
           env:
             - name: RELAY_PORT
               value: '{{ template "relay.port" }}'
+{{- if .Values.relay.init.env }}
+{{ toYaml .Values.relay.init.env | indent 12 }}
+{{- end }}
           volumeMounts:
             - name: credentials
               mountPath: /work/.relay
