@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "sentry.fullname" . }}-relay-init-script
+  labels:
+    app: sentry
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
+    release: "{{ .Release.Name }}"
+    heritage: "{{ .Release.Service }}"
+data:
+  relay-init.sh: |
+    # if a user supplied credentials.json file is present, copy it over to the proper folder so relay can find it
+    if [[ -f /credentials/credentials.json ]]
+    then
+      echo "/work/.relay/credentials.json already present, using existing relay credentials."
+      cp /credentials/credentials.json /work/.relay/credentials.json
+    else
+       # nothing is supplied generate the credentials
+       echo "/work/.relay/credentials.json not present, generating new relay credentials now."
+       /bin/bash /docker-entrypoint.sh credentials generate
+    fi

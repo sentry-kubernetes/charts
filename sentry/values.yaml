@@ -67,6 +67,8 @@ relay:
   # tolerations: []
   # podLabels: []
 
+  # see README.md
+  # existingSecret: "secret-with-relay-credentials-as-json"
   autoscaling:
     enabled: false
     minReplicas: 2
@@ -483,6 +485,17 @@ hooks:
       requests:
         cpu: 700m
         memory: 1Gi
+    affinity: {}
+    nodeSelector: {}
+    # tolerations: []
+  relayInit:
+    podAnnotations: {}
+    resources:
+      limits:
+        memory: 128Mi
+      requests:
+        cpu: 100m
+        memory: 128Mi
     affinity: {}
     nodeSelector: {}
     # tolerations: []

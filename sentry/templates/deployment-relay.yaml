@@ -66,9 +66,13 @@ spec:
         - name: {{ .Chart.Name }}-relay-init
           image: "{{ template "relay.image" . }}"
           imagePullPolicy: {{ default "IfNotPresent" .Values.images.sentry.pullPolicy }}
-          args:
-            - "credentials"
-            - "generate"
+          command:
+          - /bin/sh
+          - -c
+          - |
+            ls -l /credentials
+            cp /relay-init-scripts/*.sh /tmp
+            /bin/bash /tmp/relay-init.sh
           resources:
 {{ toYaml .Values.relay.init.resources | indent 12 }}
           env:
@@ -80,6 +84,10 @@ spec:
           volumeMounts:
             - name: credentials
               mountPath: /work/.relay
+            - name: relay-init-scripts-volume
+              mountPath: /relay-init-scripts
+            - name: credentials-json
+              mountPath: /credentials
             - name: config
               mountPath: /work/.relay/config.yml
               subPath: config.yml
@@ -106,10 +114,14 @@ spec:
         volumeMounts:
           - name: credentials
             mountPath: /work/.relay
+          - name: relay-init-scripts-volume
+            mountPath: /relay-init-scripts
           - name: config
             mountPath: /work/.relay/config.yml
             subPath: config.yml
             readOnly: true
+          - name: credentials-json
+            mountPath: /credentials
           {{- if .Values.geodata.volumeName }}
           - name: {{ .Values.geodata.volumeName }}
             mountPath: {{ .Values.geodata.mountPath }}
@@ -149,6 +161,18 @@ spec:
           defaultMode: 0644
       - name: credentials
         emptyDir: {}
+      - name: relay-init-scripts-volume
+        configMap:
+          name: {{ template "sentry.fullname" . }}-relay-init-script
+      {{- if .Values.relay.existingSecret }}
+      - name: credentials-json
+        secret:
+          secretName: {{ .Values.relay.existingSecret}}
+          optional: false
+      {{- else }}
+      - name: credentials-json
+        emptyDir: {}
+      {{- end }}
 {{- if .Values.relay.volumes }}
 {{ toYaml .Values.relay.volumes | indent 6 }}
 {{- end }}

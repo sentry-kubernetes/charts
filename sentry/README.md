@@ -120,6 +120,39 @@ sourcemaps:
 
 For details on the background see this blog post: https://engblog.yext.com/post/sentry-js-source-maps
 
+## Relay credentials
+
+Relay must be [registered at sentry-web](https://docs.sentry.io/product/relay/getting-started) with it's generated public key. By default, the sentry-relay pods
+create a new credentials.json on each start, so it will not be possible to register itself
+at the upstream sentry-web pods. 
+
+Most things will still work, but any configuration changes that need to propagate to relay won't be applied,
+like rate-limits of inbound filters.
+
+To circumvent this, you can provide an `relay.existingSecret` value, that references a secret containing
+a pre-generated credentials.json file (see https://docs.sentry.io/product/relay/getting-started/#initializing-configuration):
+
+
+values.yaml:
+
+```yaml
+relay:
+  existingSecret: sentry-relay-credentials
+
+```yaml
+---
+apiVersion: v1
+data:
+  credentials.json: | 
+                    ewogICJzZWNyZXRfa2V5IjogIjVUNktzNGZyMF8xYmtQTlJpS2ktQVhRUWRNQ3cx
+                    SFotelhTY2lOTVdGb3ciLAogICJwdWJsaWNfa2V5IjogIjFsOVlDc21qU3VXTW9j
+                    aFhPU3JrUnpQQlQyWXpGM3p2MlRVZng5TE1xVVkiLAogICJpZCI6ICJlYWU3ODJi
+                    Ni00ZWE1LTQwNTAtYWQ2ZC05YzMyNmNkZmI3YTciCn0K
+kind: Secret
+metadata:
+  name: sentry-relay-credentials
+type: Opaque
+```
 
 ## Geolocation
 
