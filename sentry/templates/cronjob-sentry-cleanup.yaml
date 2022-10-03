@@ -93,7 +93,13 @@ spec:
                   key: {{ default "postgresql-password" .Values.postgresql.existingSecretKey }}
             {{- else if .Values.externalPostgresql.password }}
             - name: POSTGRES_PASSWORD
-              value: {{ include "sentry.postgresql.password" . | quote }}
+              value: {{ .Values.externalPostgresql.password | quote }}
+            {{- else if .Values.externalPostgresql.existingSecret }}
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.externalPostgresql.existingSecret }}
+                  key: {{ default "postgresql-password" .Values.externalPostgresql.existingSecretKey }}
             {{- end }}
             {{- if and (eq .Values.filestore.backend "gcs") .Values.filestore.gcs.secretName }}
             - name: GOOGLE_APPLICATION_CREDENTIALS

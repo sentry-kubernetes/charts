@@ -237,7 +237,7 @@ Set postgresql password
 {{- define "sentry.postgresql.password" -}}
 {{- if .Values.postgresql.enabled -}}
 {{- default "" .Values.postgresql.postgresqlPassword }}
-{{- else -}}
+{{- else if not .Values.externalPostgresql.existingSecret }}
 {{ required "A valid .Values.externalPostgresql.password is required" .Values.externalPostgresql.password }}
 {{- end -}}
 {{- end -}}
