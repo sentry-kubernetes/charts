@@ -270,7 +270,7 @@ snuba:
     replicas: 1
     # set command to ["snuba","api"] if securityContext.runAsUser > 0
     # see: https://github.com/getsentry/snuba/issues/956
-    command: {}
+    command: []
     #   - snuba
     #   - api
     env: []
