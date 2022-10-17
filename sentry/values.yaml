@@ -230,6 +230,7 @@ sentry:
     enabled: true
     schedule: "0 0 * * *"
     days: 90
+    # securityContext: {}
     sidecars: []
     volumes: []
     serviceAccount: {}

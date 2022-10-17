@@ -58,6 +58,10 @@ spec:
           imagePullSecrets:
 {{ toYaml .Values.images.sentry.imagePullSecrets | indent 12 }}
             {{- end }}
+            {{- if .Values.sentry.cleanup.securityContext }}
+          securityContext:
+{{ toYaml .Values.sentry.cleanup.securityContext | indent 12 }}
+      {{- end }}
           containers:
           - name: {{ .Chart.Name }}-sentry-cleanup
             image: "{{ template "sentry.image" . }}"
