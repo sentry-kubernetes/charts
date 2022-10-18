@@ -144,7 +144,7 @@ data:
             "ENGINE": "sentry.db.postgres",
             "NAME": {{ include "sentry.postgresql.database" . | quote }},
             "USER": {{ include "sentry.postgresql.username" . | quote }},
-            "PASSWORD": os.environ.get("POSTGRES_PASSWORD", {{ include "sentry.postgresql.password" . | quote }}),
+            "PASSWORD": os.environ.get("POSTGRES_PASSWORD", ""),
             "HOST": {{ include "sentry.postgresql.host" . | quote }},
             "PORT": {{ template "sentry.postgresql.port" . }},
             {{- if .Values.externalPostgresql.sslMode }}
