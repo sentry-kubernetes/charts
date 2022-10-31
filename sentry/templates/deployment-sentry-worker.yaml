@@ -128,6 +128,10 @@ spec:
         - name: sentry-google-cloud-key
           mountPath: /var/run/secrets/google
         {{ end }}
+        {{- if .Values.sentry.worker.customCA }}
+        - name: custom-ca
+          mountPath: /etc/pki/ca-trust/custom
+        {{ end }}
   {{- if .Values.sentry.worker.livenessProbe.enabled }}
         livenessProbe:
           periodSeconds: {{ .Values.sentry.worker.livenessProbe.periodSeconds }}
@@ -169,6 +173,11 @@ spec:
       - name: sentry-google-cloud-key
         secret:
           secretName: {{ .Values.filestore.gcs.secretName }}
+      {{ end }}
+      {{- if .Values.sentry.web.customCA }}
+      - name: custom-ca
+        secret:
+{{ toYaml .Values.sentry.web.customCA | indent 10 }}
       {{ end }}
       {{- if .Values.sentry.worker.priorityClassName }}
       priorityClassName: "{{ .Values.sentry.worker.priorityClassName }}"

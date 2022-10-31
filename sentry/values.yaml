@@ -147,6 +147,8 @@ sentry:
       failureThreshold: 3
     sidecars: []
     volumes: []
+    # customCA:
+    #   secretName: custom-ca
 
   ingestConsumer:
     replicas: 1
