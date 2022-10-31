@@ -210,7 +210,19 @@ sentry:
     sidecars: []
     volumes: []
     # noStrictOffsetReset: false
-  postProcessForward:
+  postProcessForwardErrors:
+    replicas: 1
+    env: []
+    resources: {}
+    affinity: {}
+    nodeSelector: {}
+    securityContext: {}
+    # tolerations: []
+    # podLabels: []
+    # commitBatchSize: 1
+    sidecars: []
+    volumes: []
+  postProcessForwardTransactions:
     replicas: 1
     env: []
     resources: {}
