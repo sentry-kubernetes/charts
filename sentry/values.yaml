@@ -698,6 +698,8 @@ config:
     # No Python Extension Config Given
   relay: |
     # No YAML relay config given
+  web:
+    httpKeepalive: 15
 
 clickhouse:
   enabled: true
