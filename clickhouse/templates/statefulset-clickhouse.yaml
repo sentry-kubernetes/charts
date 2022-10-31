@@ -162,7 +162,6 @@ spec:
       {{- else }}
         emptyDir: {}
       {{- end }}
-      {{- if .Values.clickhouse.configmap.enabled }}
       - name: {{ include "clickhouse.fullname" . }}-config
         configMap:
           name: {{ include "clickhouse.fullname" . }}-config
@@ -181,7 +180,6 @@ spec:
           items:
           - key: users.xml
             path: users.xml
-      {{- end }}
       {{- if .Values.serviceAccount.enabled }}
       serviceAccountName: {{ .Values.serviceAccount.name }}
       {{- end }}
