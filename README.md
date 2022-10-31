@@ -14,6 +14,16 @@ Big thanks to the maintainers of the [deprecated chart](https://github.com/helm/
 
 For now the full list of values is not documented but you can get inspired by the values.yaml specific to each directory.
 
+## Upgrading from 16.x.x version of this Chart to 17.x.x
+
+Sentry version from 22.10.0 onwards should be using chart 17.x.x
+
+- post process forwarder events and transactions topics are splitted in Sentry 22.10.0
+
+You can delete the deployment "sentry-post-process-forward" as it's no longer needed.
+
+
+
 ## Upgrading from 15.x.x version of this Chart to 16.x.x
 
 system.secret-key is removed
