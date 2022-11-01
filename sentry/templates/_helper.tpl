@@ -232,17 +232,6 @@ Set postgresql username
 {{- end -}}
 
 {{/*
-Set postgresql password
-*/}}
-{{- define "sentry.postgresql.password" -}}
-{{- if .Values.postgresql.enabled -}}
-{{- default "" .Values.postgresql.postgresqlPassword }}
-{{- else -}}
-{{ required "A valid .Values.externalPostgresql.password is required" .Values.externalPostgresql.password }}
-{{- end -}}
-{{- end -}}
-
-{{/*
 Set postgresql database
 */}}
 {{- define "sentry.postgresql.database" -}}
@@ -353,13 +342,6 @@ default
 {{- end -}}
 
 {{/*
-Set ClickHouse Authorization
-*/}}
-{{- define "sentry.clickhouse.auth" -}}
---user {{ include "sentry.clickhouse.username" . }} --password {{ include "sentry.clickhouse.password" .| quote }}
-{{- end -}}
-
-{{/*
 Set ClickHouse User
 */}}
 {{- define "sentry.clickhouse.username" -}}
@@ -454,4 +436,52 @@ Common Snuba environment variables
   value: /etc/snuba/settings.py
 - name: DEFAULT_BROKERS
   value: {{ include "sentry.kafka.bootstrap_servers_string" . | quote }}
+{{- if .Values.externalClickhouse.existingSecret }}
+- name: CLICKHOUSE_PASSWORD
+  valueFrom:
+    secretKeyRef:
+      name: {{ .Values.externalClickhouse.existingSecret }}
+      key: {{ default "clickhouse-password" .Values.externalClickhouse.existingSecretKey }}
+{{- end }}
+{{- end -}}
+
+{{/*
+Common Sentry environment variables
+*/}}
+{{- define "sentry.env" -}}
+- name: SNUBA
+  value: http://{{ template "sentry.fullname" . }}-snuba:{{ template "snuba.port" . }}
+{{- if .Values.sentry.existingSecret }}
+- name: SENTRY_SECRET_KEY
+  valueFrom:
+    secretKeyRef:
+      name: {{ .Values.sentry.existingSecret }}
+      key: {{ default "key" .Values.sentry.existingSecretKey }}
+{{- else }}
+- name: SENTRY_SECRET_KEY
+  valueFrom:
+    secretKeyRef:
+      name: {{ template "sentry.fullname" . }}-sentry-secret
+      key: "key"
+{{- end }}
+{{- if .Values.postgresql.enabled }}
+- name: POSTGRES_PASSWORD
+  valueFrom:
+    secretKeyRef:
+      name: {{ default (include "sentry.postgresql.fullname" .) .Values.postgresql.existingSecret }}
+      key: {{ default "postgresql-password" .Values.postgresql.existingSecretKey }}
+{{- else if .Values.externalPostgresql.password }}
+- name: POSTGRES_PASSWORD
+  value: {{ .Values.externalPostgresql.password | quote }}
+{{- else if .Values.externalPostgresql.existingSecret }}
+- name: POSTGRES_PASSWORD
+  valueFrom:
+    secretKeyRef:
+      name: {{ .Values.externalPostgresql.existingSecret }}
+      key: {{ default "postgresql-password" .Values.externalPostgresql.existingSecretKey }}
+{{- end }}
+{{- if and (eq .Values.filestore.backend "gcs") .Values.filestore.gcs.secretName }}
+- name: GOOGLE_APPLICATION_CREDENTIALS
+  value: /var/run/secrets/google/{{ .Values.filestore.gcs.credentialsFile }}
+{{- end }}
 {{- end -}}

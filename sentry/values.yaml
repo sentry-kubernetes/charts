@@ -74,6 +74,9 @@ relay:
     targetCPUUtilizationPercentage: 50
   sidecars: []
   volumes: []
+  init:
+    resources: {}
+    # env: []
 
 geodata:
   path: ""
@@ -81,6 +84,9 @@ geodata:
   mountPath: ""
 
 sentry:
+  # to not generate a sentry-secret, use these 2 values to reference an existing secret
+  # existingSecret: "my-secret"
+  # existingSecretKey: "my-secret-key"
   singleOrganization: true
   web:
     # if using filestore backend filesystem with RWO access, set strategyType to Recreate
@@ -204,7 +210,19 @@ sentry:
     sidecars: []
     volumes: []
     # noStrictOffsetReset: false
-  postProcessForward:
+  postProcessForwardErrors:
+    replicas: 1
+    env: []
+    resources: {}
+    affinity: {}
+    nodeSelector: {}
+    securityContext: {}
+    # tolerations: []
+    # podLabels: []
+    # commitBatchSize: 1
+    sidecars: []
+    volumes: []
+  postProcessForwardTransactions:
     replicas: 1
     env: []
     resources: {}
@@ -224,6 +242,7 @@ sentry:
     enabled: true
     schedule: "0 0 * * *"
     days: 90
+    # securityContext: {}
     sidecars: []
     volumes: []
     serviceAccount: {}
@@ -418,6 +437,7 @@ snuba:
     schedule: "0 * * * *"
     sidecars: []
     volumes: []
+    # securityContext: {}
     serviceAccount: {}
 
   cleanupTransactions:
@@ -429,6 +449,7 @@ snuba:
     schedule: "0 * * * *"
     sidecars: []
     volumes: []
+    # securityContext: {}
     serviceAccount: {}
 
 hooks:
@@ -689,6 +710,8 @@ config:
     # No Python Extension Config Given
   relay: |
     # No YAML relay config given
+  web:
+    httpKeepalive: 15
 
 clickhouse:
   enabled: true
@@ -745,6 +768,9 @@ externalClickhouse:
   password: ""
   database: default
   singleNode: true
+  # existingSecret: secret-name
+  ## set existingSecretKey if key name inside existingSecret is different from 'postgres-password'
+  # existingSecretKey: secret-key-name
   ## Cluster name, can be found in config
   ## (https://clickhouse.tech/docs/en/operations/server-configuration-parameters/settings/#server-settings-remote-servers)
   ## or by executing `select * from system.clusters`
@@ -842,12 +868,16 @@ postgresql:
   #   enabled: false
 
 ## This value is only used when postgresql.enabled is set to false
-##
+## Set either externalPostgresql.password or externalPostgresql.existingSecret to configure password
+## externalPostgresql.existingSecret should have a key of 'postgres-password' which holds the password
 externalPostgresql:
   # host: postgres
   port: 5432
   username: postgres
   # password: postgres
+  # existingSecret: secret-name
+  ## set existingSecretKey if key name inside existingSecret is different from 'postgres-password'
+  # existingSecretKey: secret-key-name
   database: sentry
   # sslMode: require
 

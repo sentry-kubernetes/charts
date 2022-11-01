@@ -58,6 +58,10 @@ spec:
           imagePullSecrets:
 {{ toYaml .Values.images.sentry.imagePullSecrets | indent 12 }}
             {{- end }}
+            {{- if .Values.sentry.cleanup.securityContext }}
+          securityContext:
+{{ toYaml .Values.sentry.cleanup.securityContext | indent 12 }}
+      {{- end }}
           containers:
           - name: {{ .Chart.Name }}-sentry-cleanup
             image: "{{ template "sentry.image" . }}"
@@ -68,27 +72,12 @@ spec:
               - "--days"
               - "{{ .Values.sentry.cleanup.days }}"
             env:
-            - name: SNUBA
-              value: http://{{ template "sentry.fullname" . }}-snuba:{{ template "snuba.port" }}
             - name: C_FORCE_ROOT
               value: "true"
-            {{- if .Values.postgresql.enabled }}
-            - name: POSTGRES_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: {{ default (include "sentry.postgresql.fullname" .) .Values.postgresql.existingSecret }}
-                  key: {{ default "postgresql-password" .Values.postgresql.existingSecretKey }}
-            {{- else if .Values.externalPostgresql.password }}
-            - name: POSTGRES_PASSWORD
-              value: {{ include "sentry.postgresql.password" . | quote }}
-            {{- end }}
-            {{- if and (eq .Values.filestore.backend "gcs") .Values.filestore.gcs.secretName }}
-            - name: GOOGLE_APPLICATION_CREDENTIALS
-              value: /var/run/secrets/google/{{ .Values.filestore.gcs.credentialsFile }}
-            {{- end }}
-            {{- if .Values.sentry.cleanup.env }}
+{{ include "sentry.env" . | indent 12 }}
+{{- if .Values.sentry.cleanup.env }}
 {{ toYaml .Values.sentry.cleanup.env | indent 12 }}
-            {{- end }}
+{{- end }}
             volumeMounts:
             - mountPath: /etc/sentry
               name: config

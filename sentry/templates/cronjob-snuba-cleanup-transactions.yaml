@@ -57,6 +57,10 @@ spec:
           imagePullSecrets:
 {{ toYaml .Values.images.snuba.imagePullSecrets | indent 12 }}
             {{- end }}
+            {{- if .Values.snuba.cleanupTransactions.securityContext }}
+          securityContext:
+{{ toYaml .Values.snuba.cleanupTransactions.securityContext | indent 12 }}
+      {{- end }}
           containers:
           - name: {{ .Chart.Name }}-snuba-cleanup-errors
             image: "{{ template "snuba.image" . }}"
@@ -73,11 +77,10 @@ spec:
                 - "--clickhouse-port"
                 - {{ include "sentry.clickhouse.port" . | quote }}
             env:
-              - name: SNUBA_SETTINGS
-                value: /etc/snuba/settings.py
-              {{- if .Values.snuba.cleanupTransactions.env }}
+{{ include "sentry.snuba.env" . | indent 14 }}
+{{- if .Values.snuba.cleanupTransactions.env }}
 {{ toYaml .Values.snuba.cleanupTransactions.env | indent 14 }}
-              {{- end }}
+{{- end }}
             envFrom:
                 - secretRef:
                       name: {{ template "sentry.fullname" . }}-snuba-env

@@ -1,50 +1,57 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ template "sentry.fullname" . }}-worker
+  name: {{ template "sentry.fullname" . }}-post-process-forward-errors
   labels:
-    app: {{ template "sentry.fullname" . }}
+    app: sentry
     chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
     release: "{{ .Release.Name }}"
     heritage: "{{ .Release.Service }}"
+    app.kubernetes.io/managed-by: "Helm"
+  {{- if .Values.asHook }}
+  {{- /* Add the Helm annotations so that deployment after asHook from true to false works */}}
+  annotations:
+    meta.helm.sh/release-name: "{{ .Release.Name }}"
+    meta.helm.sh/release-namespace: "{{ .Release.Namespace }}"
+    "helm.sh/hook": "post-install,post-upgrade"
+    "helm.sh/hook-weight": "10"
+  {{- end }}
 spec:
   revisionHistoryLimit: {{ .Values.revisionHistoryLimit }}
   selector:
     matchLabels:
-        app: {{ template "sentry.fullname" . }}
+        app: sentry
         release: "{{ .Release.Name }}"
-        role: worker
-{{- if not .Values.sentry.worker.autoscaling.enabled }}
-  replicas: {{ .Values.sentry.worker.replicas }}
-{{- end }}
+        role: sentry-post-process-forward-errors
+  replicas: {{ .Values.sentry.postProcessForwardErrors.replicas }}
   template:
     metadata:
       annotations:
         checksum/configYml: {{ .Values.config.configYml | toYaml | toString | sha256sum }}
         checksum/sentryConfPy: {{ .Values.config.sentryConfPy | sha256sum }}
         checksum/config.yaml: {{ include (print $.Template.BasePath "/configmap-sentry.yaml") . | sha256sum }}
-        {{- if .Values.sentry.worker.annotations }}
-{{ toYaml .Values.sentry.worker.annotations | indent 8 }}
+        {{- if .Values.sentry.postProcessForwardErrors.annotations }}
+{{ toYaml .Values.sentry.postProcessForwardErrors.annotations | indent 8 }}
         {{- end }}
       labels:
-        app: {{ template "sentry.fullname" . }}
+        app: sentry
         release: "{{ .Release.Name }}"
-        role: worker
-        {{- if .Values.sentry.worker.podLabels }}
-{{ toYaml .Values.sentry.worker.podLabels | indent 8 }}
+        role: sentry-post-process-forward-errors
+        {{- if .Values.sentry.postProcessForwardErrors.podLabels }}
+{{ toYaml .Values.sentry.postProcessForwardErrors.podLabels | indent 8 }}
         {{- end }}
     spec:
       affinity:
-      {{- if .Values.sentry.worker.affinity }}
-{{ toYaml .Values.sentry.worker.affinity | indent 8 }}
+      {{- if .Values.sentry.postProcessForwardErrors.affinity }}
+{{ toYaml .Values.sentry.postProcessForwardErrors.affinity | indent 8 }}
       {{- end }}
-      {{- if .Values.sentry.worker.nodeSelector }}
+      {{- if .Values.sentry.postProcessForwardErrors.nodeSelector }}
       nodeSelector:
-{{ toYaml .Values.sentry.worker.nodeSelector | indent 8 }}
+{{ toYaml .Values.sentry.postProcessForwardErrors.nodeSelector | indent 8 }}
       {{- end }}
-      {{- if .Values.sentry.worker.tolerations }}
+      {{- if .Values.sentry.postProcessForwardErrors.tolerations }}
       tolerations:
-{{ toYaml .Values.sentry.worker.tolerations | indent 8 }}
+{{ toYaml .Values.sentry.postProcessForwardErrors.tolerations | indent 8 }}
       {{- end }}
       {{- if .Values.images.sentry.imagePullSecrets }}
       imagePullSecrets:
@@ -57,28 +64,26 @@ spec:
       dnsConfig:
 {{ toYaml .Values.dnsConfig | indent 8 }}
       {{- end }}
-      {{- if .Values.sentry.worker.securityContext }}
+      {{- if .Values.sentry.postProcessForwardErrors.securityContext }}
       securityContext:
-{{ toYaml .Values.sentry.worker.securityContext | indent 8 }}
+{{ toYaml .Values.sentry.postProcessForwardErrors.securityContext | indent 8 }}
       {{- end }}
       containers:
-      - name: {{ .Chart.Name }}-worker
+      - name: {{ .Chart.Name }}-post-process-forward-errors
         image: "{{ template "sentry.image" . }}"
         imagePullPolicy: {{ default "IfNotPresent" .Values.images.sentry.pullPolicy }}
         command: ["sentry"]
         args:
           - "run"
-          - "worker"
-          {{- if .Values.sentry.worker.concurrency }}
-          - "-c"
-          - "{{ .Values.sentry.worker.concurrency }}"
-          {{- end }}
+          - "post-process-forwarder"
+          - "--commit-batch-size"
+          - "{{ default "1" .Values.sentry.postProcessForwardErrors.commitBatchSize }}"
+          - "--entity"
+          - "errors"
         env:
-        - name: C_FORCE_ROOT
-          value: "true"
 {{ include "sentry.env" . | indent 8 }}
-{{- if .Values.sentry.worker.env }}
-{{ toYaml .Values.sentry.worker.env | indent 8 }}
+{{- if .Values.sentry.postProcessForwardErrors.env }}
+{{ toYaml .Values.sentry.postProcessForwardErrors.env | indent 8 }}
 {{- end }}
         volumeMounts:
         - mountPath: /etc/sentry
@@ -86,34 +91,17 @@ spec:
           readOnly: true
         - mountPath: {{ .Values.filestore.filesystem.path }}
           name: sentry-data
-        {{- if .Values.geodata.volumeName }}
-        - name: {{ .Values.geodata.volumeName }}
-          mountPath: {{ .Values.geodata.mountPath }}
-        {{- end }}
         {{- if and (eq .Values.filestore.backend "gcs") .Values.filestore.gcs.secretName }}
         - name: sentry-google-cloud-key
           mountPath: /var/run/secrets/google
         {{ end }}
-  {{- if .Values.sentry.worker.livenessProbe.enabled }}
-        livenessProbe:
-          periodSeconds: {{ .Values.sentry.worker.livenessProbe.periodSeconds }}
-          initialDelaySeconds: 10
-          timeoutSeconds: {{ .Values.sentry.worker.livenessProbe.timeoutSeconds }}
-          failureThreshold: {{ .Values.sentry.worker.livenessProbe.failureThreshold }}
-          exec:
-            command:
-              - sentry
-              - exec
-              - -c
-              - 'import celery, os; dest="celery@{}".format(os.environ["HOSTNAME"]); print(celery.task.control.ping(destination=[dest], timeout=5)[0][dest]["ok"])'
-{{- end }}
         resources:
-{{ toYaml .Values.sentry.worker.resources | indent 12 }}
-{{- if .Values.sentry.worker.sidecars }}
-{{ toYaml .Values.sentry.worker.sidecars | indent 6 }}
+{{ toYaml .Values.sentry.postProcessForwardErrors.resources | indent 12 }}
+{{- if .Values.sentry.postProcessForwardErrors.sidecars }}
+{{ toYaml .Values.sentry.postProcessForwardErrors.sidecars | indent 6 }}
 {{- end }}
       {{- if .Values.serviceAccount.enabled }}
-      serviceAccountName: {{ .Values.serviceAccount.name }}-worker
+      serviceAccountName: {{ .Values.serviceAccount.name }}-post-process-forwarder-errors
       {{- end }}
       volumes:
       - name: config
@@ -136,9 +124,9 @@ spec:
         secret:
           secretName: {{ .Values.filestore.gcs.secretName }}
       {{ end }}
-      {{- if .Values.sentry.worker.priorityClassName }}
-      priorityClassName: "{{ .Values.sentry.worker.priorityClassName }}"
-      {{- end }}
-{{- if .Values.sentry.worker.volumes }}
-{{ toYaml .Values.sentry.worker.volumes | indent 6 }}
+{{- if .Values.sentry.postProcessForwardErrors.volumes }}
+{{ toYaml .Values.sentry.postProcessForwardErrors.volumes | indent 6 }}
 {{- end }}
+      {{- if .Values.sentry.postProcessForwardErrors.priorityClassName }}
+      priorityClassName: "{{ .Values.sentry.postProcessForwardErrors.priorityClassName }}"
+      {{- end }}
