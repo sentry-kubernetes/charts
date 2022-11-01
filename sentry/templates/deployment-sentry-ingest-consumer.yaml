@@ -88,43 +88,9 @@ spec:
           - "{{ .Values.sentry.ingestConsumer.maxBatchSize }}"
           {{- end }}
         env:
-        - name: SNUBA
-          value: http://{{ template "sentry.fullname" . }}-snuba:{{ template "snuba.port" }}
         - name: C_FORCE_ROOT
           value: "true"
-        {{- if .Values.sentry.existingSecret }}
-        - name: SENTRY_SECRET_KEY
-          valueFrom:
-            secretKeyRef:
-              name: {{ .Values.sentry.existingSecret }}
-              key: {{ default "key" .Values.sentry.existingSecretKey }}
-        {{- else }}
-        - name: SENTRY_SECRET_KEY
-          valueFrom:
-            secretKeyRef:
-              name: {{ template "sentry.fullname" . }}-sentry-secret
-              key: "key"
-        {{- end }}
-        {{- if .Values.postgresql.enabled }}
-        - name: POSTGRES_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: {{ default (include "sentry.postgresql.fullname" .) .Values.postgresql.existingSecret }}
-              key: {{ default "postgresql-password" .Values.postgresql.existingSecretKey }}
-        {{- else if .Values.externalPostgresql.password }}
-        - name: POSTGRES_PASSWORD
-          value: {{ .Values.externalPostgresql.password | quote }}
-        {{- else if .Values.externalPostgresql.existingSecret }}
-        - name: POSTGRES_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: {{ .Values.externalPostgresql.existingSecret }}
-              key: {{ default "postgresql-password" .Values.externalPostgresql.existingSecretKey }}
-        {{- end }}
-        {{ if and (eq .Values.filestore.backend "gcs") .Values.filestore.gcs.secretName }}
-        - name: GOOGLE_APPLICATION_CREDENTIALS
-          value: /var/run/secrets/google/{{ .Values.filestore.gcs.credentialsFile }}
-        {{ end }}
+{{ include "sentry.env" . | indent 8 }}
 {{- if .Values.sentry.ingestConsumer.env }}
 {{ toYaml .Values.sentry.ingestConsumer.env | indent 8 }}
 {{- end }}
