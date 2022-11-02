@@ -51,6 +51,7 @@ serviceAccount:
 
 relay:
   replicas: 1
+  # args: []
   mode: managed
   env: []
   probeFailureThreshold: 5
@@ -76,6 +77,7 @@ relay:
   volumes: []
   init:
     resources: {}
+    # additionalArgs: []
     # env: []
 
 geodata:
