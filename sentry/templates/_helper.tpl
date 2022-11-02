@@ -484,4 +484,14 @@ Common Sentry environment variables
 - name: GOOGLE_APPLICATION_CREDENTIALS
   value: /var/run/secrets/google/{{ .Values.filestore.gcs.credentialsFile }}
 {{- end }}
+{{- if .Values.mail.password }}
+- name: SENTRY_EMAIL_PASSWORD
+  value: {{ .Values.mail.password | quote }}
+{{- else if .Values.mail.existingSecret }}
+- name: SENTRY_EMAIL_PASSWORD
+  valueFrom:
+    secretKeyRef:
+      name: {{ .Values.mail.existingSecret }}
+      key: {{ default "mail-password" .Values.mail.existingSecretKey }}
+{{- end }}
 {{- end -}}

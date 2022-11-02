@@ -525,6 +525,9 @@ mail:
   useSsl: false
   username: ""
   password: ""
+  # existingSecret: secret-name
+  ## set existingSecretKey if key name inside existingSecret is different from 'mail-password'
+  # existingSecretKey: secret-key-name
   port: 25
   host: ""
   from: ""
