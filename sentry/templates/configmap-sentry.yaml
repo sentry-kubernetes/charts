@@ -118,6 +118,13 @@ data:
       {{- if .Values.filestore.s3.default_acl }}
       default_acl: {{ .Values.filestore.s3.default_acl | quote }}
       {{- end }}
+      #add comfig params for s3
+      {{- if .Values.filestore.s3.addressing_style }}
+      addressing_style: {{ .Values.filestore.s3.addressing_style | quote }}
+      {{- end }}
+      {{- if .Values.filestore.s3.location }}
+      location: {{ .Values.filestore.s3.location | quote }}
+      {{- end }}
     {{ end }}
 
     {{- if .Values.config.configYml }}
