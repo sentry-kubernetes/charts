@@ -92,12 +92,18 @@ spec:
         - mountPath: /etc/sentry
           name: config
           readOnly: true
+{{- if .Values.hooks.dbInit.volumeMounts }}
+{{ toYaml .Values.hooks.dbInit.volumeMounts | indent 8 }}
+{{- end }}
         resources:
 {{ toYaml .Values.hooks.dbInit.resources | indent 10 }}
       volumes:
       - name: config
         configMap:
           name: {{ template "sentry.fullname" . }}-sentry
+{{- if .Values.hooks.dbInit.volumes }}
+{{ toYaml .Values.hooks.dbInit.volumes | indent 6 }}
+{{- end }}
       {{- if .Values.hooks.shareProcessNamespace }}
       shareProcessNamespace: {{ .Values.hooks.shareProcessNamespace }}
       {{- end }}

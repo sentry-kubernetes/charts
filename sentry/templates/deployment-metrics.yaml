@@ -68,6 +68,10 @@ spec:
           containerPort: 9125
         - name: metrics
           containerPort: 9102
+{{- if .Values.metrics.volumeMounts }}
+        volumeMounts:
+{{ toYaml .Values.metrics.volumeMounts | indent 8 }}
+{{- end }}
 {{- if .Values.metrics.livenessProbe.enabled }}
         livenessProbe:
           httpGet:
@@ -94,6 +98,11 @@ spec:
 {{- end }}
         resources:
 {{ toYaml .Values.metrics.resources | indent 10 }}
+{{- if .Values.metrics.volumes }}
+      volumes:
+{{ toYaml .Values.metrics.volumes | indent 6 }}
+{{- end }}
+
       {{- if .Values.serviceAccount.enabled }}
       serviceAccountName: {{ .Values.serviceAccount.name }}-metrics
       {{- end }}

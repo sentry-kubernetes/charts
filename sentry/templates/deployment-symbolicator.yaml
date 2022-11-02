@@ -85,6 +85,9 @@ spec:
         - name: sentry-google-cloud-key
           mountPath: /var/run/secrets/google
         {{ end }}
+{{- if .Values.symbolicator.api.volumeMounts }}
+{{ toYaml .Values.symbolicator.api.volumeMounts | indent 8 }}
+{{- end }}
         livenessProbe:
           failureThreshold: 5
           httpGet:
@@ -121,6 +124,9 @@ spec:
         secret:
           secretName: {{ .Values.filestore.gcs.secretName }}
       {{ end }}
+{{- if .Values.sentry.ingestConsumer.volumes }}
+{{ toYaml .Values.symbolicator.api.volumes | indent 6 }}
+{{- end }}
       {{- if .Values.symbolicator.api.priorityClassName }}
       priorityClassName: "{{ .Values.symbolicator.api.priorityClassName }}"
       {{- end }}

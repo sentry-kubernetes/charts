@@ -87,12 +87,18 @@ spec:
         - mountPath: /etc/snuba
           name: config
           readOnly: true
+{{- if .Values.hooks.snubaInit.volumeMounts }}
+{{ toYaml .Values.hooks.snubaInit.volumeMounts | indent 8 }}
+{{- end }}
         resources:
 {{ toYaml .Values.hooks.snubaInit.resources | indent 10 }}
       volumes:
-        - name: config
-          configMap:
-            name: {{ template "sentry.fullname" . }}-snuba
+      - name: config
+        configMap:
+          name: {{ template "sentry.fullname" . }}-snuba
+{{- if .Values.hooks.snubaInit.volumes }}
+{{ toYaml .Values.hooks.snubaInit.volumes | indent 6 }}
+{{- end }}
       {{- if .Values.hooks.shareProcessNamespace }}
       shareProcessNamespace: {{ .Values.hooks.shareProcessNamespace }}
       {{- end }}

@@ -98,6 +98,9 @@ spec:
         - name: sentry-google-cloud-key
           mountPath: /var/run/secrets/google
         {{ end }}
+{{- if .Values.sentry.postProcessForwardTransactions.volumeMounts }}
+{{ toYaml .Values.sentry.postProcessForwardTransactions.volumeMounts | indent 8 }}
+{{- end }}
         resources:
 {{ toYaml .Values.sentry.postProcessForwardTransactions.resources | indent 12 }}
 {{- if .Values.sentry.postProcessForwardTransactions.sidecars }}

@@ -85,9 +85,12 @@ spec:
                 - secretRef:
                       name: {{ template "sentry.fullname" . }}-snuba-env
             volumeMounts:
-                - mountPath: /etc/snuba
-                  name: config
-                  readOnly: true
+              - mountPath: /etc/snuba
+                name: config
+                readOnly: true
+{{- if .Values.snuba.cleanupTransactions.volumeMounts }}
+{{ toYaml .Values.snuba.cleanupTransactions.volumeMounts | indent 14 }}
+{{- end }}
             resources:
 {{ toYaml .Values.snuba.cleanupTransactions.resources | indent 14 }}
 {{- if .Values.snuba.cleanupTransactions.sidecars }}
@@ -99,7 +102,7 @@ spec:
               configMap:
                 name: {{ template "sentry.fullname" . }}-snuba
 {{- if .Values.snuba.cleanupTransactions.volumes }}
-{{ toYaml .Values.snuba.cleanupTransactions.volumes | indent 10 }}
+{{ toYaml .Values.snuba.cleanupTransactions.volumes | indent 12 }}
 {{- end }}
           {{- if .Values.snuba.cleanupTransactions.priorityClassName }}
           priorityClassName: "{{ .Values.snuba.cleanupTransactions.priorityClassName }}"
