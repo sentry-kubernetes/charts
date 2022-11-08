@@ -61,6 +61,10 @@ spec:
       securityContext:
 {{ toYaml .Values.sentry.worker.securityContext | indent 8 }}
       {{- end }}
+      initContainers:
+        - name: wait-for-redis
+          image: busybox:latest
+          command: ['sh', '-c', 'until nc -vz {{ template "sentry.fullname" . }}-sentry-redis-master 6379; do echo Waiting for {{ template "sentry.fullname" . }}-sentry-redis-master; sleep 3; done;']
       containers:
       - name: {{ .Chart.Name }}-worker
         image: "{{ template "sentry.image" . }}"
