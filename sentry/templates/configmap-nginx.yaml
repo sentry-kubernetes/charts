@@ -27,6 +27,13 @@ data:
         proxy_pass http://relay;
       }
 
+      {{ if and .Values.nginx.metrics.enabled .Values.nginx.metrics.serviceMonitor.enabled -}}
+      location = /status/ {
+        stub_status;
+      }
+
+      {{ end -}}
+
       location / {
         proxy_pass http://sentry;
       }
