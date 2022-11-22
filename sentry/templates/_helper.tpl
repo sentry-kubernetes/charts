@@ -494,4 +494,11 @@ Common Sentry environment variables
       name: {{ .Values.mail.existingSecret }}
       key: {{ default "mail-password" .Values.mail.existingSecretKey }}
 {{- end }}
+{{- if and (eq .Values.filestore.backend "s3") .Values.filestore.s3.existingSecret }}
+- name: S3_SECRET_KEY
+  valueFrom:
+    secretKeyRef:
+      name: {{ .Values.filestore.s3.existingSecret }}
+      key: {{ default "s3-secret-key" .Values.filestore.s3.existingSecretKey }}
+{{- end }}
 {{- end -}}

@@ -95,7 +95,7 @@ data:
     filestore.options:
       bucket_name: {{ .Values.filestore.gcs.bucketName | quote }}
     {{ end }}
-    {{- if eq .Values.filestore.backend "s3" }}
+    {{- if not .Values.filestore.s3.existingSecretKey }}
     filestore.options:
       {{- if .Values.filestore.s3.accessKey }}
       access_key: {{ .Values.filestore.s3.accessKey | quote }}
@@ -439,6 +439,7 @@ data:
         }
     )
 
+
     #######################
     # Email Configuration #
     #######################
@@ -450,6 +451,21 @@ data:
     SENTRY_OPTIONS['mail.port'] = int(os.getenv("SENTRY_EMAIL_PORT", {{ .Values.mail.port | quote }}))
     SENTRY_OPTIONS['mail.host'] = os.getenv("SENTRY_EMAIL_HOST", {{ .Values.mail.host | quote }})
     SENTRY_OPTIONS['mail.from'] = os.getenv("SENTRY_EMAIL_FROM", {{ .Values.mail.from | quote }})
+
+
+    #######################
+    # Filestore S3 Configuration #
+    #######################
+    {{- if .Values.filestore.s3.existingSecret }}
+    SENTRY_OPTIONS['filestore.backend'] = 's3'
+    SENTRY_OPTIONS['filestore.options'] = {
+      'access_key': os.getenv("S3_ACCESS_KEY", {{ .Values.filestore.s3.accessKey | quote }}),
+      'secret_key': os.getenv("S3_SECRET_KEY", ""),
+      'bucket_name': {{ .Values.filestore.s3.bucketName | quote }},
+      'region_name': {{ .Values.filestore.s3.region_name | quote }},
+    }
+    {{- end }}
+
 
     #########################
     # Bitbucket Integration #
