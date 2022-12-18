@@ -37,5 +37,8 @@ data:
       {{- else }}
       redis: "redis://{{ $redisHost }}:{{ $redisPort }}"
       {{- end }}
+      topics:
+        metrics_transactions: ingest-performance-metrics
+        metrics_sessions: ingest-metrics
 
 {{ .Values.config.relay | indent 4 }}
