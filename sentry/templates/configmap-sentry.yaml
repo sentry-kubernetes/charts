@@ -328,8 +328,12 @@ data:
 
     # If you're using a reverse SSL proxy, you should enable the X-Forwarded-Proto
     # header and enable the settings below
-
-    # SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+    {{- if .Values.ingress.forwardedProto }}
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', '{{ .Values.ingress.forwardedProto }}')
+    {{- end }}
+    {{- if .Values.ingress.enabledForwardedHost }}
+    USE_X_FORWARDED_HOST = True
+    {{- end }}
     # SESSION_COOKIE_SECURE = True
     # CSRF_COOKIE_SECURE = True
     # SOCIAL_AUTH_REDIRECT_IS_HTTPS = True

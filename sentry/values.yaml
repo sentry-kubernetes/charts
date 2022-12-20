@@ -750,6 +750,10 @@ nginx:
 
 ingress:
   enabled: false
+  # If you're using a reverse proxy, you should enable the X-Forwarded-Proto
+  # and X-Forwarded-Host headers, and enable following configs, see issue: https://github.com/getsentry/sentry/issues/41116
+  enabledForwardedHost: false
+  # forwardedProto: "https"
   # If you are using traefik ingress controller, switch this to 'traefik'
   # if you are using AWS ALB Ingress controller, switch this to 'aws-alb'
   # if you are using GKE Ingress controller, switch this to 'gke'
