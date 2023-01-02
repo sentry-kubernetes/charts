@@ -124,6 +124,18 @@ Note: if you are using NGINX Ingress, please set this annotation on your ingress
 If you are using `additionalHostNames` the `nginx.ingress.kubernetes.io/upstream-vhost` annotation might also come in handy.
 It sets the `Host` header to the value you provide to avoid CSRF issues.
 
+### Letsencrypt on NGINX Ingress Controller
+```
+nginx:
+  ingress:
+    annotations:
+      cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    enabled: true
+    hostname: fqdn
+    ingressClassName: "nginx"
+    tls: true
+```
+
 ## Clickhouse warning
 
 Snuba only supports a UTC timezone for Clickhouse. Please keep the initial value!
