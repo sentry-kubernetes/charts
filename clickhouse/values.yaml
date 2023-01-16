@@ -344,16 +344,26 @@ clickhouse:
     ##
     ## The users section of the user.xml configuration file contains user settings.
     ## More info: https://clickhouse.yandex/docs/en/operations/settings/settings_users/
+    ## Username and password for each user can be loaded from an existing secret.
+    ## To define user's name from an existing secret, both 'user[x].existingSecret' and 'user[x].existingSecretNameKey' must be set. In that case, 'user[x].name' value is ignored.
+    ## To define user's password from an existing secret, an 'user[x].existingSecret' and ('user[x].existingSecretPasswordKey' or 'user[x].existingSecretPasswordSHA256Key') must be set. 
+    ##    In that case, values 'user[x].password' and 'user[x].password_sha256_hex' are ignored.
+    ## When existingSecret is specified but the secret doesn't exist or it doesn't contain given keys (existingSecretNameKey or existingSecretPasswordKey or existingSecretPasswordSHA256Key), error is raised.
     users:
       enabled: false
       user:
-      - name: "default"
+      - # existingSecret: 
+        # existingSecretNameKey:
+        # existingSecretPasswordKey:   
+        # existingSecretPasswordSHA256Key: 
+        name: "default"
         config:
           # password: ""
           networks:
           - "::/0"
           profile: "default"
           quota: "default"
+
     ##
     ## Quotas allow you to limit resource usage over a period of time, or simply track the use of resources.
     ## Quotas are set up in the user config. This is usually 'users.xml'.
