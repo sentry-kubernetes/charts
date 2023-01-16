@@ -27,7 +27,7 @@ data:
 
     {{- if .Values.clickhouse.configmap.users.enabled }}
         <users>
-        {{- range $key, $value := .Values.clickhouse.configmap.users.user }}
+        {{- range $key, $value := include "clickhouse.users" . | fromJsonArray }}
         {{- with . }}
             <{{ .name }}>
             {{- range $k_1, $v_1 := .config }}
