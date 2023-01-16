@@ -346,17 +346,17 @@ clickhouse:
     ## More info: https://clickhouse.yandex/docs/en/operations/settings/settings_users/
     ## Username and password for each user can be loaded from an existing secret.
     ## To define user's name from an existing secret, both 'user[x].existingSecret' and 'user[x].existingSecretNameKey' must be set. In that case, 'user[x].name' value is ignored.
-    ## To define user's password from an existing secret, an 'user[x].existingSecret' and ('user[x].existingSecretPasswordKey' or 'user[x].existingSecretPasswordSHA256Key') must be set. 
+    ## To define user's password from an existing secret, an 'user[x].existingSecret' and ('user[x].existingSecretPasswordKey' or 'user[x].existingSecretPasswordSHA256Key') must be set.
     ##    In that case, values 'user[x].password' and 'user[x].password_sha256_hex' are ignored.
     ## When existingSecret is specified but the secret doesn't exist or it doesn't contain given keys (existingSecretNameKey or existingSecretPasswordKey or existingSecretPasswordSHA256Key), error is raised.
     users:
       enabled: false
       user:
-      - # existingSecret: 
+      - name: "default"
+        # existingSecret:
         # existingSecretNameKey:
-        # existingSecretPasswordKey:   
-        # existingSecretPasswordSHA256Key: 
-        name: "default"
+        # existingSecretPasswordKey:
+        # existingSecretPasswordSHA256Key:
         config:
           # password: ""
           networks:
