@@ -63,6 +63,17 @@ spec:
       securityContext:
 {{ toYaml .Values.sentry.web.securityContext | indent 8 }}
       {{- end }}
+      {{- if .Values.redis.enabled }}
+      initContainers:
+        - name: 'wait-for-{{ template "sentry.fullname" . }}-sentry-redis-master'
+          image: busybox:latest
+          command: ['sh', '-c', 'until nc -vz {{ template "sentry.fullname" . }}-sentry-redis-master 6379; do echo Waiting for {{ template "sentry.fullname" . }}-sentry-redis-master; sleep 3; done;']
+      {{ else }}
+      initContainers:
+        - name: 'wait-for-{{ .Values.externalRedis.host | replace "." "-" }}'
+          image: busybox:latest
+          command: ['sh', '-c', 'until nc -vz {{ .Values.externalRedis.host }} 6379; do echo Waiting for {{ .Values.externalRedis.host }}; sleep 3; done;']
+      {{ end }}
       containers:
       - name: {{ .Chart.Name }}-web
         image: "{{ template "sentry.image" . }}"
