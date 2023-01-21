@@ -1,0 +1,141 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "sentry.fullname" . }}-ingest-metrics-consumer-rh
+  labels:
+    app: {{ template "sentry.fullname" . }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
+    release: "{{ .Release.Name }}"
+    heritage: "{{ .Release.Service }}"
+    app.kubernetes.io/managed-by: "Helm"
+  {{- if .Values.asHook }}
+  {{- /* Add the Helm annotations so that deployment after asHook from true to false works */}}
+  annotations:
+    meta.helm.sh/release-name: "{{ .Release.Name }}"
+    meta.helm.sh/release-namespace: "{{ .Release.Namespace }}"
+    "helm.sh/hook": "post-install,post-upgrade"
+    "helm.sh/hook-weight": "10"
+  {{- end }}
+spec:
+  revisionHistoryLimit: {{ .Values.revisionHistoryLimit }}
+  selector:
+    matchLabels:
+      app: {{ template "sentry.fullname" . }}
+      release: "{{ .Release.Name }}"
+      role: ingest-metrics-consumer-rh
+{{- if not .Values.sentry.ingestMetricsConsumerRh.autoscaling.enabled }}
+  replicas: {{ .Values.sentry.ingestMetricsConsumerRh.replicas }}
+{{- end }}
+  template:
+    metadata:
+      annotations:
+        checksum/configYml: {{ .Values.config.configYml | toYaml | toString | sha256sum }}
+        checksum/sentryConfPy: {{ .Values.config.sentryConfPy | sha256sum }}
+        checksum/config.yaml: {{ include (print $.Template.BasePath "/configmap-sentry.yaml") . | sha256sum }}
+        {{- if .Values.sentry.ingestMetricsConsumerRh.annotations }}
+{{ toYaml .Values.sentry.ingestMetricsConsumerRh.annotations | indent 8 }}
+        {{- end }}
+      labels:
+        app: {{ template "sentry.fullname" . }}
+        release: "{{ .Release.Name }}"
+        role: ingest-metrics-consumer-rh
+        {{- if .Values.sentry.ingestMetricsConsumerRh.podLabels }}
+{{ toYaml .Values.sentry.ingestMetricsConsumerRh.podLabels | indent 8 }}
+        {{- end }}
+    spec:
+      affinity:
+      {{- if .Values.sentry.ingestMetricsConsumerRh.affinity }}
+{{ toYaml .Values.sentry.ingestMetricsConsumerRh.affinity | indent 8 }}
+      {{- end }}
+      {{- if .Values.sentry.ingestMetricsConsumerRh.nodeSelector }}
+      nodeSelector:
+{{ toYaml .Values.sentry.ingestMetricsConsumerRh.nodeSelector | indent 8 }}
+      {{- end }}
+      {{- if .Values.sentry.ingestMetricsConsumerRh.tolerations }}
+      tolerations:
+{{ toYaml .Values.sentry.ingestMetricsConsumerRh.tolerations | indent 8 }}
+      {{- end }}
+      {{- if .Values.images.sentry.imagePullSecrets }}
+      imagePullSecrets:
+{{ toYaml .Values.images.sentry.imagePullSecrets | indent 8 }}
+      {{- end }}
+      {{- if .Values.dnsPolicy }}
+      dnsPolicy: {{ .Values.dnsPolicy | quote }}
+      {{- end }}
+      {{- if .Values.dnsConfig }}
+      dnsConfig:
+{{ toYaml .Values.dnsConfig | indent 8 }}
+      {{- end }}
+      {{- if .Values.sentry.ingestMetricsConsumerRh.securityContext }}
+      securityContext:
+{{ toYaml .Values.sentry.ingestMetricsConsumerRh.securityContext | indent 8 }}
+      {{- end }}
+      containers:
+      - name: {{ .Chart.Name }}-ingest-metrics-consumer-rh
+        image: "{{ template "sentry.image" . }}"
+        imagePullPolicy: {{ default "IfNotPresent" .Values.images.sentry.pullPolicy }}
+        command: ["sentry"]
+        args:
+          - "run"
+          - "ingest-metrics-parallel-consumer"
+          - "--ingest-profile"
+          - "release-health"
+          {{- if .Values.sentry.ingestMetricsConsumerRh.maxBatchSize }}
+          - "--max-msg-batch-size"
+          - "{{ .Values.sentry.ingestMetricsConsumerRh.maxBatchSize }}"
+          {{- end }}
+        env:
+        - name: C_FORCE_ROOT
+          value: "true"
+{{ include "sentry.env" . | indent 8 }}
+{{- if .Values.sentry.ingestMetricsConsumerRh.env }}
+{{ toYaml .Values.sentry.ingestMetricsConsumerRh.env | indent 8 }}
+{{- end }}
+        volumeMounts:
+        - mountPath: /etc/sentry
+          name: config
+          readOnly: true
+        - mountPath: {{ .Values.filestore.filesystem.path }}
+          name: sentry-data
+        {{- if and (eq .Values.filestore.backend "gcs") .Values.filestore.gcs.secretName }}
+        - name: sentry-google-cloud-key
+          mountPath: /var/run/secrets/google
+        {{ end }}
+{{- if .Values.sentry.ingestMetricsConsumerRh.volumeMounts }}
+{{ toYaml .Values.sentry.ingestMetricsConsumerRh.volumeMounts | indent 8 }}
+{{- end }}
+        resources:
+{{ toYaml .Values.sentry.ingestMetricsConsumerRh.resources | indent 12 }}
+{{- if .Values.sentry.ingestMetricsConsumerRh.sidecars }}
+{{ toYaml .Values.sentry.ingestMetricsConsumerRh.sidecars | indent 6 }}
+{{- end }}
+      {{- if .Values.serviceAccount.enabled }}
+      serviceAccountName: {{ .Values.serviceAccount.name }}-ingest-metrics-consumer-rh
+      {{- end }}
+      volumes:
+      - name: config
+        configMap:
+          name: {{ template "sentry.fullname" . }}-sentry
+      - name: sentry-data
+      {{- if and (eq .Values.filestore.backend "filesystem") .Values.filestore.filesystem.persistence.enabled (.Values.filestore.filesystem.persistence.persistentWorkers) }}
+      {{- if .Values.filestore.filesystem.persistence.existingClaim }}
+        persistentVolumeClaim:
+          claimName: {{ .Values.filestore.filesystem.persistence.existingClaim }}
+      {{- else }}
+        persistentVolumeClaim:
+          claimName: {{ template "sentry.fullname" . }}-data
+      {{- end }}
+      {{- else }}
+        emptyDir: {}
+      {{ end }}
+      {{- if and (eq .Values.filestore.backend "gcs") .Values.filestore.gcs.secretName }}
+      - name: sentry-google-cloud-key
+        secret:
+          secretName: {{ .Values.filestore.gcs.secretName }}
+      {{ end }}
+{{- if .Values.sentry.ingestMetricsConsumerRh.volumes }}
+{{ toYaml .Values.sentry.ingestMetricsConsumerRh.volumes | indent 6 }}
+{{- end }}
+      {{- if .Values.sentry.ingestMetricsConsumerRh.priorityClassName }}
+      priorityClassName: "{{ .Values.sentry.ingestMetricsConsumerRh.priorityClassName }}"
+      {{- end }}
