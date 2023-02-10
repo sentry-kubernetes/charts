@@ -69,6 +69,8 @@ spec:
             command: ["sentry"]
             args:
               - "cleanup"
+              - "--concurrency"
+              - {{ .Values.sentry.cleanup.concurrency | quote }}
               - "--days"
               - "{{ .Values.sentry.cleanup.days }}"
             env:
