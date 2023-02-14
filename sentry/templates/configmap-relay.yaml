@@ -45,4 +45,4 @@ data:
         metrics_transactions: ingest-performance-metrics
         metrics_sessions: ingest-metrics
 
-{{ .Values.relayConf | indent 4 }}
+{{ .Values.config.relayConf | indent 4 }}
