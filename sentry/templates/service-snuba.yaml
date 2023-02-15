@@ -6,6 +6,9 @@ metadata:
    {{- range $key, $value := .Values.service.annotations }}
      {{ $key }}: {{ $value | quote }}
    {{- end }}
+   {{- range $key, $value := .Values.snuba.api.service.annotations }}
+     {{ $key }}: {{ $value | quote }}
+   {{- end }}
   labels:
     app: {{ template "sentry.fullname" . }}
     chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"

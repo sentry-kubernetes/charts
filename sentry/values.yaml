@@ -5,6 +5,12 @@ user:
   email: admin@sentry.local
   password: aaaa
 
+  ## set this value to an existingSecret name to create the admin user with the password in the secret
+  # existingSecret: sentry-admin-password
+
+  ## set this value to an existingSecretKey which holds the password to be used for sentry admin user default key is `admin-password`
+  # existingSecretKey: admin-password
+
 # this is required on the first installation, as sentry has to be initialized first
 # recommended to set false for updating the helm chart afterwards,
 # as you will have some downtime on each update if it's a hook
@@ -29,7 +35,7 @@ images:
     imagePullSecrets: []
   symbolicator:
     # repository: getsentry/symbolicator
-    tag: 0.3.3
+    tag: 0.6.0
     # pullPolicy: IfNotPresent
     imagePullSecrets: []
 
@@ -45,6 +51,7 @@ serviceAccount:
 
 relay:
   replicas: 1
+  # args: []
   mode: managed
   env: []
   probeFailureThreshold: 5
@@ -56,6 +63,8 @@ relay:
   affinity: {}
   nodeSelector: {}
   securityContext: {}
+  service:
+    annotations: {}
   # tolerations: []
   # podLabels: []
 
@@ -64,10 +73,25 @@ relay:
     minReplicas: 2
     maxReplicas: 5
     targetCPUUtilizationPercentage: 50
-  sidecars: [ ]
-  volumes: [ ]
+  sidecars: []
+  volumes: []
+  volumeMounts: []
+  init:
+    resources: {}
+    # additionalArgs: []
+    # env: []
+    # volumes: []
+    # volumeMounts: []
+
+geodata:
+  path: ""
+  volumeName: ""
+  mountPath: ""
 
 sentry:
+  # to not generate a sentry-secret, use these 2 values to reference an existing secret
+  # existingSecret: "my-secret"
+  # existingSecretKey: "my-secret-key"
   singleOrganization: true
   web:
     # if using filestore backend filesystem with RWO access, set strategyType to Recreate
@@ -83,6 +107,8 @@ sentry:
     affinity: {}
     nodeSelector: {}
     securityContext: {}
+    service:
+      annotations: {}
     # tolerations: []
     # podLabels: []
     # Mount and use custom CA
@@ -95,8 +121,9 @@ sentry:
       minReplicas: 2
       maxReplicas: 5
       targetCPUUtilizationPercentage: 50
-    sidecars: [ ]
-    volumes: [ ]
+    sidecars: []
+    volumes: []
+    volumeMounts: []
 
   features:
     orgSubdomains: false
@@ -119,8 +146,14 @@ sentry:
       minReplicas: 2
       maxReplicas: 5
       targetCPUUtilizationPercentage: 50
-    sidecars: [ ]
-    volumes: [ ]
+    livenessProbe:
+      enabled: false
+      periodSeconds: 60
+      timeoutSeconds: 10
+      failureThreshold: 3
+    sidecars: []
+    volumes: []
+    volumeMounts: []
 
   ingestConsumer:
     replicas: 1
@@ -141,8 +174,86 @@ sentry:
       minReplicas: 1
       maxReplicas: 3
       targetCPUUtilizationPercentage: 50
-    sidecars: [ ]
-    volumes: [ ]
+    sidecars: []
+    volumes: []
+
+    # volumeMounts:
+    #   - mountPath: /dev/shm
+    #     name: dshm
+
+  ingestMetricsConsumerPerf:
+    replicas: 1
+    # concurrency: 4
+    env: []
+    resources: {}
+    affinity: {}
+    nodeSelector: {}
+    securityContext: {}
+    # tolerations: []
+    # podLabels: []
+    # maxBatchSize: ""
+
+    # it's better to use prometheus adapter and scale based on
+    # the size of the rabbitmq queue
+    autoscaling:
+      enabled: false
+      minReplicas: 1
+      maxReplicas: 3
+      targetCPUUtilizationPercentage: 50
+    sidecars: []
+    volumes: []
+
+    # volumeMounts:
+    #   - mountPath: /dev/shm
+    #     name: dshm
+
+  ingestMetricsConsumerRh:
+    replicas: 1
+    # concurrency: 4
+    env: []
+    resources: {}
+    affinity: {}
+    nodeSelector: {}
+    securityContext: {}
+    # tolerations: []
+    # podLabels: []
+    # maxBatchSize: ""
+
+    # it's better to use prometheus adapter and scale based on
+    # the size of the rabbitmq queue
+    autoscaling:
+      enabled: false
+      minReplicas: 1
+      maxReplicas: 3
+      targetCPUUtilizationPercentage: 50
+    sidecars: []
+    volumes: []
+
+    # volumeMounts:
+    #   - mountPath: /dev/shm
+    #     name: dshm
+
+  billingMetricsConsumer:
+    replicas: 1
+    # concurrency: 4
+    env: []
+    resources: {}
+    affinity: {}
+    nodeSelector: {}
+    securityContext: {}
+    # tolerations: []
+    # podLabels: []
+    # maxBatchSize: ""
+
+    # it's better to use prometheus adapter and scale based on
+    # the size of the rabbitmq queue
+    autoscaling:
+      enabled: false
+      minReplicas: 1
+      maxReplicas: 3
+      targetCPUUtilizationPercentage: 50
+    sidecars: []
+    volumes: []
 
     # volumeMounts:
     #   - mountPath: /dev/shm
@@ -156,9 +267,11 @@ sentry:
     nodeSelector: {}
     # tolerations: []
     # podLabels: []
-    sidecars: [ ]
-    volumes: [ ]
-  postProcessForward:
+    sidecars: []
+    volumes: []
+    # volumeMounts: []
+
+  subscriptionConsumerEvents:
     replicas: 1
     env: []
     resources: {}
@@ -168,18 +281,76 @@ sentry:
     # tolerations: []
     # podLabels: []
     # commitBatchSize: 1
-    sidecars: [ ]
-    volumes: [ ]
+    sidecars: []
+    volumes: []
+    # noStrictOffsetReset: false
+    # volumeMounts: []
+
+  subscriptionConsumerTransactions:
+    replicas: 1
+    env: []
+    resources: {}
+    affinity: {}
+    nodeSelector: {}
+    securityContext: {}
+    # tolerations: []
+    # podLabels: []
+    # commitBatchSize: 1
+    sidecars: []
+    volumes: []
+    # noStrictOffsetReset: false
+    # volumeMounts: []
+
+  postProcessForwardErrors:
+    replicas: 1
+    env: []
+    resources: {}
+    affinity: {}
+    nodeSelector: {}
+    securityContext: {}
+    # tolerations: []
+    # podLabels: []
+    # commitBatchSize: 1
+    sidecars: []
+    volumes: []
+    # volumeMounts: []
+
+  postProcessForwardTransactions:
+    replicas: 1
+    env: []
+    resources: {}
+    affinity: {}
+    nodeSelector: {}
+    securityContext: {}
+    # tolerations: []
+    # podLabels: []
+    # commitBatchSize: 1
+    sidecars: []
+    volumes: []
+    # volumeMounts: []
+
   cleanup:
+    successfulJobsHistoryLimit: 5
+    failedJobsHistoryLimit: 5
+    activeDeadlineSeconds: 100
+    concurrencyPolicy: Allow
     enabled: true
     schedule: "0 0 * * *"
     days: 90
+    # securityContext: {}
     sidecars: []
     volumes: []
+    # volumeMounts: []
+    serviceAccount: {}
 
 snuba:
   api:
     replicas: 1
+    # set command to ["snuba","api"] if securityContext.runAsUser > 0
+    # see: https://github.com/getsentry/snuba/issues/956
+    command: []
+    #   - snuba
+    #   - api
     env: []
     probeInitialDelaySeconds: 10
     liveness:
@@ -190,6 +361,8 @@ snuba:
     affinity: {}
     nodeSelector: {}
     securityContext: {}
+    service:
+      annotations: {}
     # tolerations: []
     # podLabels: []
 
@@ -198,8 +371,9 @@ snuba:
       minReplicas: 2
       maxReplicas: 5
       targetCPUUtilizationPercentage: 50
-    sidecars: [ ]
-    volumes: [ ]
+    sidecars: []
+    volumes: []
+    # volumeMounts: []
 
   consumer:
     replicas: 1
@@ -211,6 +385,7 @@ snuba:
     # tolerations: []
     # podLabels: []
     autoOffsetReset: "earliest"
+    # noStrictOffsetReset: false
     # maxBatchSize: ""
     # processes: ""
     # inputBlockSize: ""
@@ -237,6 +412,7 @@ snuba:
     # tolerations: []
     # podLabels: []
     autoOffsetReset: "earliest"
+    # noStrictOffsetReset: false
     maxBatchSize: "3"
     # processes: ""
     # inputBlockSize: ""
@@ -267,6 +443,34 @@ snuba:
     # maxBatchTimeMs: ""
     # queuedMaxMessagesKbytes: ""
     # queuedMinMessages: ""
+    # volumes: []
+    # volumeMounts: []
+
+  subscriptionConsumerEvents:
+    replicas: 1
+    env: []
+    resources: {}
+    affinity: {}
+    nodeSelector: {}
+    securityContext: {}
+    # tolerations: []
+    # podLabels: []
+    autoOffsetReset: "earliest"
+    # volumes: []
+    # volumeMounts: []
+
+  subscriptionConsumerTransactions:
+    replicas: 1
+    env: []
+    resources: {}
+    affinity: {}
+    nodeSelector: {}
+    securityContext: {}
+    # tolerations: []
+    # podLabels: []
+    autoOffsetReset: "earliest"
+    # volumes: []
+    # volumeMounts: []
 
   sessionsConsumer:
     replicas: 1
@@ -278,6 +482,7 @@ snuba:
     # tolerations: []
     # podLabels: []
     autoOffsetReset: "earliest"
+    # noStrictOffsetReset: false
     # maxBatchSize: ""
     # processes: ""
     # inputBlockSize: ""
@@ -304,6 +509,7 @@ snuba:
     # tolerations: []
     # podLabels: []
     autoOffsetReset: "earliest"
+    # noStrictOffsetReset: false
     # maxBatchSize: ""
     # processes: ""
     # inputBlockSize: ""
@@ -327,25 +533,37 @@ snuba:
     env: []
 
   cleanupErrors:
+    successfulJobsHistoryLimit: 5
+    activeDeadlineSeconds: 100
+    concurrencyPolicy: Allow
     enabled: true
     schedule: "0 * * * *"
     sidecars: []
     volumes: []
+    # securityContext: {}
+    serviceAccount: {}
+    # volumes: []
+    # volumeMounts: []
 
   cleanupTransactions:
+    successfulJobsHistoryLimit: 5
+    failedJobsHistoryLimit: 5
+    activeDeadlineSeconds: 100
+    concurrencyPolicy: Allow
     enabled: true
     schedule: "0 * * * *"
     sidecars: []
     volumes: []
+    # securityContext: {}
+    serviceAccount: {}
+    # volumes: []
+    # volumeMounts: []
 
 hooks:
   enabled: true
   removeOnSuccess: true
-  clickhouseInit:
-    podAnnotations: {}
-    affinity: {}
-    nodeSelector: {}
-    # tolerations: []
+  activeDeadlineSeconds: 100
+  shareProcessNamespace: false
   dbCheck:
     image:
       # repository: subfuzion/netcat
@@ -353,6 +571,7 @@ hooks:
       # pullPolicy: IfNotPresent
       imagePullSecrets: []
     env: []
+    # podLabels: []
     podAnnotations: {}
     resources:
       limits:
@@ -362,9 +581,13 @@ hooks:
         memory: 64Mi
     affinity: {}
     nodeSelector: {}
+    securityContext: {}
     # tolerations: []
+    # volumes: []
+    # volumeMounts: []
   dbInit:
     env: []
+    # podLabels: []
     podAnnotations: {}
     resources:
       limits:
@@ -372,12 +595,15 @@ hooks:
       requests:
         cpu: 300m
         memory: 2048Mi
-    sidecars: [ ]
-    volumes: [ ]
+    sidecars: []
+    volumes: []
     affinity: {}
     nodeSelector: {}
     # tolerations: []
+    # volumes: []
+    # volumeMounts: []
   snubaInit:
+    # podLabels: []
     podAnnotations: {}
     resources:
       limits:
@@ -389,6 +615,12 @@ hooks:
     affinity: {}
     nodeSelector: {}
     # tolerations: []
+    # volumes: []
+    # volumeMounts: []
+  snubaMigrate: {}
+    # podLabels: []
+    # volumes: []
+    # volumeMounts: []
 
 system:
   ## be sure to include the scheme on the url, for example: "https://sentry.example.com"
@@ -397,13 +629,18 @@ system:
   ## This should only be used if you’re installing Sentry behind your company’s firewall.
   public: false
   ## This will generate one for you (it's must be given upon updates)
-  #secretKey: "xx"
+  # secretKey: "xx"
 
 mail:
-  backend: dummy # smtp
+  # For example: smtp
+  backend: dummy
   useTls: false
+  useSsl: false
   username: ""
   password: ""
+  # existingSecret: secret-name
+  ## set existingSecretKey if key name inside existingSecret is different from 'mail-password'
+  # existingSecretKey: secret-key-name
   port: 25
   host: ""
   from: ""
@@ -450,6 +687,10 @@ symbolicator:
       minReplicas: 2
       maxReplicas: 5
       targetCPUUtilizationPercentage: 50
+
+    # volumes: []
+    # volumeMounts: []
+
   # TODO The cleanup cronjob is not yet implemented
   cleanup:
     enabled: false
@@ -469,7 +710,8 @@ service:
   # - 192.168.0.1
   # loadBalancerSourceRanges: []
 
-github: {} # https://github.com/settings/apps (Create a Github App)
+# https://github.com/settings/apps (Create a Github App)
+github: {}
 # github:
 #   appId: "xxxx"
 #   appName: MyAppName
@@ -478,7 +720,8 @@ github: {} # https://github.com/settings/apps (Create a Github App)
 #   privateKey: "-----BEGIN RSA PRIVATE KEY-----\nMIIEpA" !!!! Don't forget a trailing \n
 #   webhookSecret:  "xxxxx`"
 
-google: {} # https://developers.google.com/identity/sign-in/web/server-side-flow#step_1_create_a_client_id_and_client_secret
+# https://developers.google.com/identity/sign-in/web/server-side-flow#step_1_create_a_client_id_and_client_secret
+google: {}
 # google:
 #   clientId:
 #   clientSecret:
@@ -498,7 +741,8 @@ nginx:
   replicaCount: 1
   service:
     type: ClusterIP
-    port: 80
+    ports:
+      http: 80
   ## Use this to enable an extra service account
   # serviceAccount:
   #   create: false
@@ -510,7 +754,7 @@ ingress:
   # if you are using AWS ALB Ingress controller, switch this to 'aws-alb'
   # if you are using GKE Ingress controller, switch this to 'gke'
   regexPathStyle: nginx
-  #If you are using AWS ALB Ingress controller, switch to true if you want activate the http to https redirection.
+  # If you are using AWS ALB Ingress controller, switch to true if you want activate the http to https redirection.
   alb:
     httpRedirect: false
   # annotations:
@@ -519,6 +763,7 @@ ingress:
   #   nginx.ingress.kubernetes.io/use-regex: "true"
   #
   # hostname:
+  # additionalHostNames: []
   #
   # tls:
   # - secretName:
@@ -557,12 +802,16 @@ filestore:
       ## different nodes.
       persistentWorkers: false
 
+      ## If existingClaim is specified, no PVC will be created and this claim will
+      ## be used
+      existingClaim: ""
+
   gcs: {}
     ## Point this at a pre-configured secret containing a service account. The resulting
     ## secret will be mounted at /var/run/secrets/google
     # secretName:
     # credentialsFile: credentials.json
-    # bucketName:
+  # bucketName:
 
   ## Currently unconfigured and changing this has no impact on the template configuration.
   s3: {}
@@ -583,35 +832,43 @@ config:
     # No Python Extension Config Given
   relay: |
     # No YAML relay config given
+  web:
+    httpKeepalive: 15
 
 clickhouse:
   enabled: true
   clickhouse:
-    imageVersion: "20.8.9.6"
+    imageVersion: "20.8.19.4"
     configmap:
       remote_servers:
         internal_replication: true
         replica:
           backup:
             enabled: false
+      zookeeper_servers:
+        enabled: true
+        config:
+          - index: "clickhouse"
+            hostTemplate: "{{ .Release.Name }}-zookeeper-clickhouse"
+            port: "2181"
       users:
         enabled: false
         user:
-        # the first user will be used if enabled
-        - name: default
-          config:
-            password: ""
-            networks:
-            - ::/0
-            profile: default
-            quota: default
+          # the first user will be used if enabled
+          - name: default
+            config:
+              password: ""
+              networks:
+                - ::/0
+              profile: default
+              quota: default
 
     persistentVolumeClaim:
       enabled: true
       dataPersistentVolume:
         enabled: true
         accessModes:
-        - "ReadWriteOnce"
+          - "ReadWriteOnce"
         storage: "30Gi"
 
   ## Use this to enable an extra service account
@@ -632,11 +889,22 @@ externalClickhouse:
   username: default
   password: ""
   database: default
+  singleNode: true
+  # existingSecret: secret-name
+  ## set existingSecretKey if key name inside existingSecret is different from 'postgres-password'
+  # existingSecretKey: secret-key-name
   ## Cluster name, can be found in config
   ## (https://clickhouse.tech/docs/en/operations/server-configuration-parameters/settings/#server-settings-remote-servers)
   ## or by executing `select * from system.clusters`
   ##
   # clusterName: test_shard_localhost
+
+# Settings for Zookeeper.
+# See https://github.com/bitnami/charts/tree/master/bitnami/zookeeper
+zookeeper:
+  enabled: true
+  nameOverride: zookeeper-clickhouse
+  replicaCount: 3
 
 # Settings for Kafka.
 # See https://github.com/bitnami/charts/tree/master/bitnami/kafka
@@ -654,7 +922,8 @@ kafka:
   socketRequestMaxBytes: "50000000"
 
   service:
-    port: 9092
+    ports:
+      client: 9092
 
   ## Use this to enable an extra service account
   # serviceAccount:
@@ -675,8 +944,14 @@ externalKafka:
   # host: "kafka-confluent"
   port: 9092
 
+sourcemaps:
+  enabled: false
+
 redis:
   enabled: true
+  auth:
+    enabled: false
+    sentinel: false
   nameOverride: sentry-redis
   usePassword: false
   ## Just omit the password field if your redis cluster doesn't use password
@@ -715,18 +990,23 @@ postgresql:
   #   enabled: false
 
 ## This value is only used when postgresql.enabled is set to false
-##
+## Set either externalPostgresql.password or externalPostgresql.existingSecret to configure password
+## externalPostgresql.existingSecret should have a key of 'postgres-password' which holds the password
 externalPostgresql:
   # host: postgres
   port: 5432
   username: postgres
   # password: postgres
+  # existingSecret: secret-name
+  ## set existingSecretKey if key name inside existingSecret is different from 'postgres-password'
+  # existingSecretKey: secret-key-name
   database: sentry
   # sslMode: require
 
 rabbitmq:
   ## If disabled, Redis will be used instead as the broker.
   enabled: true
+  vhost: /
   clustering:
     forceBoot: true
     rebalance: true
@@ -793,6 +1073,18 @@ rabbitmq:
   #   create: false
   #   name: rabbitmq
 
+memcached:
+  memoryLimit: "2048"
+  maxItemSize: "26214400"
+  args:
+    - "memcached"
+    - "-u memcached"
+    - "-p 11211"
+    - "-v"
+    - "-m $(MEMCACHED_MEMORY_LIMIT)"
+    - "-I $(MEMCACHED_MAX_ITEM_SIZE)"
+  extraEnvVarsCM: "sentry-memcached"
+
 ## Prometheus Exporter / Metrics
 ##
 metrics:
@@ -855,3 +1147,9 @@ metrics:
     # honorLabels: true
 
 revisionHistoryLimit: 10
+
+# dnsPolicy: "ClusterFirst"
+# dnsConfig:
+#   nameservers: []
+#   searches: []
+#   options: []

@@ -16,6 +16,9 @@ metadata:
    {{- range $key, $value := .Values.ingress.annotations }}
      {{ $key }}: {{ $value | quote }}
    {{- end }}
+   {{- if eq .Values.ingress.regexPathStyle "nginx" }}
+     nginx.ingress.kubernetes.io/use-regex: "true"
+   {{- end }}
    {{- if and (eq .Values.ingress.regexPathStyle "aws-alb") (.Values.ingress.alb.httpRedirect) }}
      alb.ingress.kubernetes.io/actions.ssl-redirect: '{"Type": "redirect", "RedirectConfig": { "Protocol": "HTTPS", "Port": "443", "StatusCode": "HTTP_301"}}'
    {{- end }}
@@ -24,7 +27,14 @@ spec:
   ingressClassName: {{ .Values.ingress.ingressClassName | quote }}
   {{- end }}
   rules:
-    - host: {{ .Values.ingress.hostname }}
+{{- $hosts := list .Values.ingress.hostname }}
+{{- range .Values.ingress.additionalHostNames -}}
+{{- $hosts = append $hosts . -}}
+{{- end -}}
+{{- $outer := . -}}
+{{- range $idx, $host := $hosts }}
+{{- with $outer }}
+    - host: {{ $host }}
       http:
         paths:
     {{- if .Values.nginx.enabled }}
@@ -37,14 +47,14 @@ spec:
               service:
                 name: {{ template "sentry.fullname" . }}-nginx
                 port:
-                  {{- if kindIs "float64" .Values.nginx.service.port }}
-                  number: {{ .Values.nginx.service.port }}
+                  {{- if kindIs "float64" .Values.nginx.service.ports.http }}
+                  number: {{ .Values.nginx.service.ports.http }}
                   {{- else }}
-                  name: {{ .Values.nginx.service.port }}
+                  name: {{ .Values.nginx.service.ports.http }}
                   {{- end }}
               {{- else }}
               serviceName: {{ template "sentry.fullname" . }}-nginx
-              servicePort: {{ .Values.nginx.service.port }}
+              servicePort: {{ .Values.nginx.service.ports.http }}
               {{- end }}
     {{- else if or (eq (default "nginx" .Values.ingress.regexPathStyle) "aws-alb") (eq (default "nginx" .Values.ingress.regexPathStyle) "gke") }}
     {{- if .Values.ingress.alb.httpRedirect }}
@@ -165,6 +175,8 @@ spec:
               servicePort: {{ .Values.service.externalPort }}
               {{- end }}
     {{- end }}
+{{- end -}}
+{{- end -}}
 {{- if .Values.ingress.tls }}
   tls:
 {{ toYaml .Values.ingress.tls | indent 4 }}

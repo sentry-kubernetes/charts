@@ -15,7 +15,6 @@ data:
     {{- if .Values.system.adminEmail }}
     system.admin-email: {{ .Values.system.adminEmail | quote }}
     {{- end }}
-    system.secret-key: {{ .Values.system.secretKey | default (randAlphaNum 50) | quote }}
     {{- if .Values.system.url }}
     system.url-prefix: {{ .Values.system.url | quote }}
     {{- end }}
@@ -119,6 +118,13 @@ data:
       {{- if .Values.filestore.s3.default_acl }}
       default_acl: {{ .Values.filestore.s3.default_acl | quote }}
       {{- end }}
+      #add comfig params for s3
+      {{- if .Values.filestore.s3.addressing_style }}
+      addressing_style: {{ .Values.filestore.s3.addressing_style | quote }}
+      {{- end }}
+      {{- if .Values.filestore.s3.location }}
+      location: {{ .Values.filestore.s3.location | quote }}
+      {{- end }}
     {{ end }}
 
     {{- if .Values.config.configYml }}
@@ -128,12 +134,24 @@ data:
     from sentry.conf.server import *  # NOQA
     from distutils.util import strtobool
 
+
+    {{- if .Values.sourcemaps.enabled }}
+    CACHES = {
+        "default": {
+            "BACKEND": "django.core.cache.backends.memcached.MemcachedCache",
+            "LOCATION": [
+                "sentry-memcached:11211"
+            ]
+        }
+    }
+    {{- end }}
+
     DATABASES = {
         "default": {
             "ENGINE": "sentry.db.postgres",
             "NAME": {{ include "sentry.postgresql.database" . | quote }},
             "USER": {{ include "sentry.postgresql.username" . | quote }},
-            "PASSWORD": os.environ.get("POSTGRES_PASSWORD", {{ include "sentry.postgresql.password" . | quote }}),
+            "PASSWORD": os.environ.get("POSTGRES_PASSWORD", ""),
             "HOST": {{ include "sentry.postgresql.host" . | quote }},
             "PORT": {{ template "sentry.postgresql.port" . }},
             {{- if .Values.externalPostgresql.sslMode }}
@@ -144,6 +162,10 @@ data:
         }
     }
 
+    {{- if .Values.geodata.path }}
+    GEOIP_PATH_MMDB = {{ .Values.geodata.path | quote }}
+    {{- end }}
+
     # You should not change this setting after your database has been created
     # unless you have altered all schemas first
     SENTRY_USE_BIG_INTS = True
@@ -152,11 +174,18 @@ data:
     # General #
     ###########
 
+
+    secret_key = env('SENTRY_SECRET_KEY')
+    if not secret_key:
+      raise Exception('Error: SENTRY_SECRET_KEY is undefined')
+
+    SENTRY_OPTIONS['system.secret-key'] = secret_key
+
     # Instruct Sentry that this install intends to be run by a single organization
     # and thus various UI optimizations should be enabled.
     SENTRY_SINGLE_ORGANIZATION = {{ if .Values.sentry.singleOrganization }}True{{ else }}False{{ end }}
 
-    SENTRY_OPTIONS["system.event-retention-days"] = int(env('SENTRY_EVENT_RETENTION_DAYS') or 90)
+    SENTRY_OPTIONS["system.event-retention-days"] = int(env('SENTRY_EVENT_RETENTION_DAYS') or {{ .Values.sentry.cleanup.days | quote }})
 
     #########
     # Queue #
@@ -167,7 +196,7 @@ data:
     # on a Python framework called Celery to manage queues.
 
     {{- if or (.Values.rabbitmq.enabled) (.Values.rabbitmq.host) }}
-    BROKER_URL = os.environ.get("BROKER_URL", "amqp://{{ .Values.rabbitmq.auth.username }}:{{ .Values.rabbitmq.auth.password }}@{{ template "sentry.rabbitmq.host" . }}:5672//")
+    BROKER_URL = os.environ.get("BROKER_URL", "amqp://{{ .Values.rabbitmq.auth.username }}:{{ .Values.rabbitmq.auth.password }}@{{ template "sentry.rabbitmq.host" . }}:5672/{{ .Values.rabbitmq.vhost }}")
     {{- else if $redisPass }}
     BROKER_URL = os.environ.get("BROKER_URL", "redis://:{{ $redisPass }}@{{ $redisHost }}:{{ $redisPort }}/0")
     {{- else }}
@@ -269,11 +298,8 @@ data:
         "protocol": "uwsgi",
         # This is needed to prevent https://git.io/fj7Lw
         "uwsgi-socket": None,
-
-        # These ase for proper HTTP/1.1 support from uWSGI
-        # Without these it doesn't do keep-alives causing
-        # issues with Relay's direct requests.
-        "http-keepalive": True,
+        # Keep this between 15s-75s as that's what Relay supports
+        "http-keepalive": {{ .Values.config.web.httpKeepalive }},
         "http-chunked-input": True,
         # the number of web workers
         'workers': 3,
@@ -344,6 +370,7 @@ data:
                 "organizations:discover",
                 "organizations:discover-basic",
                 "organizations:discover-query",
+                "organizations:discover-frontend-use-events-endpoint",
                 "organizations:enterprise-perf",
                 "organizations:event-attachments",
                 "organizations:events",
@@ -371,6 +398,7 @@ data:
                 "organizations:onboarding",
                 "organizations:org-saved-searches",
                 "organizations:performance-view",
+                "organizations:performance-frontend-use-events-endpoint",
                 "organizations:project-detail",
                 "organizations:relay",
                 "organizations:release-performance-views",
@@ -390,6 +418,9 @@ data:
                 "organizations:unhandled-issue-flag",
                 "organizations:invite-members-rate-limits",
                 "organizations:dashboards-v2",
+                "organizations:metrics",
+                "organizations:metrics-extraction",
+                "organizations:transaction-metrics-extraction",
 
                 "projects:alert-filters",
                 "projects:custom-inbound-filters",
@@ -416,8 +447,9 @@ data:
     #######################
     SENTRY_OPTIONS['mail.backend'] = os.getenv("SENTRY_EMAIL_BACKEND", {{ .Values.mail.backend | quote }})
     SENTRY_OPTIONS['mail.use-tls'] = bool(strtobool(os.getenv("SENTRY_EMAIL_USE_TLS", {{ .Values.mail.useTls | quote }})))
+    SENTRY_OPTIONS['mail.use-ssl'] = bool(strtobool(os.getenv("SENTRY_EMAIL_USE_SSL", {{ .Values.mail.useSsl | quote }})))
     SENTRY_OPTIONS['mail.username'] = os.getenv("SENTRY_EMAIL_USERNAME", {{ .Values.mail.username | quote }})
-    SENTRY_OPTIONS['mail.password'] = os.getenv("SENTRY_EMAIL_PASSWORD", {{ .Values.mail.password | quote }})
+    SENTRY_OPTIONS['mail.password'] = os.getenv("SENTRY_EMAIL_PASSWORD", "")
     SENTRY_OPTIONS['mail.port'] = int(os.getenv("SENTRY_EMAIL_PORT", {{ .Values.mail.port | quote }}))
     SENTRY_OPTIONS['mail.host'] = os.getenv("SENTRY_EMAIL_HOST", {{ .Values.mail.host | quote }})
     SENTRY_OPTIONS['mail.from'] = os.getenv("SENTRY_EMAIL_FROM", {{ .Values.mail.from | quote }})

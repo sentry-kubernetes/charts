@@ -12,9 +12,15 @@ spec:
     metadata:
       annotations:
         checksum/secrets: {{ include (print .Template.BasePath "/secret.yaml") . | sha256sum }}
+        {{- if .Values.podAnnotations }}
+{{ toYaml .Values.podAnnotations | indent 8 }}
+        {{- end }}
       labels:
         app: {{ template "sentry-kubernetes.name" . }}
         release: {{.Release.Name }}
+        {{- if .Values.podLabels }}
+{{ toYaml .Values.podLabels | indent 8 }}
+        {{- end }}
     spec:
       {{- if .Values.priorityClassName }}
       priorityClassName: "{{ .Values.priorityClassName }}"

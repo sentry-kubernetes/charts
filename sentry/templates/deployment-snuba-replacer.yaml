@@ -56,6 +56,13 @@ spec:
       imagePullSecrets:
 {{ toYaml .Values.images.snuba.imagePullSecrets | indent 8 }}
       {{- end }}
+      {{- if .Values.dnsPolicy }}
+      dnsPolicy: {{ .Values.dnsPolicy | quote }}
+      {{- end }}
+      {{- if .Values.dnsConfig }}
+      dnsConfig:
+{{ toYaml .Values.dnsConfig | indent 8 }}
+      {{- end }}
       {{- if .Values.snuba.replacer.securityContext }}
       securityContext:
 {{ toYaml .Values.snuba.replacer.securityContext | indent 8 }}
@@ -99,12 +106,18 @@ spec:
         - mountPath: /etc/snuba
           name: config
           readOnly: true
+{{- if .Values.snuba.replacer.volumeMounts }}
+{{ toYaml .Values.snuba.replacer.volumeMounts | indent 8 }}
+{{- end }}
         resources:
 {{ toYaml .Values.snuba.replacer.resources | indent 12 }}
       {{- if .Values.serviceAccount.enabled }}
       serviceAccountName: {{ .Values.serviceAccount.name }}-snuba
       {{- end }}
       volumes:
-        - name: config
-          configMap:
-            name: {{ template "sentry.fullname" . }}-snuba
+      - name: config
+        configMap:
+          name: {{ template "sentry.fullname" . }}-snuba
+{{- if .Values.snuba.replacer.volumes }}
+{{ toYaml .Values.snuba.replacer.volumes | indent 6 }}
+{{- end }}

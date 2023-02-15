@@ -69,9 +69,17 @@ spec:
           args:
             - "credentials"
             - "generate"
+{{- if .Values.relay.init.additionalArgs }}
+{{ toYaml .Values.relay.init.additionalArgs | indent 12 }}
+{{- end }}
+          resources:
+{{ toYaml .Values.relay.init.resources | indent 12 }}
           env:
             - name: RELAY_PORT
               value: '{{ template "relay.port" }}'
+{{- if .Values.relay.init.env }}
+{{ toYaml .Values.relay.init.env | indent 12 }}
+{{- end }}
           volumeMounts:
             - name: credentials
               mountPath: /work/.relay
@@ -79,8 +87,22 @@ spec:
               mountPath: /work/.relay/config.yml
               subPath: config.yml
               readOnly: true
+{{- if .Values.relay.init.volumeMounts }}
+{{ toYaml .Values.relay.volumeMounts | indent 12 }}
+{{- end }}
+      {{- if .Values.dnsPolicy }}
+      dnsPolicy: {{ .Values.dnsPolicy | quote }}
+      {{- end }}
+      {{- if .Values.dnsConfig }}
+      dnsConfig:
+{{ toYaml .Values.dnsConfig | indent 8 }}
+      {{- end }}
       containers:
       - name: {{ .Chart.Name }}-relay
+{{- if .Values.relay.args }}
+        args:
+{{ toYaml .Values.relay.args | indent 10 }}
+{{- end }}
         image: "{{ template "relay.image" . }}"
         imagePullPolicy: {{ default "IfNotPresent" .Values.images.sentry.pullPolicy }}
         ports:
@@ -98,10 +120,17 @@ spec:
             mountPath: /work/.relay/config.yml
             subPath: config.yml
             readOnly: true
+          {{- if .Values.geodata.volumeName }}
+          - name: {{ .Values.geodata.volumeName }}
+            mountPath: {{ .Values.geodata.mountPath }}
+          {{- end }}
+{{- if .Values.relay.volumeMounts }}
+{{ toYaml .Values.relay.volumeMounts | indent 10 }}
+{{- end }}
         livenessProbe:
           failureThreshold: {{ .Values.relay.probeFailureThreshold }}
           httpGet:
-            path: {{ template "relay.healthCheck.requestPath" }}
+            path: {{ template "relay.healthCheck.livenessRequestPath" }}
             port: {{ template "relay.port" }}
             scheme: HTTP
           initialDelaySeconds: {{ .Values.relay.probeInitialDelaySeconds }}
@@ -111,7 +140,7 @@ spec:
         readinessProbe:
           failureThreshold: {{ .Values.relay.probeFailureThreshold }}
           httpGet:
-            path: {{ template "relay.healthCheck.requestPath" }}
+            path: {{ template "relay.healthCheck.readinessRequestPath" }}
             port: {{ template "relay.port" }}
             scheme: HTTP
           initialDelaySeconds: {{ .Values.relay.probeInitialDelaySeconds }}

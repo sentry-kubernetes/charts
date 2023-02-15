@@ -52,6 +52,13 @@ spec:
       imagePullSecrets:
 {{ toYaml .Values.images.sentry.imagePullSecrets | indent 8 }}
       {{- end }}
+      {{- if .Values.dnsPolicy }}
+      dnsPolicy: {{ .Values.dnsPolicy | quote }}
+      {{- end }}
+      {{- if .Values.dnsConfig }}
+      dnsConfig:
+{{ toYaml .Values.dnsConfig | indent 8 }}
+      {{- end }}
       {{- if .Values.sentry.web.securityContext }}
       securityContext:
 {{ toYaml .Values.sentry.web.securityContext | indent 8 }}
@@ -64,19 +71,7 @@ spec:
         ports:
         - containerPort: {{ template "sentry.port" }}
         env:
-        - name: SNUBA
-          value: http://{{ template "sentry.fullname" . }}-snuba:{{ template "snuba.port" }}
-        {{- if .Values.postgresql.enabled }}
-        - name: POSTGRES_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: {{ default (include "sentry.postgresql.fullname" .) .Values.postgresql.existingSecret }}
-              key: {{ default "postgresql-password" .Values.postgresql.existingSecretKey }}
-        {{- end }}
-        {{ if and (eq .Values.filestore.backend "gcs") .Values.filestore.gcs.secretName }}
-        - name: GOOGLE_APPLICATION_CREDENTIALS
-          value: /var/run/secrets/google/{{ .Values.filestore.gcs.credentialsFile }}
-        {{ end }}
+{{ include "sentry.env" . | indent 8 }}
         {{ if .Values.sentry.web.customCA }}
         - name: REQUESTS_CA_BUNDLE
           value: /etc/pki/ca-trust/custom/{{ default "ca.crt" .Values.sentry.web.customCA.item }}
@@ -90,6 +85,10 @@ spec:
           readOnly: true
         - mountPath: {{ .Values.filestore.filesystem.path }}
           name: sentry-data
+        {{- if .Values.geodata.volumeName }}
+        - name: {{ .Values.geodata.volumeName }}
+          mountPath: {{ .Values.geodata.mountPath }}
+        {{- end }}
         {{- if and (eq .Values.filestore.backend "gcs") .Values.filestore.gcs.secretName }}
         - name: sentry-google-cloud-key
           mountPath: /var/run/secrets/google
@@ -98,6 +97,9 @@ spec:
         - name: custom-ca
           mountPath: /etc/pki/ca-trust/custom
         {{ end }}
+{{- if .Values.sentry.web.volumeMounts }}
+{{ toYaml .Values.sentry.web.volumeMounts | indent 8 }}
+{{- end }}
         livenessProbe:
           failureThreshold: {{ .Values.sentry.web.probeFailureThreshold }}
           httpGet:
@@ -132,8 +134,13 @@ spec:
           name: {{ template "sentry.fullname" . }}-sentry
       - name: sentry-data
       {{- if and (eq .Values.filestore.backend "filesystem") .Values.filestore.filesystem.persistence.enabled }}
+      {{- if .Values.filestore.filesystem.persistence.existingClaim }}
+        persistentVolumeClaim:
+          claimName: {{ .Values.filestore.filesystem.persistence.existingClaim }}
+      {{- else }}
         persistentVolumeClaim:
           claimName: {{ template "sentry.fullname" . }}-data
+      {{- end }}
       {{- else }}
         emptyDir: {}
       {{ end }}

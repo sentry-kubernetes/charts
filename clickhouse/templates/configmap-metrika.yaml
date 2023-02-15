@@ -16,7 +16,11 @@ data:
             {{- range .Values.clickhouse.configmap.zookeeper_servers.config }}
             {{- with . }}
             <node index={{ .index | quote }}>
+                {{- if .hostTemplate }}
+                <host>{{ tpl .hostTemplate $ }}</host>
+                {{- else }}
                 <host>{{ .host }}</host>
+                {{- end }}
                 <port>{{ .port }}</port>
             </node>
             {{- end }}
@@ -73,5 +77,10 @@ data:
             </{{ include "clickhouse.fullname" . }}>
         </clickhouse_remote_servers>
         {{- end }}
+
+        <macros>
+            <replica from_env="HOSTNAME"></replica>
+            <shard from_env="SHARD"></shard>
+        </macros>
     </yandex>
 {{- end }}

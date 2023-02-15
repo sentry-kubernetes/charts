@@ -45,6 +45,13 @@ spec:
       {{- if .Values.metrics.schedulerName }}
       schedulerName: "{{ .Values.metrics.schedulerName }}"
       {{- end }}
+      {{- if .Values.dnsPolicy }}
+      dnsPolicy: {{ .Values.dnsPolicy | quote }}
+      {{- end }}
+      {{- if .Values.dnsConfig }}
+      dnsConfig:
+{{ toYaml .Values.dnsConfig | indent 8 }}
+      {{- end }}
       {{- if .Values.metrics.securityContext }}
       securityContext:
 {{ toYaml .Values.metrics.securityContext | indent 8 }}
@@ -61,6 +68,10 @@ spec:
           containerPort: 9125
         - name: metrics
           containerPort: 9102
+{{- if .Values.metrics.volumeMounts }}
+        volumeMounts:
+{{ toYaml .Values.metrics.volumeMounts | indent 8 }}
+{{- end }}
 {{- if .Values.metrics.livenessProbe.enabled }}
         livenessProbe:
           httpGet:
@@ -87,6 +98,11 @@ spec:
 {{- end }}
         resources:
 {{ toYaml .Values.metrics.resources | indent 10 }}
+{{- if .Values.metrics.volumes }}
+      volumes:
+{{ toYaml .Values.metrics.volumes | indent 6 }}
+{{- end }}
+
       {{- if .Values.serviceAccount.enabled }}
       serviceAccountName: {{ .Values.serviceAccount.name }}-metrics
       {{- end }}

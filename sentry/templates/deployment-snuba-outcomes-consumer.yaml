@@ -56,6 +56,13 @@ spec:
       imagePullSecrets:
 {{ toYaml .Values.images.snuba.imagePullSecrets | indent 8 }}
       {{- end }}
+      {{- if .Values.dnsPolicy }}
+      dnsPolicy: {{ .Values.dnsPolicy | quote }}
+      {{- end }}
+      {{- if .Values.dnsConfig }}
+      dnsConfig:
+{{ toYaml .Values.dnsConfig | indent 8 }}
+      {{- end }}
       {{- if .Values.snuba.outcomesConsumer.securityContext }}
       securityContext:
 {{ toYaml .Values.snuba.outcomesConsumer.securityContext | indent 8 }}
@@ -96,6 +103,9 @@ spec:
           {{- if .Values.snuba.outcomesConsumer.queuedMinMessages }}
           - "--queued-min-messages"
           - "{{ .Values.snuba.outcomesConsumer.queuedMinMessages }}"
+          {{- end }}
+          {{- if .Values.snuba.outcomesConsumer.noStrictOffsetReset }}
+          - "--no-strict-offset-reset"
           {{- end }}
         ports:
         - containerPort: {{ template "snuba.port" }}

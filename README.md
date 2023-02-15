@@ -14,6 +14,74 @@ Big thanks to the maintainers of the [deprecated chart](https://github.com/helm/
 
 For now the full list of values is not documented but you can get inspired by the values.yaml specific to each directory.
 
+## Upgrading from 16.x.x version of this Chart to 17.x.x
+
+Sentry version from 22.10.0 onwards should be using chart 17.x.x
+
+- post process forwarder events and transactions topics are splitted in Sentry 22.10.0
+
+You can delete the deployment "sentry-post-process-forward" as it's no longer needed.
+
+
+
+## Upgrading from 15.x.x version of this Chart to 16.x.x
+
+system.secret-key is removed
+
+See https://github.com/sentry-kubernetes/charts/tree/develop/sentry#sentry-secret-key
+
+
+## Upgrading from 14.x.x version of this Chart to 15.x.x
+
+Chart dependencies has been upgraded because of bitnami charts removal. 
+Changes:
+- `nginx.service.port: 80` > `nginx.service.ports.http: 80`
+- `kafka.service.port` > `kafka.service.ports.client`
+
+Bumped dependencies:
+- redis > 16.12.1 - latest version of chart
+- kafka > 16.3.2 - chart aligned with zookeeper dependency, upgraded kafka to 3.11
+- rabbit > 8.32.2 - latest 3.9.* image version of chart
+- postgresql > 10.16.2 - latest wersion of chart with postgres 11
+- nginx > 12.0.4 - latest version of chart
+
+## Upgrading from 13.x.x version of this Chart to 14.0.0
+
+ClickHouse was reconfigured with sharding and replication in-mind, If you are using external ClickHouse, you don't need to do anything.
+
+**WARNING**: You will lose current event data<br>
+Otherwise, you should delete the old ClickHouse volumes in-order to upgrade to this version.
+
+
+## Upgrading from 12.x.x version of this Chart to 13.0.0
+
+The service annotions have been moved from the `service` section to the respective service's service sub-section. So what was:
+
+```yaml
+service:
+  annotations:
+    alb.ingress.kubernetes.io/healthcheck-path: /_health/
+    alb.ingress.kubernetes.io/healthcheck-port: traffic-port
+```
+
+will now be set per service:
+
+```yaml
+sentry:
+  web:
+    service:
+      annotations:
+        alb.ingress.kubernetes.io/healthcheck-path: /_health/
+        alb.ingress.kubernetes.io/healthcheck-port: traffic-port
+
+relay:
+  service:
+    annotations:
+      alb.ingress.kubernetes.io/healthcheck-path: /api/relay/healthcheck/ready/
+      alb.ingress.kubernetes.io/healthcheck-port: traffic-port
+```
+
+
 ## Upgrading from 10.x.x version of this Chart to 11.0.0
 
 If you were using clickhouse tabix externally, we disabled it per default.
@@ -42,7 +110,6 @@ clickhouse.clickhouse.configmap.remote_servers.replica.backup
 - The sentry.configYml value is now in a real yaml format
 - If you were previously using `relay.asHook`, the value is now `asHook`
 
-
 ## Upgrading from 4.x.x version of this Chart to 5.0.0
 
 As Relay is now part of this chart your need to make sure you enable either Nginx or the Ingress. Please read the next paragraph for more informations.
@@ -53,7 +120,21 @@ If you are using an ingress gateway (like istio), you have to change your inboun
 
 By default, NGINX is enabled to allow sending the incoming requests to [Sentry Relay](https://getsentry.github.io/relay/) or the Django backend depending on the path. When Sentry is meant to be exposed outside of the Kubernetes cluster, it is recommended to disable NGINX and let the Ingress do the same. It's recommended to go with the go to Ingress Controller, [NGINX Ingress](https://kubernetes.github.io/ingress-nginx/) but others should work as well.
 
-Note: if you are using NGINX Ingress, please set this annotation on your ingress : nginx.ingress.kubernetes.io/use-regex: "true"
+Note: if you are using NGINX Ingress, please set this annotation on your ingress : nginx.ingress.kubernetes.io/use-regex: "true".
+If you are using `additionalHostNames` the `nginx.ingress.kubernetes.io/upstream-vhost` annotation might also come in handy.
+It sets the `Host` header to the value you provide to avoid CSRF issues.
+
+### Letsencrypt on NGINX Ingress Controller
+```
+nginx:
+  ingress:
+    annotations:
+      cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    enabled: true
+    hostname: fqdn
+    ingressClassName: "nginx"
+    tls: true
+```
 
 ## Clickhouse warning
 
@@ -66,28 +147,30 @@ resources moved to separate config branches: `externalClickhouse`, `externalKafk
 
 Here is a mapping table of old values and new values:
 
-| Before                          | After                                |
-| ------------------------------- | ------------------------------------ |
-| `postgresql.postgresqlHost`     | `externalPostgresql.host`            |
-| `postgresql.postgresqlPort`     | `externalPostgresql.port`            |
-| `postgresql.postgresqlUsername` | `externalPostgresql.username`        |
-| `postgresql.postgresqlPassword` | `externalPostgresql.password`        |
-| `postgresql.postgresqlDatabase` | `externalPostgresql.database`        |
-| `postgresql.postgresSslMode`    | `externalPostgresql.sslMode`         |
-| `redis.host`                    | `externalRedis.host`                 |
-| `redis.port`                    | `externalRedis.port`                 |
-| `redis.password`                | `externalRedis.password`             |
-
+| Before                          | After                         |
+| ------------------------------- | ----------------------------- |
+| `postgresql.postgresqlHost`     | `externalPostgresql.host`     |
+| `postgresql.postgresqlPort`     | `externalPostgresql.port`     |
+| `postgresql.postgresqlUsername` | `externalPostgresql.username` |
+| `postgresql.postgresqlPassword` | `externalPostgresql.password` |
+| `postgresql.postgresqlDatabase` | `externalPostgresql.database` |
+| `postgresql.postgresSslMode`    | `externalPostgresql.sslMode`  |
+| `redis.host`                    | `externalRedis.host`          |
+| `redis.port`                    | `externalRedis.port`          |
+| `redis.password`                | `externalRedis.password`      |
 
 ## Upgrading from deprecated 9.0 -> 10.0 Chart
-As this chart runs in helm 3 and also tries its best to follow on from the original Sentry chart. There are some steps that needs to be taken in order to correctly upgrade. 
+
+As this chart runs in helm 3 and also tries its best to follow on from the original Sentry chart. There are some steps that needs to be taken in order to correctly upgrade.
 
 From the previous upgrade, make sure to get the following from your previous installation:
- - Redis Password (If Redis auth was enabled)
- - Postgresql Password 
-Both should be in the `secrets` of your original 9.0 release. Make a note of both of these values.
+
+- Redis Password (If Redis auth was enabled)
+- PostgreSQL Password
+  Both should be in the `secrets` of your original 9.0 release. Make a note of both of these values.
 
 #### Upgrade Steps
+
 Due to an issue where transferring from Helm 2 to 3. Statefulsets that use the following: `heritage: {{ .Release.Service }}` in the metadata field will error out with a `Forbidden` error during the upgrade. The only workaround is to delete the existing statefulsets (Don't worry, PVC will be retained):
 
 > `kubectl delete --all sts -n <Sentry Namespace>`
@@ -103,11 +186,12 @@ If Redis auth enabled:
 > `helm upgrade -n <Sentry namespace> <Sentry Release> . --set redis.usePassword=true --set redis.password=<Redis Password> --set postgresql.postgresqlPassword=<Postgresql Password>`
 
 If Redis auth is disabled:
+
 > `helm upgrade -n <Sentry namespace> <Sentry Release> . --set postgresql.postgresqlPassword=<Postgresql Password>`
- 
+
 Please also follow the steps for Major version 3 to 4 migration
 
-## PostgresSQL
+## PostgreSQL
 
 By default, PostgreSQL is installed as part of the chart. To use an external PostgreSQL server set `postgresql.enabled` to `false` and then set `postgresql.postgresHost` and `postgresql.postgresqlPassword`. The other options (`postgresql.postgresqlDatabase`, `postgresql.postgresqlUsername` and `postgresql.postgresqlPort`) may also want changing from their default values.
 
@@ -121,9 +205,9 @@ You may enable mounting of the sentry-data PV across worker and cron pods by cha
 
 ## Roadmap
 
-- [X] Lint in Pull requests
-- [X] Public availability through Github Pages
-- [X] Automatic deployment through Github Actions
+- [x] Lint in Pull requests
+- [x] Public availability through Github Pages
+- [x] Automatic deployment through Github Actions
 - [ ] Symbolicator deployment
-- [X] Testing the chart in a production environment
+- [x] Testing the chart in a production environment
 - [ ] Improving the README

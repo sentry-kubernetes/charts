@@ -3,25 +3,38 @@ name: Lint and Test Charts
 on: pull_request
 
 jobs:
-  lint-app:
+  lint-charts:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Lint Helm
-        uses: WyriHaximus/github-action-helm3@v2
         with:
-          command: helm lint ./sentry
-      - name: Lint Helm
+          fetch-depth: "0"
+      - name: Set up chart-testing
+        uses: helm/chart-testing-action@v2.1.0
+      - name: Run chart-testing (list-changed)
+        id: list-changed
+        run: |
+          changed=$(ct list-changed --target-branch=develop --chart-dirs=. )
+          if [[ -n "$changed" ]]; then
+            echo "::set-output name=changed::true"
+          fi
+      - name: Lint Sentry Helm Chart
         uses: WyriHaximus/github-action-helm3@v2
+        if: steps.list-changed.outputs.changed == 'true'
         with:
-          command: helm lint ./sentry-kubernetes
-      # - name: Create kind cluster
-      #   uses: helm/kind-action@v1.0.0-alpha.3
-      #   with:
-      #     install_local_path_provisioner: true
-      #   # Only build a kind cluster if there are chart changes to test.
-      #   if: steps.lint.outputs.changed == 'true'
-      # - name: Run Chart
-      #   uses: yeouchien/helm3-action@f3a7c239c5c60777210c8e631839edf5dd3fa29c
-      #   with:
-      #     command: upgrade sentry --install ./sentry
+          exec: for chart in $(ls -d ./*/); do helm lint $chart; done
+      - name: Run chart-testing (lint)
+        if: steps.list-changed.outputs.changed == 'true'
+        run: |
+          ct lint \
+            --target-branch=develop \
+            --chart-dirs=. \
+            --chart-repos=bitnami=https://charts.bitnami.com/bitnami,sentry-kubernetes=https://sentry-kubernetes.github.io/charts
+     # It would be nice to turn on this testing, but it is hard to get right and
+     # rather complex (as well as expensive in terms of runner compute time).
+     # Additionally, this is out of scope of fixing the issue brought up in #456
+     # - name: Create kind cluster
+     #   uses: helm/kind-action@v1.2.0
+     #   if: steps.list-changed.outputs.changed == 'true'
+     # - name: Run chart-testing (install)
+     #   run: ct install --target-branch=develop --chart-dirs=.

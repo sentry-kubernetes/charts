@@ -49,6 +49,13 @@ spec:
       imagePullSecrets:
 {{ toYaml .Values.images.snuba.imagePullSecrets | indent 8 }}
       {{- end }}
+      {{- if .Values.dnsPolicy }}
+      dnsPolicy: {{ .Values.dnsPolicy | quote }}
+      {{- end }}
+      {{- if .Values.dnsConfig }}
+      dnsConfig:
+{{ toYaml .Values.dnsConfig | indent 8 }}
+      {{- end }}
       {{- if .Values.snuba.api.securityContext }}
       securityContext:
 {{ toYaml .Values.snuba.api.securityContext | indent 8 }}
@@ -57,6 +64,10 @@ spec:
       - name: {{ .Chart.Name }}-snuba
         image: "{{ template "snuba.image" . }}"
         imagePullPolicy: {{ default "IfNotPresent" .Values.images.snuba.pullPolicy }}
+      {{- if .Values.snuba.api.command }}
+        command:
+{{ toYaml .Values.snuba.api.command | indent 8 }}
+      {{- end }}
         ports:
         - containerPort: {{ template "snuba.port" }}
         env:
@@ -71,6 +82,9 @@ spec:
         - mountPath: /etc/snuba
           name: config
           readOnly: true
+{{- if .Values.snuba.api.volumeMounts }}
+{{ toYaml .Values.snuba.api.volumeMounts | indent 8 }}
+{{- end }}
         livenessProbe:
           failureThreshold: 5
           httpGet:

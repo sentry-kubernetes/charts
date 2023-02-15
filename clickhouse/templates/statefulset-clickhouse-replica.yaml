@@ -47,6 +47,10 @@ spec:
       {{- end }}
       {{- end }}
     spec:
+    {{- with .Values.clickhouse.podSecurityContext }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
     {{- if .Values.affinity }}
       affinity:
 {{ toYaml .Values.affinity | indent 8 }}
@@ -70,10 +74,18 @@ spec:
         - -c
         - |
           mkdir -p /etc/clickhouse-server/metrica.d
+        {{- if .Values.clickhouse.init.resources }}
+        resources:
+{{ toYaml .Values.clickhouse.init.resources | indent 10 }}
+        {{- end }}
       containers:
       - name: {{ include "clickhouse.fullname" . }}-replica
         image: {{ .Values.clickhouse.image }}:{{ .Values.clickhouse.imageVersion }}
         imagePullPolicy: {{ .Values.clickhouse.imagePullPolicy }}
+        command:
+          - /bin/bash
+          - -c
+          - export SHARD=${HOSTNAME##*-} && /entrypoint.sh
         ports:
         - name: http-port
           containerPort: {{ .Values.clickhouse.http_port | default "8123" }}
@@ -116,9 +128,13 @@ spec:
           mountPath: /etc/clickhouse-server/metrica.d
         - name: {{ include "clickhouse.fullname" . }}-users
           mountPath: /etc/clickhouse-server/users.d
+{{- if .Values.clickhouse.volumeMounts }}
+{{ toYaml .Values.clickhouse.volumeMounts | indent 8 }}
+{{- end }}
+      {{- with .Values.clickhouse.securityContext }}
         securityContext:
-          privileged: true
-          runAsUser: 0
+          {{- toYaml . | nindent 10 }}
+      {{- end }}
         {{- if .Values.clickhouse.metrics.enabled }}
       - name: prom-exporter
         image: "{{ .Values.clickhouse.metrics.image.registry }}/{{ .Values.clickhouse.metrics.image.repository }}:{{ .Values.clickhouse.metrics.image.tag }}"
@@ -128,6 +144,10 @@ spec:
             containerPort: {{ .Values.clickhouse.metrics.image.port }}
             protocol: TCP
         {{- if .Values.clickhouse.metrics.resources }}
+{{- if .Values.clickhouse.metrics.volumeMounts }}
+        volumeMounts:
+{{ toYaml .Values.clickhouse.metrics.volumeMounts | indent 8 }}
+{{- end }}
         resources: {{- toYaml .Values.clickhouse.metrics.resources | nindent 8 }}
         {{- end }}
       {{- end }}
@@ -170,6 +190,9 @@ spec:
           - key: users.xml
             path: users.xml
       {{- end }}
+{{- if .Values.clickhouse.volumes }}
+{{ toYaml .Values.clickhouse.volumes | indent 6 }}
+{{- end }}
       {{- if .Values.serviceAccount.enabled }}
       serviceAccountName: {{ .Values.serviceAccount.name }}-replica
       {{- end }}

@@ -3,7 +3,7 @@ kind: Service
 metadata:
   name: {{ template "sentry.fullname" . }}-web
   annotations:
-    {{- range $key, $value := .Values.service.annotations }}
+    {{- range $key, $value := .Values.sentry.web.service.annotations }}
       {{ $key }}: {{ $value | quote }}
     {{- end }}
     {{- if and (.Values.ingress.enabled) (eq (default "nginx" .Values.ingress.regexPathStyle) "gke") }}
