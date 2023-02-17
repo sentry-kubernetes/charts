@@ -205,6 +205,10 @@ spec:
         app.kubernetes.io/name: {{ include "clickhouse.name" . }}-replica-data
         app.kubernetes.io/instance: {{ .Release.Name }}-replica-data
         app.kubernetes.io/managed-by: {{ .Release.Service }}
+    {{- if .Values.clickhouse.persistentVolumeClaim.dataPersistentVolume.annotations }}
+      annotations:
+        {{- toYaml .Values.clickhouse.persistentVolumeClaim.dataPersistentVolume.annotations | nindent 8 }}
+    {{- end }}
     spec:
       accessModes:
     {{- range .Values.clickhouse.persistentVolumeClaim.dataPersistentVolume.accessModes }}
@@ -224,6 +228,10 @@ spec:
         app.kubernetes.io/name: {{ include "clickhouse.name" . }}-replica-logs
         app.kubernetes.io/instance: {{ .Release.Name }}-replica-logs
         app.kubernetes.io/managed-by: {{ .Release.Service }}
+    {{- if .Values.clickhouse.persistentVolumeClaim.logsPersistentVolume.annotations }}
+      annotations:
+        {{- toYaml .Values.clickhouse.persistentVolumeClaim.logsPersistentVolume.annotations | nindent 8 }}
+    {{- end }}
     spec:
       accessModes:
     {{- range .Values.clickhouse.persistentVolumeClaim.logsPersistentVolume.accessModes }}
