@@ -5,6 +5,10 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: {{ template "sentry.fullname" . }}-sentry
+  annotations:
+   {{- range $key, $value := .Values.config.web.annotations }}
+     {{ $key }}: {{ $value | quote }}
+   {{- end }}
   labels:
     app: sentry
     chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"

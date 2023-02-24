@@ -374,6 +374,8 @@ snuba:
     sidecars: []
     volumes: []
     # volumeMounts: []
+  config:
+    annotations: {}
 
   consumer:
     replicas: 1
@@ -739,6 +741,8 @@ nginx:
   existingServerBlockConfigmap: '{{ template "sentry.fullname" . }}'
   resources: {}
   replicaCount: 1
+  config:
+    annotations: {}
   service:
     type: ClusterIP
     ports:
@@ -830,10 +834,13 @@ config:
     # No Python Extension Config Given
   snubaSettingsPy: |
     # No Python Extension Config Given
-  relay: |
+  relayConf: |
     # No YAML relay config given
+  relay:
+    annotations: {}
   web:
     httpKeepalive: 15
+    annotations: {}
 
 clickhouse:
   enabled: true
@@ -1084,6 +1091,8 @@ memcached:
     - "-m $(MEMCACHED_MEMORY_LIMIT)"
     - "-I $(MEMCACHED_MAX_ITEM_SIZE)"
   extraEnvVarsCM: "sentry-memcached"
+  config:
+    annotations: {}
 
 ## Prometheus Exporter / Metrics
 ##

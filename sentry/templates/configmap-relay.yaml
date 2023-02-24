@@ -5,6 +5,10 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: {{ template "sentry.fullname" . }}-relay
+  annotations:
+   {{- range $key, $value := .Values.config.relay.annotations }}
+     {{ $key }}: {{ $value | quote }}
+   {{- end }}
   labels:
     app: sentry
     chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
@@ -41,4 +45,4 @@ data:
         metrics_transactions: ingest-performance-metrics
         metrics_sessions: ingest-metrics
 
-{{ .Values.config.relay | indent 4 }}
+{{ .Values.config.relayConf | indent 4 }}
