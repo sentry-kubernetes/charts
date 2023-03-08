@@ -494,4 +494,21 @@ Common Sentry environment variables
       name: {{ .Values.mail.existingSecret }}
       key: {{ default "mail-password" .Values.mail.existingSecretKey }}
 {{- end }}
+{{- if .Values.slack.existingSecret }}
+- name: SLACK_CLIENT_ID
+  valueFrom:
+    secretKeyRef:
+      name: {{ .Values.slack.existingSecret }}
+      key: "client-id"
+- name: SLACK_CLIENT_SECRET
+  valueFrom:
+    secretKeyRef:
+      name: {{ .Values.slack.existingSecret }}
+      key: "client-secret"
+- name: SLACK_SIGNING_SECRET
+  valueFrom:
+    secretKeyRef:
+      name: {{ .Values.slack.existingSecret }}
+      key: "signing-secret"
+{{- end }}
 {{- end -}}
