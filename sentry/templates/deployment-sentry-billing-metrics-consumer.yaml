@@ -1,0 +1,139 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "sentry.fullname" . }}-billing-metrics-consumer
+  labels:
+    app: {{ template "sentry.fullname" . }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
+    release: "{{ .Release.Name }}"
+    heritage: "{{ .Release.Service }}"
+    app.kubernetes.io/managed-by: "Helm"
+  {{- if .Values.asHook }}
+  {{- /* Add the Helm annotations so that deployment after asHook from true to false works */}}
+  annotations:
+    meta.helm.sh/release-name: "{{ .Release.Name }}"
+    meta.helm.sh/release-namespace: "{{ .Release.Namespace }}"
+    "helm.sh/hook": "post-install,post-upgrade"
+    "helm.sh/hook-weight": "10"
+  {{- end }}
+spec:
+  revisionHistoryLimit: {{ .Values.revisionHistoryLimit }}
+  selector:
+    matchLabels:
+      app: {{ template "sentry.fullname" . }}
+      release: "{{ .Release.Name }}"
+      role: billing-metrics-consumer
+{{- if not .Values.sentry.billingMetricsConsumer.autoscaling.enabled }}
+  replicas: {{ .Values.sentry.billingMetricsConsumer.replicas }}
+{{- end }}
+  template:
+    metadata:
+      annotations:
+        checksum/configYml: {{ .Values.config.configYml | toYaml | toString | sha256sum }}
+        checksum/sentryConfPy: {{ .Values.config.sentryConfPy | sha256sum }}
+        checksum/config.yaml: {{ include (print $.Template.BasePath "/configmap-sentry.yaml") . | sha256sum }}
+        {{- if .Values.sentry.billingMetricsConsumer.annotations }}
+{{ toYaml .Values.sentry.billingMetricsConsumer.annotations | indent 8 }}
+        {{- end }}
+      labels:
+        app: {{ template "sentry.fullname" . }}
+        release: "{{ .Release.Name }}"
+        role: billing-metrics-consumer
+        {{- if .Values.sentry.billingMetricsConsumer.podLabels }}
+{{ toYaml .Values.sentry.billingMetricsConsumer.podLabels | indent 8 }}
+        {{- end }}
+    spec:
+      affinity:
+      {{- if .Values.sentry.billingMetricsConsumer.affinity }}
+{{ toYaml .Values.sentry.billingMetricsConsumer.affinity | indent 8 }}
+      {{- end }}
+      {{- if .Values.sentry.billingMetricsConsumer.nodeSelector }}
+      nodeSelector:
+{{ toYaml .Values.sentry.billingMetricsConsumer.nodeSelector | indent 8 }}
+      {{- end }}
+      {{- if .Values.sentry.billingMetricsConsumer.tolerations }}
+      tolerations:
+{{ toYaml .Values.sentry.billingMetricsConsumer.tolerations | indent 8 }}
+      {{- end }}
+      {{- if .Values.images.sentry.imagePullSecrets }}
+      imagePullSecrets:
+{{ toYaml .Values.images.sentry.imagePullSecrets | indent 8 }}
+      {{- end }}
+      {{- if .Values.dnsPolicy }}
+      dnsPolicy: {{ .Values.dnsPolicy | quote }}
+      {{- end }}
+      {{- if .Values.dnsConfig }}
+      dnsConfig:
+{{ toYaml .Values.dnsConfig | indent 8 }}
+      {{- end }}
+      {{- if .Values.sentry.billingMetricsConsumer.securityContext }}
+      securityContext:
+{{ toYaml .Values.sentry.billingMetricsConsumer.securityContext | indent 8 }}
+      {{- end }}
+      containers:
+      - name: {{ .Chart.Name }}-billing-metrics-consumer
+        image: "{{ template "sentry.image" . }}"
+        imagePullPolicy: {{ default "IfNotPresent" .Values.images.sentry.pullPolicy }}
+        command: ["sentry"]
+        args:
+          - "run"
+          - "billing-metrics-consumer"
+          {{- if .Values.sentry.billingMetricsConsumer.maxBatchSize }}
+          - "--max-batch-size"
+          - "{{ .Values.sentry.billingMetricsConsumer.maxBatchSize }}"
+          {{- end }}
+        env:
+        - name: C_FORCE_ROOT
+          value: "true"
+{{ include "sentry.env" . | indent 8 }}
+{{- if .Values.sentry.billingMetricsConsumer.env }}
+{{ toYaml .Values.sentry.billingMetricsConsumer.env | indent 8 }}
+{{- end }}
+        volumeMounts:
+        - mountPath: /etc/sentry
+          name: config
+          readOnly: true
+        - mountPath: {{ .Values.filestore.filesystem.path }}
+          name: sentry-data
+        {{- if and (eq .Values.filestore.backend "gcs") .Values.filestore.gcs.secretName }}
+        - name: sentry-google-cloud-key
+          mountPath: /var/run/secrets/google
+        {{ end }}
+{{- if .Values.sentry.billingMetricsConsumer.volumeMounts }}
+{{ toYaml .Values.sentry.billingMetricsConsumer.volumeMounts | indent 8 }}
+{{- end }}
+        resources:
+{{ toYaml .Values.sentry.billingMetricsConsumer.resources | indent 12 }}
+{{- if .Values.sentry.billingMetricsConsumer.sidecars }}
+{{ toYaml .Values.sentry.billingMetricsConsumer.sidecars | indent 6 }}
+{{- end }}
+      {{- if .Values.serviceAccount.enabled }}
+      serviceAccountName: {{ .Values.serviceAccount.name }}-billing-metrics-consumer
+      {{- end }}
+      volumes:
+      - name: config
+        configMap:
+          name: {{ template "sentry.fullname" . }}-sentry
+      - name: sentry-data
+      {{- if and (eq .Values.filestore.backend "filesystem") .Values.filestore.filesystem.persistence.enabled (.Values.filestore.filesystem.persistence.persistentWorkers) }}
+      {{- if .Values.filestore.filesystem.persistence.existingClaim }}
+        persistentVolumeClaim:
+          claimName: {{ .Values.filestore.filesystem.persistence.existingClaim }}
+      {{- else }}
+        persistentVolumeClaim:
+          claimName: {{ template "sentry.fullname" . }}-data
+      {{- end }}
+      {{- else }}
+        emptyDir: {}
+      {{ end }}
+      {{- if and (eq .Values.filestore.backend "gcs") .Values.filestore.gcs.secretName }}
+      - name: sentry-google-cloud-key
+        secret:
+          secretName: {{ .Values.filestore.gcs.secretName }}
+      {{ end }}
+{{- if .Values.sentry.billingMetricsConsumer.volumes }}
+{{ toYaml .Values.sentry.billingMetricsConsumer.volumes | indent 6 }}
+{{- end }}
+      {{- if .Values.sentry.billingMetricsConsumer.priorityClassName }}
+      priorityClassName: "{{ .Values.sentry.billingMetricsConsumer.priorityClassName }}"
+      {{- end }}
