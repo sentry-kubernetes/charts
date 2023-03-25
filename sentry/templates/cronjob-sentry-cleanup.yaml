@@ -71,6 +71,8 @@ spec:
               - "cleanup"
               - "--days"
               - "{{ .Values.sentry.cleanup.days }}"
+              - "--concurrency"
+              - "{{ .Values.sentry.cleanup.concurrency }}"
             env:
             - name: C_FORCE_ROOT
               value: "true"

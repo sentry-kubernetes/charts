@@ -337,6 +337,7 @@ sentry:
     enabled: true
     schedule: "0 0 * * *"
     days: 90
+    concurrency: 1
     # securityContext: {}
     sidecars: []
     volumes: []
