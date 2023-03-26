@@ -334,6 +334,7 @@ sentry:
     failedJobsHistoryLimit: 5
     activeDeadlineSeconds: 100
     concurrencyPolicy: Allow
+    concurrency: 1
     enabled: true
     schedule: "0 0 * * *"
     days: 90
