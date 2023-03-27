@@ -507,7 +507,7 @@ snuba:
     autoOffsetReset: "earliest"
     # volumes: []
     # volumeMounts: []
-  
+
   subscriptionConsumerSessions:
     replicas: 1
     env: []
@@ -522,7 +522,7 @@ snuba:
     sidecars: []
     volumes: []
     # noStrictOffsetReset: false
-    # volumeMounts: []  
+    # volumeMounts: []
 
   replaysConsumer:
     replicas: 1
