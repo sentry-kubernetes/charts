@@ -140,10 +140,12 @@ data:
         "default": {
             "BACKEND": "django.core.cache.backends.memcached.MemcachedCache",
             "LOCATION": [
-                "sentry-memcached:11211"
+                "{{ template "sentry.fullname" . }}-memcached:11211"
             ]
         }
     }
+    import memcache
+    memcache.SERVER_MAX_VALUE_LENGTH = {{ .Values.memcached.maxItemSize }}
     {{- end }}
 
     DATABASES = {
