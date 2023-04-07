@@ -38,14 +38,14 @@ spec:
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         volumeMounts:
           - name: custom-ca
-            mountPath: /etc/pki/ca-trust/custom/ca.pem
+            mountPath: /etc/pki/ca-trust/custom/ca.crt
             subPath: {{ .Values.customCA.item | quote }}
           - name: cacert
             mountPath: /tmp/cacert
         command:
           - /bin/bash
           - -c
-          - cat /usr/local/lib/python3.7/site-packages/certifi/cacert.pem /etc/pki/ca-trust/custom/ca.pem > /tmp/cacert/cacert.pem
+          - cat /usr/local/lib/python3.7/site-packages/certifi/cacert.pem /etc/pki/ca-trust/custom/ca.crt > /tmp/cacert/cacert.pem
       {{- end }}
       containers:
       - name: {{ .Chart.Name }}
@@ -71,7 +71,7 @@ spec:
           {{ end }}
           {{ if .Values.customCA }}
           - name: REQUESTS_CA_BUNDLE
-            value: /etc/pki/ca-trust/custom/{{ .Values.customCA.item }}
+            value: /etc/pki/ca-trust/custom/ca.crt
           {{ end }}
         {{- if .Values.customCA }}
         volumeMounts:
