@@ -25,6 +25,28 @@ spec:
       {{- if .Values.priorityClassName }}
       priorityClassName: "{{ .Values.priorityClassName }}"
       {{- end }}
+      {{- if .Values.customCA }}
+      volumes:
+        - name: custom-ca
+          secret:
+            secretName: {{ .Values.customCA.secretName | quote }}
+        - name: cacert
+          emptyDir: {}
+      initContainers:
+      - name: ca-bundle-init
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        volumeMounts:
+          - name: custom-ca
+            mountPath: /etc/pki/ca-trust/custom/ca.pem
+            subPath: {{ .Values.customCA.item | quote }}
+          - name: cacert
+            mountPath: /tmp/cacert
+        command:
+          - /bin/bash
+          - -c
+          - cat /usr/local/lib/python3.7/site-packages/certifi/cacert.pem /etc/pki/ca-trust/custom/ca.pem > /tmp/cacert/cacert.pem
+      {{- end }}
       containers:
       - name: {{ .Chart.Name }}
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
@@ -47,6 +69,21 @@ spec:
           - name: LOG_LEVEL
             value: {{ .Values.sentry.logLevel }}
           {{ end }}
+          {{ if .Values.customCA }}
+          - name: REQUESTS_CA_BUNDLE
+            value: /etc/pki/ca-trust/custom/{{ .Values.customCA.item }}
+          {{ end }}
+        {{- if .Values.customCA }}
+        volumeMounts:
+          - name: custom-ca
+            mountPath: /etc/pki/ca-trust/custom/ca.crt
+            subPath: {{ .Values.customCA.item | quote }}
+            readOnly: true
+          - name: cacert
+            mountPath: /usr/local/lib/python3.7/site-packages/certifi/cacert.pem
+            subPath: cacert.pem
+            readOnly: true
+        {{- end }}
         resources:
 {{ toYaml .Values.resources | indent 10 }}
     {{- if .Values.nodeSelector }}
