@@ -61,6 +61,21 @@ spec:
       securityContext:
 {{ toYaml .Values.sentry.worker.securityContext | indent 8 }}
       {{- end }}
+      {{ if .Values.sentry.worker.customCA }}
+      initContainers:
+      - name: {{ .Chart.Name }}-ca-bundle-init
+        image: "{{ template "sentry.image" . }}"
+        imagePullPolicy: {{ default "IfNotPresent" .Values.images.sentry.pullPolicy }}
+        volumeMounts:
+          - name: custom-ca
+            mountPath: /etc/pki/ca-trust/custom
+          - name: cacert
+            mountPath: /tmp/cacert
+        command:
+          - /bin/bash
+          - -c
+          - cat /usr/local/lib/python3.8/site-packages/certifi/cacert.pem /etc/pki/ca-trust/custom/{{ default "ca.crt" .Values.sentry.worker.customCA.item }} > /tmp/cacert/cacert.pem
+      {{- end }}
       containers:
       - name: {{ .Chart.Name }}-worker
         image: "{{ template "sentry.image" . }}"
@@ -77,6 +92,10 @@ spec:
         - name: C_FORCE_ROOT
           value: "true"
 {{ include "sentry.env" . | indent 8 }}
+        {{ if .Values.sentry.worker.customCA }}
+        - name: REQUESTS_CA_BUNDLE
+          value: /etc/pki/ca-trust/custom/{{ default "ca.crt" .Values.sentry.worker.customCA.item }}
+        {{ end }}
 {{- if .Values.sentry.worker.env }}
 {{ toYaml .Values.sentry.worker.env | indent 8 }}
 {{- end }}
@@ -93,6 +112,13 @@ spec:
         {{- if and (eq .Values.filestore.backend "gcs") .Values.filestore.gcs.secretName }}
         - name: sentry-google-cloud-key
           mountPath: /var/run/secrets/google
+        {{ end }}
+        {{- if .Values.sentry.worker.customCA }}
+        - name: custom-ca
+          mountPath: /etc/pki/ca-trust/custom
+        - name: cacert
+          mountPath: /usr/local/lib/python3.8/site-packages/certifi/cacert.pem
+          subPath: cacert.pem
         {{ end }}
 {{- if .Values.sentry.worker.volumeMounts }}
 {{ toYaml .Values.sentry.worker.volumeMounts | indent 8 }}
@@ -138,6 +164,13 @@ spec:
       - name: sentry-google-cloud-key
         secret:
           secretName: {{ .Values.filestore.gcs.secretName }}
+      {{ end }}
+      {{- if .Values.sentry.worker.customCA }}
+      - name: custom-ca
+        secret:
+          secretName: {{ .Values.sentry.worker.customCA.secretName | quote }}
+      - name: cacert
+        emptyDir: {}
       {{ end }}
       {{- if .Values.sentry.worker.priorityClassName }}
       priorityClassName: "{{ .Values.sentry.worker.priorityClassName }}"
