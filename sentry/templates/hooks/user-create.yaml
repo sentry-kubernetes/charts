@@ -51,7 +51,7 @@ spec:
         # Create user but do not exit 1 when user already exists (exit code 3 from createuser command)
         # https://docs.sentry.io/server/cli/createuser/
         args:
-          - >
+          - |
             sentry createuser \
               --no-input \
               --superuser \
