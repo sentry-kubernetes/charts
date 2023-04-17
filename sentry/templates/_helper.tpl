@@ -511,4 +511,26 @@ Common Sentry environment variables
       name: {{ .Values.slack.existingSecret }}
       key: "signing-secret"
 {{- end }}
+{{- if and .Values.github.existingSecret }}
+- name: GITHUB_APP_PRIVATE_KEY
+  valueFrom:
+    secretKeyRef:
+      name: {{ .Values.github.existingSecret }}
+      key: {{ default "private-key" .Values.github.existingSecretPrivateKeyKey }}
+- name: GITHUB_APP_WEBHOOK_SECRET
+  valueFrom:
+    secretKeyRef:
+      name: {{ .Values.github.existingSecret }}
+      key: {{ default "webhook-secret" .Values.github.existingSecretWebhookSecretKey }}
+- name: GITHUB_APP_CLIENT_ID
+  valueFrom:
+    secretKeyRef:
+      name: {{ .Values.github.existingSecret }}
+      key: {{ default "client-id" .Values.github.existingSecretClientIdKey }}
+- name: GITHUB_APP_CLIENT_SECRET
+  valueFrom:
+    secretKeyRef:
+      name: {{ .Values.github.existingSecret }}
+      key: {{ default "client-secret" .Values.github.existingSecretClientSecretKey }}
+{{- end }}
 {{- end -}}
