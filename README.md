@@ -22,6 +22,8 @@ Sentry version from 22.10.0 onwards should be using chart 17.x.x
 
 You can delete the deployment "sentry-post-process-forward" as it's no longer needed.
 
+`sentry-worker` may failed to start by [#774](https://github.com/sentry-kubernetes/charts/issues/774).
+If you encountered this issue, please reset `counters-0`, `triggers-0` queues.
 
 
 ## Upgrading from 15.x.x version of this Chart to 16.x.x
