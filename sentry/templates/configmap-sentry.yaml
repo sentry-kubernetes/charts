@@ -31,24 +31,25 @@ data:
     ##########
     # Github #
     ##########
-    {{- if .Values.github.appId }}
-    github-app.id: {{ .Values.github.appId }}
+    {{- with .Values.github.appId }}
+    github-app.id: {{ . }}
     {{- end }}
-    {{- if .Values.github.appName }}
-    github-app.name: {{ .Values.github.appName | quote }}
+    {{- with .Values.github.appName }}
+    github-app.name: {{ . | quote }}
     {{- end }}
-    {{- if .Values.github.privateKey }}
-    github-app.private-key: |-
-{{ .Values.github.privateKey | indent 8 }}
-    {{- end }}
-    {{- if .Values.github.webhookSecret }}
-    github-app.webhook-secret: {{ .Values.github.webhookSecret | quote }}
-    {{- end }}
-    {{- if .Values.github.clientId }}
-    github-app.client-id: {{ .Values.github.clientId | quote }}
-    {{- end }}
-    {{- if .Values.github.clientSecret }}
-    github-app.client-secret: {{ .Values.github.clientSecret | quote }}
+    {{- if not .Values.github.existingSecret }}
+      {{- with .Values.github.privateKey }}
+    github-app.private-key: {{- . | toYaml | indent 4 }}
+      {{- end }}
+      {{- with .Values.github.webhookSecret }}
+    github-app.webhook-secret: {{ . | quote }}
+      {{- end }}
+      {{- with .Values.github.clientId }}
+    github-app.client-id: {{ . | quote }}
+      {{- end }}
+      {{- with .Values.github.clientSecret }}
+    github-app.client-secret: {{ . | quote }}
+      {{- end }}
     {{- end }}
 
     ##########
@@ -62,7 +63,7 @@ data:
     #########
     # Slack #
     #########
-    {{- if .Values.slack.clientId }}
+    {{- if and (.Values.slack.clientId) (.Values.slack.clientSecret) (.Values.slack.signingSecret) (not .Values.slack.existingSecret) }}
     slack.client-id: {{ .Values.slack.clientId | quote }}
     slack.client-secret: {{ .Values.slack.clientSecret | quote }}
     slack.signing-secret: {{ .Values.slack.signingSecret | quote }}
@@ -140,10 +141,12 @@ data:
         "default": {
             "BACKEND": "django.core.cache.backends.memcached.MemcachedCache",
             "LOCATION": [
-                "sentry-memcached:11211"
+                "{{ template "sentry.fullname" . }}-memcached:11211"
             ]
         }
     }
+    import memcache
+    memcache.SERVER_MAX_VALUE_LENGTH = {{ .Values.memcached.maxItemSize }}
     {{- end }}
 
     DATABASES = {
@@ -418,6 +421,7 @@ data:
                 "organizations:unhandled-issue-flag",
                 "organizations:invite-members-rate-limits",
                 "organizations:dashboards-v2",
+                "organizations:reprocessing-v2",
                 "organizations:metrics",
                 "organizations:metrics-extraction",
                 "organizations:transaction-metrics-extraction",
@@ -435,7 +439,6 @@ data:
                 "projects:similarity-indexing",
                 "projects:similarity-view-v2",
                 "projects:similarity-indexing-v2",
-                "projects:reprocessing-v2",
 
                 "projects:plugins",
             )
@@ -475,4 +478,22 @@ data:
     }
 {{- end }}
 
+{{- if .Values.slack.existingSecret }}
+    #########
+    # SLACK #
+    #########
+    SENTRY_OPTIONS['slack.client-id'] = os.environ.get("SLACK_CLIENT_ID")
+    SENTRY_OPTIONS['slack.client-secret'] = os.environ.get("SLACK_CLIENT_SECRET")
+    SENTRY_OPTIONS['slack.signing-secret'] = os.environ.get("SLACK_SIGNING_SECRET")
+{{- end }}
+
+{{- if .Values.github.existingSecret }}
+    ##########
+    # Github #
+    ##########
+    SENTRY_OPTIONS['github-app.private-key'] = os.environ.get("GITHUB_APP_PRIVATE_KEY")
+    SENTRY_OPTIONS['github-app.webhook-secret'] = os.environ.get("GITHUB_APP_WEBHOOK_SECRET")
+    SENTRY_OPTIONS['github-app.client-id'] = os.environ.get("GITHUB_APP_CLIENT_ID")
+    SENTRY_OPTIONS['github-app.client-secret'] = os.environ.get("GITHUB_APP_CLIENT_SECRET")
+{{- end }}
 {{ .Values.config.sentryConfPy | indent 4 }}

@@ -334,6 +334,7 @@ sentry:
     failedJobsHistoryLimit: 5
     activeDeadlineSeconds: 100
     concurrencyPolicy: Allow
+    concurrency: 1
     enabled: true
     schedule: "0 0 * * *"
     days: 90
@@ -718,7 +719,20 @@ github: {}
 #   clientId: "xxxxx"
 #   clientSecret: "xxxxx"
 #   privateKey: "-----BEGIN RSA PRIVATE KEY-----\nMIIEpA" !!!! Don't forget a trailing \n
-#   webhookSecret:  "xxxxx`"
+#   webhookSecret:  "xxxxx"
+#
+#   Note: if you use `existingSecret`, all above `clientId`, `clientSecret`, `privateKey`, `webhookSecret`
+#   params would be ignored, because chart will suppose that they are stored in `existingSecret`. So you
+#   must define all required keys and set it at least to empty strings if they are not needed in `existingSecret`
+#   secret (client-id, client-secret, webhook-secret, private-key)
+#
+#   existingSecret: "xxxxx"
+#   existingSecretPrivateKeyKey: ""     # by default "private-key"
+#   existingSecretWebhookSecretKey: ""  # by default "webhook-secret"
+#   existingSecretClientIdKey: ""       # by default "client-id"
+#   existingSecretClientSecretKey: ""   # by default "client-secret"
+#
+#   Reference -> https://docs.sentry.io/product/integrations/source-code-mgmt/github/
 
 # https://developers.google.com/identity/sign-in/web/server-side-flow#step_1_create_a_client_id_and_client_secret
 google: {}
@@ -731,6 +745,7 @@ slack: {}
 #   clientId:
 #   clientSecret:
 #   signingSecret:
+#   existingSecret:
 #   Reference -> https://develop.sentry.dev/integrations/slack/
 
 nginx:
