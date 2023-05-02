@@ -43,6 +43,8 @@ data:
             "replays",
             "generic_metrics_sets",
             "generic_metrics_distributions",
+            "search_issues",
+            "generic_metrics_counters",
         },
         {{- /*
           The default clickhouse installation runs in distributed mode, while the external

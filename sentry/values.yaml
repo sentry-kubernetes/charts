@@ -233,6 +233,30 @@ sentry:
     #   - mountPath: /dev/shm
     #     name: dshm
 
+  ingestReplayRecordings:
+    replicas: 1
+    env: []
+    resources: {}
+    affinity: {}
+    nodeSelector: {}
+    securityContext: {}
+    # tolerations: []
+    # podLabels: []
+
+    # it's better to use prometheus adapter and scale based on
+    # the size of the rabbitmq queue
+    autoscaling:
+      enabled: false
+      minReplicas: 1
+      maxReplicas: 3
+      targetCPUUtilizationPercentage: 50
+    sidecars: []
+    volumes: []
+
+    # volumeMounts:
+    #   - mountPath: /dev/shm
+    #     name: dshm
+
   billingMetricsConsumer:
     replicas: 1
     # concurrency: 4
@@ -286,6 +310,20 @@ sentry:
     # noStrictOffsetReset: false
     # volumeMounts: []
 
+  subscriptionConsumerSessions:
+    replicas: 1
+    env: []
+    resources: {}
+    affinity: {}
+    nodeSelector: {}
+    securityContext: {}
+    # tolerations: []
+    # podLabels: []
+    sidecars: []
+    volumes: []
+    # noStrictOffsetReset: false
+    # volumeMounts: []
+
   subscriptionConsumerTransactions:
     replicas: 1
     env: []
@@ -310,7 +348,6 @@ sentry:
     securityContext: {}
     # tolerations: []
     # podLabels: []
-    # commitBatchSize: 1
     sidecars: []
     volumes: []
     # volumeMounts: []
@@ -324,7 +361,6 @@ sentry:
     securityContext: {}
     # tolerations: []
     # podLabels: []
-    # commitBatchSize: 1
     sidecars: []
     volumes: []
     # volumeMounts: []
@@ -440,7 +476,6 @@ snuba:
     # tolerations: []
     # podLabels: []
     autoOffsetReset: "earliest"
-    maxBatchSize: "3"
     # maxBatchTimeMs: ""
     # queuedMaxMessagesKbytes: ""
     # queuedMinMessages: ""
@@ -472,6 +507,49 @@ snuba:
     autoOffsetReset: "earliest"
     # volumes: []
     # volumeMounts: []
+
+  subscriptionConsumerSessions:
+    replicas: 1
+    env: []
+    resources: {}
+    affinity: {}
+    nodeSelector: {}
+    securityContext: {}
+    # tolerations: []
+    # podLabels: []
+    # commitBatchSize: 1
+    autoOffsetReset: "earliest"
+    sidecars: []
+    volumes: []
+    # noStrictOffsetReset: false
+    # volumeMounts: []
+
+  replaysConsumer:
+    replicas: 1
+    env: []
+    resources: {}
+    affinity: {}
+    nodeSelector: {}
+    securityContext: {}
+    # tolerations: []
+    # podLabels: []
+    autoOffsetReset: "earliest"
+    # noStrictOffsetReset: false
+    # maxBatchSize: ""
+    # processes: ""
+    # inputBlockSize: ""
+    # outputBlockSize: ""
+    # maxBatchTimeMs: ""
+    # queuedMaxMessagesKbytes: ""
+    # queuedMinMessages: ""
+
+    # volumeMounts:
+    #   - mountPath: /dev/shm
+    #     name: dshm
+    # volumes:
+    #   - name: dshm
+    #     emptyDir:
+    #       medium: Memory
 
   sessionsConsumer:
     replicas: 1
@@ -532,33 +610,6 @@ snuba:
 
   migrateJob:
     env: []
-
-  cleanupErrors:
-    successfulJobsHistoryLimit: 5
-    activeDeadlineSeconds: 100
-    concurrencyPolicy: Allow
-    enabled: true
-    schedule: "0 * * * *"
-    sidecars: []
-    volumes: []
-    # securityContext: {}
-    serviceAccount: {}
-    # volumes: []
-    # volumeMounts: []
-
-  cleanupTransactions:
-    successfulJobsHistoryLimit: 5
-    failedJobsHistoryLimit: 5
-    activeDeadlineSeconds: 100
-    concurrencyPolicy: Allow
-    enabled: true
-    schedule: "0 * * * *"
-    sidecars: []
-    volumes: []
-    # securityContext: {}
-    serviceAccount: {}
-    # volumes: []
-    # volumeMounts: []
 
 hooks:
   enabled: true

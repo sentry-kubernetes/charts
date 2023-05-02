@@ -1,9 +1,9 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ template "sentry.fullname" . }}-post-process-forward-errors
+  name: {{ template "sentry.fullname" . }}-ingest-replay-recordings
   labels:
-    app: sentry
+    app: {{ template "sentry.fullname" . }}
     chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
     release: "{{ .Release.Name }}"
     heritage: "{{ .Release.Service }}"
@@ -20,38 +20,40 @@ spec:
   revisionHistoryLimit: {{ .Values.revisionHistoryLimit }}
   selector:
     matchLabels:
-        app: sentry
-        release: "{{ .Release.Name }}"
-        role: sentry-post-process-forward-errors
-  replicas: {{ .Values.sentry.postProcessForwardErrors.replicas }}
+      app: {{ template "sentry.fullname" . }}
+      release: "{{ .Release.Name }}"
+      role: ingest-replay-recordings
+{{- if not .Values.sentry.ingestReplayRecordings.autoscaling.enabled }}
+  replicas: {{ .Values.sentry.ingestReplayRecordings.replicas }}
+{{- end }}
   template:
     metadata:
       annotations:
         checksum/configYml: {{ .Values.config.configYml | toYaml | toString | sha256sum }}
         checksum/sentryConfPy: {{ .Values.config.sentryConfPy | sha256sum }}
         checksum/config.yaml: {{ include (print $.Template.BasePath "/configmap-sentry.yaml") . | sha256sum }}
-        {{- if .Values.sentry.postProcessForwardErrors.annotations }}
-{{ toYaml .Values.sentry.postProcessForwardErrors.annotations | indent 8 }}
+        {{- if .Values.sentry.ingestReplayRecordings.annotations }}
+{{ toYaml .Values.sentry.ingestReplayRecordings.annotations | indent 8 }}
         {{- end }}
       labels:
-        app: sentry
+        app: {{ template "sentry.fullname" . }}
         release: "{{ .Release.Name }}"
-        role: sentry-post-process-forward-errors
-        {{- if .Values.sentry.postProcessForwardErrors.podLabels }}
-{{ toYaml .Values.sentry.postProcessForwardErrors.podLabels | indent 8 }}
+        role: ingest-replay-recordings
+        {{- if .Values.sentry.ingestReplayRecordings.podLabels }}
+{{ toYaml .Values.sentry.ingestReplayRecordings.podLabels | indent 8 }}
         {{- end }}
     spec:
       affinity:
-      {{- if .Values.sentry.postProcessForwardErrors.affinity }}
-{{ toYaml .Values.sentry.postProcessForwardErrors.affinity | indent 8 }}
+      {{- if .Values.sentry.ingestReplayRecordings.affinity }}
+{{ toYaml .Values.sentry.ingestReplayRecordings.affinity | indent 8 }}
       {{- end }}
-      {{- if .Values.sentry.postProcessForwardErrors.nodeSelector }}
+      {{- if .Values.sentry.ingestReplayRecordings.nodeSelector }}
       nodeSelector:
-{{ toYaml .Values.sentry.postProcessForwardErrors.nodeSelector | indent 8 }}
+{{ toYaml .Values.sentry.ingestReplayRecordings.nodeSelector | indent 8 }}
       {{- end }}
-      {{- if .Values.sentry.postProcessForwardErrors.tolerations }}
+      {{- if .Values.sentry.ingestReplayRecordings.tolerations }}
       tolerations:
-{{ toYaml .Values.sentry.postProcessForwardErrors.tolerations | indent 8 }}
+{{ toYaml .Values.sentry.ingestReplayRecordings.tolerations | indent 8 }}
       {{- end }}
       {{- if .Values.images.sentry.imagePullSecrets }}
       imagePullSecrets:
@@ -64,24 +66,24 @@ spec:
       dnsConfig:
 {{ toYaml .Values.dnsConfig | indent 8 }}
       {{- end }}
-      {{- if .Values.sentry.postProcessForwardErrors.securityContext }}
+      {{- if .Values.sentry.ingestReplayRecordings.securityContext }}
       securityContext:
-{{ toYaml .Values.sentry.postProcessForwardErrors.securityContext | indent 8 }}
+{{ toYaml .Values.sentry.ingestReplayRecordings.securityContext | indent 8 }}
       {{- end }}
       containers:
-      - name: {{ .Chart.Name }}-post-process-forward-errors
+      - name: {{ .Chart.Name }}-ingest-replay-recordings
         image: "{{ template "sentry.image" . }}"
         imagePullPolicy: {{ default "IfNotPresent" .Values.images.sentry.pullPolicy }}
         command: ["sentry"]
         args:
           - "run"
-          - "post-process-forwarder"
-          - "--entity"
-          - "errors"
+          - "ingest-replay-recordings"
         env:
+        - name: C_FORCE_ROOT
+          value: "true"
 {{ include "sentry.env" . | indent 8 }}
-{{- if .Values.sentry.postProcessForwardErrors.env }}
-{{ toYaml .Values.sentry.postProcessForwardErrors.env | indent 8 }}
+{{- if .Values.sentry.ingestReplayRecordings.env }}
+{{ toYaml .Values.sentry.ingestReplayRecordings.env | indent 8 }}
 {{- end }}
         volumeMounts:
         - mountPath: /etc/sentry
@@ -93,16 +95,16 @@ spec:
         - name: sentry-google-cloud-key
           mountPath: /var/run/secrets/google
         {{ end }}
-{{- if .Values.sentry.postProcessForwardErrors.volumeMounts }}
-{{ toYaml .Values.sentry.postProcessForwardErrors.volumeMounts | indent 8 }}
+{{- if .Values.sentry.ingestReplayRecordings.volumeMounts }}
+{{ toYaml .Values.sentry.ingestReplayRecordings.volumeMounts | indent 8 }}
 {{- end }}
         resources:
-{{ toYaml .Values.sentry.postProcessForwardErrors.resources | indent 12 }}
-{{- if .Values.sentry.postProcessForwardErrors.sidecars }}
-{{ toYaml .Values.sentry.postProcessForwardErrors.sidecars | indent 6 }}
+{{ toYaml .Values.sentry.ingestReplayRecordings.resources | indent 12 }}
+{{- if .Values.sentry.ingestReplayRecordings.sidecars }}
+{{ toYaml .Values.sentry.ingestReplayRecordings.sidecars | indent 6 }}
 {{- end }}
       {{- if .Values.serviceAccount.enabled }}
-      serviceAccountName: {{ .Values.serviceAccount.name }}-post-process-forwarder-errors
+      serviceAccountName: {{ .Values.serviceAccount.name }}-ingest-replay-recordings
       {{- end }}
       volumes:
       - name: config
@@ -125,9 +127,9 @@ spec:
         secret:
           secretName: {{ .Values.filestore.gcs.secretName }}
       {{ end }}
-{{- if .Values.sentry.postProcessForwardErrors.volumes }}
-{{ toYaml .Values.sentry.postProcessForwardErrors.volumes | indent 6 }}
+{{- if .Values.sentry.ingestReplayRecordings.volumes }}
+{{ toYaml .Values.sentry.ingestReplayRecordings.volumes | indent 6 }}
 {{- end }}
-      {{- if .Values.sentry.postProcessForwardErrors.priorityClassName }}
-      priorityClassName: "{{ .Values.sentry.postProcessForwardErrors.priorityClassName }}"
+      {{- if .Values.sentry.ingestReplayRecordings.priorityClassName }}
+      priorityClassName: "{{ .Values.sentry.ingestReplayRecordings.priorityClassName }}"
       {{- end }}
