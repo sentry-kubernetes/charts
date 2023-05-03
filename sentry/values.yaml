@@ -991,6 +991,12 @@ kafka:
     ports:
       client: 9092
 
+  kraft:
+    enabled: false
+
+  zookeeper:
+    enabled: true
+
   ## Use this to enable an extra service account
   # serviceAccount:
   #   create: false
