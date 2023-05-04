@@ -14,6 +14,14 @@ Big thanks to the maintainers of the [deprecated chart](https://github.com/helm/
 
 For now the full list of values is not documented but you can get inspired by the values.yaml specific to each directory.
 
+
+## Upgrading from 17.x.x version of this Chart to 18.x.x
+
+If Kafka is complaining about unknown or missing topic, please connect to kafka-0 and run 
+
+`/opt/bitnami/kafka/bin/kafka-topics.sh --create --topic ingest-replay-recordings --bootstrap-server localhost:9092`
+
+
 ## Upgrading from 16.x.x version of this Chart to 17.x.x
 
 Sentry version from 22.10.0 onwards should be using chart 17.x.x
