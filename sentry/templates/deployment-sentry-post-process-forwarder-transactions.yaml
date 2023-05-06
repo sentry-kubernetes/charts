@@ -76,8 +76,6 @@ spec:
         args:
           - "run"
           - "post-process-forwarder"
-          - "--commit-batch-size"
-          - "{{ default "1" .Values.sentry.postProcessForwardTransactions.commitBatchSize }}"
           - "--entity"
           - "transactions"
           - "--commit-log-topic=snuba-transactions-commit-log"
