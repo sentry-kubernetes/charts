@@ -71,8 +71,6 @@ spec:
           - "query-subscription-consumer"
           - "--topic"
           - "transactions-subscription-results"
-          - "--commit-batch-size"
-          - "{{ default "1" .Values.sentry.subscriptionConsumerEvents.commitBatchSize }}"
         env:
 {{ include "sentry.env" . | indent 8 }}
 {{- if .Values.sentry.subscriptionConsumerTransactions.env }}
