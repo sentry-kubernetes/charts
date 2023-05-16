@@ -135,6 +135,12 @@ data:
     from sentry.conf.server import *  # NOQA
     from distutils.util import strtobool
 
+    BYTE_MULTIPLIER = 1024
+    UNITS = ("K", "M", "G")
+    def unit_text_to_bytes(text):
+        unit = text[-1].upper()
+        power = UNITS.index(unit) + 1
+        return float(text[:-1])*(BYTE_MULTIPLIER**power)
 
     {{- if .Values.sourcemaps.enabled }}
     CACHES = {
@@ -142,7 +148,11 @@ data:
             "BACKEND": "django.core.cache.backends.memcached.MemcachedCache",
             "LOCATION": [
                 "{{ template "sentry.fullname" . }}-memcached:11211"
-            ]
+            ],
+            "TIMEOUT": 3600,
+            "OPTIONS": {
+                "server_max_value_length": unit_text_to_bytes(env("SENTRY_MAX_EXTERNAL_SOURCEMAP_SIZE", "1M")),
+            },
         }
     }
     import memcache
@@ -460,7 +470,7 @@ data:
 
     #########################
     # Bitbucket Integration #
-    ########################
+    #########################
 
     # BITBUCKET_CONSUMER_KEY = 'YOUR_BITBUCKET_CONSUMER_KEY'
     # BITBUCKET_CONSUMER_SECRET = 'YOUR_BITBUCKET_CONSUMER_SECRET'
@@ -470,6 +480,14 @@ data:
     #########
     SENTRY_RELAY_WHITELIST_PK = []
     SENTRY_RELAY_OPEN_REGISTRATION = True
+
+    #######################
+    # OpenAi Suggestions #
+    #######################
+    
+    OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "")
+    if OPENAI_API_KEY:
+      SENTRY_FEATURES["organizations:open-ai-suggestion"] = True
 
 {{- if .Values.metrics.enabled }}
     SENTRY_METRICS_BACKEND = 'sentry.metrics.statsd.StatsdMetricsBackend'

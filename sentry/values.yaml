@@ -797,6 +797,10 @@ slack: {}
 #   existingSecret:
 #   Reference -> https://develop.sentry.dev/integrations/slack/
 
+openai: {}
+#   existingSecret: "xxxxx"
+#   existingSecretKey: ""   # by default "api-token"
+
 nginx:
   enabled: true
   containerPort: 8080

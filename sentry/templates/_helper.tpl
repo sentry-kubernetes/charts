@@ -533,4 +533,11 @@ Common Sentry environment variables
       name: {{ .Values.github.existingSecret }}
       key: {{ default "client-secret" .Values.github.existingSecretClientSecretKey }}
 {{- end }}
+{{- if .Values.openai.existingSecret }}
+- name: OPENAI_API_KEY
+  valueFrom:
+    secretKeyRef:
+      name: {{ .Values.openai.existingSecret }}
+      key: {{ default "api-token" .Values.openai.existingSecretKey }}
+{{- end }}
 {{- end -}}
