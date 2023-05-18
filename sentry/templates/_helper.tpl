@@ -36,7 +36,7 @@
 {{- define "symbolicator.image" -}}
 {{- default "getsentry/symbolicator" .Values.images.symbolicator.repository -}}
 :
-{{- .Values.images.symbolicator.tag -}}
+{{- default .Chart.AppVersion .Values.images.symbolicator.tag -}}
 {{- end -}}
 
 {{- define "dbCheck.image" -}}
@@ -214,7 +214,7 @@ Set postgres port
 */}}
 {{- define "sentry.postgresql.port" -}}
 {{- if .Values.postgresql.enabled -}}
-{{- default 5432 .Values.postgresql.service.port }}
+{{- default 5432 .Values.postgresql.primary.service.ports.postgresql }}
 {{- else -}}
 {{- required "A valid .Values.externalPostgresql.port is required" .Values.externalPostgresql.port -}}
 {{- end -}}
@@ -469,7 +469,7 @@ Common Sentry environment variables
   valueFrom:
     secretKeyRef:
       name: {{ default (include "sentry.postgresql.fullname" .) .Values.postgresql.existingSecret }}
-      key: {{ default "postgresql-password" .Values.postgresql.existingSecretKey }}
+      key: {{ default "postgres-password" .Values.postgresql.existingSecretKey }}
 {{- else if .Values.externalPostgresql.password }}
 - name: POSTGRES_PASSWORD
   value: {{ .Values.externalPostgresql.password | quote }}
@@ -532,5 +532,12 @@ Common Sentry environment variables
     secretKeyRef:
       name: {{ .Values.github.existingSecret }}
       key: {{ default "client-secret" .Values.github.existingSecretClientSecretKey }}
+{{- end }}
+{{- if .Values.openai.existingSecret }}
+- name: OPENAI_API_KEY
+  valueFrom:
+    secretKeyRef:
+      name: {{ .Values.openai.existingSecret }}
+      key: {{ default "api-token" .Values.openai.existingSecretKey }}
 {{- end }}
 {{- end -}}

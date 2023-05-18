@@ -35,7 +35,7 @@ images:
     imagePullSecrets: []
   symbolicator:
     # repository: getsentry/symbolicator
-    tag: 0.6.0
+    # tag: Chart.AppVersion
     # pullPolicy: IfNotPresent
     imagePullSecrets: []
 
@@ -304,7 +304,6 @@ sentry:
     securityContext: {}
     # tolerations: []
     # podLabels: []
-    # commitBatchSize: 1
     sidecars: []
     volumes: []
     # noStrictOffsetReset: false
@@ -333,7 +332,6 @@ sentry:
     securityContext: {}
     # tolerations: []
     # podLabels: []
-    # commitBatchSize: 1
     sidecars: []
     volumes: []
     # noStrictOffsetReset: false
@@ -799,6 +797,10 @@ slack: {}
 #   existingSecret:
 #   Reference -> https://develop.sentry.dev/integrations/slack/
 
+openai: {}
+#   existingSecret: "xxxxx"
+#   existingSecretKey: ""   # by default "api-token"
+
 nginx:
   enabled: true
   containerPort: 8080
@@ -1043,8 +1045,8 @@ externalRedis:
 postgresql:
   enabled: true
   nameOverride: sentry-postgresql
-  postgresqlUsername: postgres
-  postgresqlDatabase: sentry
+  auth:
+    database: sentry
   replication:
     enabled: false
     readReplicas: 2
