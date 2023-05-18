@@ -115,5 +115,13 @@ data:
         {{- if .Values.clickhouse.configmap.interserver_http_host }}
         <interserver_http_host>{{ .Values.clickhouse.configmap.interserver_http_host }}</interserver_http_host>
         {{- end }}
+
+        {{- if .Values.clickhouse.configmap.merge_tree.enabled }}
+        <merge_tree>
+            <parts_to_delay_insert>{{ .Values.clickhouse.configmap.merge_tree.parts_to_delay_insert }}</parts_to_delay_insert> 
+            <parts_to_throw_insert>{{ .Values.clickhouse.configmap.merge_tree.parts_to_throw_insert }}</parts_to_throw_insert> 
+            <max_part_loading_threads>{{ .Values.clickhouse.configmap.merge_tree.max_part_loading_threads }}</max_part_loading_threads> 
+        </merge_tree>
+        {{- end }}
     </yandex>
 {{- end }}
