@@ -1,4 +1,5 @@
 # Sentry 10 helm charts
+[![REUSE status](https://api.reuse.software/badge/github.com/signavio/sentry-charts)](https://api.reuse.software/info/github.com/signavio/sentry-charts)
 
 Sentry is a cross-platform crash reporting and aggregation platform.
 
