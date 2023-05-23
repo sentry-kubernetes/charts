@@ -989,6 +989,10 @@ kafka2:
   # 50 MB
   socketRequestMaxBytes: "50000000"
 
+  provisioning:
+    enabled: true
+    topics:
+      - name: ingest-replay-recordings
 
   ## Use this to enable an extra service account
   # serviceAccount:
