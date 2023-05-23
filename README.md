@@ -20,6 +20,8 @@ If you're using your own kafka (externalKafka), you don't need to change anythin
 
 Kafka chart has been upgraded to the latest available version and uses KRaft instead of Zookeeper. To make the transition easier, we renamed the subchart to "kafka2". If you're overriding the values of the internal Kafka, make sure you change from "kafka" to "kafka2".
 
+Once Sentry is fully updated, you will be able to remove the unused old PVCs (kafka + zookeeper). Be careful not to delete the zookeeper PVCs related to Clickhouse.
+
 
 
 ## Upgrading from 18.x.x version of this Chart to 19.x.x
