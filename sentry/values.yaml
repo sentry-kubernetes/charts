@@ -976,7 +976,7 @@ zookeeper:
 
 # Settings for Kafka.
 # See https://github.com/bitnami/charts/tree/master/bitnami/kafka
-kafka:
+kafka2:
   enabled: true
   replicaCount: 3
   allowPlaintextListener: true
@@ -989,20 +989,11 @@ kafka:
   # 50 MB
   socketRequestMaxBytes: "50000000"
 
-  service:
-    ports:
-      client: 9092
 
   ## Use this to enable an extra service account
   # serviceAccount:
   #   create: false
   #   name: kafka
-
-  ## Use this to enable an extra service account
-  # zookeeper:
-  #   serviceAccount:
-  #     create: false
-  #     name: zookeeper
 
 ## This value is only used when kafka.enabled is set to false
 ##

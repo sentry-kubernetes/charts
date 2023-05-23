@@ -14,6 +14,13 @@ Big thanks to the maintainers of the [deprecated chart](https://github.com/helm/
 
 For now the full list of values is not documented but you can get inspired by the values.yaml specific to each directory.
 
+## Upgrading from 19.x.x version of this Chart to 20.x.x
+
+If you're using your own kafka (externalKafka), you don't need to change anything.
+
+Kafka chart has been upgraded to the latest available version and uses KRaft instead of Zookeeper. To make the transition easier, we renamed the subchart to "kafka2". If you're overriding the values of the internal Kafka, make sure you change from "kafka" to "kafka2".
+
+
 
 ## Upgrading from 18.x.x version of this Chart to 19.x.x
 
