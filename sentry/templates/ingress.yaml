@@ -139,7 +139,7 @@ spec:
               servicePort: {{ template "relay.port" . }}
               {{- end }}
         {{- if eq (default "nginx" .Values.ingress.regexPathStyle) "traefik" }}
-          - path: {{ default "/" .Values.ingress.path }}api/{[1-9][0-9]*}/{(.*)}
+          - path: {{ default "/" .Values.ingress.path }}api/{id:[1-9][0-9]*}/{rest:(.*)}
         {{- else }}
           - path: {{ default "/" .Values.ingress.path }}api/[1-9][0-9]*/(.*)
         {{- end }}
