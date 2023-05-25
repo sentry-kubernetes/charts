@@ -1,10 +1,10 @@
 dependencies:
 - name: memcached
-  repository: https://charts.bitnami.com/bitnami
-  version: 6.1.5
+  repository: oci://registry-1.docker.io/bitnamicharts
+  version: 6.5.2
 - name: redis
-  repository: https://charts.bitnami.com/bitnami
-  version: 16.12.1
+  repository: oci://registry-1.docker.io/bitnamicharts
+  version: 17.11.3
 - name: kafka
   repository: https://raw.githubusercontent.com/bitnami/charts/pre-2022/bitnami
   version: 16.3.2
@@ -15,13 +15,13 @@ dependencies:
   repository: https://raw.githubusercontent.com/bitnami/charts/pre-2022/bitnami
   version: 9.0.0
 - name: rabbitmq
-  repository: https://raw.githubusercontent.com/bitnami/charts/pre-2022/bitnami
-  version: 8.32.2
+  repository: oci://registry-1.docker.io/bitnamicharts
+  version: 11.15.3
 - name: postgresql
   repository: oci://registry-1.docker.io/bitnamicharts
   version: 12.5.1
 - name: nginx
-  repository: https://charts.bitnami.com/bitnami
-  version: 12.0.4
-digest: sha256:f29298bb2da18cd25a6e17ed317381b5434a70f855592e154f0f8488d720cbad
-generated: "2023-05-23T15:49:48.955958+02:00"
+  repository: oci://registry-1.docker.io/bitnamicharts
+  version: 14.2.2
+digest: sha256:54168dcc798193ef587a9e7f63f35fad08c7030853bd79e20effccbcc652ff85
+generated: "2023-05-25T20:54:03.230343+03:00"
