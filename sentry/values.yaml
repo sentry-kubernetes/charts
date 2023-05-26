@@ -994,6 +994,9 @@ kafka2:
     topics:
       - name: ingest-replay-recordings
 
+  zookeeper:
+    enabled: false
+
   ## Use this to enable an extra service account
   # serviceAccount:
   #   create: false
