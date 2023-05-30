@@ -257,6 +257,30 @@ sentry:
     #   - mountPath: /dev/shm
     #     name: dshm
 
+  ingestMonitors:
+    replicas: 1
+    env: []
+    resources: {}
+    affinity: {}
+    nodeSelector: {}
+    securityContext: {}
+    # tolerations: []
+    # podLabels: []
+
+    # it's better to use prometheus adapter and scale based on
+    # the size of the rabbitmq queue
+    autoscaling:
+      enabled: false
+      minReplicas: 1
+      maxReplicas: 3
+      targetCPUUtilizationPercentage: 50
+    sidecars: []
+    volumes: []
+
+    # volumeMounts:
+    #   - mountPath: /dev/shm
+    #     name: dshm
+
   billingMetricsConsumer:
     replicas: 1
     # concurrency: 4

@@ -1,0 +1,135 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "sentry.fullname" . }}-ingest-monitors
+  labels:
+    app: {{ template "sentry.fullname" . }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
+    release: "{{ .Release.Name }}"
+    heritage: "{{ .Release.Service }}"
+    app.kubernetes.io/managed-by: "Helm"
+  {{- if .Values.asHook }}
+  {{- /* Add the Helm annotations so that deployment after asHook from true to false works */}}
+  annotations:
+    meta.helm.sh/release-name: "{{ .Release.Name }}"
+    meta.helm.sh/release-namespace: "{{ .Release.Namespace }}"
+    "helm.sh/hook": "post-install,post-upgrade"
+    "helm.sh/hook-weight": "10"
+  {{- end }}
+spec:
+  revisionHistoryLimit: {{ .Values.revisionHistoryLimit }}
+  selector:
+    matchLabels:
+      app: {{ template "sentry.fullname" . }}
+      release: "{{ .Release.Name }}"
+      role: ingest-monitors
+{{- if not .Values.sentry.ingestMonitors.autoscaling.enabled }}
+  replicas: {{ .Values.sentry.ingestMonitors.replicas }}
+{{- end }}
+  template:
+    metadata:
+      annotations:
+        checksum/configYml: {{ .Values.config.configYml | toYaml | toString | sha256sum }}
+        checksum/sentryConfPy: {{ .Values.config.sentryConfPy | sha256sum }}
+        checksum/config.yaml: {{ include (print $.Template.BasePath "/configmap-sentry.yaml") . | sha256sum }}
+        {{- if .Values.sentry.ingestMonitors.annotations }}
+{{ toYaml .Values.sentry.ingestMonitors.annotations | indent 8 }}
+        {{- end }}
+      labels:
+        app: {{ template "sentry.fullname" . }}
+        release: "{{ .Release.Name }}"
+        role: ingest-monitors
+        {{- if .Values.sentry.ingestMonitors.podLabels }}
+{{ toYaml .Values.sentry.ingestMonitors.podLabels | indent 8 }}
+        {{- end }}
+    spec:
+      affinity:
+      {{- if .Values.sentry.ingestMonitors.affinity }}
+{{ toYaml .Values.sentry.ingestMonitors.affinity | indent 8 }}
+      {{- end }}
+      {{- if .Values.sentry.ingestMonitors.nodeSelector }}
+      nodeSelector:
+{{ toYaml .Values.sentry.ingestMonitors.nodeSelector | indent 8 }}
+      {{- end }}
+      {{- if .Values.sentry.ingestMonitors.tolerations }}
+      tolerations:
+{{ toYaml .Values.sentry.ingestMonitors.tolerations | indent 8 }}
+      {{- end }}
+      {{- if .Values.images.sentry.imagePullSecrets }}
+      imagePullSecrets:
+{{ toYaml .Values.images.sentry.imagePullSecrets | indent 8 }}
+      {{- end }}
+      {{- if .Values.dnsPolicy }}
+      dnsPolicy: {{ .Values.dnsPolicy | quote }}
+      {{- end }}
+      {{- if .Values.dnsConfig }}
+      dnsConfig:
+{{ toYaml .Values.dnsConfig | indent 8 }}
+      {{- end }}
+      {{- if .Values.sentry.ingestMonitors.securityContext }}
+      securityContext:
+{{ toYaml .Values.sentry.ingestMonitors.securityContext | indent 8 }}
+      {{- end }}
+      containers:
+      - name: {{ .Chart.Name }}-ingest-monitors
+        image: "{{ template "sentry.image" . }}"
+        imagePullPolicy: {{ default "IfNotPresent" .Values.images.sentry.pullPolicy }}
+        command: ["sentry"]
+        args:
+          - "run"
+          - "ingest-monitors"
+        env:
+        - name: C_FORCE_ROOT
+          value: "true"
+{{ include "sentry.env" . | indent 8 }}
+{{- if .Values.sentry.ingestMonitors.env }}
+{{ toYaml .Values.sentry.ingestMonitors.env | indent 8 }}
+{{- end }}
+        volumeMounts:
+        - mountPath: /etc/sentry
+          name: config
+          readOnly: true
+        - mountPath: {{ .Values.filestore.filesystem.path }}
+          name: sentry-data
+        {{- if and (eq .Values.filestore.backend "gcs") .Values.filestore.gcs.secretName }}
+        - name: sentry-google-cloud-key
+          mountPath: /var/run/secrets/google
+        {{ end }}
+{{- if .Values.sentry.ingestMonitors.volumeMounts }}
+{{ toYaml .Values.sentry.ingestMonitors.volumeMounts | indent 8 }}
+{{- end }}
+        resources:
+{{ toYaml .Values.sentry.ingestMonitors.resources | indent 12 }}
+{{- if .Values.sentry.ingestMonitors.sidecars }}
+{{ toYaml .Values.sentry.ingestMonitors.sidecars | indent 6 }}
+{{- end }}
+      {{- if .Values.serviceAccount.enabled }}
+      serviceAccountName: {{ .Values.serviceAccount.name }}-ingest-monitors
+      {{- end }}
+      volumes:
+      - name: config
+        configMap:
+          name: {{ template "sentry.fullname" . }}-sentry
+      - name: sentry-data
+      {{- if and (eq .Values.filestore.backend "filesystem") .Values.filestore.filesystem.persistence.enabled (.Values.filestore.filesystem.persistence.persistentWorkers) }}
+      {{- if .Values.filestore.filesystem.persistence.existingClaim }}
+        persistentVolumeClaim:
+          claimName: {{ .Values.filestore.filesystem.persistence.existingClaim }}
+      {{- else }}
+        persistentVolumeClaim:
+          claimName: {{ template "sentry.fullname" . }}-data
+      {{- end }}
+      {{- else }}
+        emptyDir: {}
+      {{ end }}
+      {{- if and (eq .Values.filestore.backend "gcs") .Values.filestore.gcs.secretName }}
+      - name: sentry-google-cloud-key
+        secret:
+          secretName: {{ .Values.filestore.gcs.secretName }}
+      {{ end }}
+{{- if .Values.sentry.ingestMonitors.volumes }}
+{{ toYaml .Values.sentry.ingestMonitors.volumes | indent 6 }}
+{{- end }}
+      {{- if .Values.sentry.ingestMonitors.priorityClassName }}
+      priorityClassName: "{{ .Values.sentry.ingestMonitors.priorityClassName }}"
+      {{- end }}
