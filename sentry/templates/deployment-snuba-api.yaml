@@ -7,116 +7,31 @@ metadata:
     chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
     release: "{{ .Release.Name }}"
     heritage: "{{ .Release.Service }}"
-spec:
-  revisionHistoryLimit: {{ .Values.revisionHistoryLimit }}
-  selector:
-    matchLabels:
-      app: {{ template "sentry.fullname" . }}
-      release: "{{ .Release.Name }}"
-      role: snuba-api
-{{- if not .Values.snuba.api.autoscaling.enabled }}
-  replicas: {{ .Values.snuba.api.replicas }}
+{{- define "snuba.api.container" -}}
+{{- if .Values.snuba.api.command }}
+command:
+{{ toYaml .Values.snuba.api.command | indent 2 }}
 {{- end }}
-  template:
-    metadata:
-      annotations:
-        checksum/snubaSettingsPy: {{ .Values.config.snubaSettingsPy | sha256sum }}
-        checksum/config.yaml: {{ include (print $.Template.BasePath "/configmap-snuba.yaml") . | sha256sum }}
-        {{- if .Values.snuba.api.annotations }}
-{{ toYaml .Values.snuba.api.annotations | indent 8 }}
-        {{- end }}
-      labels:
-        app: {{ template "sentry.fullname" . }}
-        release: "{{ .Release.Name }}"
-        role: snuba-api
-        {{- if .Values.snuba.api.podLabels }}
-{{ toYaml .Values.snuba.api.podLabels | indent 8 }}
-        {{- end }}
-    spec:
-      affinity:
-      {{- if .Values.snuba.api.affinity }}
-{{ toYaml .Values.snuba.api.affinity | indent 8 }}
-      {{- end }}
-      {{- if .Values.snuba.api.nodeSelector }}
-      nodeSelector:
-{{ toYaml .Values.snuba.api.nodeSelector | indent 8 }}
-      {{- end }}
-      {{- if .Values.snuba.api.tolerations }}
-      tolerations:
-{{ toYaml .Values.snuba.api.tolerations | indent 8 }}
-      {{- end }}
-      {{- if .Values.images.snuba.imagePullSecrets }}
-      imagePullSecrets:
-{{ toYaml .Values.images.snuba.imagePullSecrets | indent 8 }}
-      {{- end }}
-      {{- if .Values.dnsPolicy }}
-      dnsPolicy: {{ .Values.dnsPolicy | quote }}
-      {{- end }}
-      {{- if .Values.dnsConfig }}
-      dnsConfig:
-{{ toYaml .Values.dnsConfig | indent 8 }}
-      {{- end }}
-      {{- if .Values.snuba.api.securityContext }}
-      securityContext:
-{{ toYaml .Values.snuba.api.securityContext | indent 8 }}
-      {{- end }}
-      containers:
-      - name: {{ .Chart.Name }}-snuba
-        image: "{{ template "snuba.image" . }}"
-        imagePullPolicy: {{ default "IfNotPresent" .Values.images.snuba.pullPolicy }}
-      {{- if .Values.snuba.api.command }}
-        command:
-{{ toYaml .Values.snuba.api.command | indent 8 }}
-      {{- end }}
-        ports:
-        - containerPort: {{ template "snuba.port" }}
-        env:
-{{ include "sentry.snuba.env" . | indent 8 }}
-{{- if .Values.snuba.api.env }}
-{{ toYaml .Values.snuba.api.env | indent 8 }}
-{{- end }}
-        envFrom:
-        - secretRef:
-            name: {{ template "sentry.fullname" . }}-snuba-env
-        volumeMounts:
-        - mountPath: /etc/snuba
-          name: config
-          readOnly: true
-{{- if .Values.snuba.api.volumeMounts }}
-{{ toYaml .Values.snuba.api.volumeMounts | indent 8 }}
-{{- end }}
-        livenessProbe:
-          failureThreshold: 5
-          httpGet:
-            path: /
-            port: {{ template "snuba.port" }}
-            scheme: HTTP
-          initialDelaySeconds: {{ .Values.snuba.api.probeInitialDelaySeconds }}
-          periodSeconds: 10
-          successThreshold: 1
-          timeoutSeconds: {{ .Values.snuba.api.liveness.timeoutSeconds }}
-        readinessProbe:
-          failureThreshold: 10
-          httpGet:
-            path: /
-            port: {{ template "snuba.port" }}
-            scheme: HTTP
-          initialDelaySeconds: {{ .Values.snuba.api.probeInitialDelaySeconds }}
-          periodSeconds: 10
-          successThreshold: 1
-          timeoutSeconds: {{ .Values.snuba.api.readiness.timeoutSeconds }}
-        resources:
-{{ toYaml .Values.snuba.api.resources | indent 12 }}
-{{- if .Values.snuba.api.sidecars }}
-{{ toYaml .Values.snuba.api.sidecars | indent 6 }}
-{{- end }}
-      {{- if .Values.serviceAccount.enabled }}
-      serviceAccountName: {{ .Values.serviceAccount.name }}-snuba
-      {{- end }}
-      volumes:
-        - name: config
-          configMap:
-            name: {{ template "sentry.fullname" . }}-snuba
-{{- if .Values.snuba.api.volumes }}
-{{ toYaml .Values.snuba.api.volumes | indent 8 }}
-{{- end }}
+livenessProbe:
+  failureThreshold: 5
+  httpGet:
+    path: /
+    port: {{ template "snuba.port" }}
+    scheme: HTTP
+  initialDelaySeconds: {{ .Values.snuba.api.probeInitialDelaySeconds }}
+  periodSeconds: 10
+  successThreshold: 1
+  timeoutSeconds: {{ .Values.snuba.api.liveness.timeoutSeconds }}
+readinessProbe:
+  failureThreshold: 10
+  httpGet:
+    path: /
+    port: {{ template "snuba.port" }}
+    scheme: HTTP
+  initialDelaySeconds: {{ .Values.snuba.api.probeInitialDelaySeconds }}
+  periodSeconds: 10
+  successThreshold: 1
+  timeoutSeconds: {{ .Values.snuba.api.readiness.timeoutSeconds }}
+{{- end -}}
+{{- $container := include "snuba.api.container" . }}
+{{- include "snuba.spec" (list . .Values.snuba.api "api" $container) }}

@@ -541,3 +541,107 @@ Common Sentry environment variables
       key: {{ default "api-token" .Values.openai.existingSecretKey }}
 {{- end }}
 {{- end -}}
+
+{{/*
+Common Snuba pod template variables
+*/}}
+{{- define "snuba.spec" -}}
+{{- $ := index . 0 }}
+{{- $arg := index . 1 }}
+{{- $name := index . 2 }}
+{{- $container := index . 3 }}
+spec:
+  revisionHistoryLimit: {{ $.Values.revisionHistoryLimit }}
+  selector:
+    matchLabels:
+      app: {{ template "sentry.fullname" $ }}
+      release: "{{ $.Release.Name }}"
+      role: snuba-{{ $name }}
+{{- if not (and $arg.autoscaling $arg.autoscaling.enabled) }}
+  replicas: {{ $arg.replicas }}
+{{- end }}
+  template:
+    metadata:
+      annotations:
+        checksum/snubaSettingsPy: {{ $.Values.config.snubaSettingsPy | sha256sum }}
+        checksum/config.yaml: {{ include (print $.Template.BasePath "/configmap-snuba.yaml") $ | sha256sum }}
+        {{- if $arg.annotations }}
+{{ toYaml $arg.annotations | indent 8 }}
+        {{- end }}
+      labels:
+        app: {{ template "sentry.fullname" $ }}
+        release: "{{ $.Release.Name }}"
+        role: snuba-{{ $name }}
+        {{- if $arg.podLabels }}
+{{ toYaml $arg.podLabels | indent 8 }}
+        {{- end }}
+    spec:
+      {{- if $arg.affinity }}
+      affinity:
+{{ toYaml $arg.affinity | indent 8 }}
+      {{- end }}
+      {{- if $arg.nodeSelector }}
+      nodeSelector:
+{{ toYaml $arg.nodeSelector | indent 8 }}
+      {{- end }}
+      {{- if $arg.tolerations }}
+      tolerations:
+{{ toYaml $arg.tolerations | indent 8 }}
+      {{- end }}
+      {{- if $.Values.images.snuba.imagePullSecrets }}
+      imagePullSecrets:
+{{ toYaml $.Values.images.snuba.imagePullSecrets | indent 8 }}
+      {{- end }}
+      {{- if $.Values.dnsPolicy }}
+      dnsPolicy: {{ $.Values.dnsPolicy | quote }}
+      {{- end }}
+      {{- if $.Values.dnsConfig }}
+      dnsConfig:
+{{ toYaml $.Values.dnsConfig | indent 8 }}
+      {{- end }}
+      {{- if $arg.securityContext }}
+      securityContext:
+{{ toYaml $arg.securityContext | indent 8 }}
+      {{- end }}
+      {{- if $.Values.serviceAccount.enabled }}
+      serviceAccountName: {{ $.Values.serviceAccount.name }}-snuba
+      {{- end }}
+      volumes:
+        - name: config
+          configMap:
+            name: {{ template "sentry.fullname" $ }}-snuba
+        {{- if $arg.volumes }}
+{{ toYaml $arg.volumes | indent 8 }}
+        {{- end }}
+      containers:
+        - name: {{ $.Chart.Name }}-snuba
+          image: "{{ template "snuba.image" $ }}"
+          imagePullPolicy: {{ default "IfNotPresent" $.Values.images.snuba.pullPolicy }}
+          ports:
+          - containerPort: {{ template "snuba.port" }}
+          env:
+{{ include "sentry.snuba.env" $ | indent 10 }}
+          {{- if $arg.env }}
+{{ toYaml $arg.env | indent 10 }}
+          {{- end }}
+          envFrom:
+          - secretRef:
+              name: {{ template "sentry.fullname" $ }}-snuba-env
+          volumeMounts:
+          - mountPath: /etc/snuba
+            name: config
+            readOnly: true
+          {{- if $arg.volumeMounts }}
+{{ toYaml $arg.volumeMounts | indent 10 }}
+          {{- end }}
+          {{- if $arg.resources }}
+          resources:
+{{ toYaml $arg.resources | indent 12 }}
+          {{- end }}
+          {{- if $container }}
+{{ $container | indent 10 }}
+          {{- end }}
+      {{- if $arg.sidecars }}
+{{ toYaml $arg.sidecars | indent 8 }}
+      {{- end }}
+{{- end -}}
