@@ -9,6 +9,11 @@ jobs:
       - uses: actions/checkout@v2
         with:
           fetch-depth: "0"
+      - uses: d3adb5/helm-unittest-action@v2
+        with:
+          helm-version: v3.8.0
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          charts: sentry
       - name: Set up chart-testing
         uses: helm/chart-testing-action@v2.1.0
       - name: Run chart-testing (list-changed)
@@ -30,11 +35,6 @@ jobs:
             --target-branch=develop \
             --chart-dirs=. \
             --chart-repos=bitnami=https://charts.bitnami.com/bitnami,bitnami-old=https://raw.githubusercontent.com/bitnami/charts/pre-2022/bitnami,sentry-kubernetes=https://sentry-kubernetes.github.io/charts
-      - uses: d3adb5/helm-unittest-action@v2
-        with:
-          helm-version: v3.8.0
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          charts: sentry
      # It would be nice to turn on this testing, but it is hard to get right and
      # rather complex (as well as expensive in terms of runner compute time).
      # Additionally, this is out of scope of fixing the issue brought up in #456
