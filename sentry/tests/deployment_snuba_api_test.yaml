@@ -1,0 +1,135 @@
+suite: test deployment-snuba-api
+templates:
+  - configmap-snuba.yaml
+  - deployment-snuba-api.yaml
+tests:
+  - it: update image
+    template: deployment-snuba-api.yaml
+    set:
+      images.snuba.tag: test
+    asserts:
+      - isKind:
+          of: Deployment
+      - matchRegex:
+          path: metadata.name
+          pattern: -sentry-snuba-api$
+      - equal:
+          path: spec.template.spec.containers[0].image
+          value: getsentry/snuba:test
+  - it: update dnsPolicy
+    template: deployment-snuba-api.yaml
+    set:
+      dnsPolicy: test
+    asserts:
+      - isKind:
+          of: Deployment
+      - matchRegex:
+          path: metadata.name
+          pattern: -sentry-snuba-api$
+      - equal:
+          path: spec.template.spec.dnsPolicy
+          value: test
+  - it: update revisionHistoryLimit
+    template: deployment-snuba-api.yaml
+    set:
+      revisionHistoryLimit: 3
+    asserts:
+      - isKind:
+          of: Deployment
+      - matchRegex:
+          path: metadata.name
+          pattern: -sentry-snuba-api$
+      - equal:
+          path: spec.revisionHistoryLimit
+          value: 3
+  - it: set replicas
+    template: deployment-snuba-api.yaml
+    set:
+      snuba.api.replicas: 5
+    asserts:
+      - isKind:
+          of: Deployment
+      - matchRegex:
+          path: metadata.name
+          pattern: -sentry-snuba-api$
+      - equal:
+          path: spec.replicas
+          value: 5
+  - it: set role label
+    template: deployment-snuba-api.yaml
+    asserts:
+      - isKind:
+          of: Deployment
+      - matchRegex:
+          path: metadata.name
+          pattern: -sentry-snuba-api$
+      - equal:
+          path: spec.template.metadata.labels.role
+          value: snuba-api
+      - equal:
+          path: spec.selector.matchLabels.role
+          value: snuba-api
+  - it: set podlabels
+    template: deployment-snuba-api.yaml
+    set:
+      snuba.api.podLabels:
+        test: test
+    asserts:
+      - isKind:
+          of: Deployment
+      - matchRegex:
+          path: metadata.name
+          pattern: -sentry-snuba-api$
+      - equal:
+          path: spec.template.metadata.labels.test
+          value: test
+  - it: set sidecars
+    template: deployment-snuba-api.yaml
+    set:
+      snuba.api.sidecars:
+        - name: test
+          image: nginx:latest
+    asserts:
+      - isKind:
+          of: Deployment
+      - matchRegex:
+          path: metadata.name
+          pattern: -sentry-snuba-api$
+      - equal:
+          path: spec.template.spec.containers[1].image
+          value: nginx:latest
+  - it: set resources
+    template: deployment-snuba-api.yaml
+    set:
+      snuba.api.resources:
+        limits:
+          memory: 64Mi
+    asserts:
+      - isKind:
+          of: Deployment
+      - matchRegex:
+          path: metadata.name
+          pattern: -sentry-snuba-api$
+      - equal:
+          path: spec.template.spec.containers[0].resources.limits.memory
+          value: 64Mi
+  - it: set volumeMounts
+    template: deployment-snuba-api.yaml
+    set:
+      snuba.api.volumeMounts:
+        - mountPath: /etc/bla
+          name: bla
+    asserts:
+      - isKind:
+          of: Deployment
+      - matchRegex:
+          path: metadata.name
+          pattern: -sentry-snuba-api$
+      - equal:
+          path: spec.template.spec.containers[0].volumeMounts[0].name
+          value: config
+      - equal:
+          path: spec.template.spec.containers[0].volumeMounts[1].name
+          value: bla
+          
+          
