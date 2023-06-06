@@ -107,6 +107,10 @@ spec:
           timeoutSeconds: {{ .Values.snuba.api.readiness.timeoutSeconds }}
         resources:
 {{ toYaml .Values.snuba.api.resources | indent 12 }}
+{{- if .Values.snuba.api.containerSecurityContext }}
+        securityContext:
+{{ toYaml .Values.snuba.api.containerSecurityContext | indent 12 }}
+{{- end }}
 {{- if .Values.snuba.api.sidecars }}
 {{ toYaml .Values.snuba.api.sidecars | indent 6 }}
 {{- end }}

@@ -100,6 +100,10 @@ spec:
 {{- end }}
         resources:
 {{ toYaml .Values.sentry.ingestReplayRecordings.resources | indent 12 }}
+{{- if .Values.sentry.ingestReplayRecordings.containerSecurityContext }}
+        securityContext:
+{{ toYaml .Values.sentry.ingestReplayRecordings.containerSecurityContext | indent 12 }}
+{{- end }}
 {{- if .Values.sentry.ingestReplayRecordings.sidecars }}
 {{ toYaml .Values.sentry.ingestReplayRecordings.sidecars | indent 6 }}
 {{- end }}
