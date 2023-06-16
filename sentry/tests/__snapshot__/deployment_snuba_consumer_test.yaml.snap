@@ -1,0 +1,537 @@
+set podlabels:
+  1: |
+    apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      annotations:
+        helm.sh/hook: post-install,post-upgrade
+        helm.sh/hook-weight: "10"
+        meta.helm.sh/release-name: RELEASE-NAME
+        meta.helm.sh/release-namespace: NAMESPACE
+      labels:
+        app: RELEASE-NAME-sentry
+        app.kubernetes.io/managed-by: Helm
+        chart: sentry-19.2.0
+        heritage: Helm
+        release: RELEASE-NAME
+      name: RELEASE-NAME-sentry-snuba-consumer
+    spec:
+      replicas: 1
+      revisionHistoryLimit: 10
+      selector:
+        matchLabels:
+          app: RELEASE-NAME-sentry
+          release: RELEASE-NAME
+          role: snuba-consumer
+      template:
+        metadata:
+          annotations:
+            checksum/config.yaml: 23f36c63e6ee38f6cd97e6889384bb53bc60cbfe742fd1c202f24d275363e850
+            checksum/snubaSettingsPy: d5f85a6a8afbc55eebe23801e1a51a0fb4c0428c9a73ef6708d8dc83e079cd49
+          labels:
+            app: RELEASE-NAME-sentry
+            release: RELEASE-NAME
+            role: snuba-consumer
+            test: test
+        spec:
+          containers:
+            - command:
+                - snuba
+                - consumer
+                - --storage
+                - errors
+                - --auto-offset-reset
+                - earliest
+                - --max-batch-time-ms
+                - "750"
+              env:
+                - name: SNUBA_SETTINGS
+                  value: /etc/snuba/settings.py
+                - name: DEFAULT_BROKERS
+                  value: RELEASE-NAME-kafka:9092
+              envFrom:
+                - secretRef:
+                    name: RELEASE-NAME-sentry-snuba-env
+              image: getsentry/snuba:23.5.0
+              imagePullPolicy: IfNotPresent
+              name: sentry-snuba
+              ports:
+                - containerPort: 1218
+              volumeMounts:
+                - mountPath: /etc/snuba
+                  name: config
+                  readOnly: true
+          volumes:
+            - configMap:
+                name: RELEASE-NAME-sentry-snuba
+              name: config
+set replicas:
+  1: |
+    apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      annotations:
+        helm.sh/hook: post-install,post-upgrade
+        helm.sh/hook-weight: "10"
+        meta.helm.sh/release-name: RELEASE-NAME
+        meta.helm.sh/release-namespace: NAMESPACE
+      labels:
+        app: RELEASE-NAME-sentry
+        app.kubernetes.io/managed-by: Helm
+        chart: sentry-19.2.0
+        heritage: Helm
+        release: RELEASE-NAME
+      name: RELEASE-NAME-sentry-snuba-consumer
+    spec:
+      replicas: 5
+      revisionHistoryLimit: 10
+      selector:
+        matchLabels:
+          app: RELEASE-NAME-sentry
+          release: RELEASE-NAME
+          role: snuba-consumer
+      template:
+        metadata:
+          annotations:
+            checksum/config.yaml: 23f36c63e6ee38f6cd97e6889384bb53bc60cbfe742fd1c202f24d275363e850
+            checksum/snubaSettingsPy: d5f85a6a8afbc55eebe23801e1a51a0fb4c0428c9a73ef6708d8dc83e079cd49
+          labels:
+            app: RELEASE-NAME-sentry
+            release: RELEASE-NAME
+            role: snuba-consumer
+        spec:
+          containers:
+            - command:
+                - snuba
+                - consumer
+                - --storage
+                - errors
+                - --auto-offset-reset
+                - earliest
+                - --max-batch-time-ms
+                - "750"
+              env:
+                - name: SNUBA_SETTINGS
+                  value: /etc/snuba/settings.py
+                - name: DEFAULT_BROKERS
+                  value: RELEASE-NAME-kafka:9092
+              envFrom:
+                - secretRef:
+                    name: RELEASE-NAME-sentry-snuba-env
+              image: getsentry/snuba:23.5.0
+              imagePullPolicy: IfNotPresent
+              name: sentry-snuba
+              ports:
+                - containerPort: 1218
+              volumeMounts:
+                - mountPath: /etc/snuba
+                  name: config
+                  readOnly: true
+          volumes:
+            - configMap:
+                name: RELEASE-NAME-sentry-snuba
+              name: config
+set resources:
+  1: |
+    apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      annotations:
+        helm.sh/hook: post-install,post-upgrade
+        helm.sh/hook-weight: "10"
+        meta.helm.sh/release-name: RELEASE-NAME
+        meta.helm.sh/release-namespace: NAMESPACE
+      labels:
+        app: RELEASE-NAME-sentry
+        app.kubernetes.io/managed-by: Helm
+        chart: sentry-19.2.0
+        heritage: Helm
+        release: RELEASE-NAME
+      name: RELEASE-NAME-sentry-snuba-consumer
+    spec:
+      replicas: 1
+      revisionHistoryLimit: 10
+      selector:
+        matchLabels:
+          app: RELEASE-NAME-sentry
+          release: RELEASE-NAME
+          role: snuba-consumer
+      template:
+        metadata:
+          annotations:
+            checksum/config.yaml: 23f36c63e6ee38f6cd97e6889384bb53bc60cbfe742fd1c202f24d275363e850
+            checksum/snubaSettingsPy: d5f85a6a8afbc55eebe23801e1a51a0fb4c0428c9a73ef6708d8dc83e079cd49
+          labels:
+            app: RELEASE-NAME-sentry
+            release: RELEASE-NAME
+            role: snuba-consumer
+        spec:
+          containers:
+            - command:
+                - snuba
+                - consumer
+                - --storage
+                - errors
+                - --auto-offset-reset
+                - earliest
+                - --max-batch-time-ms
+                - "750"
+              env:
+                - name: SNUBA_SETTINGS
+                  value: /etc/snuba/settings.py
+                - name: DEFAULT_BROKERS
+                  value: RELEASE-NAME-kafka:9092
+              envFrom:
+                - secretRef:
+                    name: RELEASE-NAME-sentry-snuba-env
+              image: getsentry/snuba:23.5.0
+              imagePullPolicy: IfNotPresent
+              name: sentry-snuba
+              ports:
+                - containerPort: 1218
+              resources:
+                limits:
+                  memory: 64Mi
+              volumeMounts:
+                - mountPath: /etc/snuba
+                  name: config
+                  readOnly: true
+          volumes:
+            - configMap:
+                name: RELEASE-NAME-sentry-snuba
+              name: config
+set sidecars:
+  1: |
+    apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      annotations:
+        helm.sh/hook: post-install,post-upgrade
+        helm.sh/hook-weight: "10"
+        meta.helm.sh/release-name: RELEASE-NAME
+        meta.helm.sh/release-namespace: NAMESPACE
+      labels:
+        app: RELEASE-NAME-sentry
+        app.kubernetes.io/managed-by: Helm
+        chart: sentry-19.2.0
+        heritage: Helm
+        release: RELEASE-NAME
+      name: RELEASE-NAME-sentry-snuba-consumer
+    spec:
+      replicas: 1
+      revisionHistoryLimit: 10
+      selector:
+        matchLabels:
+          app: RELEASE-NAME-sentry
+          release: RELEASE-NAME
+          role: snuba-consumer
+      template:
+        metadata:
+          annotations:
+            checksum/config.yaml: 23f36c63e6ee38f6cd97e6889384bb53bc60cbfe742fd1c202f24d275363e850
+            checksum/snubaSettingsPy: d5f85a6a8afbc55eebe23801e1a51a0fb4c0428c9a73ef6708d8dc83e079cd49
+          labels:
+            app: RELEASE-NAME-sentry
+            release: RELEASE-NAME
+            role: snuba-consumer
+        spec:
+          containers:
+            - command:
+                - snuba
+                - consumer
+                - --storage
+                - errors
+                - --auto-offset-reset
+                - earliest
+                - --max-batch-time-ms
+                - "750"
+              env:
+                - name: SNUBA_SETTINGS
+                  value: /etc/snuba/settings.py
+                - name: DEFAULT_BROKERS
+                  value: RELEASE-NAME-kafka:9092
+              envFrom:
+                - secretRef:
+                    name: RELEASE-NAME-sentry-snuba-env
+              image: getsentry/snuba:23.5.0
+              imagePullPolicy: IfNotPresent
+              name: sentry-snuba
+              ports:
+                - containerPort: 1218
+              volumeMounts:
+                - mountPath: /etc/snuba
+                  name: config
+                  readOnly: true
+            - image: nginx:latest
+              name: test
+          volumes:
+            - configMap:
+                name: RELEASE-NAME-sentry-snuba
+              name: config
+set volumeMounts:
+  1: |
+    apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      annotations:
+        helm.sh/hook: post-install,post-upgrade
+        helm.sh/hook-weight: "10"
+        meta.helm.sh/release-name: RELEASE-NAME
+        meta.helm.sh/release-namespace: NAMESPACE
+      labels:
+        app: RELEASE-NAME-sentry
+        app.kubernetes.io/managed-by: Helm
+        chart: sentry-19.2.0
+        heritage: Helm
+        release: RELEASE-NAME
+      name: RELEASE-NAME-sentry-snuba-consumer
+    spec:
+      replicas: 1
+      revisionHistoryLimit: 10
+      selector:
+        matchLabels:
+          app: RELEASE-NAME-sentry
+          release: RELEASE-NAME
+          role: snuba-consumer
+      template:
+        metadata:
+          annotations:
+            checksum/config.yaml: 23f36c63e6ee38f6cd97e6889384bb53bc60cbfe742fd1c202f24d275363e850
+            checksum/snubaSettingsPy: d5f85a6a8afbc55eebe23801e1a51a0fb4c0428c9a73ef6708d8dc83e079cd49
+          labels:
+            app: RELEASE-NAME-sentry
+            release: RELEASE-NAME
+            role: snuba-consumer
+        spec:
+          containers:
+            - command:
+                - snuba
+                - consumer
+                - --storage
+                - errors
+                - --auto-offset-reset
+                - earliest
+                - --max-batch-time-ms
+                - "750"
+              env:
+                - name: SNUBA_SETTINGS
+                  value: /etc/snuba/settings.py
+                - name: DEFAULT_BROKERS
+                  value: RELEASE-NAME-kafka:9092
+              envFrom:
+                - secretRef:
+                    name: RELEASE-NAME-sentry-snuba-env
+              image: getsentry/snuba:23.5.0
+              imagePullPolicy: IfNotPresent
+              name: sentry-snuba
+              ports:
+                - containerPort: 1218
+              volumeMounts:
+                - mountPath: /etc/snuba
+                  name: config
+                  readOnly: true
+                - mountPath: /etc/bla
+                  name: bla
+          volumes:
+            - configMap:
+                name: RELEASE-NAME-sentry-snuba
+              name: config
+update dnsPolicy:
+  1: |
+    apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      annotations:
+        helm.sh/hook: post-install,post-upgrade
+        helm.sh/hook-weight: "10"
+        meta.helm.sh/release-name: RELEASE-NAME
+        meta.helm.sh/release-namespace: NAMESPACE
+      labels:
+        app: RELEASE-NAME-sentry
+        app.kubernetes.io/managed-by: Helm
+        chart: sentry-19.2.0
+        heritage: Helm
+        release: RELEASE-NAME
+      name: RELEASE-NAME-sentry-snuba-consumer
+    spec:
+      replicas: 1
+      revisionHistoryLimit: 10
+      selector:
+        matchLabels:
+          app: RELEASE-NAME-sentry
+          release: RELEASE-NAME
+          role: snuba-consumer
+      template:
+        metadata:
+          annotations:
+            checksum/config.yaml: 23f36c63e6ee38f6cd97e6889384bb53bc60cbfe742fd1c202f24d275363e850
+            checksum/snubaSettingsPy: d5f85a6a8afbc55eebe23801e1a51a0fb4c0428c9a73ef6708d8dc83e079cd49
+          labels:
+            app: RELEASE-NAME-sentry
+            release: RELEASE-NAME
+            role: snuba-consumer
+        spec:
+          containers:
+            - command:
+                - snuba
+                - consumer
+                - --storage
+                - errors
+                - --auto-offset-reset
+                - earliest
+                - --max-batch-time-ms
+                - "750"
+              env:
+                - name: SNUBA_SETTINGS
+                  value: /etc/snuba/settings.py
+                - name: DEFAULT_BROKERS
+                  value: RELEASE-NAME-kafka:9092
+              envFrom:
+                - secretRef:
+                    name: RELEASE-NAME-sentry-snuba-env
+              image: getsentry/snuba:23.5.0
+              imagePullPolicy: IfNotPresent
+              name: sentry-snuba
+              ports:
+                - containerPort: 1218
+              volumeMounts:
+                - mountPath: /etc/snuba
+                  name: config
+                  readOnly: true
+          dnsPolicy: test
+          volumes:
+            - configMap:
+                name: RELEASE-NAME-sentry-snuba
+              name: config
+update image:
+  1: |
+    apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      annotations:
+        helm.sh/hook: post-install,post-upgrade
+        helm.sh/hook-weight: "10"
+        meta.helm.sh/release-name: RELEASE-NAME
+        meta.helm.sh/release-namespace: NAMESPACE
+      labels:
+        app: RELEASE-NAME-sentry
+        app.kubernetes.io/managed-by: Helm
+        chart: sentry-19.2.0
+        heritage: Helm
+        release: RELEASE-NAME
+      name: RELEASE-NAME-sentry-snuba-consumer
+    spec:
+      replicas: 1
+      revisionHistoryLimit: 10
+      selector:
+        matchLabels:
+          app: RELEASE-NAME-sentry
+          release: RELEASE-NAME
+          role: snuba-consumer
+      template:
+        metadata:
+          annotations:
+            checksum/config.yaml: 23f36c63e6ee38f6cd97e6889384bb53bc60cbfe742fd1c202f24d275363e850
+            checksum/snubaSettingsPy: d5f85a6a8afbc55eebe23801e1a51a0fb4c0428c9a73ef6708d8dc83e079cd49
+          labels:
+            app: RELEASE-NAME-sentry
+            release: RELEASE-NAME
+            role: snuba-consumer
+        spec:
+          containers:
+            - command:
+                - snuba
+                - consumer
+                - --storage
+                - errors
+                - --auto-offset-reset
+                - earliest
+                - --max-batch-time-ms
+                - "750"
+              env:
+                - name: SNUBA_SETTINGS
+                  value: /etc/snuba/settings.py
+                - name: DEFAULT_BROKERS
+                  value: RELEASE-NAME-kafka:9092
+              envFrom:
+                - secretRef:
+                    name: RELEASE-NAME-sentry-snuba-env
+              image: getsentry/snuba:test
+              imagePullPolicy: IfNotPresent
+              name: sentry-snuba
+              ports:
+                - containerPort: 1218
+              volumeMounts:
+                - mountPath: /etc/snuba
+                  name: config
+                  readOnly: true
+          volumes:
+            - configMap:
+                name: RELEASE-NAME-sentry-snuba
+              name: config
+update revisionHistoryLimit:
+  1: |
+    apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      annotations:
+        helm.sh/hook: post-install,post-upgrade
+        helm.sh/hook-weight: "10"
+        meta.helm.sh/release-name: RELEASE-NAME
+        meta.helm.sh/release-namespace: NAMESPACE
+      labels:
+        app: RELEASE-NAME-sentry
+        app.kubernetes.io/managed-by: Helm
+        chart: sentry-19.2.0
+        heritage: Helm
+        release: RELEASE-NAME
+      name: RELEASE-NAME-sentry-snuba-consumer
+    spec:
+      replicas: 1
+      revisionHistoryLimit: 3
+      selector:
+        matchLabels:
+          app: RELEASE-NAME-sentry
+          release: RELEASE-NAME
+          role: snuba-consumer
+      template:
+        metadata:
+          annotations:
+            checksum/config.yaml: 23f36c63e6ee38f6cd97e6889384bb53bc60cbfe742fd1c202f24d275363e850
+            checksum/snubaSettingsPy: d5f85a6a8afbc55eebe23801e1a51a0fb4c0428c9a73ef6708d8dc83e079cd49
+          labels:
+            app: RELEASE-NAME-sentry
+            release: RELEASE-NAME
+            role: snuba-consumer
+        spec:
+          containers:
+            - command:
+                - snuba
+                - consumer
+                - --storage
+                - errors
+                - --auto-offset-reset
+                - earliest
+                - --max-batch-time-ms
+                - "750"
+              env:
+                - name: SNUBA_SETTINGS
+                  value: /etc/snuba/settings.py
+                - name: DEFAULT_BROKERS
+                  value: RELEASE-NAME-kafka:9092
+              envFrom:
+                - secretRef:
+                    name: RELEASE-NAME-sentry-snuba-env
+              image: getsentry/snuba:23.5.0
+              imagePullPolicy: IfNotPresent
+              name: sentry-snuba
+              ports:
+                - containerPort: 1218
+              volumeMounts:
+                - mountPath: /etc/snuba
+                  name: config
+                  readOnly: true
+          volumes:
+            - configMap:
+                name: RELEASE-NAME-sentry-snuba
+              name: config

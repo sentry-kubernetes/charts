@@ -1,59 +1,59 @@
-suite: test deployment-snuba-api
+suite: test deployment-snuba-replacer
 templates:
   - configmap-snuba.yaml
-  - deployment-snuba-api.yaml
+  - deployment-snuba-replacer.yaml
 tests:
   - it: update image
-    template: deployment-snuba-api.yaml
+    template: deployment-snuba-replacer.yaml
     set:
       images.snuba.tag: test
     asserts:
       - matchSnapshot: {}
   - it: update dnsPolicy
-    template: deployment-snuba-api.yaml
+    template: deployment-snuba-replacer.yaml
     set:
       dnsPolicy: test
     asserts:
       - matchSnapshot: {}
   - it: update revisionHistoryLimit
-    template: deployment-snuba-api.yaml
+    template: deployment-snuba-replacer.yaml
     set:
       revisionHistoryLimit: 3
     asserts:
       - matchSnapshot: {}
   - it: set replicas
-    template: deployment-snuba-api.yaml
+    template: deployment-snuba-replacer.yaml
     set:
-      snuba.api.replicas: 5
+      snuba.replacer.replicas: 5
     asserts:
       - matchSnapshot: {}
   - it: set podlabels
-    template: deployment-snuba-api.yaml
+    template: deployment-snuba-replacer.yaml
     set:
-      snuba.api.podLabels:
+      snuba.replacer.podLabels:
         test: test
     asserts:
       - matchSnapshot: {}
   - it: set sidecars
-    template: deployment-snuba-api.yaml
+    template: deployment-snuba-replacer.yaml
     set:
-      snuba.api.sidecars:
+      snuba.replacer.sidecars:
         - name: test
           image: nginx:latest
     asserts:
       - matchSnapshot: {}
   - it: set resources
-    template: deployment-snuba-api.yaml
+    template: deployment-snuba-replacer.yaml
     set:
-      snuba.api.resources:
+      snuba.replacer.resources:
         limits:
           memory: 64Mi
     asserts:
       - matchSnapshot: {}
   - it: set volumeMounts
-    template: deployment-snuba-api.yaml
+    template: deployment-snuba-replacer.yaml
     set:
-      snuba.api.volumeMounts:
+      snuba.replacer.volumeMounts:
         - mountPath: /etc/bla
           name: bla
     asserts:
