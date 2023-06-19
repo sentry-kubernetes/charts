@@ -1021,10 +1021,9 @@ kafka:
       - name: ingest-replay-recordings
       - name: profiles
 
-  provisioning:
-    enabled: true
-    topics:
-      - name: ingest-replay-recordings
+  service:
+    ports:
+      client: 9092
 
   ## Use this to enable an extra service account
   # serviceAccount:
@@ -1036,7 +1035,7 @@ kafka:
   #   serviceAccount:
   #     create: false
   #     name: zookeeper
-  
+
 ## This value is only used when kafka.enabled is set to false
 ##
 externalKafka:
