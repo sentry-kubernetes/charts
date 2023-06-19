@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ template "sentry.fullname" . }}-ingest-consumer
+  name: {{ template "sentry.fullname" . }}-ingest-consumer-events
   labels:
     app: {{ template "sentry.fullname" . }}
     chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
@@ -71,14 +71,14 @@ spec:
 {{ toYaml .Values.sentry.ingestConsumer.securityContext | indent 8 }}
       {{- end }}
       containers:
-      - name: {{ .Chart.Name }}-ingest-consumer
+      - name: {{ .Chart.Name }}-ingest-consumer-events
         image: "{{ template "sentry.image" . }}"
         imagePullPolicy: {{ default "IfNotPresent" .Values.images.sentry.pullPolicy }}
         command: ["sentry"]
         args:
           - "run"
           - "ingest-consumer"
-          - "--all-consumer-types"
+          - "--consumer-type=events"
           {{- if .Values.sentry.ingestConsumer.concurrency }}
           - "--concurrency"
           - "{{ .Values.sentry.ingestConsumer.concurrency }}"
@@ -113,7 +113,7 @@ spec:
 {{ toYaml .Values.sentry.ingestConsumer.sidecars | indent 6 }}
 {{- end }}
       {{- if .Values.serviceAccount.enabled }}
-      serviceAccountName: {{ .Values.serviceAccount.name }}-ingest-consumer
+      serviceAccountName: {{ .Values.serviceAccount.name }}-ingest-consumer-events
       {{- end }}
       volumes:
       - name: config
