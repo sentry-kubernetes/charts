@@ -976,7 +976,7 @@ zookeeper:
 
 # Settings for Kafka.
 # See https://github.com/bitnami/charts/tree/master/bitnami/kafka
-kafka2:
+kafka:
   enabled: true
   replicaCount: 3
   allowPlaintextListener: true
@@ -994,14 +994,17 @@ kafka2:
     topics:
       - name: ingest-replay-recordings
 
-  zookeeper:
-    enabled: false
-
   ## Use this to enable an extra service account
   # serviceAccount:
   #   create: false
   #   name: kafka
 
+  ## Use this to enable an extra service account
+  # zookeeper:
+  #   serviceAccount:
+  #     create: false
+  #     name: zookeeper
+  
 ## This value is only used when kafka.enabled is set to false
 ##
 externalKafka:

@@ -106,8 +106,8 @@ spec:
             KAFKA_STATUS=0
             while [ $KAFKA_STATUS -eq 0 ]; do
               KAFKA_STATUS=1
-              {{- if .Values.kafka2.enabled }}
-              KAFKA_REPLICAS={{ .Values.kafka2.replicaCount }}
+              {{- if .Values.kafka.enabled }}
+              KAFKA_REPLICAS={{ .Values.kafka.replicaCount }}
               i=0; while [ $i -lt $KAFKA_REPLICAS ]; do
                 KAFKA_HOST={{ $kafkaHost }}-$i.{{ $kafkaHost }}-headless
                 if ! nc -z "$KAFKA_HOST" {{ $kafkaPort }}; then

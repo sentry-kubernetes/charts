@@ -16,11 +16,10 @@ For now the full list of values is not documented but you can get inspired by th
 
 ## Upgrading from 19.x.x version of this Chart to 20.x.x
 
-If you're using your own kafka (externalKafka), you don't need to change anything.
+If you're using your own kafka (externalKafka), nothing has changed for you.
 
-Kafka chart has been upgraded to the latest available version and uses KRaft instead of Zookeeper. To make the transition easier, we renamed the subchart to "kafka2". If you're overriding the values of the internal Kafka, make sure you change from "kafka" to "kafka2".
+Kafka chart has been upgraded to the latest available version and supports KRaft instead of Zookeeper.
 
-Once Sentry is fully updated, you will be able to remove the unused old PVCs (kafka + zookeeper). Be careful not to delete the zookeeper PVCs related to Clickhouse.
 
 
 

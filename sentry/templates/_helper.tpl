@@ -171,7 +171,7 @@ We truncate at 63 chars because some Kubernetes name fields are limited to this 
 {{- end -}}
 
 {{- define "sentry.kafka.fullname" -}}
-{{- printf "%s-%s" .Release.Name "kafka2" | trunc 63 | trimSuffix "-" -}}
+{{- printf "%s-%s" .Release.Name "kafka" | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 
 {{/*
@@ -372,7 +372,7 @@ Set ClickHouse cluster name
 Set Kafka Confluent host
 */}}
 {{- define "sentry.kafka.host" -}}
-{{- if .Values.kafka2.enabled -}}
+{{- if .Values.kafka.enabled -}}
 {{- template "sentry.kafka.fullname" . -}}
 {{- else if and (.Values.externalKafka) (not (kindIs "slice" .Values.externalKafka)) -}}
 {{ required "A valid .Values.externalKafka.host is required" .Values.externalKafka.host }}
@@ -383,8 +383,8 @@ Set Kafka Confluent host
 Set Kafka Confluent port
 */}}
 {{- define "sentry.kafka.port" -}}
-{{- if and (.Values.kafka2.enabled) (.Values.kafka2.service.ports.client) -}}
-{{- .Values.kafka2.service.ports.client }}
+{{- if and (.Values.kafka.enabled) (.Values.kafka.service.ports.client) -}}
+{{- .Values.kafka.service.ports.client }}
 {{- else if and (.Values.externalKafka) (not (kindIs "slice" .Values.externalKafka)) -}}
 {{ required "A valid .Values.externalKafka.port is required" .Values.externalKafka.port }}
 {{- end -}}
@@ -394,7 +394,7 @@ Set Kafka Confluent port
 Set Kafka bootstrap servers string
 */}}
 {{- define "sentry.kafka.bootstrap_servers_string" -}}
-{{- if or (.Values.kafka2.enabled) (not (kindIs "slice" .Values.externalKafka)) -}}
+{{- if or (.Values.kafka.enabled) (not (kindIs "slice" .Values.externalKafka)) -}}
 {{ printf "%s:%s" (include "sentry.kafka.host" .) (include "sentry.kafka.port" .) }}
 {{- else -}}
 {{- range $index, $elem := .Values.externalKafka -}}
