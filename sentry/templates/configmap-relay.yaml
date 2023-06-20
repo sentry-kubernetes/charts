@@ -1,6 +1,8 @@
-{{- $redisHost := include "sentry.redis.host" . -}}
-{{- $redisPort := include "sentry.redis.port" . -}}
-{{- $redisPass := include "sentry.redis.password" . -}}
+{{- $redisHost   := include "sentry.redis.host" . -}}
+{{- $redisPort   := include "sentry.redis.port" . -}}
+{{- $redisPass   := include "sentry.redis.password" . -}}
+{{- $redisDb     := include "sentry.redis.db" . -}}
+{{- $redisProto  := ternary "rediss" "redis" (eq (include "sentry.redis.ssl" .) "true")  -}}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -32,11 +34,12 @@ data:
         - name: "message.max.bytes"
           value: 50000000  # 50MB or bust
 
-      {{- if $redisPass }}
-      redis: "redis://:{{ $redisPass }}@{{ $redisHost }}:{{ $redisPort }}"
+      {{- if $redisPass }}    
+      redis: "{{ $redisProto }}://{{ $redisPass }}@{{ $redisHost }}:{{ $redisPort }}/{{ $redisDb }}"
       {{- else }}
-      redis: "redis://{{ $redisHost }}:{{ $redisPort }}"
+      redis: "{{ $redisProto }}://{{ $redisHost }}:{{ $redisPort }}/{{ $redisDb }}"
       {{- end }}
+
       topics:
         metrics_transactions: ingest-performance-metrics
         metrics_sessions: ingest-metrics
