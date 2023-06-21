@@ -37,8 +37,8 @@ data:
             <{{ include "clickhouse.fullname" . }}>
             {{- range untilStep 0 (int .Values.clickhouse.replicas) 1 }}
                 <shard>
+                    <internal_replication>{{ $.Values.clickhouse.configmap.remote_servers.internal_replication | default "false" }}</internal_replication>
                     <replica>
-                        <internal_replication>{{ $.Values.clickhouse.configmap.remote_servers.internal_replication | default "false" }}</internal_replication>
                         <host>{{ include "clickhouse.fullname" $ }}-{{ . }}.{{ include "clickhouse.fullname" $ }}-headless.{{ $.Release.Namespace }}.svc.{{ $.Values.clusterDomain }}</host>
                         <port>{{ $.Values.clickhouse.tcp_port}}</port>
                       {{- if $.Values.clickhouse.configmap.remote_servers.replica.user }}
