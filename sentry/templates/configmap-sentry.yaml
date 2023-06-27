@@ -31,6 +31,7 @@ data:
     ##########
     # Github #
     ##########
+    
     {{- with .Values.github.appId }}
     github-app.id: {{ . }}
     {{- end }}
@@ -55,6 +56,7 @@ data:
     ##########
     # Google #
     ##########
+    
     {{- if .Values.google.clientId }}
     auth-google.client-id: {{ .Values.google.clientId | quote }}
     auth-google.client-secret: {{ .Values.google.clientSecret | quote }}
@@ -63,28 +65,17 @@ data:
     #########
     # Slack #
     #########
+    
     {{- if and (.Values.slack.clientId) (.Values.slack.clientSecret) (.Values.slack.signingSecret) (not .Values.slack.existingSecret) }}
     slack.client-id: {{ .Values.slack.clientId | quote }}
     slack.client-secret: {{ .Values.slack.clientSecret | quote }}
     slack.signing-secret: {{ .Values.slack.signingSecret | quote }}
     {{ end }}
 
-    #########
-    # Redis #
-    #########
-    redis.clusters:
-      default:
-        hosts:
-          0:
-            host: {{ $redisHost | quote }}
-            port: {{ $redisPort }}
-            {{- if $redisPass }}
-            password: {{ $redisPass | quote }}
-            {{- end }}
-
     ################
     # File storage #
     ################
+    
     # Uploaded media uses these `filestore` settings. The available
     # backends are either `filesystem` or `s3`.
     filestore.backend: {{ .Values.filestore.backend | quote }}
@@ -142,23 +133,6 @@ data:
         power = UNITS.index(unit) + 1
         return float(text[:-1])*(BYTE_MULTIPLIER**power)
 
-    {{- if .Values.sourcemaps.enabled }}
-    CACHES = {
-        "default": {
-            "BACKEND": "django.core.cache.backends.memcached.MemcachedCache",
-            "LOCATION": [
-                "{{ template "sentry.fullname" . }}-memcached:11211"
-            ],
-            "TIMEOUT": 3600,
-            "OPTIONS": {
-                "server_max_value_length": unit_text_to_bytes(env("SENTRY_MAX_EXTERNAL_SOURCEMAP_SIZE", "1M")),
-            },
-        }
-    }
-    import memcache
-    memcache.SERVER_MAX_VALUE_LENGTH = {{ .Values.memcached.maxItemSize }}
-    {{- end }}
-
     DATABASES = {
         "default": {
             "ENGINE": "sentry.db.postgres",
@@ -175,10 +149,6 @@ data:
         }
     }
 
-    {{- if .Values.geodata.path }}
-    GEOIP_PATH_MMDB = {{ .Values.geodata.path | quote }}
-    {{- end }}
-
     # You should not change this setting after your database has been created
     # unless you have altered all schemas first
     SENTRY_USE_BIG_INTS = True
@@ -187,18 +157,26 @@ data:
     # General #
     ###########
 
-
-    secret_key = env('SENTRY_SECRET_KEY')
-    if not secret_key:
-      raise Exception('Error: SENTRY_SECRET_KEY is undefined')
-
-    SENTRY_OPTIONS['system.secret-key'] = secret_key
-
     # Instruct Sentry that this install intends to be run by a single organization
     # and thus various UI optimizations should be enabled.
     SENTRY_SINGLE_ORGANIZATION = {{ if .Values.sentry.singleOrganization }}True{{ else }}False{{ end }}
 
-    SENTRY_OPTIONS["system.event-retention-days"] = int(env('SENTRY_EVENT_RETENTION_DAYS') or {{ .Values.sentry.cleanup.days | quote }})
+    SENTRY_OPTIONS["system.event-retention-days"] = int(
+        env('SENTRY_EVENT_RETENTION_DAYS') or {{ .Values.sentry.cleanup.days | quote }}
+    )
+
+    #########
+    # Redis #
+    #########
+    
+    # Generic Redis configuration used as defaults for various things including:
+    # Buffers, Quotas, TSDB
+
+    SENTRY_OPTIONS["redis.clusters"] = {
+        "default": {
+            "hosts": {0: {"host": {{ $redisHost | quote }}, "password": {{ $redisPass | quote }}, "port": {{ $redisPort }}, "db": "0"}}
+        }
+    }
 
     #########
     # Queue #
@@ -220,16 +198,20 @@ data:
     # Cache #
     #########
 
+    {{- if .Values.sourcemaps.enabled }}
     # Sentry currently utilizes two separate mechanisms. While CACHES is not a
     # requirement, it will optimize several high throughput patterns.
-
-    # CACHES = {
-    #     "default": {
-    #         "BACKEND": "django.core.cache.backends.memcached.MemcachedCache",
-    #         "LOCATION": ["memcached:11211"],
-    #         "TIMEOUT": 3600,
-    #     }
-    # }
+    CACHES = {
+        "default": {
+            "BACKEND": "django.core.cache.backends.memcached.MemcachedCache",
+            "LOCATION": ["{{ template "sentry.fullname" . }}-memcached:11211"],
+            "TIMEOUT": 3600,
+            "OPTIONS": {
+                "server_max_value_length": unit_text_to_bytes(env("SENTRY_MAX_EXTERNAL_SOURCEMAP_SIZE", "1M")),
+            },
+        }
+    }
+    {{- end }}
 
     # A primary cache is required for things such as processing events
     SENTRY_CACHE = "sentry.cache.redis.RedisCache"
@@ -304,35 +286,35 @@ data:
     ##############
 
     SENTRY_WEB_HOST = "0.0.0.0"
-    SENTRY_WEB_PORT = {{ template "sentry.port" }}
-    SENTRY_PUBLIC = {{ .Values.system.public | ternary "True" "False" }}
+    SENTRY_WEB_PORT = 9000
     SENTRY_WEB_OPTIONS = {
         "http": "%s:%s" % (SENTRY_WEB_HOST, SENTRY_WEB_PORT),
         "protocol": "uwsgi",
-        # This is needed to prevent https://git.io/fj7Lw
+        # This is needed in order to prevent https://github.com/getsentry/sentry/blob/c6f9660e37fcd9c1bbda8ff4af1dcfd0442f5155/src/sentry/services/http.py#L70
         "uwsgi-socket": None,
+        "so-keepalive": True,
         # Keep this between 15s-75s as that's what Relay supports
-        "http-keepalive": {{ .Values.config.web.httpKeepalive }},
+        "http-keepalive": 15,
         "http-chunked-input": True,
         # the number of web workers
-        'workers': 3,
-        # Turn off memory reporting
+        "workers": 3,
+        "threads": 4,
         "memory-report": False,
         # Some stuff so uwsgi will cycle workers sensibly
-        'max-requests': 100000,
-        'max-requests-delta': 500,
-        'max-worker-lifetime': 86400,
+        "max-requests": 100000,
+        "max-requests-delta": 500,
+        "max-worker-lifetime": 86400,
         # Duplicate options from sentry default just so we don't get
         # bit by sentry changing a default value that we depend on.
-        'thunder-lock': True,
-        'log-x-forwarded-for': False,
-        'buffer-size': 32768,
-        'limit-post': 209715200,
-        'disable-logging': True,
-        'reload-on-rss': 600,
-        'ignore-sigpipe': True,
-        'ignore-write-errors': True,
-        'disable-write-exception': True,
+        "thunder-lock": True,
+        "log-x-forwarded-for": False,
+        "buffer-size": 32768,
+        "limit-post": 209715200,
+        "disable-logging": True,
+        "reload-on-rss": 600,
+        "ignore-sigpipe": True,
+        "ignore-write-errors": True,
+        "disable-write-exception": True,
     }
 
     ###########
@@ -352,106 +334,39 @@ data:
     ############
     # Features #
     ############
-
-
-    SENTRY_FEATURES = {
-      "auth:register": {{ .Values.auth.register | ternary "True" "False" }}
-    }
+    
     SENTRY_FEATURES["projects:sample-events"] = False
     SENTRY_FEATURES.update(
         {
             feature: True
             for feature in (
-                {{- if not .Values.sentry.singleOrganization }}
-                "organizations:create",
-                {{ end -}}
-
-                {{- if .Values.sentry.features.orgSubdomains }}
+            {{- if .Values.sentry.features.orgSubdomains }}
                 "organizations:org-subdomains",
-                {{ end -}}
-
-                "organizations:advanced-search",
-                "organizations:android-mappings",
-                "organizations:api-keys",
-                "organizations:boolean-search",
-                "organizations:related-events",
-                "organizations:alert-filters",
-                "organizations:custom-symbol-sources",
-                "organizations:dashboards-basic",
-                "organizations:dashboards-edit",
-                "organizations:data-forwarding",
+            {{ end -}}
+            {{- if .Values.sentry.features.vstsLimitedScopes }}
+                "organizations:integrations-vsts-limited-scopes",
+            {{ end -}}
                 "organizations:discover",
-                "organizations:discover-basic",
-                "organizations:discover-query",
-                "organizations:discover-frontend-use-events-endpoint",
-                "organizations:enterprise-perf",
-                "organizations:event-attachments",
                 "organizations:events",
                 "organizations:global-views",
                 "organizations:incidents",
-                "organizations:metric-alert-builder-aggregate",
-                "organizations:metric-alert-gui-filters",
-                "organizations:integrations-event-hooks",
                 "organizations:integrations-issue-basic",
                 "organizations:integrations-issue-sync",
-                "organizations:integrations-alert-rule",
-                "organizations:integrations-chat-unfurl",
-                "organizations:integrations-incident-management",
-                "organizations:integrations-ticket-rules",
-
-                {{- if .Values.sentry.features.vstsLimitedScopes }}
-                "organizations:integrations-vsts-limited-scopes",
-                {{ end -}}
-
-                "organizations:integrations-stacktrace-link",
-                "organizations:internal-catchall",
                 "organizations:invite-members",
-                "organizations:large-debug-files",
-                "organizations:monitors",
-                "organizations:onboarding",
-                "organizations:org-saved-searches",
-                "organizations:performance-view",
-                "organizations:performance-frontend-use-events-endpoint",
-                "organizations:project-detail",
-                "organizations:relay",
-                "organizations:release-performance-views",
-                "organizations:rule-page",
-                "organizations:set-grouping-config",
-                "organizations:custom-event-title",
-                "organizations:slack-migration",
+                "organizations:metric-alert-builder-aggregate",
                 "organizations:sso-basic",
                 "organizations:sso-rippling",
                 "organizations:sso-saml2",
-                "organizations:sso-migration",
-                "organizations:stacktrace-hover-preview",
-                "organizations:symbol-sources",
-                "organizations:transaction-comparison",
-                "organizations:usage-stats-graph",
-                "organizations:inbox",
-                "organizations:unhandled-issue-flag",
-                "organizations:invite-members-rate-limits",
-                "organizations:dashboards-v2",
-                "organizations:reprocessing-v2",
-                "organizations:metrics",
-                "organizations:metrics-extraction",
-                "organizations:transaction-metrics-extraction",
+                "organizations:performance-view",
+                "organizations:advanced-search",
                 "organizations:session-replay",
-
-                "projects:alert-filters",
+                "organizations:profiling",
                 "projects:custom-inbound-filters",
                 "projects:data-forwarding",
                 "projects:discard-groups",
-                "projects:issue-alerts-targeting",
-                "projects:minidump",
-                "projects:rate-limits",
-                "projects:sample-events",
-                "projects:servicehooks",
-                "projects:similarity-view",
-                "projects:similarity-indexing",
-                "projects:similarity-view-v2",
-                "projects:similarity-indexing-v2",
-
                 "projects:plugins",
+                "projects:rate-limits",
+                "projects:servicehooks",
             )
         }
     )
@@ -459,6 +374,7 @@ data:
     #######################
     # Email Configuration #
     #######################
+
     SENTRY_OPTIONS['mail.backend'] = os.getenv("SENTRY_EMAIL_BACKEND", {{ .Values.mail.backend | quote }})
     SENTRY_OPTIONS['mail.use-tls'] = bool(strtobool(os.getenv("SENTRY_EMAIL_USE_TLS", {{ .Values.mail.useTls | quote }})))
     SENTRY_OPTIONS['mail.use-ssl'] = bool(strtobool(os.getenv("SENTRY_EMAIL_USE_SSL", {{ .Values.mail.useSsl | quote }})))
@@ -468,51 +384,76 @@ data:
     SENTRY_OPTIONS['mail.host'] = os.getenv("SENTRY_EMAIL_HOST", {{ .Values.mail.host | quote }})
     SENTRY_OPTIONS['mail.from'] = os.getenv("SENTRY_EMAIL_FROM", {{ .Values.mail.from | quote }})
 
+    #######################
+    # MaxMind Integration #
+    #######################
+
+    {{- if .Values.geodata.path }}
+    GEOIP_PATH_MMDB = {{ .Values.geodata.path | quote }}
+    {{- end }}
+    
     #########################
     # Bitbucket Integration #
     #########################
-
+    
     # BITBUCKET_CONSUMER_KEY = 'YOUR_BITBUCKET_CONSUMER_KEY'
     # BITBUCKET_CONSUMER_SECRET = 'YOUR_BITBUCKET_CONSUMER_SECRET'
 
-    #########
-    # Relay #
-    #########
-    SENTRY_RELAY_WHITELIST_PK = []
-    SENTRY_RELAY_OPEN_REGISTRATION = True
-
-    #######################
-    # OpenAi Suggestions #
-    #######################
+    ##############################################
+    # Suggested Fix Feature / OpenAI Integration #
+    ##############################################
     
+    # See https://docs.sentry.io/product/issues/issue-details/ai-suggested-solution/
+    # for more information about the feature. Make sure the OpenAI's privacy policy is
+    # aligned with your company.
+    
+    # Set the OPENAI_API_KEY on the .env or .env.custom file with a valid
+    # OpenAI API key to turn on the feature.
     OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "")
+    
     if OPENAI_API_KEY:
       SENTRY_FEATURES["organizations:open-ai-suggestion"] = True
+    
+    ##############################################
+    # Content Security Policy settings
+    ##############################################
+    
+    if "csp.middleware.CSPMiddleware" not in MIDDLEWARE:
+        MIDDLEWARE = ("csp.middleware.CSPMiddleware",) + MIDDLEWARE
+    # CSP_REPORT_URI = "https://{your-sentry-installation}/api/{csp-project}/security/?sentry_key={sentry-key}"
+    CSP_REPORT_ONLY = True
+    
+    # optional extra permissions
+    # https://django-csp.readthedocs.io/en/latest/configuration.html
+    # CSP_SCRIPT_SRC += ["example.com"]
 
-{{- if .Values.metrics.enabled }}
+    {{- if .Values.metrics.enabled }}
     SENTRY_METRICS_BACKEND = 'sentry.metrics.statsd.StatsdMetricsBackend'
     SENTRY_METRICS_OPTIONS = {
         'host': '{{ template "sentry.fullname" . }}-metrics',
         'port': 9125,
     }
-{{- end }}
+    {{- end }}
 
-{{- if .Values.slack.existingSecret }}
+    {{- if .Values.slack.existingSecret }}
     #########
-    # SLACK #
+    # Slack #
     #########
+    
     SENTRY_OPTIONS['slack.client-id'] = os.environ.get("SLACK_CLIENT_ID")
     SENTRY_OPTIONS['slack.client-secret'] = os.environ.get("SLACK_CLIENT_SECRET")
     SENTRY_OPTIONS['slack.signing-secret'] = os.environ.get("SLACK_SIGNING_SECRET")
-{{- end }}
+    {{- end }}
 
-{{- if .Values.github.existingSecret }}
+    {{- if .Values.github.existingSecret }}
     ##########
     # Github #
     ##########
+    
     SENTRY_OPTIONS['github-app.private-key'] = os.environ.get("GITHUB_APP_PRIVATE_KEY")
     SENTRY_OPTIONS['github-app.webhook-secret'] = os.environ.get("GITHUB_APP_WEBHOOK_SECRET")
     SENTRY_OPTIONS['github-app.client-id'] = os.environ.get("GITHUB_APP_CLIENT_ID")
     SENTRY_OPTIONS['github-app.client-secret'] = os.environ.get("GITHUB_APP_CLIENT_SECRET")
-{{- end }}
+    {{- end }}
+
 {{ .Values.config.sentryConfPy | indent 4 }}
