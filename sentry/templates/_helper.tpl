@@ -533,6 +533,18 @@ Common Sentry environment variables
       name: {{ .Values.github.existingSecret }}
       key: {{ default "client-secret" .Values.github.existingSecretClientSecretKey }}
 {{- end }}
+{{- if and .Values.google.existingSecret }}
+- name: GOOGLE_AUTH_CLIENT_ID
+  valueFrom:
+    secretKeyRef:
+      name: {{ .Values.google.existingSecret }}
+      key: {{ default "client-id" .Values.google.existingSecretClientIdKey }}
+- name: GOOGLE_AUTH_CLIENT_SECRET
+  valueFrom:
+    secretKeyRef:
+      name: {{ .Values.google.existingSecret }}
+      key: {{ default "client-secret" .Values.google.existingSecretClientSecretKey }}
+{{- end }}
 {{- if .Values.openai.existingSecret }}
 - name: OPENAI_API_KEY
   valueFrom:
