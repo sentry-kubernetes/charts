@@ -28,49 +28,27 @@ data:
       url: "http://{{ template "sentry.fullname" . }}-symbolicator:{{ template "symbolicator.port" }}"
     {{- end }}
 
-    ##########
-    # Github #
-    ##########
+    ###################
+    # System Settings #
+    ###################
     
-    {{- with .Values.github.appId }}
-    github-app.id: {{ . }}
-    {{- end }}
-    {{- with .Values.github.appName }}
-    github-app.name: {{ . | quote }}
-    {{- end }}
-    {{- if not .Values.github.existingSecret }}
-      {{- with .Values.github.privateKey }}
-    github-app.private-key: {{- . | toYaml | indent 4 }}
-      {{- end }}
-      {{- with .Values.github.webhookSecret }}
-    github-app.webhook-secret: {{ . | quote }}
-      {{- end }}
-      {{- with .Values.github.clientId }}
-    github-app.client-id: {{ . | quote }}
-      {{- end }}
-      {{- with .Values.github.clientSecret }}
-    github-app.client-secret: {{ . | quote }}
-      {{- end }}
-    {{- end }}
-
-    ##########
-    # Google #
-    ##########
+    # If this file ever becomes compromised, it's important to generate a new key.
+    # Changing this value will result in all current sessions being invalidated.
+    # A new key can be generated with `$ sentry config generate-secret-key`
+    system.secret-key: env('SENTRY_SECRET_KEY')
     
-    {{- if .Values.google.clientId }}
-    auth-google.client-id: {{ .Values.google.clientId | quote }}
-    auth-google.client-secret: {{ .Values.google.clientSecret | quote }}
-    {{ end }}
-
-    #########
-    # Slack #
-    #########
-    
-    {{- if and (.Values.slack.clientId) (.Values.slack.clientSecret) (.Values.slack.signingSecret) (not .Values.slack.existingSecret) }}
-    slack.client-id: {{ .Values.slack.clientId | quote }}
-    slack.client-secret: {{ .Values.slack.clientSecret | quote }}
-    slack.signing-secret: {{ .Values.slack.signingSecret | quote }}
-    {{ end }}
+    # The ``redis.clusters`` setting is used, unsurprisingly, to configure Redis
+    # clusters. These clusters can be then referred to by name when configuring
+    # backends such as the cache, digests, or TSDB backend.
+    redis.clusters:
+      default:
+        hosts:
+          0:
+            host: {{ $redisHost | quote }}
+            port: {{ $redisPort }}
+            {{- if $redisPass }}
+            password: {{ $redisPass | quote }}
+            {{- end }}
 
     ################
     # File storage #
@@ -117,6 +95,50 @@ data:
       {{- if .Values.filestore.s3.location }}
       location: {{ .Values.filestore.s3.location | quote }}
       {{- end }}
+    {{ end }}
+
+    ######################
+    # GitHub Integration #
+    ######################
+    
+    {{- with .Values.github.appId }}
+    github-app.id: {{ . }}
+    {{- end }}
+    {{- with .Values.github.appName }}
+    github-app.name: {{ . | quote }}
+    {{- end }}
+    {{- if not .Values.github.existingSecret }}
+      {{- with .Values.github.privateKey }}
+    github-app.private-key: {{- . | toYaml | indent 4 }}
+      {{- end }}
+      {{- with .Values.github.webhookSecret }}
+    github-app.webhook-secret: {{ . | quote }}
+      {{- end }}
+      {{- with .Values.github.clientId }}
+    github-app.client-id: {{ . | quote }}
+      {{- end }}
+      {{- with .Values.github.clientSecret }}
+    github-app.client-secret: {{ . | quote }}
+      {{- end }}
+    {{- end }}
+
+    ######################
+    # Google Integration #
+    ######################
+    
+    {{- if .Values.google.clientId }}
+    auth-google.client-id: {{ .Values.google.clientId | quote }}
+    auth-google.client-secret: {{ .Values.google.clientSecret | quote }}
+    {{ end }}
+
+    #####################
+    # Slack Integration #
+    #####################
+    
+    {{- if and (.Values.slack.clientId) (.Values.slack.clientSecret) (.Values.slack.signingSecret) (not .Values.slack.existingSecret) }}
+    slack.client-id: {{ .Values.slack.clientId | quote }}
+    slack.client-secret: {{ .Values.slack.clientSecret | quote }}
+    slack.signing-secret: {{ .Values.slack.signingSecret | quote }}
     {{ end }}
 
     {{- if .Values.config.configYml }}
