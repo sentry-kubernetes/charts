@@ -316,7 +316,7 @@ data:
         "uwsgi-socket": None,
         "so-keepalive": True,
         # Keep this between 15s-75s as that's what Relay supports
-        "http-keepalive": 15,
+        "http-keepalive": {{ .Values.config.web.httpKeepalive }},
         "http-chunked-input": True,
         # the number of web workers
         "workers": 3,
