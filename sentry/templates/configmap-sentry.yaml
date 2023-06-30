@@ -28,50 +28,18 @@ data:
       url: "http://{{ template "sentry.fullname" . }}-symbolicator:{{ template "symbolicator.port" }}"
     {{- end }}
 
-    ##########
-    # Github #
-    ##########
-    {{- with .Values.github.appId }}
-    github-app.id: {{ . }}
-    {{- end }}
-    {{- with .Values.github.appName }}
-    github-app.name: {{ . | quote }}
-    {{- end }}
-    {{- if not .Values.github.existingSecret }}
-      {{- with .Values.github.privateKey }}
-    github-app.private-key: {{- . | toYaml | indent 4 }}
-      {{- end }}
-      {{- with .Values.github.webhookSecret }}
-    github-app.webhook-secret: {{ . | quote }}
-      {{- end }}
-      {{- with .Values.github.clientId }}
-    github-app.client-id: {{ . | quote }}
-      {{- end }}
-      {{- with .Values.github.clientSecret }}
-    github-app.client-secret: {{ . | quote }}
-      {{- end }}
-    {{- end }}
-
-    ##########
-    # Google #
-    ##########
-    {{- if .Values.google.clientId }}
-    auth-google.client-id: {{ .Values.google.clientId | quote }}
-    auth-google.client-secret: {{ .Values.google.clientSecret | quote }}
-    {{ end }}
-
-    #########
-    # Slack #
-    #########
-    {{- if and (.Values.slack.clientId) (.Values.slack.clientSecret) (.Values.slack.signingSecret) (not .Values.slack.existingSecret) }}
-    slack.client-id: {{ .Values.slack.clientId | quote }}
-    slack.client-secret: {{ .Values.slack.clientSecret | quote }}
-    slack.signing-secret: {{ .Values.slack.signingSecret | quote }}
-    {{ end }}
-
-    #########
-    # Redis #
-    #########
+    ###################
+    # System Settings #
+    ###################
+    
+    # If this file ever becomes compromised, it's important to generate a new key.
+    # Changing this value will result in all current sessions being invalidated.
+    # A new key can be generated with `$ sentry config generate-secret-key`
+    system.secret-key: env('SENTRY_SECRET_KEY')
+    
+    # The ``redis.clusters`` setting is used, unsurprisingly, to configure Redis
+    # clusters. These clusters can be then referred to by name when configuring
+    # backends such as the cache, digests, or TSDB backend.
     redis.clusters:
       default:
         hosts:
@@ -85,6 +53,7 @@ data:
     ################
     # File storage #
     ################
+    
     # Uploaded media uses these `filestore` settings. The available
     # backends are either `filesystem` or `s3`.
     filestore.backend: {{ .Values.filestore.backend | quote }}
@@ -126,6 +95,50 @@ data:
       {{- if .Values.filestore.s3.location }}
       location: {{ .Values.filestore.s3.location | quote }}
       {{- end }}
+    {{ end }}
+
+    ######################
+    # GitHub Integration #
+    ######################
+    
+    {{- with .Values.github.appId }}
+    github-app.id: {{ . }}
+    {{- end }}
+    {{- with .Values.github.appName }}
+    github-app.name: {{ . | quote }}
+    {{- end }}
+    {{- if not .Values.github.existingSecret }}
+      {{- with .Values.github.privateKey }}
+    github-app.private-key: {{- . | toYaml | indent 4 }}
+      {{- end }}
+      {{- with .Values.github.webhookSecret }}
+    github-app.webhook-secret: {{ . | quote }}
+      {{- end }}
+      {{- with .Values.github.clientId }}
+    github-app.client-id: {{ . | quote }}
+      {{- end }}
+      {{- with .Values.github.clientSecret }}
+    github-app.client-secret: {{ . | quote }}
+      {{- end }}
+    {{- end }}
+
+    ######################
+    # Google Integration #
+    ######################
+    
+    {{- if .Values.google.clientId }}
+    auth-google.client-id: {{ .Values.google.clientId | quote }}
+    auth-google.client-secret: {{ .Values.google.clientSecret | quote }}
+    {{ end }}
+
+    #####################
+    # Slack Integration #
+    #####################
+    
+    {{- if and (.Values.slack.clientId) (.Values.slack.clientSecret) (.Values.slack.signingSecret) (not .Values.slack.existingSecret) }}
+    slack.client-id: {{ .Values.slack.clientId | quote }}
+    slack.client-secret: {{ .Values.slack.clientSecret | quote }}
+    slack.signing-secret: {{ .Values.slack.signingSecret | quote }}
     {{ end }}
 
     {{- if .Values.config.configYml }}
@@ -186,13 +199,6 @@ data:
     ###########
     # General #
     ###########
-
-
-    secret_key = env('SENTRY_SECRET_KEY')
-    if not secret_key:
-      raise Exception('Error: SENTRY_SECRET_KEY is undefined')
-
-    SENTRY_OPTIONS['system.secret-key'] = secret_key
 
     # Instruct Sentry that this install intends to be run by a single organization
     # and thus various UI optimizations should be enabled.
