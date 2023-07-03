@@ -23,8 +23,8 @@ spec:
       app: {{ template "sentry.fullname" . }}
       release: "{{ .Release.Name }}"
       role: ingest-consumer
-{{- if not .Values.sentry.ingestConsumer.autoscaling.enabled }}
-  replicas: {{ .Values.sentry.ingestConsumer.replicas }}
+{{- if not .Values.sentry.ingestConsumerEvents.autoscaling.enabled }}
+  replicas: {{ .Values.sentry.ingestConsumerEvents.replicas }}
 {{- end }}
   template:
     metadata:
@@ -32,28 +32,28 @@ spec:
         checksum/configYml: {{ .Values.config.configYml | toYaml | toString | sha256sum }}
         checksum/sentryConfPy: {{ .Values.config.sentryConfPy | sha256sum }}
         checksum/config.yaml: {{ include (print $.Template.BasePath "/configmap-sentry.yaml") . | sha256sum }}
-        {{- if .Values.sentry.ingestConsumer.annotations }}
-{{ toYaml .Values.sentry.ingestConsumer.annotations | indent 8 }}
+        {{- if .Values.sentry.ingestConsumerEvents.annotations }}
+{{ toYaml .Values.sentry.ingestConsumerEvents.annotations | indent 8 }}
         {{- end }}
       labels:
         app: {{ template "sentry.fullname" . }}
         release: "{{ .Release.Name }}"
         role: ingest-consumer
-        {{- if .Values.sentry.ingestConsumer.podLabels }}
-{{ toYaml .Values.sentry.ingestConsumer.podLabels | indent 8 }}
+        {{- if .Values.sentry.ingestConsumerEvents.podLabels }}
+{{ toYaml .Values.sentry.ingestConsumerEvents.podLabels | indent 8 }}
         {{- end }}
     spec:
       affinity:
-      {{- if .Values.sentry.ingestConsumer.affinity }}
-{{ toYaml .Values.sentry.ingestConsumer.affinity | indent 8 }}
+      {{- if .Values.sentry.ingestConsumerEvents.affinity }}
+{{ toYaml .Values.sentry.ingestConsumerEvents.affinity | indent 8 }}
       {{- end }}
-      {{- if .Values.sentry.ingestConsumer.nodeSelector }}
+      {{- if .Values.sentry.ingestConsumerEvents.nodeSelector }}
       nodeSelector:
-{{ toYaml .Values.sentry.ingestConsumer.nodeSelector | indent 8 }}
+{{ toYaml .Values.sentry.ingestConsumerEvents.nodeSelector | indent 8 }}
       {{- end }}
-      {{- if .Values.sentry.ingestConsumer.tolerations }}
+      {{- if .Values.sentry.ingestConsumerEvents.tolerations }}
       tolerations:
-{{ toYaml .Values.sentry.ingestConsumer.tolerations | indent 8 }}
+{{ toYaml .Values.sentry.ingestConsumerEvents.tolerations | indent 8 }}
       {{- end }}
       {{- if .Values.images.sentry.imagePullSecrets }}
       imagePullSecrets:
@@ -66,9 +66,9 @@ spec:
       dnsConfig:
 {{ toYaml .Values.dnsConfig | indent 8 }}
       {{- end }}
-      {{- if .Values.sentry.ingestConsumer.securityContext }}
+      {{- if .Values.sentry.ingestConsumerEvents.securityContext }}
       securityContext:
-{{ toYaml .Values.sentry.ingestConsumer.securityContext | indent 8 }}
+{{ toYaml .Values.sentry.ingestConsumerEvents.securityContext | indent 8 }}
       {{- end }}
       containers:
       - name: {{ .Chart.Name }}-ingest-consumer-events
@@ -79,20 +79,20 @@ spec:
           - "run"
           - "ingest-consumer"
           - "--consumer-type=events"
-          {{- if .Values.sentry.ingestConsumer.concurrency }}
+          {{- if .Values.sentry.ingestConsumerEvents.concurrency }}
           - "--concurrency"
-          - "{{ .Values.sentry.ingestConsumer.concurrency }}"
+          - "{{ .Values.sentry.ingestConsumerEvents.concurrency }}"
           {{- end }}
-          {{- if .Values.sentry.ingestConsumer.maxBatchSize }}
+          {{- if .Values.sentry.ingestConsumerEvents.maxBatchSize }}
           - "--max-batch-size"
-          - "{{ .Values.sentry.ingestConsumer.maxBatchSize }}"
+          - "{{ .Values.sentry.ingestConsumerEvents.maxBatchSize }}"
           {{- end }}
         env:
         - name: C_FORCE_ROOT
           value: "true"
 {{ include "sentry.env" . | indent 8 }}
-{{- if .Values.sentry.ingestConsumer.env }}
-{{ toYaml .Values.sentry.ingestConsumer.env | indent 8 }}
+{{- if .Values.sentry.ingestConsumerEvents.env }}
+{{ toYaml .Values.sentry.ingestConsumerEvents.env | indent 8 }}
 {{- end }}
         volumeMounts:
         - mountPath: /etc/sentry
@@ -104,13 +104,13 @@ spec:
         - name: sentry-google-cloud-key
           mountPath: /var/run/secrets/google
         {{ end }}
-{{- if .Values.sentry.ingestConsumer.volumeMounts }}
-{{ toYaml .Values.sentry.ingestConsumer.volumeMounts | indent 8 }}
+{{- if .Values.sentry.ingestConsumerEvents.volumeMounts }}
+{{ toYaml .Values.sentry.ingestConsumerEvents.volumeMounts | indent 8 }}
 {{- end }}
         resources:
-{{ toYaml .Values.sentry.ingestConsumer.resources | indent 12 }}
-{{- if .Values.sentry.ingestConsumer.sidecars }}
-{{ toYaml .Values.sentry.ingestConsumer.sidecars | indent 6 }}
+{{ toYaml .Values.sentry.ingestConsumerEvents.resources | indent 12 }}
+{{- if .Values.sentry.ingestConsumerEvents.sidecars }}
+{{ toYaml .Values.sentry.ingestConsumerEvents.sidecars | indent 6 }}
 {{- end }}
       {{- if .Values.serviceAccount.enabled }}
       serviceAccountName: {{ .Values.serviceAccount.name }}-ingest-consumer-events
@@ -136,9 +136,9 @@ spec:
         secret:
           secretName: {{ .Values.filestore.gcs.secretName }}
       {{ end }}
-{{- if .Values.sentry.ingestConsumer.volumes }}
-{{ toYaml .Values.sentry.ingestConsumer.volumes | indent 6 }}
+{{- if .Values.sentry.ingestConsumerEvents.volumes }}
+{{ toYaml .Values.sentry.ingestConsumerEvents.volumes | indent 6 }}
 {{- end }}
-      {{- if .Values.sentry.ingestConsumer.priorityClassName }}
-      priorityClassName: "{{ .Values.sentry.ingestConsumer.priorityClassName }}"
+      {{- if .Values.sentry.ingestConsumerEvents.priorityClassName }}
+      priorityClassName: "{{ .Values.sentry.ingestConsumerEvents.priorityClassName }}"
       {{- end }}
