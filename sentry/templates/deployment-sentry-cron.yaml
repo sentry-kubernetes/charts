@@ -89,6 +89,10 @@ spec:
 {{- end }}
         resources:
 {{ toYaml .Values.sentry.cron.resources | indent 12 }}
+{{- if .Values.sentry.cron.containerSecurityContext }}
+        securityContext:
+{{ toYaml .Values.sentry.cron.containerSecurityContext | indent 12 }}
+{{- end }}
 {{- if .Values.sentry.cron.sidecars }}
 {{ toYaml .Values.sentry.cron.sidecars | indent 6 }}
 {{- end }}

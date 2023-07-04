@@ -98,6 +98,10 @@ spec:
 {{- end }}
         resources:
 {{ toYaml .Values.metrics.resources | indent 10 }}
+{{- if .Values.metrics.containerSecurityContext }}
+        securityContext:
+{{ toYaml .Values.metrics.containerSecurityContext | indent 10 }}
+{{- end }}
 {{- if .Values.metrics.volumes }}
       volumes:
 {{ toYaml .Values.metrics.volumes | indent 6 }}
