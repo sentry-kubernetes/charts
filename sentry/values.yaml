@@ -155,7 +155,58 @@ sentry:
     volumes: []
     volumeMounts: []
 
-  ingestConsumer:
+  ingestConsumerEvents:
+    replicas: 1
+    # concurrency: 4
+    env: []
+    resources: {}
+    affinity: {}
+    nodeSelector: {}
+    securityContext: {}
+    # tolerations: []
+    # podLabels: []
+    # maxBatchSize: ""
+
+    # it's better to use prometheus adapter and scale based on
+    # the size of the rabbitmq queue
+    autoscaling:
+      enabled: false
+      minReplicas: 1
+      maxReplicas: 3
+      targetCPUUtilizationPercentage: 50
+    sidecars: []
+    volumes: []
+
+    # volumeMounts:
+    #   - mountPath: /dev/shm
+    #     name: dshm
+
+  ingestConsumerTransactions:
+    replicas: 1
+    # concurrency: 4
+    env: []
+    resources: {}
+    affinity: {}
+    nodeSelector: {}
+    securityContext: {}
+    # tolerations: []
+    # podLabels: []
+    # maxBatchSize: ""
+
+    # it's better to use prometheus adapter and scale based on
+    # the size of the rabbitmq queue
+    autoscaling:
+      enabled: false
+      minReplicas: 1
+      maxReplicas: 3
+      targetCPUUtilizationPercentage: 50
+    sidecars: []
+    volumes: []
+
+    # volumeMounts:
+    #   - mountPath: /dev/shm
+    #     name: dshm
+  ingestConsumerAttachments:
     replicas: 1
     # concurrency: 4
     env: []

@@ -1,0 +1,14 @@
+{{- if .Values.sentry.ingestConsumerEvents.autoscaling.enabled }}
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ template "sentry.fullname" . }}-sentry-ingest-consumer-events
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ template "sentry.fullname" . }}-ingest-consumer
+  minReplicas: {{ .Values.sentry.ingestConsumerEvents.autoscaling.minReplicas }}
+  maxReplicas: {{ .Values.sentry.ingestConsumerEvents.autoscaling.maxReplicas }}
+  targetCPUUtilizationPercentage: {{ .Values.sentry.ingestConsumerEvents.autoscaling.targetCPUUtilizationPercentage }}
+{{- end }}
