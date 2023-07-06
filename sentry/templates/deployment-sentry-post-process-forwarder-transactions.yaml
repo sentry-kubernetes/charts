@@ -101,6 +101,10 @@ spec:
 {{- end }}
         resources:
 {{ toYaml .Values.sentry.postProcessForwardTransactions.resources | indent 12 }}
+{{- if .Values.sentry.postProcessForwardTransactions.containerSecurityContext }}
+        securityContext:
+{{ toYaml .Values.sentry.postProcessForwardTransactions.containerSecurityContext | indent 12 }}
+{{- end }}
 {{- if .Values.sentry.postProcessForwardTransactions.sidecars }}
 {{ toYaml .Values.sentry.postProcessForwardTransactions.sidecars | indent 6 }}
 {{- end }}

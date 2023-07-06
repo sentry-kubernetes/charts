@@ -109,6 +109,10 @@ spec:
 {{- end }}
         resources:
 {{ toYaml .Values.sentry.ingestConsumer.resources | indent 12 }}
+{{- if .Values.sentry.ingestConsumer.containerSecurityContext }}
+        securityContext:
+{{ toYaml .Values.sentry.ingestConsumer.containerSecurityContext | indent 12 }}
+{{- end }}
 {{- if .Values.sentry.ingestConsumer.sidecars }}
 {{ toYaml .Values.sentry.ingestConsumer.sidecars | indent 6 }}
 {{- end }}

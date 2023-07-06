@@ -100,6 +100,10 @@ spec:
 {{- end }}
         resources:
 {{ toYaml .Values.sentry.ingestMonitors.resources | indent 12 }}
+{{- if .Values.sentry.ingestMonitors.containerSecurityContext }}
+        securityContext:
+{{ toYaml .Values.sentry.ingestMonitors.containerSecurityContext | indent 12 }}
+{{- end }}
 {{- if .Values.sentry.ingestMonitors.sidecars }}
 {{ toYaml .Values.sentry.ingestMonitors.sidecars | indent 6 }}
 {{- end }}
