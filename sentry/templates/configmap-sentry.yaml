@@ -357,17 +357,15 @@ data:
     # Features #
     ############
     
+    SENTRY_FEATURES["auth:register"] = {{ .Values.auth.register | ternary "True" "False" }}
     SENTRY_FEATURES["projects:sample-events"] = False
     SENTRY_FEATURES.update(
         {
             feature: True
             for feature in (
-            {{- if .Values.sentry.features.orgSubdomains }}
-                "organizations:org-subdomains",
-            {{ end -}}
-            {{- if .Values.sentry.features.vstsLimitedScopes }}
-                "organizations:integrations-vsts-limited-scopes",
-            {{ end -}}
+                {{- if not .Values.sentry.singleOrganization }}
+                "organizations:create",
+                {{ end -}}
                 "organizations:discover",
                 "organizations:events",
                 "organizations:global-views",
@@ -376,6 +374,20 @@ data:
                 "organizations:integrations-issue-sync",
                 "organizations:invite-members",
                 "organizations:metric-alert-builder-aggregate",
+                {{- if .Values.sentry.features.vstsLimitedScopes }}
+                "organizations:integrations-vsts-limited-scopes",
+                {{ end -}}
+                "organizations:invite-members",
+                "organizations:metric-alert-builder-aggregate",
+
+                # Leave these per discussion in https://github.com/sentry-kubernetes/charts/pull/800
+                "organizations:metrics",
+                "organizations:metrics-extraction",
+                "organizations:transaction-metrics-extraction",
+                
+                {{- if .Values.sentry.features.orgSubdomains }}
+                "organizations:org-subdomains",
+                {{ end -}}
                 "organizations:sso-basic",
                 "organizations:sso-rippling",
                 "organizations:sso-saml2",
