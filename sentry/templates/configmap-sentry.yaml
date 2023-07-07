@@ -360,9 +360,7 @@ data:
     ############
 
 
-    SENTRY_FEATURES = {
-      "auth:register": {{ .Values.auth.register | ternary "True" "False" }}
-    }
+    SENTRY_FEATURES["auth:register"] = {{ .Values.auth.register | ternary "True" "False" }}
     SENTRY_FEATURES["projects:sample-events"] = False
     SENTRY_FEATURES.update(
         {
@@ -371,93 +369,39 @@ data:
                 {{- if not .Values.sentry.singleOrganization }}
                 "organizations:create",
                 {{ end -}}
-
-                {{- if .Values.sentry.features.orgSubdomains }}
-                "organizations:org-subdomains",
-                {{ end -}}
-
-                "organizations:advanced-search",
-                "organizations:android-mappings",
-                "organizations:api-keys",
-                "organizations:boolean-search",
-                "organizations:related-events",
-                "organizations:alert-filters",
-                "organizations:custom-symbol-sources",
-                "organizations:dashboards-basic",
-                "organizations:dashboards-edit",
-                "organizations:data-forwarding",
                 "organizations:discover",
-                "organizations:discover-basic",
-                "organizations:discover-query",
-                "organizations:discover-frontend-use-events-endpoint",
-                "organizations:enterprise-perf",
-                "organizations:event-attachments",
                 "organizations:events",
                 "organizations:global-views",
                 "organizations:incidents",
-                "organizations:metric-alert-builder-aggregate",
-                "organizations:metric-alert-gui-filters",
-                "organizations:integrations-event-hooks",
                 "organizations:integrations-issue-basic",
                 "organizations:integrations-issue-sync",
-                "organizations:integrations-alert-rule",
-                "organizations:integrations-chat-unfurl",
-                "organizations:integrations-incident-management",
-                "organizations:integrations-ticket-rules",
-
                 {{- if .Values.sentry.features.vstsLimitedScopes }}
                 "organizations:integrations-vsts-limited-scopes",
                 {{ end -}}
-
-                "organizations:integrations-stacktrace-link",
-                "organizations:internal-catchall",
                 "organizations:invite-members",
-                "organizations:large-debug-files",
-                "organizations:monitors",
-                "organizations:onboarding",
-                "organizations:org-saved-searches",
-                "organizations:performance-view",
-                "organizations:performance-frontend-use-events-endpoint",
-                "organizations:project-detail",
-                "organizations:relay",
-                "organizations:release-performance-views",
-                "organizations:rule-page",
-                "organizations:set-grouping-config",
-                "organizations:custom-event-title",
-                "organizations:slack-migration",
-                "organizations:sso-basic",
-                "organizations:sso-rippling",
-                "organizations:sso-saml2",
-                "organizations:sso-migration",
-                "organizations:stacktrace-hover-preview",
-                "organizations:symbol-sources",
-                "organizations:transaction-comparison",
-                "organizations:usage-stats-graph",
-                "organizations:inbox",
-                "organizations:unhandled-issue-flag",
-                "organizations:invite-members-rate-limits",
-                "organizations:dashboards-v2",
-                "organizations:reprocessing-v2",
+                "organizations:metric-alert-builder-aggregate",
+
+                # Leave these per discussion in https://github.com/sentry-kubernetes/charts/pull/800
                 "organizations:metrics",
                 "organizations:metrics-extraction",
                 "organizations:transaction-metrics-extraction",
+                
+                {{- if .Values.sentry.features.orgSubdomains }}
+                "organizations:org-subdomains",
+                {{ end -}}
+                "organizations:sso-basic",
+                "organizations:sso-rippling",
+                "organizations:sso-saml2",
+                "organizations:performance-view",
+                "organizations:advanced-search",
                 "organizations:session-replay",
-
-                "projects:alert-filters",
+                "organizations:profiling",
                 "projects:custom-inbound-filters",
                 "projects:data-forwarding",
                 "projects:discard-groups",
-                "projects:issue-alerts-targeting",
-                "projects:minidump",
-                "projects:rate-limits",
-                "projects:sample-events",
-                "projects:servicehooks",
-                "projects:similarity-view",
-                "projects:similarity-indexing",
-                "projects:similarity-view-v2",
-                "projects:similarity-indexing-v2",
-
                 "projects:plugins",
+                "projects:rate-limits",
+                "projects:servicehooks",
             )
         }
     )
