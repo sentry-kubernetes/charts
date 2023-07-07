@@ -98,6 +98,10 @@ spec:
 {{- end }}
         resources:
 {{ toYaml .Values.sentry.postProcessForwardErrors.resources | indent 12 }}
+{{- if .Values.sentry.postProcessForwardErrors.containerSecurityContext }}
+        securityContext:
+{{ toYaml .Values.sentry.postProcessForwardErrors.containerSecurityContext | indent 12 }}
+{{- end }}
 {{- if .Values.sentry.postProcessForwardErrors.sidecars }}
 {{ toYaml .Values.sentry.postProcessForwardErrors.sidecars | indent 6 }}
 {{- end }}

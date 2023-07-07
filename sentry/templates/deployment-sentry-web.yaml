@@ -122,6 +122,10 @@ spec:
           timeoutSeconds: {{ .Values.sentry.web.probeTimeoutSeconds }}
         resources:
 {{ toYaml .Values.sentry.web.resources | indent 12 }}
+{{- if .Values.sentry.web.containerSecurityContext }}
+        securityContext:
+{{ toYaml .Values.sentry.web.containerSecurityContext | indent 12 }}
+{{- end }}
 {{- if .Values.sentry.web.sidecars }}
 {{ toYaml .Values.sentry.web.sidecars | indent 6 }}
 {{- end }}

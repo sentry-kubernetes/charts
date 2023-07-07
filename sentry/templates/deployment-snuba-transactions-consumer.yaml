@@ -132,6 +132,10 @@ spec:
 {{- end }}
         resources:
 {{ toYaml .Values.snuba.transactionsConsumer.resources | indent 12 }}
+{{- if .Values.snuba.transactionsConsumer.containerSecurityContext }}
+        securityContext:
+{{ toYaml .Values.snuba.transactionsConsumer.containerSecurityContext | indent 12 }}
+{{- end }}
       {{- if .Values.serviceAccount.enabled }}
       serviceAccountName: {{ .Values.serviceAccount.name }}-snuba
       {{- end }}
