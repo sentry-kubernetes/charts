@@ -138,6 +138,7 @@ clickhouse:
   resources: {}
 
   init:
+    enabled: true
     image: "busybox"
     imageVersion: "1.31.0"
     imagePullPolicy: "IfNotPresent"
