@@ -77,6 +77,10 @@ spec:
         resources:
 {{ toYaml .Values.clickhouse.init.resources | indent 10 }}
         {{- end }}
+        {{- with .Values.clickhouse.init.securityContext }}
+        securityContext:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
       containers:
       - name: {{ include "clickhouse.fullname" . }}
         image: {{ .Values.clickhouse.image }}:{{ .Values.clickhouse.imageVersion }}
