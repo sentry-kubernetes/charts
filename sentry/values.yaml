@@ -35,7 +35,7 @@ images:
     imagePullSecrets: []
   symbolicator:
     # repository: getsentry/symbolicator
-    tag: 0.6.0
+    # tag: Chart.AppVersion
     # pullPolicy: IfNotPresent
     imagePullSecrets: []
 
@@ -63,6 +63,7 @@ relay:
   affinity: {}
   nodeSelector: {}
   securityContext: {}
+  containerSecurityContext: {}
   service:
     annotations: {}
   # tolerations: []
@@ -107,6 +108,7 @@ sentry:
     affinity: {}
     nodeSelector: {}
     securityContext: {}
+    containerSecurityContext: {}
     service:
       annotations: {}
     # tolerations: []
@@ -163,6 +165,7 @@ sentry:
     affinity: {}
     nodeSelector: {}
     securityContext: {}
+    containerSecurityContext: {}
     # tolerations: []
     # podLabels: []
     # maxBatchSize: ""
@@ -189,6 +192,7 @@ sentry:
     affinity: {}
     nodeSelector: {}
     securityContext: {}
+    containerSecurityContext: {}
     # tolerations: []
     # podLabels: []
     # maxBatchSize: ""
@@ -215,6 +219,7 @@ sentry:
     affinity: {}
     nodeSelector: {}
     securityContext: {}
+    containerSecurityContext: {}
     # tolerations: []
     # podLabels: []
     # maxBatchSize: ""
@@ -240,6 +245,32 @@ sentry:
     affinity: {}
     nodeSelector: {}
     securityContext: {}
+    containerSecurityContext: {}
+    # tolerations: []
+    # podLabels: []
+
+    # it's better to use prometheus adapter and scale based on
+    # the size of the rabbitmq queue
+    autoscaling:
+      enabled: false
+      minReplicas: 1
+      maxReplicas: 3
+      targetCPUUtilizationPercentage: 50
+    sidecars: []
+    volumes: []
+
+    # volumeMounts:
+    #   - mountPath: /dev/shm
+    #     name: dshm
+
+  ingestMonitors:
+    replicas: 1
+    env: []
+    resources: {}
+    affinity: {}
+    nodeSelector: {}
+    securityContext: {}
+    containerSecurityContext: {}
     # tolerations: []
     # podLabels: []
 
@@ -265,6 +296,7 @@ sentry:
     affinity: {}
     nodeSelector: {}
     securityContext: {}
+    containerSecurityContext: {}
     # tolerations: []
     # podLabels: []
     # maxBatchSize: ""
@@ -302,9 +334,9 @@ sentry:
     affinity: {}
     nodeSelector: {}
     securityContext: {}
+    containerSecurityContext: {}
     # tolerations: []
     # podLabels: []
-    # commitBatchSize: 1
     sidecars: []
     volumes: []
     # noStrictOffsetReset: false
@@ -317,6 +349,7 @@ sentry:
     affinity: {}
     nodeSelector: {}
     securityContext: {}
+    containerSecurityContext: {}
     # tolerations: []
     # podLabels: []
     sidecars: []
@@ -331,9 +364,9 @@ sentry:
     affinity: {}
     nodeSelector: {}
     securityContext: {}
+    containerSecurityContext: {}
     # tolerations: []
     # podLabels: []
-    # commitBatchSize: 1
     sidecars: []
     volumes: []
     # noStrictOffsetReset: false
@@ -346,6 +379,7 @@ sentry:
     affinity: {}
     nodeSelector: {}
     securityContext: {}
+    containerSecurityContext: {}
     # tolerations: []
     # podLabels: []
     sidecars: []
@@ -359,6 +393,7 @@ sentry:
     affinity: {}
     nodeSelector: {}
     securityContext: {}
+    containerSecurityContext: {}
     # tolerations: []
     # podLabels: []
     sidecars: []
@@ -375,6 +410,7 @@ sentry:
     schedule: "0 0 * * *"
     days: 90
     # securityContext: {}
+    # containerSecurityContext: {}
     sidecars: []
     volumes: []
     # volumeMounts: []
@@ -398,6 +434,7 @@ snuba:
     affinity: {}
     nodeSelector: {}
     securityContext: {}
+    containerSecurityContext: {}
     service:
       annotations: {}
     # tolerations: []
@@ -419,6 +456,7 @@ snuba:
     affinity: {}
     nodeSelector: {}
     securityContext: {}
+    containerSecurityContext: {}
     # tolerations: []
     # podLabels: []
     autoOffsetReset: "earliest"
@@ -446,6 +484,7 @@ snuba:
     affinity: {}
     nodeSelector: {}
     securityContext: {}
+    containerSecurityContext: {}
     # tolerations: []
     # podLabels: []
     autoOffsetReset: "earliest"
@@ -473,6 +512,7 @@ snuba:
     affinity: {}
     nodeSelector: {}
     securityContext: {}
+    containerSecurityContext: {}
     # tolerations: []
     # podLabels: []
     autoOffsetReset: "earliest"
@@ -489,6 +529,7 @@ snuba:
     affinity: {}
     nodeSelector: {}
     securityContext: {}
+    containerSecurityContext: {}
     # tolerations: []
     # podLabels: []
     autoOffsetReset: "earliest"
@@ -502,6 +543,7 @@ snuba:
     affinity: {}
     nodeSelector: {}
     securityContext: {}
+    containerSecurityContext: {}
     # tolerations: []
     # podLabels: []
     autoOffsetReset: "earliest"
@@ -515,6 +557,7 @@ snuba:
     affinity: {}
     nodeSelector: {}
     securityContext: {}
+    containerSecurityContext: {}
     # tolerations: []
     # podLabels: []
     # commitBatchSize: 1
@@ -531,6 +574,7 @@ snuba:
     affinity: {}
     nodeSelector: {}
     securityContext: {}
+    containerSecurityContext: {}
     # tolerations: []
     # podLabels: []
     autoOffsetReset: "earliest"
@@ -558,6 +602,7 @@ snuba:
     affinity: {}
     nodeSelector: {}
     securityContext: {}
+    containerSecurityContext: {}
     # tolerations: []
     # podLabels: []
     autoOffsetReset: "earliest"
@@ -585,6 +630,7 @@ snuba:
     affinity: {}
     nodeSelector: {}
     securityContext: {}
+    containerSecurityContext: {}
     # tolerations: []
     # podLabels: []
     autoOffsetReset: "earliest"
@@ -634,6 +680,7 @@ hooks:
     affinity: {}
     nodeSelector: {}
     securityContext: {}
+    containerSecurityContext: {}
     # tolerations: []
     # volumes: []
     # volumeMounts: []
@@ -707,6 +754,7 @@ symbolicator:
     affinity: {}
     nodeSelector: {}
     securityContext: {}
+    containerSecurityContext: {}
     # tolerations: []
     # podLabels: []
     # priorityClassName: "xxx"
@@ -798,6 +846,10 @@ slack: {}
 #   signingSecret:
 #   existingSecret:
 #   Reference -> https://develop.sentry.dev/integrations/slack/
+
+openai: {}
+#   existingSecret: "xxxxx"
+#   existingSecretKey: ""   # by default "api-token"
 
 nginx:
   enabled: true
@@ -904,7 +956,7 @@ config:
 clickhouse:
   enabled: true
   clickhouse:
-    imageVersion: "20.12.8.5"
+    imageVersion: "21.8.13.6"
     configmap:
       remote_servers:
         internal_replication: true
@@ -986,6 +1038,16 @@ kafka:
   maxMessageBytes: "50000000"
   # 50 MB
   socketRequestMaxBytes: "50000000"
+  provisioning:
+    enabled: true
+    topics:
+      - name: ingest-attachments
+      - name: ingest-transactions
+      - name: ingest-events
+      - name: ingest-replay-recordings
+      - name: ingest-metrics
+      - name: ingest-performance-metrics
+      - name: profiles
 
   service:
     ports:
@@ -1049,8 +1111,8 @@ externalRedis:
 postgresql:
   enabled: true
   nameOverride: sentry-postgresql
-  postgresqlUsername: postgres
-  postgresqlDatabase: sentry
+  auth:
+    database: sentry
   replication:
     enabled: false
     readReplicas: 2
@@ -1193,6 +1255,7 @@ metrics:
   tolerations: []
   affinity: {}
   securityContext: {}
+  containerSecurityContext: {}
   # schedulerName:
   # Optional extra labels for pod, i.e. redis-client: "true"
   # podLabels: []

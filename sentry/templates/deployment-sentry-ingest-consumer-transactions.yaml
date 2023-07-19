@@ -1,9 +1,9 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ template "sentry.fullname" . }}-post-process-forward-errors
+  name: {{ template "sentry.fullname" . }}-ingest-consumer-transactions
   labels:
-    app: sentry
+    app: {{ template "sentry.fullname" . }}
     chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
     release: "{{ .Release.Name }}"
     heritage: "{{ .Release.Service }}"
@@ -20,38 +20,40 @@ spec:
   revisionHistoryLimit: {{ .Values.revisionHistoryLimit }}
   selector:
     matchLabels:
-        app: sentry
-        release: "{{ .Release.Name }}"
-        role: sentry-post-process-forward-errors
-  replicas: {{ .Values.sentry.postProcessForwardErrors.replicas }}
+      app: {{ template "sentry.fullname" . }}
+      release: "{{ .Release.Name }}"
+      role: ingest-consumer
+{{- if not .Values.sentry.ingestConsumer.autoscaling.enabled }}
+  replicas: {{ .Values.sentry.ingestConsumer.replicas }}
+{{- end }}
   template:
     metadata:
       annotations:
         checksum/configYml: {{ .Values.config.configYml | toYaml | toString | sha256sum }}
         checksum/sentryConfPy: {{ .Values.config.sentryConfPy | sha256sum }}
         checksum/config.yaml: {{ include (print $.Template.BasePath "/configmap-sentry.yaml") . | sha256sum }}
-        {{- if .Values.sentry.postProcessForwardErrors.annotations }}
-{{ toYaml .Values.sentry.postProcessForwardErrors.annotations | indent 8 }}
+        {{- if .Values.sentry.ingestConsumer.annotations }}
+{{ toYaml .Values.sentry.ingestConsumer.annotations | indent 8 }}
         {{- end }}
       labels:
-        app: sentry
+        app: {{ template "sentry.fullname" . }}
         release: "{{ .Release.Name }}"
-        role: sentry-post-process-forward-errors
-        {{- if .Values.sentry.postProcessForwardErrors.podLabels }}
-{{ toYaml .Values.sentry.postProcessForwardErrors.podLabels | indent 8 }}
+        role: ingest-consumer
+        {{- if .Values.sentry.ingestConsumer.podLabels }}
+{{ toYaml .Values.sentry.ingestConsumer.podLabels | indent 8 }}
         {{- end }}
     spec:
       affinity:
-      {{- if .Values.sentry.postProcessForwardErrors.affinity }}
-{{ toYaml .Values.sentry.postProcessForwardErrors.affinity | indent 8 }}
+      {{- if .Values.sentry.ingestConsumer.affinity }}
+{{ toYaml .Values.sentry.ingestConsumer.affinity | indent 8 }}
       {{- end }}
-      {{- if .Values.sentry.postProcessForwardErrors.nodeSelector }}
+      {{- if .Values.sentry.ingestConsumer.nodeSelector }}
       nodeSelector:
-{{ toYaml .Values.sentry.postProcessForwardErrors.nodeSelector | indent 8 }}
+{{ toYaml .Values.sentry.ingestConsumer.nodeSelector | indent 8 }}
       {{- end }}
-      {{- if .Values.sentry.postProcessForwardErrors.tolerations }}
+      {{- if .Values.sentry.ingestConsumer.tolerations }}
       tolerations:
-{{ toYaml .Values.sentry.postProcessForwardErrors.tolerations | indent 8 }}
+{{ toYaml .Values.sentry.ingestConsumer.tolerations | indent 8 }}
       {{- end }}
       {{- if .Values.images.sentry.imagePullSecrets }}
       imagePullSecrets:
@@ -64,24 +66,33 @@ spec:
       dnsConfig:
 {{ toYaml .Values.dnsConfig | indent 8 }}
       {{- end }}
-      {{- if .Values.sentry.postProcessForwardErrors.securityContext }}
+      {{- if .Values.sentry.ingestConsumer.securityContext }}
       securityContext:
-{{ toYaml .Values.sentry.postProcessForwardErrors.securityContext | indent 8 }}
+{{ toYaml .Values.sentry.ingestConsumer.securityContext | indent 8 }}
       {{- end }}
       containers:
-      - name: {{ .Chart.Name }}-post-process-forward-errors
+      - name: {{ .Chart.Name }}-ingest-consumer-transactions
         image: "{{ template "sentry.image" . }}"
         imagePullPolicy: {{ default "IfNotPresent" .Values.images.sentry.pullPolicy }}
         command: ["sentry"]
         args:
           - "run"
-          - "post-process-forwarder"
-          - "--entity"
-          - "errors"
+          - "ingest-consumer"
+          - "--consumer-type=transactions"
+          {{- if .Values.sentry.ingestConsumer.concurrency }}
+          - "--concurrency"
+          - "{{ .Values.sentry.ingestConsumer.concurrency }}"
+          {{- end }}
+          {{- if .Values.sentry.ingestConsumer.maxBatchSize }}
+          - "--max-batch-size"
+          - "{{ .Values.sentry.ingestConsumer.maxBatchSize }}"
+          {{- end }}
         env:
+        - name: C_FORCE_ROOT
+          value: "true"
 {{ include "sentry.env" . | indent 8 }}
-{{- if .Values.sentry.postProcessForwardErrors.env }}
-{{ toYaml .Values.sentry.postProcessForwardErrors.env | indent 8 }}
+{{- if .Values.sentry.ingestConsumer.env }}
+{{ toYaml .Values.sentry.ingestConsumer.env | indent 8 }}
 {{- end }}
         volumeMounts:
         - mountPath: /etc/sentry
@@ -93,20 +104,20 @@ spec:
         - name: sentry-google-cloud-key
           mountPath: /var/run/secrets/google
         {{ end }}
-{{- if .Values.sentry.postProcessForwardErrors.volumeMounts }}
-{{ toYaml .Values.sentry.postProcessForwardErrors.volumeMounts | indent 8 }}
+{{- if .Values.sentry.ingestConsumer.volumeMounts }}
+{{ toYaml .Values.sentry.ingestConsumer.volumeMounts | indent 8 }}
 {{- end }}
         resources:
-{{ toYaml .Values.sentry.postProcessForwardErrors.resources | indent 12 }}
-{{- if .Values.sentry.postProcessForwardErrors.containerSecurityContext }}
+{{ toYaml .Values.sentry.ingestConsumer.resources | indent 12 }}
+{{- if .Values.sentry.ingestConsumer.containerSecurityContext }}
         securityContext:
-{{ toYaml .Values.sentry.postProcessForwardErrors.containerSecurityContext | indent 12 }}
+{{ toYaml .Values.sentry.ingestConsumer.containerSecurityContext | indent 12 }}
 {{- end }}
-{{- if .Values.sentry.postProcessForwardErrors.sidecars }}
-{{ toYaml .Values.sentry.postProcessForwardErrors.sidecars | indent 6 }}
+{{- if .Values.sentry.ingestConsumer.sidecars }}
+{{ toYaml .Values.sentry.ingestConsumer.sidecars | indent 6 }}
 {{- end }}
       {{- if .Values.serviceAccount.enabled }}
-      serviceAccountName: {{ .Values.serviceAccount.name }}-post-process-forwarder-errors
+      serviceAccountName: {{ .Values.serviceAccount.name }}-ingest-consumer-transactions
       {{- end }}
       volumes:
       - name: config
@@ -129,9 +140,9 @@ spec:
         secret:
           secretName: {{ .Values.filestore.gcs.secretName }}
       {{ end }}
-{{- if .Values.sentry.postProcessForwardErrors.volumes }}
-{{ toYaml .Values.sentry.postProcessForwardErrors.volumes | indent 6 }}
+{{- if .Values.sentry.ingestConsumer.volumes }}
+{{ toYaml .Values.sentry.ingestConsumer.volumes | indent 6 }}
 {{- end }}
-      {{- if .Values.sentry.postProcessForwardErrors.priorityClassName }}
-      priorityClassName: "{{ .Values.sentry.postProcessForwardErrors.priorityClassName }}"
+      {{- if .Values.sentry.ingestConsumer.priorityClassName }}
+      priorityClassName: "{{ .Values.sentry.ingestConsumer.priorityClassName }}"
       {{- end }}

@@ -71,8 +71,6 @@ spec:
           - "query-subscription-consumer"
           - "--topic"
           - "transactions-subscription-results"
-          - "--commit-batch-size"
-          - "{{ default "1" .Values.sentry.subscriptionConsumerEvents.commitBatchSize }}"
         env:
 {{ include "sentry.env" . | indent 8 }}
 {{- if .Values.sentry.subscriptionConsumerTransactions.env }}
@@ -93,6 +91,10 @@ spec:
 {{- end }}
         resources:
 {{ toYaml .Values.sentry.subscriptionConsumerTransactions.resources | indent 12 }}
+{{- if .Values.sentry.subscriptionConsumerTransactions.containerSecurityContext }}
+        securityContext:
+{{ toYaml .Values.sentry.subscriptionConsumerTransactions.containerSecurityContext | indent 12 }}
+{{- end }}
 {{- if .Values.sentry.subscriptionConsumerTransactions.sidecars }}
 {{ toYaml .Values.sentry.subscriptionConsumerTransactions.sidecars | indent 6 }}
 {{- end }}

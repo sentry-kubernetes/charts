@@ -1,27 +1,27 @@
 dependencies:
 - name: memcached
-  repository: https://charts.bitnami.com/bitnami
-  version: 6.1.5
+  repository: oci://registry-1.docker.io/bitnamicharts
+  version: 6.5.2
 - name: redis
-  repository: https://charts.bitnami.com/bitnami
-  version: 16.12.1
+  repository: oci://registry-1.docker.io/bitnamicharts
+  version: 17.11.3
 - name: kafka
-  repository: https://charts.bitnami.com/bitnami
+  repository: oci://registry-1.docker.io/bitnamicharts
   version: 22.0.1
 - name: clickhouse
   repository: https://sentry-kubernetes.github.io/charts
-  version: 3.2.0
+  version: 3.4.0
 - name: zookeeper
   repository: https://raw.githubusercontent.com/bitnami/charts/pre-2022/bitnami
   version: 9.0.0
 - name: rabbitmq
-  repository: https://raw.githubusercontent.com/bitnami/charts/pre-2022/bitnami
-  version: 8.32.2
+  repository: oci://registry-1.docker.io/bitnamicharts
+  version: 11.15.3
 - name: postgresql
-  repository: https://raw.githubusercontent.com/bitnami/charts/pre-2022/bitnami
-  version: 10.16.2
+  repository: oci://registry-1.docker.io/bitnamicharts
+  version: 12.5.1
 - name: nginx
-  repository: https://charts.bitnami.com/bitnami
-  version: 12.0.4
-digest: sha256:b30af82bb04b6f559d92b4cd96d1573917bd1f8c63f9ecc1272a18206b88e5bf
-generated: "2023-05-03T19:23:45.659747+09:00"
+  repository: oci://registry-1.docker.io/bitnamicharts
+  version: 14.2.2
+digest: sha256:89050a2960f25e32d7859e1df8c2d6e78c62f4445ddc9371b84e6976f589db26
+generated: "2023-07-19T12:15:59.50337+09:00"

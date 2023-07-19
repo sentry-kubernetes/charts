@@ -369,6 +369,16 @@ clickhouse:
           result_rows: "0"
           read_rows: "0"
           execution_time: "0"
+    ## Allows to configure specified MergeTree tables settings in config.xml
+    ## More info: https://clickhouse.com/docs/en/operations/settings/merge-tree-settings
+    merge_tree:
+      enabled: false
+      # If the number of active parts in a single partition exceeds the parts_to_delay_insert value, an INSERT artificially slows down.
+      parts_to_delay_insert: 150
+      # If the number of inactive parts in a single partition more than the inactive_parts_to_throw_insert value, INSERT is interrupted with the "Too many inactive parts (N). Parts cleaning are processing significantly slower than inserts" exception.
+      parts_to_throw_insert: 300
+      # The maximum number of threads that read parts when ClickHouse starts.
+      max_part_loading_threads: auto
 
 ##
 ## Web interface for ClickHouse in the Tabix project.

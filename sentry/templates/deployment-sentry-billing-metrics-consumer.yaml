@@ -104,6 +104,10 @@ spec:
 {{- end }}
         resources:
 {{ toYaml .Values.sentry.billingMetricsConsumer.resources | indent 12 }}
+{{- if .Values.sentry.billingMetricsConsumer.containerSecurityContext }}
+        securityContext:
+{{ toYaml .Values.sentry.billingMetricsConsumer.containerSecurityContext | indent 12 }}
+{{- end }}
 {{- if .Values.sentry.billingMetricsConsumer.sidecars }}
 {{ toYaml .Values.sentry.billingMetricsConsumer.sidecars | indent 6 }}
 {{- end }}
