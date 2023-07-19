@@ -15,6 +15,17 @@ Big thanks to the maintainers of the [deprecated chart](https://github.com/helm/
 For now the full list of values is not documented but you can get inspired by the values.yaml specific to each directory.
 
 
+## Upgrading from 19.x.x version of this Chart to 20.x.x
+
+Chart dependencies has been upgraded because of sentry requirements.
+Changes:
+- Kafka's kraft is enabled by default. With kraft mode, zookeeper is no longer required for kafka. To disable kraft mode and use zookeeper for backward compatibility, set `kafka.kraft.enabled=false` and `kafka.zookeeper.enabled=true`
+
+Bumped dependencies:
+- kafka > 23.0.5 - latest version of kafka chart
+
+
+
 ## Upgrading from 18.x.x version of this Chart to 19.x.x
 
 Chart dependencies has been upgraded because of sentry requirements. 
@@ -22,7 +33,7 @@ Changes:
 - The minimum required version of Postgresql is 14.5 (works with 15.x too)
 
 Bumped dependencies:
-- postgresql > 12.5.1 - latest wersion of chart with postgres 15
+- postgresql > 12.5.1 - latest version of chart with postgres 15
 
 
 ## Upgrading from 17.x.x version of this Chart to 18.x.x
