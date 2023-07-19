@@ -19,7 +19,7 @@ dependencies:
     condition: kafka.enabled
   - name: clickhouse
     repository: https://sentry-kubernetes.github.io/charts
-    version: 3.4.0
+    version: 3.5.0
     condition: clickhouse.enabled
   - name: zookeeper
     repository: https://raw.githubusercontent.com/bitnami/charts/pre-2022/bitnami
