@@ -112,6 +112,10 @@ spec:
 {{- end }}
         resources:
 {{ toYaml .Values.sentry.worker.resources | indent 12 }}
+{{- if .Values.sentry.worker.containerSecurityContext }}
+        securityContext:
+{{ toYaml .Values.sentry.worker.containerSecurityContext | indent 12 }}
+{{- end }}
 {{- if .Values.sentry.worker.sidecars }}
 {{ toYaml .Values.sentry.worker.sidecars | indent 6 }}
 {{- end }}

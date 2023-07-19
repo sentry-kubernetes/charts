@@ -91,6 +91,10 @@ spec:
 {{- end }}
         resources:
 {{ toYaml .Values.sentry.subscriptionConsumerEvents.resources | indent 12 }}
+{{- if .Values.sentry.subscriptionConsumerEvents.containerSecurityContext }}
+        securityContext:
+{{ toYaml .Values.sentry.subscriptionConsumerEvents.containerSecurityContext | indent 12 }}
+{{- end }}
 {{- if .Values.sentry.subscriptionConsumerEvents.sidecars }}
 {{ toYaml .Values.sentry.subscriptionConsumerEvents.sidecars | indent 6 }}
 {{- end }}

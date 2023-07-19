@@ -95,6 +95,10 @@ spec:
 {{- end }}
             resources:
 {{ toYaml .Values.sentry.cleanup.resources | indent 14 }}
+{{- if .Values.sentry.cleanup.containerSecurityContext }}
+            securityContext:
+{{ toYaml .Values.sentry.cleanup.containerSecurityContext | indent 14 }}
+{{- end }}
 {{- if .Values.sentry.cleanup.sidecars }}
 {{ toYaml .Values.sentry.cleanup.sidecars | indent 10 }}
 {{- end }}

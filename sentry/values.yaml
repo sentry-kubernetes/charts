@@ -63,6 +63,7 @@ relay:
   affinity: {}
   nodeSelector: {}
   securityContext: {}
+  containerSecurityContext: {}
   service:
     annotations: {}
   # tolerations: []
@@ -107,6 +108,7 @@ sentry:
     affinity: {}
     nodeSelector: {}
     securityContext: {}
+    containerSecurityContext: {}
     service:
       annotations: {}
     # tolerations: []
@@ -163,6 +165,7 @@ sentry:
     affinity: {}
     nodeSelector: {}
     securityContext: {}
+    containerSecurityContext: {}
     # tolerations: []
     # podLabels: []
     # maxBatchSize: ""
@@ -189,6 +192,7 @@ sentry:
     affinity: {}
     nodeSelector: {}
     securityContext: {}
+    containerSecurityContext: {}
     # tolerations: []
     # podLabels: []
     # maxBatchSize: ""
@@ -215,6 +219,7 @@ sentry:
     affinity: {}
     nodeSelector: {}
     securityContext: {}
+    containerSecurityContext: {}
     # tolerations: []
     # podLabels: []
     # maxBatchSize: ""
@@ -240,6 +245,7 @@ sentry:
     affinity: {}
     nodeSelector: {}
     securityContext: {}
+    containerSecurityContext: {}
     # tolerations: []
     # podLabels: []
 
@@ -264,6 +270,7 @@ sentry:
     affinity: {}
     nodeSelector: {}
     securityContext: {}
+    containerSecurityContext: {}
     # tolerations: []
     # podLabels: []
 
@@ -289,6 +296,7 @@ sentry:
     affinity: {}
     nodeSelector: {}
     securityContext: {}
+    containerSecurityContext: {}
     # tolerations: []
     # podLabels: []
     # maxBatchSize: ""
@@ -326,6 +334,7 @@ sentry:
     affinity: {}
     nodeSelector: {}
     securityContext: {}
+    containerSecurityContext: {}
     # tolerations: []
     # podLabels: []
     sidecars: []
@@ -340,6 +349,7 @@ sentry:
     affinity: {}
     nodeSelector: {}
     securityContext: {}
+    containerSecurityContext: {}
     # tolerations: []
     # podLabels: []
     sidecars: []
@@ -354,6 +364,7 @@ sentry:
     affinity: {}
     nodeSelector: {}
     securityContext: {}
+    containerSecurityContext: {}
     # tolerations: []
     # podLabels: []
     sidecars: []
@@ -368,6 +379,7 @@ sentry:
     affinity: {}
     nodeSelector: {}
     securityContext: {}
+    containerSecurityContext: {}
     # tolerations: []
     # podLabels: []
     sidecars: []
@@ -381,6 +393,7 @@ sentry:
     affinity: {}
     nodeSelector: {}
     securityContext: {}
+    containerSecurityContext: {}
     # tolerations: []
     # podLabels: []
     sidecars: []
@@ -397,6 +410,7 @@ sentry:
     schedule: "0 0 * * *"
     days: 90
     # securityContext: {}
+    # containerSecurityContext: {}
     sidecars: []
     volumes: []
     # volumeMounts: []
@@ -420,6 +434,7 @@ snuba:
     affinity: {}
     nodeSelector: {}
     securityContext: {}
+    containerSecurityContext: {}
     service:
       annotations: {}
     # tolerations: []
@@ -441,6 +456,7 @@ snuba:
     affinity: {}
     nodeSelector: {}
     securityContext: {}
+    containerSecurityContext: {}
     # tolerations: []
     # podLabels: []
     autoOffsetReset: "earliest"
@@ -468,6 +484,7 @@ snuba:
     affinity: {}
     nodeSelector: {}
     securityContext: {}
+    containerSecurityContext: {}
     # tolerations: []
     # podLabels: []
     autoOffsetReset: "earliest"
@@ -495,6 +512,7 @@ snuba:
     affinity: {}
     nodeSelector: {}
     securityContext: {}
+    containerSecurityContext: {}
     # tolerations: []
     # podLabels: []
     autoOffsetReset: "earliest"
@@ -511,6 +529,7 @@ snuba:
     affinity: {}
     nodeSelector: {}
     securityContext: {}
+    containerSecurityContext: {}
     # tolerations: []
     # podLabels: []
     autoOffsetReset: "earliest"
@@ -524,6 +543,7 @@ snuba:
     affinity: {}
     nodeSelector: {}
     securityContext: {}
+    containerSecurityContext: {}
     # tolerations: []
     # podLabels: []
     autoOffsetReset: "earliest"
@@ -537,6 +557,7 @@ snuba:
     affinity: {}
     nodeSelector: {}
     securityContext: {}
+    containerSecurityContext: {}
     # tolerations: []
     # podLabels: []
     # commitBatchSize: 1
@@ -553,6 +574,7 @@ snuba:
     affinity: {}
     nodeSelector: {}
     securityContext: {}
+    containerSecurityContext: {}
     # tolerations: []
     # podLabels: []
     autoOffsetReset: "earliest"
@@ -580,6 +602,7 @@ snuba:
     affinity: {}
     nodeSelector: {}
     securityContext: {}
+    containerSecurityContext: {}
     # tolerations: []
     # podLabels: []
     autoOffsetReset: "earliest"
@@ -607,6 +630,7 @@ snuba:
     affinity: {}
     nodeSelector: {}
     securityContext: {}
+    containerSecurityContext: {}
     # tolerations: []
     # podLabels: []
     autoOffsetReset: "earliest"
@@ -656,6 +680,7 @@ hooks:
     affinity: {}
     nodeSelector: {}
     securityContext: {}
+    containerSecurityContext: {}
     # tolerations: []
     # volumes: []
     # volumeMounts: []
@@ -729,6 +754,7 @@ symbolicator:
     affinity: {}
     nodeSelector: {}
     securityContext: {}
+    containerSecurityContext: {}
     # tolerations: []
     # podLabels: []
     # priorityClassName: "xxx"
@@ -930,7 +956,7 @@ config:
 clickhouse:
   enabled: true
   clickhouse:
-    imageVersion: "20.12.8.5"
+    imageVersion: "21.8.13.6"
     configmap:
       remote_servers:
         internal_replication: true
@@ -1019,6 +1045,8 @@ kafka:
       - name: ingest-transactions
       - name: ingest-events
       - name: ingest-replay-recordings
+      - name: ingest-metrics
+      - name: ingest-performance-metrics
       - name: profiles
 
   service:
@@ -1221,6 +1249,7 @@ metrics:
   tolerations: []
   affinity: {}
   securityContext: {}
+  containerSecurityContext: {}
   # schedulerName:
   # Optional extra labels for pod, i.e. redis-client: "true"
   # podLabels: []

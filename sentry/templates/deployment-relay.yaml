@@ -74,6 +74,10 @@ spec:
 {{- end }}
           resources:
 {{ toYaml .Values.relay.init.resources | indent 12 }}
+{{- if .Values.relay.containerSecurityContext }}
+          securityContext:
+{{ toYaml .Values.relay.containerSecurityContext | indent 12 }}
+{{- end }}
           env:
             - name: RELAY_PORT
               value: '{{ template "relay.port" }}'
@@ -149,6 +153,10 @@ spec:
           timeoutSeconds: {{ .Values.relay.probeTimeoutSeconds }}
         resources:
 {{ toYaml .Values.relay.resources | indent 12 }}
+{{- if .Values.relay.containerSecurityContext }}
+        securityContext:
+{{ toYaml .Values.relay.containerSecurityContext | indent 12 }}
+{{- end }}
 {{- if .Values.relay.sidecars }}
 {{ toYaml .Values.relay.sidecars | indent 6 }}
 {{- end }}
