@@ -75,10 +75,11 @@ spec:
         command: ["sentry"]
         args:
           - "run"
+          - "consumer"
+          - "post-process-forwarder-transactions"
+          - "--consumer-group"
           - "post-process-forwarder"
-          - "--entity"
-          - "transactions"
-          - "--commit-log-topic=snuba-transactions-commit-log"
+          - "--synchronize-commit-log-topic=snuba-transactions-commit-log"
           - "--synchronize-commit-group"
           - "transactions_group"
         env:
