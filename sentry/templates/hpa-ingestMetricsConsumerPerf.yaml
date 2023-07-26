@@ -1,0 +1,14 @@
+{{- if .Values.sentry.ingestConsumer.autoscaling.enabled }}
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ template "sentry.fullname" . }}-sentry-ingest-metrics-consumer-perf
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ template "sentry.fullname" . }}-ingest-metrics-consumer-perf
+  minReplicas: {{ .Values.sentry.ingestConsumer.autoscaling.minReplicas }}
+  maxReplicas: {{ .Values.sentry.ingestConsumer.autoscaling.maxReplicas }}
+  targetCPUUtilizationPercentage: {{ .Values.sentry.ingestConsumer.autoscaling.targetCPUUtilizationPercentage }}
+{{- end }}
