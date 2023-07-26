@@ -68,7 +68,7 @@ spec:
 {{ toYaml .Values.vroom.args | indent 10 }}
 {{- end }}
         image: "{{ template "vroom.image" . }}"
-        imagePullPolicy: {{ default "IfNotPresent" .Values.images.sentry.pullPolicy }}
+        imagePullPolicy: {{ default "IfNotPresent" .Values.images.vroom.pullPolicy }}
         ports:
         - containerPort: {{ template "vroom.port" }}
         env:
@@ -81,26 +81,6 @@ spec:
         volumeMounts:
 {{ toYaml .Values.vroom.volumeMounts | indent 10 }}
 {{- end }}
-{{/*        livenessProbe:*/}}
-{{/*          failureThreshold: {{ .Values.vroom.probeFailureThreshold }}*/}}
-{{/*          httpGet:*/}}
-{{/*            path: {{ template "relay.healthCheck.livenessRequestPath" }}*/}}
-{{/*            port: {{ template "relay.port" }}*/}}
-{{/*            scheme: HTTP*/}}
-{{/*          initialDelaySeconds: {{ .Values.vroom.probeInitialDelaySeconds }}*/}}
-{{/*          periodSeconds: {{ .Values.vroom.probePeriodSeconds }}*/}}
-{{/*          successThreshold: {{ .Values.vroom.probeSuccessThreshold }}*/}}
-{{/*          timeoutSeconds: {{ .Values.vroom.probeTimeoutSeconds }}*/}}
-{{/*        readinessProbe:*/}}
-{{/*          failureThreshold: {{ .Values.vroom.probeFailureThreshold }}*/}}
-{{/*          httpGet:*/}}
-{{/*            path: {{ template "relay.healthCheck.readinessRequestPath" }}*/}}
-{{/*            port: {{ template "relay.port" }}*/}}
-{{/*            scheme: HTTP*/}}
-{{/*          initialDelaySeconds: {{ .Values.vroom.probeInitialDelaySeconds }}*/}}
-{{/*          periodSeconds: {{ .Values.vroom.probePeriodSeconds }}*/}}
-{{/*          successThreshold: {{ .Values.vroom.probeSuccessThreshold }}*/}}
-{{/*          timeoutSeconds: {{ .Values.vroom.probeTimeoutSeconds }}*/}}
         resources:
 {{ toYaml .Values.vroom.resources | indent 12 }}
 {{- if .Values.vroom.containerSecurityContext }}
