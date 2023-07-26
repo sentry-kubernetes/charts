@@ -1,3 +1,4 @@
+{{- if .Values.sentry.features.enableProfiling }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -119,3 +120,4 @@ spec:
       {{- if .Values.vroom.priorityClassName }}
       priorityClassName: "{{ .Values.vroom.priorityClassName }}"
       {{- end }}
+{{- end }}

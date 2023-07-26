@@ -1,3 +1,4 @@
+{{- if .Values.sentry.features.enableProfiling }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -137,3 +138,4 @@ spec:
       {{- if .Values.sentry.ingestProfiles.priorityClassName }}
       priorityClassName: "{{ .Values.sentry.ingestProfiles.priorityClassName }}"
       {{- end }}
+{{- end }}

@@ -62,13 +62,13 @@ vroom:
   probePeriodSeconds: 10
   probeSuccessThreshold: 1
   probeTimeoutSeconds: 2
-  resources: { }
-  affinity: { }
-  nodeSelector: { }
-  securityContext: { }
-  containerSecurityContext: { }
+  resources: {}
+  affinity: {}
+  nodeSelector: {}
+  securityContext: {}
+  containerSecurityContext: {}
   service:
-    annotations: { }
+    annotations: {}
   # tolerations: []
   # podLabels: []
 
@@ -77,9 +77,9 @@ vroom:
     minReplicas: 2
     maxReplicas: 5
     targetCPUUtilizationPercentage: 50
-  sidecars: [ ]
-  volumes: [ ]
-  volumeMounts: [ ]
+  sidecars: []
+  volumes: []
+  volumeMounts: []
   init:
     resources: {}
     # additionalArgs: []
@@ -168,6 +168,7 @@ sentry:
   features:
     orgSubdomains: false
     vstsLimitedScopes: true
+    enableProfiling: false
 
   worker:
     replicas: 3
