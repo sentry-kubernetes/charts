@@ -14,6 +14,19 @@ Big thanks to the maintainers of the [deprecated chart](https://github.com/helm/
 
 For now the full list of values is not documented but you can get inspired by the values.yaml specific to each directory.
 
+## Upgrading from 19.x.x version of this Chart to 20.x.x
+
+Bumped dependencies:
+- kafka > 22.1.3 - now supports Kraft. Note that the upgrade is breaking and that you have to start a new kafka from scratch to use it.
+
+Example:
+
+```
+kafka:
+  zookeeper:
+    enabled: false
+```
+
 
 ## Upgrading from 18.x.x version of this Chart to 19.x.x
 

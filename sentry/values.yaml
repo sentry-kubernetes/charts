@@ -956,7 +956,7 @@ config:
 clickhouse:
   enabled: true
   clickhouse:
-    imageVersion: "20.12.8.5"
+    imageVersion: "21.8.13.6"
     configmap:
       remote_servers:
         internal_replication: false
@@ -1045,6 +1045,8 @@ kafka:
       - name: ingest-transactions
       - name: ingest-events
       - name: ingest-replay-recordings
+      - name: ingest-metrics
+      - name: ingest-performance-metrics
       - name: profiles
 
   service:
