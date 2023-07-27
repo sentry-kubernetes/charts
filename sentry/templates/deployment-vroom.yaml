@@ -81,6 +81,26 @@ spec:
         volumeMounts:
 {{ toYaml .Values.vroom.volumeMounts | indent 10 }}
 {{- end }}
+        livenessProbe:
+          failureThreshold: {{ .Values.vroom.probeFailureThreshold }}
+          httpGet:
+            path: /health
+            port: {{ template "vroom.port" }}
+            scheme: HTTP
+          initialDelaySeconds: {{ .Values.vroom.probeInitialDelaySeconds }}
+          periodSeconds: {{ .Values.vroom.probePeriodSeconds }}
+          successThreshold: {{ .Values.vroom.probeSuccessThreshold }}
+          timeoutSeconds: {{ .Values.vroom.probeTimeoutSeconds }}
+        readinessProbe:
+          failureThreshold: {{ .Values.vroom.probeFailureThreshold }}
+          httpGet:
+            path: /health
+            port: {{ template "vroom.port" }}
+            scheme: HTTP
+          initialDelaySeconds: {{ .Values.vroom.probeInitialDelaySeconds }}
+          periodSeconds: {{ .Values.vroom.probePeriodSeconds }}
+          successThreshold: {{ .Values.vroom.probeSuccessThreshold }}
+          timeoutSeconds: {{ .Values.vroom.probeTimeoutSeconds }}
         resources:
 {{ toYaml .Values.vroom.resources | indent 12 }}
 {{- if .Values.vroom.containerSecurityContext }}
