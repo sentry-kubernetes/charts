@@ -403,7 +403,7 @@ sentry:
   cleanup:
     successfulJobsHistoryLimit: 5
     failedJobsHistoryLimit: 5
-    activeDeadlineSeconds: 100
+    activeDeadlineSeconds: 300
     concurrencyPolicy: Allow
     concurrency: 1
     enabled: true
@@ -660,7 +660,7 @@ snuba:
 hooks:
   enabled: true
   removeOnSuccess: true
-  activeDeadlineSeconds: 100
+  activeDeadlineSeconds: 300
   shareProcessNamespace: false
   dbCheck:
     image:
