@@ -25,6 +25,8 @@ Example:
 kafka:
   zookeeper:
     enabled: false
+  kraft:
+    enabled: true
 ```
 
 
