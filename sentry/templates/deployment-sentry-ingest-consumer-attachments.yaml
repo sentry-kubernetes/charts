@@ -77,8 +77,10 @@ spec:
         command: ["sentry"]
         args:
           - "run"
+          - "consumer"
+          - "ingest-attachments"
+          - "--consumer-group"
           - "ingest-consumer"
-          - "--consumer-type=attachments"
           {{- if .Values.sentry.ingestConsumer.concurrency }}
           - "--concurrency"
           - "{{ .Values.sentry.ingestConsumer.concurrency }}"

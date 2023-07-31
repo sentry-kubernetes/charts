@@ -1051,7 +1051,10 @@ kafka:
       - name: ingest-metrics
       - name: ingest-performance-metrics
       - name: profiles
-
+  zookeeper:
+    enabled: true
+  kraft:
+    enabled: false
   service:
     ports:
       client: 9092
