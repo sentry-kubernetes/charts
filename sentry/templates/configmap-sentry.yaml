@@ -56,8 +56,8 @@ data:
     # Google #
     ##########
     {{- if and (.Values.google.clientId) (.Values.google.clientSecret) (not .Values.google.existingSecret) }}
-    auth-google.client-id: {{ .Values.google.clientId }}
-    auth-google.client-secret: {{ .Values.google.clientSecret }}
+    auth-google.client-id: {{ .Values.google.clientId | quote }}
+    auth-google.client-secret: {{ .Values.google.clientSecret | quote }}
     {{- end }}
 
     #########
