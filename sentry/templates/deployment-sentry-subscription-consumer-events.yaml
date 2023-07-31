@@ -68,9 +68,10 @@ spec:
         command: ["sentry"]
         args:
           - "run"
-          - "query-subscription-consumer"
-          - "--topic"
+          - "consumer"
           - "events-subscription-results"
+          - "--consumer-group"
+          - "query-subscription-consumer"
         env:
 {{ include "sentry.env" . | indent 8 }}
 {{- if .Values.sentry.subscriptionConsumerEvents.env }}
