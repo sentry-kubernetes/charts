@@ -55,10 +55,10 @@ data:
     ##########
     # Google #
     ##########
-    {{- if .Values.google.clientId }}
+    {{- if and (.Values.google.clientId) (.Values.google.clientSecret) (not .Values.google.existingSecret) }}
     auth-google.client-id: {{ .Values.google.clientId | quote }}
     auth-google.client-secret: {{ .Values.google.clientSecret | quote }}
-    {{ end }}
+    {{- end }}
 
     #########
     # Slack #
@@ -504,6 +504,14 @@ data:
     SENTRY_OPTIONS['slack.client-id'] = os.environ.get("SLACK_CLIENT_ID")
     SENTRY_OPTIONS['slack.client-secret'] = os.environ.get("SLACK_CLIENT_SECRET")
     SENTRY_OPTIONS['slack.signing-secret'] = os.environ.get("SLACK_SIGNING_SECRET")
+{{- end }}
+
+{{- if .Values.google.existingSecret }}
+    #########
+    # GOOGLE #
+    #########
+    SENTRY_OPTIONS['auth-google.client-id'] = os.environ.get("GOOGLE_AUTH_CLIENT_ID")
+    SENTRY_OPTIONS['auth-google.client-secret'] = os.environ.get("GOOGLE_AUTH_CLIENT_SECRET")
 {{- end }}
 
 {{- if .Values.github.existingSecret }}

@@ -836,8 +836,11 @@ github: {}
 # https://developers.google.com/identity/sign-in/web/server-side-flow#step_1_create_a_client_id_and_client_secret
 google: {}
 # google:
-#   clientId:
-#   clientSecret:
+#   clientId: ""
+#   clientSecret: ""
+#   existingSecret: ""
+#   existingSecretClientIdKey: "" # by default "client-id"
+#   existingSecretClientSecretKey: "" # by default "client-secret"
 
 slack: {}
 # slack:
