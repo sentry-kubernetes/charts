@@ -1,0 +1,130 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "sentry.fullname" . }}-subscription-consumer-sessions
+  labels:
+    app: sentry
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
+    release: "{{ .Release.Name }}"
+    heritage: "{{ .Release.Service }}"
+    app.kubernetes.io/managed-by: "Helm"
+  {{- if .Values.asHook }}
+  {{- /* Add the Helm annotations so that deployment after asHook from true to false works */}}
+  annotations:
+    meta.helm.sh/release-name: "{{ .Release.Name }}"
+    meta.helm.sh/release-namespace: "{{ .Release.Namespace }}"
+    "helm.sh/hook": "post-install,post-upgrade"
+    "helm.sh/hook-weight": "10"
+  {{- end }}
+spec:
+  revisionHistoryLimit: {{ .Values.revisionHistoryLimit }}
+  selector:
+    matchLabels:
+        app: sentry
+        release: "{{ .Release.Name }}"
+        role: sentry-subscription-consumer-sessions
+  replicas: {{ .Values.sentry.subscriptionConsumerSessions.replicas }}
+  template:
+    metadata:
+      annotations:
+        checksum/configYml: {{ .Values.config.configYml | toYaml | toString | sha256sum }}
+        checksum/sentryConfPy: {{ .Values.config.sentryConfPy | sha256sum }}
+        checksum/config.yaml: {{ include (print $.Template.BasePath "/configmap-sentry.yaml") . | sha256sum }}
+        {{- if .Values.sentry.subscriptionConsumerSessions.annotations }}
+{{ toYaml .Values.sentry.subscriptionConsumerSessions.annotations | indent 8 }}
+        {{- end }}
+      labels:
+        app: sentry
+        release: "{{ .Release.Name }}"
+        role: sentry-subscription-consumer-sessions
+        {{- if .Values.sentry.subscriptionConsumerSessions.podLabels }}
+{{ toYaml .Values.sentry.subscriptionConsumerSessions.podLabels | indent 8 }}
+        {{- end }}
+    spec:
+      affinity:
+      {{- if .Values.sentry.subscriptionConsumerSessions.affinity }}
+{{ toYaml .Values.sentry.subscriptionConsumerSessions.affinity | indent 8 }}
+      {{- end }}
+      {{- if .Values.sentry.subscriptionConsumerSessions.nodeSelector }}
+      nodeSelector:
+{{ toYaml .Values.sentry.subscriptionConsumerSessions.nodeSelector | indent 8 }}
+      {{- end }}
+      {{- if .Values.sentry.subscriptionConsumerSessions.tolerations }}
+      tolerations:
+{{ toYaml .Values.sentry.subscriptionConsumerSessions.tolerations | indent 8 }}
+      {{- end }}
+      {{- if .Values.images.sentry.imagePullSecrets }}
+      imagePullSecrets:
+{{ toYaml .Values.images.sentry.imagePullSecrets | indent 8 }}
+      {{- end }}
+      {{- if .Values.sentry.subscriptionConsumerSessions.securityContext }}
+      securityContext:
+{{ toYaml .Values.sentry.subscriptionConsumerSessions.securityContext | indent 8 }}
+      {{- end }}
+      containers:
+      - name: {{ .Chart.Name }}-subscription-consumer-sessions
+        image: "{{ template "sentry.image" . }}"
+        imagePullPolicy: {{ default "IfNotPresent" .Values.images.sentry.pullPolicy }}
+        command: ["sentry"]
+        args:
+          - "run"
+          - "query-subscription-consumer"
+          - "--topic"
+          - "sessions-subscription-results"
+        env:
+{{ include "sentry.env" . | indent 8 }}
+{{- if .Values.sentry.subscriptionConsumerSessions.env }}
+{{ toYaml .Values.sentry.subscriptionConsumerSessions.env | indent 8 }}
+{{- end }}
+        volumeMounts:
+        - mountPath: /etc/sentry
+          name: config
+          readOnly: true
+        - mountPath: {{ .Values.filestore.filesystem.path }}
+          name: sentry-data
+        {{- if and (eq .Values.filestore.backend "gcs") .Values.filestore.gcs.secretName }}
+        - name: sentry-google-cloud-key
+          mountPath: /var/run/secrets/google
+        {{ end }}
+{{- if .Values.sentry.subscriptionConsumerSessions.volumeMounts }}
+{{ toYaml .Values.sentry.subscriptionConsumerSessions.volumeMounts | indent 8 }}
+{{- end }}
+        resources:
+{{ toYaml .Values.sentry.subscriptionConsumerSessions.resources | indent 12 }}
+{{- if .Values.sentry.subscriptionConsumerSessions.containerSecurityContext }}
+        securityContext:
+{{ toYaml .Values.sentry.subscriptionConsumerSessions.containerSecurityContext | indent 12 }}
+{{- end }}
+{{- if .Values.sentry.subscriptionConsumerSessions.sidecars }}
+{{ toYaml .Values.sentry.subscriptionConsumerSessions.sidecars | indent 6 }}
+{{- end }}
+      {{- if .Values.serviceAccount.enabled }}
+      serviceAccountName: {{ .Values.serviceAccount.name }}-subscription-consumer-sessions
+      {{- end }}
+      volumes:
+      - name: config
+        configMap:
+          name: {{ template "sentry.fullname" . }}-sentry
+      - name: sentry-data
+      {{- if and (eq .Values.filestore.backend "filesystem") .Values.filestore.filesystem.persistence.enabled (.Values.filestore.filesystem.persistence.persistentWorkers) }}
+      {{- if .Values.filestore.filesystem.persistence.existingClaim }}
+        persistentVolumeClaim:
+          claimName: {{ .Values.filestore.filesystem.persistence.existingClaim }}
+      {{- else }}
+        persistentVolumeClaim:
+          claimName: {{ template "sentry.fullname" . }}-data
+      {{- end }}
+      {{- else }}
+        emptyDir: {}
+      {{ end }}
+      {{- if and (eq .Values.filestore.backend "gcs") .Values.filestore.gcs.secretName }}
+      - name: sentry-google-cloud-key
+        secret:
+          secretName: {{ .Values.filestore.gcs.secretName }}
+      {{ end }}
+{{- if .Values.sentry.subscriptionConsumerSessions.volumes }}
+{{ toYaml .Values.sentry.subscriptionConsumerSessions.volumes | indent 6 }}
+{{- end }}
+      {{- if .Values.sentry.subscriptionConsumerSessions.priorityClassName }}
+      priorityClassName: "{{ .Values.sentry.subscriptionConsumerSessions.priorityClassName }}"
+      {{- end }}
