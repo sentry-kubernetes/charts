@@ -1,0 +1,150 @@
+{{- if .Values.sentry.features.enableProfiling }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "sentry.fullname" . }}-snuba-profiling-profiles-consumer
+  labels:
+    app: {{ template "sentry.fullname" . }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
+    release: "{{ .Release.Name }}"
+    heritage: "{{ .Release.Service }}"
+    app.kubernetes.io/managed-by: "Helm"
+  {{- if .Values.asHook }}
+  {{- /* Add the Helm annotations so that deployment after asHook from true to false works */}}
+  annotations:
+    meta.helm.sh/release-name: "{{ .Release.Name }}"
+    meta.helm.sh/release-namespace: "{{ .Release.Namespace }}"
+    "helm.sh/hook": "post-install,post-upgrade"
+    "helm.sh/hook-weight": "12"
+  {{- end }}
+spec:
+  revisionHistoryLimit: {{ .Values.revisionHistoryLimit }}
+  selector:
+    matchLabels:
+        app: {{ template "sentry.fullname" . }}
+        release: "{{ .Release.Name }}"
+        role: snuba-profiling-profiles-consumer
+  replicas: {{ .Values.snuba.profilingProfilesConsumer.replicas }}
+  template:
+    metadata:
+      annotations:
+        checksum/snubaSettingsPy: {{ .Values.config.snubaSettingsPy | sha256sum }}
+        checksum/config.yaml: {{ include (print $.Template.BasePath "/configmap-snuba.yaml") . | sha256sum }}
+        {{- if .Values.snuba.profilingProfilesConsumer.annotations }}
+{{ toYaml .Values.snuba.profilingProfilesConsumer.annotations | indent 8 }}
+        {{- end }}
+      labels:
+        app: {{ template "sentry.fullname" . }}
+        release: "{{ .Release.Name }}"
+        role: snuba-profiling-profiles-consumer
+        {{- if .Values.snuba.profilingProfilesConsumer.podLabels }}
+{{ toYaml .Values.snuba.profilingProfilesConsumer.podLabels | indent 8 }}
+        {{- end }}
+    spec:
+      affinity:
+      {{- if .Values.snuba.profilingProfilesConsumer.affinity }}
+{{ toYaml .Values.snuba.profilingProfilesConsumer.affinity | indent 8 }}
+      {{- end }}
+      {{- if .Values.snuba.profilingProfilesConsumer.nodeSelector }}
+      nodeSelector:
+{{ toYaml .Values.snuba.profilingProfilesConsumer.nodeSelector | indent 8 }}
+      {{- end }}
+      {{- if .Values.snuba.profilingProfilesConsumer.tolerations }}
+      tolerations:
+{{ toYaml .Values.snuba.profilingProfilesConsumer.tolerations | indent 8 }}
+      {{- end }}
+      {{- if .Values.images.snuba.imagePullSecrets }}
+      imagePullSecrets:
+{{ toYaml .Values.images.snuba.imagePullSecrets | indent 8 }}
+      {{- end }}
+      {{- if .Values.dnsPolicy }}
+      dnsPolicy: {{ .Values.dnsPolicy | quote }}
+      {{- end }}
+      {{- if .Values.dnsConfig }}
+      dnsConfig:
+{{ toYaml .Values.dnsConfig | indent 8 }}
+      {{- end }}
+      {{- if .Values.snuba.profilingProfilesConsumer.securityContext }}
+      securityContext:
+{{ toYaml .Values.snuba.profilingProfilesConsumer.securityContext | indent 8 }}
+      {{- end }}
+      containers:
+      - name: {{ .Chart.Name }}-snuba
+        image: "{{ template "snuba.image" . }}"
+        imagePullPolicy: {{ default "IfNotPresent" .Values.images.snuba.pullPolicy }}
+        command:
+          - "snuba"
+          - "consumer"
+          - "--storage"
+          - "profiles"
+          - "--consumer-group"
+          - "profiles_group"
+          - "--auto-offset-reset"
+          - "{{ .Values.snuba.profilingProfilesConsumer.autoOffsetReset }}"
+          - "--max-batch-time-ms"
+          - "750"
+          {{- if .Values.snuba.profilingProfilesConsumer.maxBatchSize }}
+          - "--max-batch-size"
+          - "{{ .Values.snuba.profilingProfilesConsumer.maxBatchSize }}"
+          {{- end }}
+          {{- if .Values.snuba.profilingProfilesConsumer.processes }}
+          - "--processes"
+          - "{{ .Values.snuba.profilingProfilesConsumer.processes }}"
+          {{- end }}
+          {{- if .Values.snuba.profilingProfilesConsumer.inputBlockSize }}
+          - "--input-block-size"
+          - "{{ .Values.snuba.profilingProfilesConsumer.inputBlockSize }}"
+          {{- end }}
+          {{- if .Values.snuba.profilingProfilesConsumer.outputBlockSize }}
+          - "--output-block-size"
+          - "{{ .Values.snuba.profilingProfilesConsumer.outputBlockSize }}"
+          {{- end }}
+          {{- if .Values.snuba.profilingProfilesConsumer.maxBatchTimeMs }}
+          - "--max-batch-time-ms"
+          - "{{ .Values.snuba.profilingProfilesConsumer.maxBatchTimeMs }}"
+          {{- end }}
+          {{- if .Values.snuba.profilingProfilesConsumer.queuedMaxMessagesKbytes }}
+          - "--queued-max-messages-kbytes"
+          - "{{ .Values.snuba.profilingProfilesConsumer.queuedMaxMessagesKbytes }}"
+          {{- end }}
+          {{- if .Values.snuba.profilingProfilesConsumer.queuedMinMessages }}
+          - "--queued-min-messages"
+          - "{{ .Values.snuba.profilingProfilesConsumer.queuedMinMessages }}"
+          {{- end }}
+          {{- if .Values.snuba.profilingProfilesConsumer.noStrictOffsetReset }}
+          - "--no-strict-offset-reset"
+          {{- end }}
+        ports:
+        - containerPort: {{ template "snuba.port" }}
+        env:
+{{ include "sentry.snuba.env" . | indent 8 }}
+{{- if .Values.snuba.profilingProfilesConsumer.env }}
+{{ toYaml .Values.snuba.profilingProfilesConsumer.env | indent 8 }}
+{{- end }}
+        envFrom:
+        - secretRef:
+            name: {{ template "sentry.fullname" . }}-snuba-env
+        volumeMounts:
+        - mountPath: /etc/snuba
+          name: config
+          readOnly: true
+{{- if .Values.snuba.profilingProfilesConsumer.volumeMounts }}
+{{ toYaml .Values.snuba.profilingProfilesConsumer.volumeMounts | indent 8 }}
+{{- end }}
+        resources:
+{{ toYaml .Values.snuba.profilingProfilesConsumer.resources | indent 12 }}
+{{- if .Values.snuba.profilingProfilesConsumer.containerSecurityContext }}
+        securityContext:
+{{ toYaml .Values.snuba.profilingProfilesConsumer.containerSecurityContext | indent 12 }}
+{{- end }}
+      {{- if .Values.serviceAccount.enabled }}
+      serviceAccountName: {{ .Values.serviceAccount.name }}-snuba
+      {{- end }}
+      volumes:
+        - name: config
+          configMap:
+            name: {{ template "sentry.fullname" . }}-snuba
+{{- if .Values.snuba.profilingProfilesConsumer.volumes }}
+{{ toYaml .Values.snuba.profilingProfilesConsumer.volumes | indent 8 }}
+{{- end }}
+{{- end }}
