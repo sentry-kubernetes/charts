@@ -1,0 +1,28 @@
+{{- if .Values.sentry.features.enableProfiling }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "sentry.fullname" . }}-vroom
+  annotations:
+    {{- range $key, $value := .Values.vroom.service.annotations }}
+      {{ $key }}: {{ $value | quote }}
+    {{- end }}
+    {{- if and (.Values.ingress.enabled) (eq (default "nginx" .Values.ingress.regexPathStyle) "gke") }}
+      cloud.google.com/backend-config: '{"ports": {"{{ template "vroom.port" . }}":"{{ include "sentry.fullname" . }}-vroom"}}'
+    {{- end }}
+  labels:
+    app: {{ template "sentry.fullname" . }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
+    release: "{{ .Release.Name }}"
+    heritage: "{{ .Release.Service }}"
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+  - port: {{ template "vroom.port" . }}
+    targetPort: {{ template "vroom.port" }}
+    protocol: TCP
+    name: {{ .Values.service.name }}-vroom
+  selector:
+    app: {{ template "sentry.fullname" . }}
+    role: vroom
+{{- end }}

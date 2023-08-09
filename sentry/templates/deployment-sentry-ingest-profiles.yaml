@@ -1,0 +1,141 @@
+{{- if .Values.sentry.features.enableProfiling }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "sentry.fullname" . }}-ingest-profiles
+  labels:
+    app: {{ template "sentry.fullname" . }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
+    release: "{{ .Release.Name }}"
+    heritage: "{{ .Release.Service }}"
+    app.kubernetes.io/managed-by: "Helm"
+  {{- if .Values.asHook }}
+  {{- /* Add the Helm annotations so that deployment after asHook from true to false works */}}
+  annotations:
+    meta.helm.sh/release-name: "{{ .Release.Name }}"
+    meta.helm.sh/release-namespace: "{{ .Release.Namespace }}"
+    "helm.sh/hook": "post-install,post-upgrade"
+    "helm.sh/hook-weight": "10"
+  {{- end }}
+spec:
+  revisionHistoryLimit: {{ .Values.revisionHistoryLimit }}
+  selector:
+    matchLabels:
+      app: {{ template "sentry.fullname" . }}
+      release: "{{ .Release.Name }}"
+      role: ingest-profiles
+{{- if not .Values.sentry.ingestProfiles.autoscaling.enabled }}
+  replicas: {{ .Values.sentry.ingestProfiles.replicas }}
+{{- end }}
+  template:
+    metadata:
+      annotations:
+        checksum/configYml: {{ .Values.config.configYml | toYaml | toString | sha256sum }}
+        checksum/sentryConfPy: {{ .Values.config.sentryConfPy | sha256sum }}
+        checksum/config.yaml: {{ include (print $.Template.BasePath "/configmap-sentry.yaml") . | sha256sum }}
+        {{- if .Values.sentry.ingestProfiles.annotations }}
+{{ toYaml .Values.sentry.ingestProfiles.annotations | indent 8 }}
+        {{- end }}
+      labels:
+        app: {{ template "sentry.fullname" . }}
+        release: "{{ .Release.Name }}"
+        role: ingest-profiles
+        {{- if .Values.sentry.ingestProfiles.podLabels }}
+{{ toYaml .Values.sentry.ingestProfiles.podLabels | indent 8 }}
+        {{- end }}
+    spec:
+      affinity:
+      {{- if .Values.sentry.ingestProfiles.affinity }}
+{{ toYaml .Values.sentry.ingestProfiles.affinity | indent 8 }}
+      {{- end }}
+      {{- if .Values.sentry.ingestProfiles.nodeSelector }}
+      nodeSelector:
+{{ toYaml .Values.sentry.ingestProfiles.nodeSelector | indent 8 }}
+      {{- end }}
+      {{- if .Values.sentry.ingestProfiles.tolerations }}
+      tolerations:
+{{ toYaml .Values.sentry.ingestProfiles.tolerations | indent 8 }}
+      {{- end }}
+      {{- if .Values.images.sentry.imagePullSecrets }}
+      imagePullSecrets:
+{{ toYaml .Values.images.sentry.imagePullSecrets | indent 8 }}
+      {{- end }}
+      {{- if .Values.dnsPolicy }}
+      dnsPolicy: {{ .Values.dnsPolicy | quote }}
+      {{- end }}
+      {{- if .Values.dnsConfig }}
+      dnsConfig:
+{{ toYaml .Values.dnsConfig | indent 8 }}
+      {{- end }}
+      {{- if .Values.sentry.ingestProfiles.securityContext }}
+      securityContext:
+{{ toYaml .Values.sentry.ingestProfiles.securityContext | indent 8 }}
+      {{- end }}
+      containers:
+      - name: {{ .Chart.Name }}-ingest-profiles
+        image: "{{ template "sentry.image" . }}"
+        imagePullPolicy: {{ default "IfNotPresent" .Values.images.sentry.pullPolicy }}
+        command: ["sentry"]
+        args:
+          - "run"
+          - "ingest-profiles"
+        env:
+        - name: C_FORCE_ROOT
+          value: "true"
+{{ include "sentry.env" . | indent 8 }}
+{{- if .Values.sentry.ingestProfiles.env }}
+{{ toYaml .Values.sentry.ingestProfiles.env | indent 8 }}
+{{- end }}
+        volumeMounts:
+        - mountPath: /etc/sentry
+          name: config
+          readOnly: true
+        - mountPath: {{ .Values.filestore.filesystem.path }}
+          name: sentry-data
+        {{- if and (eq .Values.filestore.backend "gcs") .Values.filestore.gcs.secretName }}
+        - name: sentry-google-cloud-key
+          mountPath: /var/run/secrets/google
+        {{ end }}
+{{- if .Values.sentry.ingestProfiles.volumeMounts }}
+{{ toYaml .Values.sentry.ingestProfiles.volumeMounts | indent 8 }}
+{{- end }}
+        resources:
+{{ toYaml .Values.sentry.ingestProfiles.resources | indent 12 }}
+{{- if .Values.sentry.ingestProfiles.containerSecurityContext }}
+        securityContext:
+{{ toYaml .Values.sentry.ingestProfiles.containerSecurityContext | indent 12 }}
+{{- end }}
+{{- if .Values.sentry.ingestProfiles.sidecars }}
+{{ toYaml .Values.sentry.ingestProfiles.sidecars | indent 6 }}
+{{- end }}
+      {{- if .Values.serviceAccount.enabled }}
+      serviceAccountName: {{ .Values.serviceAccount.name }}-ingest-replay-recordings
+      {{- end }}
+      volumes:
+      - name: config
+        configMap:
+          name: {{ template "sentry.fullname" . }}-sentry
+      - name: sentry-data
+      {{- if and (eq .Values.filestore.backend "filesystem") .Values.filestore.filesystem.persistence.enabled (.Values.filestore.filesystem.persistence.persistentWorkers) }}
+      {{- if .Values.filestore.filesystem.persistence.existingClaim }}
+        persistentVolumeClaim:
+          claimName: {{ .Values.filestore.filesystem.persistence.existingClaim }}
+      {{- else }}
+        persistentVolumeClaim:
+          claimName: {{ template "sentry.fullname" . }}-data
+      {{- end }}
+      {{- else }}
+        emptyDir: {}
+      {{ end }}
+      {{- if and (eq .Values.filestore.backend "gcs") .Values.filestore.gcs.secretName }}
+      - name: sentry-google-cloud-key
+        secret:
+          secretName: {{ .Values.filestore.gcs.secretName }}
+      {{ end }}
+{{- if .Values.sentry.ingestProfiles.volumes }}
+{{ toYaml .Values.sentry.ingestProfiles.volumes | indent 6 }}
+{{- end }}
+      {{- if .Values.sentry.ingestProfiles.priorityClassName }}
+      priorityClassName: "{{ .Values.sentry.ingestProfiles.priorityClassName }}"
+      {{- end }}
+{{- end }}

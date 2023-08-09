@@ -16,6 +16,7 @@
 {{- define "relay.healthCheck.requestPath" -}}/api/relay/healthcheck/live/{{- end -}}
 {{- define "snuba.port" -}}1218{{- end -}}
 {{- define "symbolicator.port" -}}3021{{- end -}}
+{{- define "vroom.port" -}}8085{{- end -}}
 
 {{- define "relay.image" -}}
 {{- default "getsentry/relay" .Values.images.relay.repository -}}
@@ -43,6 +44,12 @@
 {{- default "subfuzion/netcat" .Values.hooks.dbCheck.image.repository -}}
 :
 {{- default "latest" .Values.hooks.dbCheck.image.tag -}}
+{{- end -}}
+
+{{- define "vroom.image" -}}
+{{- default "getsentry/vroom" .Values.images.vroom.repository -}}
+:
+{{- default .Chart.AppVersion .Values.images.vroom.tag -}}
 {{- end -}}
 
 {{/*
@@ -445,12 +452,25 @@ Common Snuba environment variables
 {{- end }}
 {{- end -}}
 
+{{- define "vroom.env" -}}
+- name: SENTRY_KAFKA_BROKERS_PROFILING
+  value: {{ include "sentry.kafka.bootstrap_servers_string" . | quote }}
+- name: SENTRY_KAFKA_BROKERS_OCCURRENCES
+  value: {{ include "sentry.kafka.bootstrap_servers_string" . | quote }}
+- name: SENTRY_BUCKET_PROFILES
+  value: file://localhost//var/lib/sentry-profiles
+- name: SENTRY_SNUBA_HOST
+  value: http://{{ template "sentry.fullname" . }}-snuba:{{ template "snuba.port" . }}
+{{- end -}}
+
 {{/*
 Common Sentry environment variables
 */}}
 {{- define "sentry.env" -}}
 - name: SNUBA
   value: http://{{ template "sentry.fullname" . }}-snuba:{{ template "snuba.port" . }}
+- name: VROOM
+  value: http://{{ template "sentry.fullname" . }}-vroom:{{ template "vroom.port" . }}
 {{- if .Values.sentry.existingSecret }}
 - name: SENTRY_SECRET_KEY
   valueFrom:
