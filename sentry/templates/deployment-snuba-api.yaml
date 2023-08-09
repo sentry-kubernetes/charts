@@ -88,7 +88,7 @@ spec:
         livenessProbe:
           failureThreshold: 5
           httpGet:
-            path: /
+            path: /health
             port: {{ template "snuba.port" }}
             scheme: HTTP
           initialDelaySeconds: {{ .Values.snuba.api.probeInitialDelaySeconds }}
@@ -98,7 +98,7 @@ spec:
         readinessProbe:
           failureThreshold: 10
           httpGet:
-            path: /
+            path: /health
             port: {{ template "snuba.port" }}
             scheme: HTTP
           initialDelaySeconds: {{ .Values.snuba.api.probeInitialDelaySeconds }}

@@ -1,0 +1,123 @@
+{{- if .Values.sentry.features.enableProfiling }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "sentry.fullname" . }}-vroom
+  labels:
+    app: {{ template "sentry.fullname" . }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
+    release: "{{ .Release.Name }}"
+    heritage: "{{ .Release.Service }}"
+    app.kubernetes.io/managed-by: "Helm"
+  {{- if .Values.asHook }}
+  {{- /* Add the Helm annotations so that deployment after asHook from true to false works */}}
+  annotations:
+    meta.helm.sh/release-name: "{{ .Release.Name }}"
+    meta.helm.sh/release-namespace: "{{ .Release.Namespace }}"
+    "helm.sh/hook": "post-install,post-upgrade"
+    "helm.sh/hook-weight": "25"
+  {{- end }}
+spec:
+  selector:
+    matchLabels:
+      app: {{ template "sentry.fullname" . }}
+      release: "{{ .Release.Name }}"
+      role: vroom
+{{- if not .Values.vroom.autoscaling.enabled }}
+  replicas: {{ .Values.vroom.replicas }}
+{{- end }}
+  revisionHistoryLimit: {{ .Values.revisionHistoryLimit }}
+  template:
+    metadata:
+      annotations:
+        {{- if .Values.vroom.annotations }}
+{{ toYaml .Values.vroom.annotations | indent 8 }}
+        {{- end }}
+      labels:
+        app: {{ template "sentry.fullname" . }}
+        release: "{{ .Release.Name }}"
+        role: vroom
+        {{- if .Values.vroom.podLabels }}
+{{ toYaml .Values.vroom.podLabels | indent 8 }}
+        {{- end }}
+    spec:
+      affinity:
+      {{- if .Values.vroom.affinity }}
+{{ toYaml .Values.vroom.affinity | indent 8 }}
+      {{- end }}
+      {{- if .Values.vroom.nodeSelector }}
+      nodeSelector:
+{{ toYaml .Values.vroom.nodeSelector | indent 8 }}
+      {{- end }}
+      {{- if .Values.vroom.tolerations }}
+      tolerations:
+{{ toYaml .Values.vroom.tolerations | indent 8 }}
+      {{- end }}
+      {{- if .Values.images.vroom.imagePullSecrets }}
+      imagePullSecrets:
+{{ toYaml .Values.images.vroom.imagePullSecrets | indent 8 }}
+      {{- end }}
+      {{- if .Values.vroom.securityContext }}
+      securityContext:
+{{ toYaml .Values.vroom.securityContext | indent 8 }}
+      {{- end }}
+      containers:
+      - name: {{ .Chart.Name }}-vroom
+{{- if .Values.vroom.args }}
+        args:
+{{ toYaml .Values.vroom.args | indent 10 }}
+{{- end }}
+        image: "{{ template "vroom.image" . }}"
+        imagePullPolicy: {{ default "IfNotPresent" .Values.images.vroom.pullPolicy }}
+        ports:
+        - containerPort: {{ template "vroom.port" }}
+        env:
+        - name: VROOM_PORT
+          value: '{{ template "vroom.port" }}'
+{{- if .Values.vroom.env }}
+{{ toYaml .Values.vroom.env | indent 8 }}
+{{- end }}
+{{- if .Values.vroom.volumeMounts }}
+        volumeMounts:
+{{ toYaml .Values.vroom.volumeMounts | indent 10 }}
+{{- end }}
+        livenessProbe:
+          failureThreshold: {{ .Values.vroom.probeFailureThreshold }}
+          httpGet:
+            path: /health
+            port: {{ template "vroom.port" }}
+            scheme: HTTP
+          initialDelaySeconds: {{ .Values.vroom.probeInitialDelaySeconds }}
+          periodSeconds: {{ .Values.vroom.probePeriodSeconds }}
+          successThreshold: {{ .Values.vroom.probeSuccessThreshold }}
+          timeoutSeconds: {{ .Values.vroom.probeTimeoutSeconds }}
+        readinessProbe:
+          failureThreshold: {{ .Values.vroom.probeFailureThreshold }}
+          httpGet:
+            path: /health
+            port: {{ template "vroom.port" }}
+            scheme: HTTP
+          initialDelaySeconds: {{ .Values.vroom.probeInitialDelaySeconds }}
+          periodSeconds: {{ .Values.vroom.probePeriodSeconds }}
+          successThreshold: {{ .Values.vroom.probeSuccessThreshold }}
+          timeoutSeconds: {{ .Values.vroom.probeTimeoutSeconds }}
+        resources:
+{{ toYaml .Values.vroom.resources | indent 12 }}
+{{- if .Values.vroom.containerSecurityContext }}
+        securityContext:
+{{ toYaml .Values.vroom.containerSecurityContext | indent 12 }}
+{{- end }}
+{{- if .Values.vroom.sidecars }}
+{{ toYaml .Values.vroom.sidecars | indent 6 }}
+{{- end }}
+      {{- if .Values.serviceAccount.enabled }}
+      serviceAccountName: {{ .Values.serviceAccount.name }}-vroom
+      {{- end }}
+{{- if .Values.vroom.volumes }}
+      volumes:
+{{ toYaml .Values.vroom.volumes | indent 6 }}
+{{- end }}
+      {{- if .Values.vroom.priorityClassName }}
+      priorityClassName: "{{ .Values.vroom.priorityClassName }}"
+      {{- end }}
+{{- end }}
