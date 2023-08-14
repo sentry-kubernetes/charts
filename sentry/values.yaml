@@ -659,6 +659,35 @@ snuba:
     #     emptyDir:
     #       medium: Memory
 
+  issueOccurrenceConsumer:
+    replicas: 1
+    env: []
+    resources: {}
+    affinity: {}
+    nodeSelector: {}
+    securityContext: {}
+    containerSecurityContext: {}
+    # tolerations: []
+    # podLabels: []
+    autoOffsetReset: "earliest"
+    # noStrictOffsetReset: false
+    # maxBatchSize: ""
+    # processes: ""
+    # inputBlockSize: ""
+    # outputBlockSize: ""
+    # maxBatchTimeMs: ""
+    # queuedMaxMessagesKbytes: ""
+    # queuedMinMessages: ""
+
+    # volumeMounts:
+    #   - mountPath: /dev/shm
+    #     name: dshm
+    # volumes:
+    #   - name: dshm
+    #     emptyDir:
+    #       medium: Memory
+    
+
   sessionsConsumer:
     replicas: 1
     env: []
@@ -1172,6 +1201,7 @@ kafka:
       - name: ingest-performance-metrics
       - name: ingest-monitors
       - name: profiles
+      - name: snuba-commit-log
   zookeeper:
     enabled: true
   kraft:
