@@ -1168,7 +1168,9 @@ kafka:
   socketRequestMaxBytes: "50000000"
   provisioning:
     enabled: true
-    # Topic list is based on https://github.com/getsentry/snuba/blob/master/snuba/utils/streams/topics.py
+    # Topic list is based on files below.
+    # - https://github.com/getsentry/snuba/blob/master/snuba/utils/streams/topics.py
+    # - https://github.com/getsentry/self-hosted/blob/master/install/create-kafka-topics.sh#L6
     # Note that snuba component might fail if you set `hooks.snubaInit.kafka.enabled` to `false` and remove the topics from this default topic list.
     topics:
       - name: events
