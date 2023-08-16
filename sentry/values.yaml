@@ -822,6 +822,11 @@ hooks:
     # volumes: []
     # volumeMounts: []
   snubaInit:
+    # As snubaInit doesn't support configuring partition and replication factor, you can disable snubaInit's kafka topic creation by setting `kafka.enabled` to `false`,
+    # and create the topics using `kafka.provisioning.topics` with the desired partition and replication factor.
+    # Note that when you set `kafka.enabled` to `false`, snuba component might fail to start if newly added topics are not created by `kafka.provisioning`.
+    kafka:
+      enabled: true
     # podLabels: []
     podAnnotations: {}
     resources:
@@ -1163,7 +1168,75 @@ kafka:
   socketRequestMaxBytes: "50000000"
   provisioning:
     enabled: true
+    # Topic list is based on files below.
+    # - https://github.com/getsentry/snuba/blob/master/snuba/utils/streams/topics.py
+    # - https://github.com/getsentry/self-hosted/blob/master/install/create-kafka-topics.sh#L6
+    # Note that snuba component might fail if you set `hooks.snubaInit.kafka.enabled` to `false` and remove the topics from this default topic list.
     topics:
+      - name: events
+        config:
+          "message.timestamp.type": LogAppendTime
+      - name: event-replacements
+      - name: snuba-commit-log
+      - name: cdc
+      - name: transactions
+        config:
+          "message.timestamp.type": LogAppendTime
+      - name: snuba-transactions-commit-log
+      - name: snuba-metrics
+        config:
+          "message.timestamp.type": LogAppendTime
+      - name: outcomes
+      - name: ingest-sessions
+      - name: snuba-sessions-commit-log
+      - name: snuba-metrics-commit-log
+      - name: scheduled-subscriptions-events
+      - name: scheduled-subscriptions-transactions
+      - name: scheduled-subscriptions-sessions
+      - name: scheduled-subscriptions-metrics
+      - name: scheduled-subscriptions-generic-metrics-sets
+      - name: scheduled-subscriptions-generic-metrics-distributions
+      - name: scheduled-subscriptions-generic-metrics-counters
+      - name: events-subscription-results
+      - name: transactions-subscription-results
+      - name: sessions-subscription-results
+      - name: metrics-subscription-results
+      - name: generic-metrics-subscription-results
+      - name: snuba-queries
+        config:
+          "message.timestamp.type": LogAppendTime
+      - name: processed-profiles
+        config:
+          "message.timestamp.type": LogAppendTime
+      - name: profiles-call-tree
+      - name: ingest-replay-events
+        config:
+          "message.timestamp.type": LogAppendTime
+          "max.message.bytes": "15000000"
+      - name: snuba-generic-metrics
+        config:
+          "message.timestamp.type": LogAppendTime
+      - name: snuba-generic-metrics-sets-commit-log
+      - name: snuba-generic-metrics-distributions-commit-log
+      - name: snuba-generic-metrics-counters-commit-log
+      - name: generic-events
+        config:
+          "message.timestamp.type": LogAppendTime
+      - name: snuba-generic-events-commit-log
+      - name: group-attributes
+        config:
+          "message.timestamp.type": LogAppendTime
+      - name: snuba-attribution
+      - name: snuba-dead-letter-metrics
+      - name: snuba-dead-letter-metrics-sets
+      - name: snuba-dead-letter-metrics-counters
+      - name: snuba-dead-letter-metrics-distributions
+      - name: snuba-dead-letter-sessions
+      - name: snuba-dead-letter-generic-metrics
+      - name: snuba-dead-letter-replays
+      - name: snuba-dead-letter-generic-events
+      - name: snuba-dead-letter-querylog
+      - name: snuba-dead-letter-group-attributes
       - name: ingest-attachments
       - name: ingest-transactions
       - name: ingest-events
