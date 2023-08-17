@@ -119,7 +119,7 @@ data:
       {{- if .Values.filestore.s3.default_acl }}
       default_acl: {{ .Values.filestore.s3.default_acl | quote }}
       {{- end }}
-      #add comfig params for s3
+      # add config params for s3
       {{- if .Values.filestore.s3.addressing_style }}
       addressing_style: {{ .Values.filestore.s3.addressing_style | quote }}
       {{- end }}
@@ -495,7 +495,7 @@ data:
     #######################
     # OpenAi Suggestions #
     #######################
-    
+
     OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "")
     if OPENAI_API_KEY:
       SENTRY_FEATURES["organizations:open-ai-suggestion"] = True
