@@ -179,6 +179,9 @@ sentry:
     nodeSelector: {}
     # tolerations: []
     # podLabels: []
+    # customCA:
+    #   secretName: custom-ca
+    #   item: ca.crt
 
     # it's better to use prometheus adapter and scale based on
     # the size of the rabbitmq queue

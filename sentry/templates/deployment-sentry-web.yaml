@@ -63,6 +63,21 @@ spec:
       securityContext:
 {{ toYaml .Values.sentry.web.securityContext | indent 8 }}
       {{- end }}
+      {{ if .Values.sentry.web.customCA }}
+      initContainers:
+      - name: {{ .Chart.Name }}-ca-bundle-init
+        image: "{{ template "sentry.image" . }}"
+        imagePullPolicy: {{ default "IfNotPresent" .Values.images.sentry.pullPolicy }}
+        volumeMounts:
+          - name: custom-ca
+            mountPath: /etc/pki/ca-trust/custom
+          - name: cacert
+            mountPath: /tmp/cacert
+        command:
+          - /bin/bash
+          - -c
+          - cat /usr/local/lib/python3.8/site-packages/certifi/cacert.pem /etc/pki/ca-trust/custom/{{ default "ca.crt" .Values.sentry.web.customCA.item }} > /tmp/cacert/cacert.pem
+      {{- end }}
       containers:
       - name: {{ .Chart.Name }}-web
         image: "{{ template "sentry.image" . }}"
@@ -72,10 +87,6 @@ spec:
         - containerPort: {{ template "sentry.port" }}
         env:
 {{ include "sentry.env" . | indent 8 }}
-        {{ if .Values.sentry.web.customCA }}
-        - name: REQUESTS_CA_BUNDLE
-          value: /etc/pki/ca-trust/custom/{{ default "ca.crt" .Values.sentry.web.customCA.item }}
-        {{ end }}
 {{- if .Values.sentry.web.env }}
 {{ toYaml .Values.sentry.web.env | indent 8 }}
 {{- end }}
@@ -94,8 +105,9 @@ spec:
           mountPath: /var/run/secrets/google
         {{ end }}
         {{- if .Values.sentry.web.customCA }}
-        - name: custom-ca
-          mountPath: /etc/pki/ca-trust/custom
+        - name: cacert
+          mountPath: /usr/local/lib/python3.8/site-packages/certifi/cacert.pem
+          subPath: cacert.pem
         {{ end }}
 {{- if .Values.sentry.web.volumeMounts }}
 {{ toYaml .Values.sentry.web.volumeMounts | indent 8 }}
@@ -156,7 +168,9 @@ spec:
       {{- if .Values.sentry.web.customCA }}
       - name: custom-ca
         secret:
-{{ toYaml .Values.sentry.web.customCA | indent 10 }}
+          secretName: {{ .Values.sentry.web.customCA.secretName | quote }}
+      - name: cacert
+        emptyDir: {}
       {{ end }}
       {{- if .Values.sentry.web.priorityClassName }}
       priorityClassName: "{{ .Values.sentry.web.priorityClassName }}"
