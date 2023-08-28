@@ -109,7 +109,7 @@ spec:
 {{ toYaml .Values.sentry.ingestProfiles.sidecars | indent 6 }}
 {{- end }}
       {{- if .Values.serviceAccount.enabled }}
-      serviceAccountName: {{ .Values.serviceAccount.name }}-ingest-replay-recordings
+      serviceAccountName: {{ .Values.serviceAccount.name }}-ingest-profiles
       {{- end }}
       volumes:
       - name: config
