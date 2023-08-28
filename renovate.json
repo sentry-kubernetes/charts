@@ -6,7 +6,13 @@
   "labels": ["renovate"],
   "packageRules": [
     {
-      "matchManagers": ["helmv3", "github-actions"],
+      "matchManagers": ["helmv3"],
+      "matchDatasources": ["helm"],
+      "stabilityDays": 7,
+      "enabled": true
+    },
+    {
+      "matchManagers": ["github-actions"],
       "stabilityDays": 7,
       "enabled": true
     }
