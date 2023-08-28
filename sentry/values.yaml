@@ -326,6 +326,30 @@ sentry:
     # volumeMounts:
     #   - mountPath: /dev/shm
     #     name: dshm
+  ingestOccurrences:
+    replicas: 1
+    env: []
+    resources: {}
+    affinity: {}
+    nodeSelector: {}
+    securityContext: {}
+    containerSecurityContext: {}
+    # tolerations: []
+    # podLabels: []
+
+    # it's better to use prometheus adapter and scale based on
+    # the size of the rabbitmq queue
+    autoscaling:
+      enabled: false
+      minReplicas: 1
+      maxReplicas: 3
+      targetCPUUtilizationPercentage: 50
+    sidecars: []
+    volumes: []
+
+    # volumeMounts:
+    #   - mountPath: /dev/shm
+    #     name: dshm
 
   ingestMonitors:
     replicas: 1
@@ -451,6 +475,19 @@ sentry:
     # volumeMounts: []
 
   postProcessForwardTransactions:
+    replicas: 1
+    env: []
+    resources: {}
+    affinity: {}
+    nodeSelector: {}
+    securityContext: {}
+    containerSecurityContext: {}
+    # tolerations: []
+    # podLabels: []
+    sidecars: []
+    volumes: []
+    # volumeMounts: []
+  postProcessForwardIssuePlatform:
     replicas: 1
     env: []
     resources: {}
@@ -744,6 +781,33 @@ snuba:
     #       medium: Memory
 
   profilingFunctionsConsumer:
+    replicas: 1
+    env: []
+    resources: {}
+    affinity: {}
+    nodeSelector: {}
+    securityContext: {}
+    containerSecurityContext: {}
+    # tolerations: []
+    # podLabels: []
+    autoOffsetReset: "earliest"
+    # noStrictOffsetReset: false
+    # maxBatchSize: ""
+    # processes: ""
+    # inputBlockSize: ""
+    # outputBlockSize: ""
+    # maxBatchTimeMs: ""
+    # queuedMaxMessagesKbytes: ""
+    # queuedMinMessages: ""
+
+    # volumeMounts:
+    #   - mountPath: /dev/shm
+    #     name: dshm
+    # volumes:
+    #   - name: dshm
+    #     emptyDir:
+    #       medium: Memory
+  issueOccurrenceConsumer:
     replicas: 1
     env: []
     resources: {}
@@ -1245,6 +1309,7 @@ kafka:
       - name: ingest-performance-metrics
       - name: ingest-monitors
       - name: profiles
+      - name: ingest-occurrences
   zookeeper:
     enabled: true
   kraft:

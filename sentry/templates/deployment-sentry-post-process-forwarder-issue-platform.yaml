@@ -1,0 +1,141 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "sentry.fullname" . }}-post-process-forward-issue-platform
+  labels:
+    app: sentry
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
+    release: "{{ .Release.Name }}"
+    heritage: "{{ .Release.Service }}"
+    app.kubernetes.io/managed-by: "Helm"
+  {{- if .Values.asHook }}
+  {{- /* Add the Helm annotations so that deployment after asHook from true to false works */}}
+  annotations:
+    meta.helm.sh/release-name: "{{ .Release.Name }}"
+    meta.helm.sh/release-namespace: "{{ .Release.Namespace }}"
+    "helm.sh/hook": "post-install,post-upgrade"
+    "helm.sh/hook-weight": "10"
+  {{- end }}
+spec:
+  revisionHistoryLimit: {{ .Values.revisionHistoryLimit }}
+  selector:
+    matchLabels:
+        app: sentry
+        release: "{{ .Release.Name }}"
+        role: sentry-post-process-forward-issue-platform
+  replicas: {{ .Values.sentry.postProcessForwardIssuePlatform.replicas }}
+  template:
+    metadata:
+      annotations:
+        checksum/configYml: {{ .Values.config.configYml | toYaml | toString | sha256sum }}
+        checksum/sentryConfPy: {{ .Values.config.sentryConfPy | sha256sum }}
+        checksum/config.yaml: {{ include (print $.Template.BasePath "/configmap-sentry.yaml") . | sha256sum }}
+        {{- if .Values.sentry.postProcessForwardIssuePlatform.annotations }}
+{{ toYaml .Values.sentry.postProcessForwardIssuePlatform.annotations | indent 8 }}
+        {{- end }}
+      labels:
+        app: sentry
+        release: "{{ .Release.Name }}"
+        role: sentry-post-process-forward-issue-platform
+        {{- if .Values.sentry.postProcessForwardIssuePlatform.podLabels }}
+{{ toYaml .Values.sentry.postProcessForwardIssuePlatform.podLabels | indent 8 }}
+        {{- end }}
+    spec:
+      affinity:
+      {{- if .Values.sentry.postProcessForwardIssuePlatform.affinity }}
+{{ toYaml .Values.sentry.postProcessForwardIssuePlatform.affinity | indent 8 }}
+      {{- end }}
+      {{- if .Values.sentry.postProcessForwardIssuePlatform.nodeSelector }}
+      nodeSelector:
+{{ toYaml .Values.sentry.postProcessForwardIssuePlatform.nodeSelector | indent 8 }}
+      {{- end }}
+      {{- if .Values.sentry.postProcessForwardIssuePlatform.tolerations }}
+      tolerations:
+{{ toYaml .Values.sentry.postProcessForwardIssuePlatform.tolerations | indent 8 }}
+      {{- end }}
+      {{- if .Values.images.sentry.imagePullSecrets }}
+      imagePullSecrets:
+{{ toYaml .Values.images.sentry.imagePullSecrets | indent 8 }}
+      {{- end }}
+      {{- if .Values.dnsPolicy }}
+      dnsPolicy: {{ .Values.dnsPolicy | quote }}
+      {{- end }}
+      {{- if .Values.dnsConfig }}
+      dnsConfig:
+{{ toYaml .Values.dnsConfig | indent 8 }}
+      {{- end }}
+      {{- if .Values.sentry.postProcessForwardIssuePlatform.securityContext }}
+      securityContext:
+{{ toYaml .Values.sentry.postProcessForwardIssuePlatform.securityContext | indent 8 }}
+      {{- end }}
+      containers:
+      - name: {{ .Chart.Name }}-post-process-forward-issue-platform
+        image: "{{ template "sentry.image" . }}"
+        imagePullPolicy: {{ default "IfNotPresent" .Values.images.sentry.pullPolicy }}
+        command: ["sentry"]
+        args:
+          - "run"
+          - "consumer"
+          - "post-process-forwarder-issue-platform"
+          - "--consumer-group"
+          - "post-process-forwarder"
+          - "--synchronize-commit-log-topic=snuba-generic-events-commit-log"
+          - "--synchronize-commit-group"
+          - "generic_events_group"
+        env:
+{{ include "sentry.env" . | indent 8 }}
+{{- if .Values.sentry.postProcessForwardIssuePlatform.env }}
+{{ toYaml .Values.sentry.postProcessForwardIssuePlatform.env | indent 8 }}
+{{- end }}
+        volumeMounts:
+        - mountPath: /etc/sentry
+          name: config
+          readOnly: true
+        - mountPath: {{ .Values.filestore.filesystem.path }}
+          name: sentry-data
+        {{- if and (eq .Values.filestore.backend "gcs") .Values.filestore.gcs.secretName }}
+        - name: sentry-google-cloud-key
+          mountPath: /var/run/secrets/google
+        {{ end }}
+{{- if .Values.sentry.postProcessForwardIssuePlatform.volumeMounts }}
+{{ toYaml .Values.sentry.postProcessForwardIssuePlatform.volumeMounts | indent 8 }}
+{{- end }}
+        resources:
+{{ toYaml .Values.sentry.postProcessForwardIssuePlatform.resources | indent 12 }}
+{{- if .Values.sentry.postProcessForwardIssuePlatform.containerSecurityContext }}
+        securityContext:
+{{ toYaml .Values.sentry.postProcessForwardIssuePlatform.containerSecurityContext | indent 12 }}
+{{- end }}
+{{- if .Values.sentry.postProcessForwardIssuePlatform.sidecars }}
+{{ toYaml .Values.sentry.postProcessForwardIssuePlatform.sidecars | indent 6 }}
+{{- end }}
+      {{- if .Values.serviceAccount.enabled }}
+      serviceAccountName: {{ .Values.serviceAccount.name }}-post-process-forwarder-issue-platform
+      {{- end }}
+      volumes:
+      - name: config
+        configMap:
+          name: {{ template "sentry.fullname" . }}-sentry
+      - name: sentry-data
+      {{- if and (eq .Values.filestore.backend "filesystem") .Values.filestore.filesystem.persistence.enabled (.Values.filestore.filesystem.persistence.persistentWorkers) }}
+      {{- if .Values.filestore.filesystem.persistence.existingClaim }}
+        persistentVolumeClaim:
+          claimName: {{ .Values.filestore.filesystem.persistence.existingClaim }}
+      {{- else }}
+        persistentVolumeClaim:
+          claimName: {{ template "sentry.fullname" . }}-data
+      {{- end }}
+      {{- else }}
+        emptyDir: {}
+      {{ end }}
+      {{- if and (eq .Values.filestore.backend "gcs") .Values.filestore.gcs.secretName }}
+      - name: sentry-google-cloud-key
+        secret:
+          secretName: {{ .Values.filestore.gcs.secretName }}
+      {{ end }}
+{{- if .Values.sentry.postProcessForwardIssuePlatform.volumes }}
+{{ toYaml .Values.sentry.postProcessForwardIssuePlatform.volumes | indent 6 }}
+{{- end }}
+      {{- if .Values.sentry.postProcessForwardIssuePlatform.priorityClassName }}
+      priorityClassName: "{{ .Values.sentry.postProcessForwardIssuePlatform.priorityClassName }}"
+      {{- end }}

@@ -436,6 +436,7 @@ data:
                 "organizations:metrics-extraction",
                 "organizations:transaction-metrics-extraction",
                 "organizations:session-replay",
+                "organizations:issue-platform",
 
                 {{- if .Values.sentry.features.enableProfiling }}
                 "organizations:profiling",
