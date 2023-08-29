@@ -23,7 +23,7 @@ dependencies:
     condition: clickhouse.enabled
   - name: zookeeper
     repository: https://raw.githubusercontent.com/bitnami/charts/pre-2022/bitnami
-    version: 9.0.0
+    version: 9.2.1
     condition: zookeeper.enabled
   - name: rabbitmq
     repository: oci://registry-1.docker.io/bitnamicharts
