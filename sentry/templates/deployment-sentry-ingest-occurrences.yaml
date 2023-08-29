@@ -111,7 +111,7 @@ spec:
 {{ toYaml .Values.sentry.ingestOccurrences.sidecars | indent 6 }}
 {{- end }}
       {{- if .Values.serviceAccount.enabled }}
-      serviceAccountName: {{ .Values.serviceAccount.name }}-ingest-replay-recordings
+      serviceAccountName: {{ .Values.serviceAccount.name }}-ingest-occurrences
       {{- end }}
       volumes:
       - name: config
