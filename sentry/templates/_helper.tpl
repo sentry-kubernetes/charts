@@ -488,8 +488,8 @@ Common Sentry environment variables
 - name: POSTGRES_PASSWORD
   valueFrom:
     secretKeyRef:
-      name: {{ default (include "sentry.postgresql.fullname" .) .Values.postgresql.existingSecret }}
-      key: {{ default "postgres-password" .Values.postgresql.existingSecretKey }}
+      name: {{ default (include "sentry.postgresql.fullname" .) .Values.postgresql.auth.existingSecret }}
+      key: {{ default "postgres-password" .Values.postgresql.auth.secretKeys.adminPasswordKey }}
 {{- else if .Values.externalPostgresql.password }}
 - name: POSTGRES_PASSWORD
   value: {{ .Values.externalPostgresql.password | quote }}
