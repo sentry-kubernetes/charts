@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ template "sentry.fullname" . }}-subscription-consumer-events
+  name: {{ template "sentry.fullname" . }}-post-process-forward-issue-platform
   labels:
     app: sentry
     chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
@@ -22,60 +22,70 @@ spec:
     matchLabels:
         app: sentry
         release: "{{ .Release.Name }}"
-        role: sentry-subscription-consumer-events
-  replicas: {{ .Values.sentry.subscriptionConsumerEvents.replicas }}
+        role: sentry-post-process-forward-issue-platform
+  replicas: {{ .Values.sentry.postProcessForwardIssuePlatform.replicas }}
   template:
     metadata:
       annotations:
         checksum/configYml: {{ .Values.config.configYml | toYaml | toString | sha256sum }}
         checksum/sentryConfPy: {{ .Values.config.sentryConfPy | sha256sum }}
         checksum/config.yaml: {{ include (print $.Template.BasePath "/configmap-sentry.yaml") . | sha256sum }}
-        {{- if .Values.sentry.subscriptionConsumerEvents.annotations }}
-{{ toYaml .Values.sentry.subscriptionConsumerEvents.annotations | indent 8 }}
+        {{- if .Values.sentry.postProcessForwardIssuePlatform.annotations }}
+{{ toYaml .Values.sentry.postProcessForwardIssuePlatform.annotations | indent 8 }}
         {{- end }}
       labels:
         app: sentry
         release: "{{ .Release.Name }}"
-        role: sentry-subscription-consumer-events
-        {{- if .Values.sentry.subscriptionConsumerEvents.podLabels }}
-{{ toYaml .Values.sentry.subscriptionConsumerEvents.podLabels | indent 8 }}
+        role: sentry-post-process-forward-issue-platform
+        {{- if .Values.sentry.postProcessForwardIssuePlatform.podLabels }}
+{{ toYaml .Values.sentry.postProcessForwardIssuePlatform.podLabels | indent 8 }}
         {{- end }}
     spec:
       affinity:
-      {{- if .Values.sentry.subscriptionConsumerEvents.affinity }}
-{{ toYaml .Values.sentry.subscriptionConsumerEvents.affinity | indent 8 }}
+      {{- if .Values.sentry.postProcessForwardIssuePlatform.affinity }}
+{{ toYaml .Values.sentry.postProcessForwardIssuePlatform.affinity | indent 8 }}
       {{- end }}
-      {{- if .Values.sentry.subscriptionConsumerEvents.nodeSelector }}
+      {{- if .Values.sentry.postProcessForwardIssuePlatform.nodeSelector }}
       nodeSelector:
-{{ toYaml .Values.sentry.subscriptionConsumerEvents.nodeSelector | indent 8 }}
+{{ toYaml .Values.sentry.postProcessForwardIssuePlatform.nodeSelector | indent 8 }}
       {{- end }}
-      {{- if .Values.sentry.subscriptionConsumerEvents.tolerations }}
+      {{- if .Values.sentry.postProcessForwardIssuePlatform.tolerations }}
       tolerations:
-{{ toYaml .Values.sentry.subscriptionConsumerEvents.tolerations | indent 8 }}
+{{ toYaml .Values.sentry.postProcessForwardIssuePlatform.tolerations | indent 8 }}
       {{- end }}
       {{- if .Values.images.sentry.imagePullSecrets }}
       imagePullSecrets:
 {{ toYaml .Values.images.sentry.imagePullSecrets | indent 8 }}
       {{- end }}
-      {{- if .Values.sentry.subscriptionConsumerEvents.securityContext }}
+      {{- if .Values.dnsPolicy }}
+      dnsPolicy: {{ .Values.dnsPolicy | quote }}
+      {{- end }}
+      {{- if .Values.dnsConfig }}
+      dnsConfig:
+{{ toYaml .Values.dnsConfig | indent 8 }}
+      {{- end }}
+      {{- if .Values.sentry.postProcessForwardIssuePlatform.securityContext }}
       securityContext:
-{{ toYaml .Values.sentry.subscriptionConsumerEvents.securityContext | indent 8 }}
+{{ toYaml .Values.sentry.postProcessForwardIssuePlatform.securityContext | indent 8 }}
       {{- end }}
       containers:
-      - name: {{ .Chart.Name }}-subscription-consumer-events
+      - name: {{ .Chart.Name }}-post-process-forward-issue-platform
         image: "{{ template "sentry.image" . }}"
         imagePullPolicy: {{ default "IfNotPresent" .Values.images.sentry.pullPolicy }}
         command: ["sentry"]
         args:
           - "run"
           - "consumer"
-          - "events-subscription-results"
+          - "post-process-forwarder-issue-platform"
           - "--consumer-group"
-          - "query-subscription-consumer"
+          - "post-process-forwarder"
+          - "--synchronize-commit-log-topic=snuba-generic-events-commit-log"
+          - "--synchronize-commit-group"
+          - "generic_events_group"
         env:
 {{ include "sentry.env" . | indent 8 }}
-{{- if .Values.sentry.subscriptionConsumerEvents.env }}
-{{ toYaml .Values.sentry.subscriptionConsumerEvents.env | indent 8 }}
+{{- if .Values.sentry.postProcessForwardIssuePlatform.env }}
+{{ toYaml .Values.sentry.postProcessForwardIssuePlatform.env | indent 8 }}
 {{- end }}
         volumeMounts:
         - mountPath: /etc/sentry
@@ -87,20 +97,20 @@ spec:
         - name: sentry-google-cloud-key
           mountPath: /var/run/secrets/google
         {{ end }}
-{{- if .Values.sentry.subscriptionConsumerEvents.volumeMounts }}
-{{ toYaml .Values.sentry.subscriptionConsumerEvents.volumeMounts | indent 8 }}
+{{- if .Values.sentry.postProcessForwardIssuePlatform.volumeMounts }}
+{{ toYaml .Values.sentry.postProcessForwardIssuePlatform.volumeMounts | indent 8 }}
 {{- end }}
         resources:
-{{ toYaml .Values.sentry.subscriptionConsumerEvents.resources | indent 12 }}
-{{- if .Values.sentry.subscriptionConsumerEvents.containerSecurityContext }}
+{{ toYaml .Values.sentry.postProcessForwardIssuePlatform.resources | indent 12 }}
+{{- if .Values.sentry.postProcessForwardIssuePlatform.containerSecurityContext }}
         securityContext:
-{{ toYaml .Values.sentry.subscriptionConsumerEvents.containerSecurityContext | indent 12 }}
+{{ toYaml .Values.sentry.postProcessForwardIssuePlatform.containerSecurityContext | indent 12 }}
 {{- end }}
-{{- if .Values.sentry.subscriptionConsumerEvents.sidecars }}
-{{ toYaml .Values.sentry.subscriptionConsumerEvents.sidecars | indent 6 }}
+{{- if .Values.sentry.postProcessForwardIssuePlatform.sidecars }}
+{{ toYaml .Values.sentry.postProcessForwardIssuePlatform.sidecars | indent 6 }}
 {{- end }}
       {{- if .Values.serviceAccount.enabled }}
-      serviceAccountName: {{ .Values.serviceAccount.name }}-subscription-consumer-events
+      serviceAccountName: {{ .Values.serviceAccount.name }}-post-process-forwarder-issue-platform
       {{- end }}
       volumes:
       - name: config
@@ -123,9 +133,9 @@ spec:
         secret:
           secretName: {{ .Values.filestore.gcs.secretName }}
       {{ end }}
-{{- if .Values.sentry.subscriptionConsumerEvents.volumes }}
-{{ toYaml .Values.sentry.subscriptionConsumerEvents.volumes | indent 6 }}
+{{- if .Values.sentry.postProcessForwardIssuePlatform.volumes }}
+{{ toYaml .Values.sentry.postProcessForwardIssuePlatform.volumes | indent 6 }}
 {{- end }}
-      {{- if .Values.sentry.subscriptionConsumerEvents.priorityClassName }}
-      priorityClassName: "{{ .Values.sentry.subscriptionConsumerEvents.priorityClassName }}"
+      {{- if .Values.sentry.postProcessForwardIssuePlatform.priorityClassName }}
+      priorityClassName: "{{ .Values.sentry.postProcessForwardIssuePlatform.priorityClassName }}"
       {{- end }}

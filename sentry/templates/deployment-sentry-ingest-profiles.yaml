@@ -1,9 +1,10 @@
+{{- if .Values.sentry.features.enableProfiling }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ template "sentry.fullname" . }}-subscription-consumer-events
+  name: {{ template "sentry.fullname" . }}-ingest-profiles
   labels:
-    app: sentry
+    app: {{ template "sentry.fullname" . }}
     chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
     release: "{{ .Release.Name }}"
     heritage: "{{ .Release.Service }}"
@@ -20,62 +21,70 @@ spec:
   revisionHistoryLimit: {{ .Values.revisionHistoryLimit }}
   selector:
     matchLabels:
-        app: sentry
-        release: "{{ .Release.Name }}"
-        role: sentry-subscription-consumer-events
-  replicas: {{ .Values.sentry.subscriptionConsumerEvents.replicas }}
+      app: {{ template "sentry.fullname" . }}
+      release: "{{ .Release.Name }}"
+      role: ingest-profiles
+{{- if not .Values.sentry.ingestProfiles.autoscaling.enabled }}
+  replicas: {{ .Values.sentry.ingestProfiles.replicas }}
+{{- end }}
   template:
     metadata:
       annotations:
         checksum/configYml: {{ .Values.config.configYml | toYaml | toString | sha256sum }}
         checksum/sentryConfPy: {{ .Values.config.sentryConfPy | sha256sum }}
         checksum/config.yaml: {{ include (print $.Template.BasePath "/configmap-sentry.yaml") . | sha256sum }}
-        {{- if .Values.sentry.subscriptionConsumerEvents.annotations }}
-{{ toYaml .Values.sentry.subscriptionConsumerEvents.annotations | indent 8 }}
+        {{- if .Values.sentry.ingestProfiles.annotations }}
+{{ toYaml .Values.sentry.ingestProfiles.annotations | indent 8 }}
         {{- end }}
       labels:
-        app: sentry
+        app: {{ template "sentry.fullname" . }}
         release: "{{ .Release.Name }}"
-        role: sentry-subscription-consumer-events
-        {{- if .Values.sentry.subscriptionConsumerEvents.podLabels }}
-{{ toYaml .Values.sentry.subscriptionConsumerEvents.podLabels | indent 8 }}
+        role: ingest-profiles
+        {{- if .Values.sentry.ingestProfiles.podLabels }}
+{{ toYaml .Values.sentry.ingestProfiles.podLabels | indent 8 }}
         {{- end }}
     spec:
       affinity:
-      {{- if .Values.sentry.subscriptionConsumerEvents.affinity }}
-{{ toYaml .Values.sentry.subscriptionConsumerEvents.affinity | indent 8 }}
+      {{- if .Values.sentry.ingestProfiles.affinity }}
+{{ toYaml .Values.sentry.ingestProfiles.affinity | indent 8 }}
       {{- end }}
-      {{- if .Values.sentry.subscriptionConsumerEvents.nodeSelector }}
+      {{- if .Values.sentry.ingestProfiles.nodeSelector }}
       nodeSelector:
-{{ toYaml .Values.sentry.subscriptionConsumerEvents.nodeSelector | indent 8 }}
+{{ toYaml .Values.sentry.ingestProfiles.nodeSelector | indent 8 }}
       {{- end }}
-      {{- if .Values.sentry.subscriptionConsumerEvents.tolerations }}
+      {{- if .Values.sentry.ingestProfiles.tolerations }}
       tolerations:
-{{ toYaml .Values.sentry.subscriptionConsumerEvents.tolerations | indent 8 }}
+{{ toYaml .Values.sentry.ingestProfiles.tolerations | indent 8 }}
       {{- end }}
       {{- if .Values.images.sentry.imagePullSecrets }}
       imagePullSecrets:
 {{ toYaml .Values.images.sentry.imagePullSecrets | indent 8 }}
       {{- end }}
-      {{- if .Values.sentry.subscriptionConsumerEvents.securityContext }}
+      {{- if .Values.dnsPolicy }}
+      dnsPolicy: {{ .Values.dnsPolicy | quote }}
+      {{- end }}
+      {{- if .Values.dnsConfig }}
+      dnsConfig:
+{{ toYaml .Values.dnsConfig | indent 8 }}
+      {{- end }}
+      {{- if .Values.sentry.ingestProfiles.securityContext }}
       securityContext:
-{{ toYaml .Values.sentry.subscriptionConsumerEvents.securityContext | indent 8 }}
+{{ toYaml .Values.sentry.ingestProfiles.securityContext | indent 8 }}
       {{- end }}
       containers:
-      - name: {{ .Chart.Name }}-subscription-consumer-events
+      - name: {{ .Chart.Name }}-ingest-profiles
         image: "{{ template "sentry.image" . }}"
         imagePullPolicy: {{ default "IfNotPresent" .Values.images.sentry.pullPolicy }}
         command: ["sentry"]
         args:
           - "run"
-          - "consumer"
-          - "events-subscription-results"
-          - "--consumer-group"
-          - "query-subscription-consumer"
+          - "ingest-profiles"
         env:
+        - name: C_FORCE_ROOT
+          value: "true"
 {{ include "sentry.env" . | indent 8 }}
-{{- if .Values.sentry.subscriptionConsumerEvents.env }}
-{{ toYaml .Values.sentry.subscriptionConsumerEvents.env | indent 8 }}
+{{- if .Values.sentry.ingestProfiles.env }}
+{{ toYaml .Values.sentry.ingestProfiles.env | indent 8 }}
 {{- end }}
         volumeMounts:
         - mountPath: /etc/sentry
@@ -87,20 +96,20 @@ spec:
         - name: sentry-google-cloud-key
           mountPath: /var/run/secrets/google
         {{ end }}
-{{- if .Values.sentry.subscriptionConsumerEvents.volumeMounts }}
-{{ toYaml .Values.sentry.subscriptionConsumerEvents.volumeMounts | indent 8 }}
+{{- if .Values.sentry.ingestProfiles.volumeMounts }}
+{{ toYaml .Values.sentry.ingestProfiles.volumeMounts | indent 8 }}
 {{- end }}
         resources:
-{{ toYaml .Values.sentry.subscriptionConsumerEvents.resources | indent 12 }}
-{{- if .Values.sentry.subscriptionConsumerEvents.containerSecurityContext }}
+{{ toYaml .Values.sentry.ingestProfiles.resources | indent 12 }}
+{{- if .Values.sentry.ingestProfiles.containerSecurityContext }}
         securityContext:
-{{ toYaml .Values.sentry.subscriptionConsumerEvents.containerSecurityContext | indent 12 }}
+{{ toYaml .Values.sentry.ingestProfiles.containerSecurityContext | indent 12 }}
 {{- end }}
-{{- if .Values.sentry.subscriptionConsumerEvents.sidecars }}
-{{ toYaml .Values.sentry.subscriptionConsumerEvents.sidecars | indent 6 }}
+{{- if .Values.sentry.ingestProfiles.sidecars }}
+{{ toYaml .Values.sentry.ingestProfiles.sidecars | indent 6 }}
 {{- end }}
       {{- if .Values.serviceAccount.enabled }}
-      serviceAccountName: {{ .Values.serviceAccount.name }}-subscription-consumer-events
+      serviceAccountName: {{ .Values.serviceAccount.name }}-ingest-profiles
       {{- end }}
       volumes:
       - name: config
@@ -123,9 +132,10 @@ spec:
         secret:
           secretName: {{ .Values.filestore.gcs.secretName }}
       {{ end }}
-{{- if .Values.sentry.subscriptionConsumerEvents.volumes }}
-{{ toYaml .Values.sentry.subscriptionConsumerEvents.volumes | indent 6 }}
+{{- if .Values.sentry.ingestProfiles.volumes }}
+{{ toYaml .Values.sentry.ingestProfiles.volumes | indent 6 }}
 {{- end }}
-      {{- if .Values.sentry.subscriptionConsumerEvents.priorityClassName }}
-      priorityClassName: "{{ .Values.sentry.subscriptionConsumerEvents.priorityClassName }}"
+      {{- if .Values.sentry.ingestProfiles.priorityClassName }}
+      priorityClassName: "{{ .Values.sentry.ingestProfiles.priorityClassName }}"
       {{- end }}
+{{- end }}

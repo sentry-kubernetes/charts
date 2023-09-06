@@ -77,8 +77,10 @@ spec:
         command: ["sentry"]
         args:
           - "run"
+          - "consumer"
+          - "ingest-transactions"
+          - "--consumer-group"
           - "ingest-consumer"
-          - "--consumer-type=transactions"
           {{- if .Values.sentry.ingestConsumer.concurrency }}
           - "--concurrency"
           - "{{ .Values.sentry.ingestConsumer.concurrency }}"
