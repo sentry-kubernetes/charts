@@ -1,0 +1,14 @@
+{{- if .Values.vroom.autoscaling.enabled }}
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ template "sentry.fullname" . }}-vroom
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ template "sentry.fullname" . }}-vroom
+  minReplicas: {{ .Values.vroom.autoscaling.minReplicas }}
+  maxReplicas: {{ .Values.vroom.autoscaling.maxReplicas }}
+  targetCPUUtilizationPercentage: {{ .Values.vroom.autoscaling.targetCPUUtilizationPercentage }}
+{{- end }}
