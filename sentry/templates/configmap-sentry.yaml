@@ -322,6 +322,7 @@ data:
         'max-requests': 100000,
         'max-requests-delta': 500,
         'max-worker-lifetime': 86400,
+        'max-worker-lifetime-delta': 600,
         # Duplicate options from sentry default just so we don't get
         # bit by sentry changing a default value that we depend on.
         'thunder-lock': True,
