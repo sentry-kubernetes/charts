@@ -22,7 +22,7 @@ spec:
     matchLabels:
       app: {{ template "sentry.fullname" . }}
       release: "{{ .Release.Name }}"
-      role: ingest-consumer
+      role: ingest-consumer-attachments
 {{- if not .Values.sentry.ingestConsumer.autoscaling.enabled }}
   replicas: {{ .Values.sentry.ingestConsumer.replicas }}
 {{- end }}
@@ -38,7 +38,7 @@ spec:
       labels:
         app: {{ template "sentry.fullname" . }}
         release: "{{ .Release.Name }}"
-        role: ingest-consumer
+        role: ingest-consumer-attachments
         {{- if .Values.sentry.ingestConsumer.podLabels }}
 {{ toYaml .Values.sentry.ingestConsumer.podLabels | indent 8 }}
         {{- end }}
