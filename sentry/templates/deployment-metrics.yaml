@@ -29,6 +29,9 @@ spec:
         app: {{ template "sentry.fullname" . }}-metrics
         release: "{{ .Release.Name }}"
         role: metrics
+        {{- if .Values.metrics.podLabels }}
+{{ toYaml .Values.metrics.podLabels | indent 8 }}
+        {{- end }}
     spec:
       {{- if .Values.metrics.affinity }}
       affinity:
