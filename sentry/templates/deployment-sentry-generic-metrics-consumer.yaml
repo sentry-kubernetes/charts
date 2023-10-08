@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ template "sentry.fullname" . }}-billing-metrics-consumer
+  name: {{ template "sentry.fullname" . }}-generic-metrics-consumer
   labels:
     app: {{ template "sentry.fullname" . }}
     chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
@@ -22,38 +22,36 @@ spec:
     matchLabels:
       app: {{ template "sentry.fullname" . }}
       release: "{{ .Release.Name }}"
-      role: billing-metrics-consumer
-{{- if not .Values.sentry.billingMetricsConsumer.autoscaling.enabled }}
-  replicas: {{ .Values.sentry.billingMetricsConsumer.replicas }}
-{{- end }}
+      role: generic-metrics-consumer
+  replicas: {{ .Values.sentry.genericMetricsConsumer.replicas }}
   template:
     metadata:
       annotations:
         checksum/configYml: {{ .Values.config.configYml | toYaml | toString | sha256sum }}
         checksum/sentryConfPy: {{ .Values.config.sentryConfPy | sha256sum }}
         checksum/config.yaml: {{ include (print $.Template.BasePath "/configmap-sentry.yaml") . | sha256sum }}
-        {{- if .Values.sentry.billingMetricsConsumer.annotations }}
-{{ toYaml .Values.sentry.billingMetricsConsumer.annotations | indent 8 }}
+        {{- if .Values.sentry.genericMetricsConsumer.annotations }}
+{{ toYaml .Values.sentry.genericMetricsConsumer.annotations | indent 8 }}
         {{- end }}
       labels:
         app: {{ template "sentry.fullname" . }}
         release: "{{ .Release.Name }}"
-        role: billing-metrics-consumer
-        {{- if .Values.sentry.billingMetricsConsumer.podLabels }}
-{{ toYaml .Values.sentry.billingMetricsConsumer.podLabels | indent 8 }}
+        role: generic-metrics-consumer
+        {{- if .Values.sentry.genericMetricsConsumer.podLabels }}
+{{ toYaml .Values.sentry.genericMetricsConsumer.podLabels | indent 8 }}
         {{- end }}
     spec:
       affinity:
-      {{- if .Values.sentry.billingMetricsConsumer.affinity }}
-{{ toYaml .Values.sentry.billingMetricsConsumer.affinity | indent 8 }}
+      {{- if .Values.sentry.genericMetricsConsumer.affinity }}
+{{ toYaml .Values.sentry.genericMetricsConsumer.affinity | indent 8 }}
       {{- end }}
-      {{- if .Values.sentry.billingMetricsConsumer.nodeSelector }}
+      {{- if .Values.sentry.genericMetricsConsumer.nodeSelector }}
       nodeSelector:
-{{ toYaml .Values.sentry.billingMetricsConsumer.nodeSelector | indent 8 }}
+{{ toYaml .Values.sentry.genericMetricsConsumer.nodeSelector | indent 8 }}
       {{- end }}
-      {{- if .Values.sentry.billingMetricsConsumer.tolerations }}
+      {{- if .Values.sentry.genericMetricsConsumer.tolerations }}
       tolerations:
-{{ toYaml .Values.sentry.billingMetricsConsumer.tolerations | indent 8 }}
+{{ toYaml .Values.sentry.genericMetricsConsumer.tolerations | indent 8 }}
       {{- end }}
       {{- if .Values.images.sentry.imagePullSecrets }}
       imagePullSecrets:
@@ -66,35 +64,35 @@ spec:
       dnsConfig:
 {{ toYaml .Values.dnsConfig | indent 8 }}
       {{- end }}
-      {{- if .Values.sentry.billingMetricsConsumer.securityContext }}
+      {{- if .Values.sentry.genericMetricsConsumer.securityContext }}
       securityContext:
-{{ toYaml .Values.sentry.billingMetricsConsumer.securityContext | indent 8 }}
+{{ toYaml .Values.sentry.genericMetricsConsumer.securityContext | indent 8 }}
       {{- end }}
       containers:
-      - name: {{ .Chart.Name }}-billing-metrics-consumer
+      - name: {{ .Chart.Name }}-generic-metrics-consumer
         image: "{{ template "sentry.image" . }}"
         imagePullPolicy: {{ default "IfNotPresent" .Values.images.sentry.pullPolicy }}
         command: ["sentry"]
         args:
           - "run"
           - "consumer"
-          - "billing-metrics-consumer"
+          - "ingest-generic-metrics"
           - "--consumer-group"
-          - "billing-metrics-consumer"
-          {{- if .Values.sentry.billingMetricsConsumer.concurrency }}
+          - "generic-metrics-consumer"
+          {{- if .Values.sentry.genericMetricsConsumer.concurrency }}
           - "--concurrency"
-          - "{{ .Values.sentry.billingMetricsConsumer.concurrency }}"
+          - "{{ .Values.sentry.genericMetricsConsumer.concurrency }}"
           {{- end }}
-          {{- if .Values.sentry.billingMetricsConsumer.maxBatchSize }}
+          {{- if .Values.sentry.genericMetricsConsumer.maxBatchSize }}
           - "--max-batch-size"
-          - "{{ .Values.sentry.billingMetricsConsumer.maxBatchSize }}"
+          - "{{ .Values.sentry.genericMetricsConsumer.maxBatchSize }}"
           {{- end }}
         env:
         - name: C_FORCE_ROOT
           value: "true"
 {{ include "sentry.env" . | indent 8 }}
-{{- if .Values.sentry.billingMetricsConsumer.env }}
-{{ toYaml .Values.sentry.billingMetricsConsumer.env | indent 8 }}
+{{- if .Values.sentry.genericMetricsConsumer.env }}
+{{ toYaml .Values.sentry.genericMetricsConsumer.env | indent 8 }}
 {{- end }}
         volumeMounts:
         - mountPath: /etc/sentry
@@ -106,20 +104,20 @@ spec:
         - name: sentry-google-cloud-key
           mountPath: /var/run/secrets/google
         {{ end }}
-{{- if .Values.sentry.billingMetricsConsumer.volumeMounts }}
-{{ toYaml .Values.sentry.billingMetricsConsumer.volumeMounts | indent 8 }}
+{{- if .Values.sentry.genericMetricsConsumer.volumeMounts }}
+{{ toYaml .Values.sentry.genericMetricsConsumer.volumeMounts | indent 8 }}
 {{- end }}
         resources:
-{{ toYaml .Values.sentry.billingMetricsConsumer.resources | indent 12 }}
-{{- if .Values.sentry.billingMetricsConsumer.containerSecurityContext }}
+{{ toYaml .Values.sentry.genericMetricsConsumer.resources | indent 12 }}
+{{- if .Values.sentry.genericMetricsConsumer.containerSecurityContext }}
         securityContext:
-{{ toYaml .Values.sentry.billingMetricsConsumer.containerSecurityContext | indent 12 }}
+{{ toYaml .Values.sentry.genericMetricsConsumer.containerSecurityContext | indent 12 }}
 {{- end }}
-{{- if .Values.sentry.billingMetricsConsumer.sidecars }}
-{{ toYaml .Values.sentry.billingMetricsConsumer.sidecars | indent 6 }}
+{{- if .Values.sentry.genericMetricsConsumer.sidecars }}
+{{ toYaml .Values.sentry.genericMetricsConsumer.sidecars | indent 6 }}
 {{- end }}
       {{- if .Values.serviceAccount.enabled }}
-      serviceAccountName: {{ .Values.serviceAccount.name }}-billing-metrics-consumer
+      serviceAccountName: {{ .Values.serviceAccount.name }}-generic-metrics-consumer
       {{- end }}
       volumes:
       - name: config
@@ -142,9 +140,9 @@ spec:
         secret:
           secretName: {{ .Values.filestore.gcs.secretName }}
       {{ end }}
-{{- if .Values.sentry.billingMetricsConsumer.volumes }}
-{{ toYaml .Values.sentry.billingMetricsConsumer.volumes | indent 6 }}
+{{- if .Values.sentry.genericMetricsConsumer.volumes }}
+{{ toYaml .Values.sentry.genericMetricsConsumer.volumes | indent 6 }}
 {{- end }}
-      {{- if .Values.sentry.billingMetricsConsumer.priorityClassName }}
-      priorityClassName: "{{ .Values.sentry.billingMetricsConsumer.priorityClassName }}"
+      {{- if .Values.sentry.genericMetricsConsumer.priorityClassName }}
+      priorityClassName: "{{ .Values.sentry.genericMetricsConsumer.priorityClassName }}"
       {{- end }}
