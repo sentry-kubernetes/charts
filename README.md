@@ -1,8 +1,8 @@
-# Sentry helm charts
+# Sentry 10 helm charts
 
 Sentry is a cross-platform crash reporting and aggregation platform.
 
-This repository aims to support Sentry >=10 and move out from the deprecated Helm charts official repo.
+This repository aims to support Sentry 10 and move out from the deprecated Helm charts official repo.
 
 Big thanks to the maintainers of the [deprecated chart](https://github.com/helm/charts/tree/master/stable/sentry). This work has been partly inspired by it.
 
@@ -10,6 +10,21 @@ Big thanks to the maintainers of the [deprecated chart](https://github.com/helm/
 
 `helm repo add sentry https://sentry-kubernetes.github.io/charts`
 
+## Django Cache
+
+Currently this chart only supports Redis cache for django. in order for it to run properly you need to build the docker image yourself with `django_redis` installed by pip.
+You can use a dockerfile like this one:
+```dockerfile
+ARG VERSION=latest
+FROM getsentry/sentry:${VERSION}
+
+COPY requirements.txt /usr/src/sentry/requirements.txt
+
+# Hook for installing additional plugins
+RUN if [ -s /usr/src/sentry/requirements.txt ]; then pip install -r /usr/src/sentry/requirements.txt; fi
+```
+
+And change the docker image repo in values file to point to your desired docker image registry.
 ## Values
 
 For now the full list of values is not documented but you can get inspired by the values.yaml specific to each directory.

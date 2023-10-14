@@ -71,46 +71,51 @@ spec:
       - name: {{ .Chart.Name }}-snuba
         image: "{{ template "snuba.image" . }}"
         imagePullPolicy: {{ default "IfNotPresent" .Values.images.snuba.pullPolicy }}
-        command:
-          - "snuba"
-          - "consumer"
-          - "--storage"
-          - "errors"
-          - "--auto-offset-reset"
-          - "{{ .Values.snuba.consumer.autoOffsetReset }}"
-          - "--max-batch-time-ms"
-          - "750"
-          {{- if .Values.snuba.consumer.maxBatchSize }}
-          - "--max-batch-size"
-          - "{{ .Values.snuba.consumer.maxBatchSize }}"
-          {{- end }}
-          {{- if .Values.snuba.consumer.processes }}
-          - "--processes"
-          - "{{ .Values.snuba.consumer.processes }}"
-          {{- end }}
-          {{- if .Values.snuba.consumer.inputBlockSize }}
-          - "--input-block-size"
-          - "{{ .Values.snuba.consumer.inputBlockSize }}"
-          {{- end }}
-          {{- if .Values.snuba.consumer.outputBlockSize }}
-          - "--output-block-size"
-          - "{{ .Values.snuba.consumer.outputBlockSize }}"
-          {{- end }}
-          {{- if .Values.snuba.consumer.maxBatchTimeMs }}
-          - "--max-batch-time-ms"
-          - "{{ .Values.snuba.consumer.maxBatchTimeMs }}"
-          {{- end }}
-          {{- if .Values.snuba.consumer.queuedMaxMessagesKbytes }}
-          - "--queued-max-messages-kbytes"
-          - "{{ .Values.snuba.consumer.queuedMaxMessagesKbytes }}"
-          {{- end }}
-          {{- if .Values.snuba.consumer.queuedMinMessages }}
-          - "--queued-min-messages"
-          - "{{ .Values.snuba.consumer.queuedMinMessages }}"
-          {{- end }}
-          {{- if .Values.snuba.consumer.noStrictOffsetReset }}
-          - "--no-strict-offset-reset"
-          {{- end }}
+        args:
+        - consumer
+        - --storage
+        - errors
+        - "--auto-offset-reset"
+        - "{{ .Values.snuba.consumer.autoOffsetReset }}"
+        {{- if .Values.snuba.consumer.maxBatchTimeMs }}
+        - "--max-batch-time-ms"
+        - "{{ .Values.snuba.consumer.maxBatchTimeMs }}"
+        {{- end }}
+        {{- if .Values.snuba.consumer.maxBatchSize }}
+        - "--max-batch-size"
+        - "{{ .Values.snuba.consumer.maxBatchSize }}"
+        {{- end }}
+        {{- if .Values.snuba.consumer.queuedMaxMessagesKbytes }}
+        - "--queued-max-messages-kbytes"
+        - "{{ .Values.snuba.consumer.queuedMaxMessagesKbytes }}"
+        {{- end }}
+        {{- if .Values.snuba.consumer.queuedMinMessages }}
+        - "--queued-min-messages"
+        - "{{ .Values.snuba.consumer.queuedMinMessages }}"
+        {{- end }}
+        {{- if .Values.snuba.consumer.noStrictOffsetReset }}
+        - "--no-strict-offset-reset"
+        {{- end }}
+        {{- if and (not .Values.kafka.enabled) .Values.externalKafka.topics }}
+        {{- with .Values.externalKafka.topics }}
+        - --raw-events-topic
+        - {{ .sentryEvents | quote }}
+        - --commit-log-topic
+        - {{ .commitLog | quote }}
+        {{- end }}
+        - --consumer-group
+        - {{ .Values.externalKafka.consumerGroups.commitLog | quote }}
+        {{- end }}
+        - --log-level
+        - {{ .Values.snuba.logging.level }}
+        {{- if .Values.snuba.consumer.processes }}
+        - --processes
+        - {{ .Values.snuba.consumer.processes | quote }}
+        - --input-block-size
+        - {{ required "A valid .Values.consumer.inputBlockSize is required" .Values.snuba.consumer.inputBlockSize | quote }}
+        - --output-block-size
+        - {{ required "A valid .Values.consumer.outputBlockSize is required" .Values.snuba.consumer.outputBlockSize | quote }}
+        {{- end }}
         ports:
         - containerPort: {{ template "snuba.port" }}
         env:
@@ -125,6 +130,10 @@ spec:
         - mountPath: /etc/snuba
           name: config
           readOnly: true
+        {{- if .Values.snuba.consumer.processes }}
+        - mountPath: /dev/shm
+          name: shm
+        {{- end }}
 {{- if .Values.snuba.consumer.volumeMounts }}
 {{ toYaml .Values.snuba.consumer.volumeMounts | indent 8 }}
 {{- end }}
@@ -141,6 +150,11 @@ spec:
         - name: config
           configMap:
             name: {{ template "sentry.fullname" . }}-snuba
+        {{- if .Values.snuba.consumer.processes }}
+        - emptyDir:
+            medium: Memory
+          name: shm
+        {{- end }}
 {{- if .Values.snuba.consumer.volumes }}
 {{ toYaml .Values.snuba.consumer.volumes | indent 8 }}
 {{- end }}

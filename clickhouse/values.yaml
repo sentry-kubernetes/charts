@@ -137,6 +137,14 @@ clickhouse:
   ## The resource limits and requests used by clickhouse
   resources: {}
 
+  init:
+    image: "busybox"
+    imageVersion: "1.31.0"
+    imagePullPolicy: "IfNotPresent"
+  # imagePullSecrets:
+  ## Periodic probe of container liveness. Container will be restarted if the probe fails. Cannot be updated.
+  ## More info: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle#container-probes
+    resources: {}
   livenessProbe:
     enabled: true
     initialDelaySeconds: "30"

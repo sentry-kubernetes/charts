@@ -28,6 +28,8 @@ data:
       url: "http://{{ template "sentry.fullname" . }}-symbolicator:{{ template "symbolicator.port" }}"
     {{- end }}
 
+    transaction-events.force-disable-internal-project: {{ .Values.system.transactionEvents.forceDisableInternalProject }}
+
     ##########
     # Github #
     ##########
@@ -198,7 +200,9 @@ data:
     # and thus various UI optimizations should be enabled.
     SENTRY_SINGLE_ORGANIZATION = {{ if .Values.sentry.singleOrganization }}True{{ else }}False{{ end }}
 
-    SENTRY_OPTIONS["system.event-retention-days"] = int(env('SENTRY_EVENT_RETENTION_DAYS') or {{ .Values.sentry.cleanup.days | quote }})
+    SENTRY_OPTIONS["system.event-retention-days"] = int(env('SENTRY_EVENT_RETENTION_DAYS') or {{ .Values.sentry.eventRetentionDays | quote }} )
+
+    SENTRY_BEACON = {{ .Values.sentry.beacon | ternary "True" "False" }}
 
     #########
     # Queue #
@@ -231,8 +235,82 @@ data:
     #     }
     # }
 
+    CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        {{- if $redisPass }}
+        "LOCATION": ["redis://:{{ $redisPass }}@{{ $redisHost }}:{{ $redisPort }}/0"],
+        {{- else }}
+        "LOCATION": ["redis://{{ $redisHost }}:{{ $redisPort }}"],
+        {{- end }}
+        "TIMEOUT": 3600,
+        'OPTIONS': {
+            'CLIENT_CLASS': 'django_redis.client.DefaultClient',
+            'SOCKET_CONNECT_TIMEOUT': 0.3,  # in seconds
+            'SOCKET_TIMEOUT': 0.3,  # in seconds
+            'IGNORE_EXCEPTIONS': True,
+            'CONNECTION_POOL_KWARGS': {
+                'max_connections': 100,
+                'socket_keepalive': 15,
+            }
+        },
+      }
+    }
+
     # A primary cache is required for things such as processing events
     SENTRY_CACHE = "sentry.cache.redis.RedisCache"
+
+    {{ if and (not .Values.kafka.enabled) .Values.externalKafka.topics }}
+    {{- with .Values.externalKafka.topics }}
+    KAFKA_EVENTS = {{ .sentryEvents | quote }}
+    KAFKA_TRANSACTIONS = {{ .sentryEvents | quote }}
+    KAFKA_OUTCOMES = {{ .outcomes | quote }}
+    KAFKA_EVENTS_SUBSCRIPTIONS_RESULTS = {{ .eventsSubscriptionResults | quote }}
+    KAFKA_TRANSACTIONS_SUBSCRIPTIONS_RESULTS = {{ .transactionsSubscriptionResults | quote }}
+    KAFKA_SUBSCRIPTION_RESULT_TOPICS = {
+        "events": {{ .eventsSubscriptionResults | quote }},
+        "transactions": {{ .transactionsSubscriptionResults | quote }},
+    }
+    KAFKA_INGEST_EVENTS = {{ .ingestEvents | quote }}
+    KAFKA_INGEST_ATTACHMENTS = {{ .ingestAttachments | quote }}
+    KAFKA_INGEST_TRANSACTIONS = {{ .ingestTransactions | quote }}
+
+    KAFKA_INGEST_PERFORMANCE_METRICS = {{ .ingestPerformanceMetrics | quote }}
+    KAFKA_INGEST_METRICS = {{ .ingestMetrics | quote }}
+    KAFKA_SNUBA_GENERIC_METRICS = {{ .snubaGenericMetrics | quote }}
+    KAFKA_SNUBA_METRICS = {{ .snubaMetrics | quote }}
+    KAFKA_OUTCOMES_BILLING = {{ .outcomesBilling | quote }}
+    
+    KAFKA_TOPICS = {
+        KAFKA_OUTCOMES_BILLING: {"cluster": "default", "topic": KAFKA_OUTCOMES_BILLING},
+        KAFKA_EVENTS: {"cluster": "default", "topic": KAFKA_EVENTS},
+        KAFKA_TRANSACTIONS: {"cluster": "default", "topic": KAFKA_TRANSACTIONS},
+        KAFKA_OUTCOMES: {"cluster": "default", "topic": KAFKA_OUTCOMES},
+        KAFKA_EVENTS_SUBSCRIPTIONS_RESULTS: {
+            "cluster": "default",
+            "topic": KAFKA_EVENTS_SUBSCRIPTIONS_RESULTS,
+        },
+        KAFKA_TRANSACTIONS_SUBSCRIPTIONS_RESULTS: {
+            "cluster": "default",
+            "topic": KAFKA_TRANSACTIONS_SUBSCRIPTIONS_RESULTS,
+        },
+        # Topic for receiving simple events (error events without attachments) from Relay
+        KAFKA_INGEST_EVENTS: {"cluster": "default", "topic": KAFKA_INGEST_EVENTS},
+        # Topic for receiving 'complex' events (error events with attachments) from Relay
+        KAFKA_INGEST_ATTACHMENTS: {"cluster": "default", "topic": KAFKA_INGEST_ATTACHMENTS},
+        # Topic for receiving transaction events (APM events) from Relay
+        KAFKA_INGEST_TRANSACTIONS: {"cluster": "default", "topic": KAFKA_INGEST_TRANSACTIONS},
+        # Topic for receiving metrics from Relay
+        KAFKA_INGEST_METRICS: {"cluster": "default", "topic": KAFKA_INGEST_METRICS},
+        # Topic for receiving profiles from Relay
+        KAFKA_INGEST_PERFORMANCE_METRICS: {"cluster": "default", "topic": KAFKA_INGEST_PERFORMANCE_METRICS},
+        KAFKA_SNUBA_GENERIC_METRICS: {"cluster": "default", "topic": KAFKA_SNUBA_GENERIC_METRICS},
+        KAFKA_SNUBA_METRICS: {"cluster": "default", "topic": KAFKA_SNUBA_METRICS},
+        
+    }
+
+    {{- end }}
+    {{- end }}
 
     DEFAULT_KAFKA_OPTIONS = {
         "bootstrap.servers": {{ (include "sentry.kafka.bootstrap_servers_string" .) | quote }},
@@ -311,13 +389,14 @@ data:
         "protocol": "uwsgi",
         # This is needed to prevent https://git.io/fj7Lw
         "uwsgi-socket": None,
+        "so-keepalive": True,
         # Keep this between 15s-75s as that's what Relay supports
         "http-keepalive": {{ .Values.config.web.httpKeepalive }},
         "http-chunked-input": True,
         # the number of web workers
         'workers': 3,
-        # Turn off memory reporting
-        "memory-report": False,
+        'threads': 4,
+        'memory-report': False,
         # Some stuff so uwsgi will cycle workers sensibly
         'max-requests': 100000,
         'max-requests-delta': 500,
@@ -342,10 +421,10 @@ data:
     # If you're using a reverse SSL proxy, you should enable the X-Forwarded-Proto
     # header and enable the settings below
 
-    # SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-    # SESSION_COOKIE_SECURE = True
-    # CSRF_COOKIE_SECURE = True
-    # SOCIAL_AUTH_REDIRECT_IS_HTTPS = True
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    SOCIAL_AUTH_REDIRECT_IS_HTTPS = True
 
     # End of SSL/TLS settings
 
@@ -353,9 +432,11 @@ data:
     # Features #
     ############
 
-
+    
+    SENTRY_FEATURES["organizations:invite-members"] = {{ .Values.sentry.features.enableInvites | ternary "True" "False" }}
+    SENTRY_ENABLE_INVITES = {{ .Values.sentry.features.enableInvites | ternary "True" "False" }}
     SENTRY_FEATURES = {
-      "auth:register": {{ .Values.auth.register | ternary "True" "False" }}
+      "auth:register": {{ .Values.sentry.features.auth.register | ternary "True" "False" }}
     }
     SENTRY_FEATURES["projects:sample-events"] = False
     SENTRY_FEATURES.update(
@@ -462,6 +543,7 @@ data:
                 "projects:similarity-indexing",
                 "projects:similarity-view-v2",
                 "projects:similarity-indexing-v2",
+                "projects:reprocessing-v2",
 
                 "projects:plugins",
             )
@@ -507,6 +589,15 @@ data:
         'host': '{{ template "sentry.fullname" . }}-metrics',
         'port': 9125,
     }
+    SENTRY_METRICS_SAMPLE_RATE = 1.0
+    metrics_prefix = os.environ.get("METRICS_PREFIX", "")
+    SENTRY_METRICS_PREFIX = "sentry." + metrics_prefix + "." if metrics_prefix else ""
+    SENTRY_METRICS_SKIP_INTERNAL_PREFIXES = []  # Order this by most frequent prefixes.
+    SENTRY_APM_SAMPLING = 0
+    SENTRY_SYMBOLICATE_EVENT_APM_SAMPLING = 0.1
+    SENTRY_PROCESS_EVENT_APM_SAMPLING = 0.05
+    SENTRY_INGEST_CONSUMER_APM_SAMPLING = 0.05
+    SENTRY_RELAY_ENDPOINT_APM_SAMPLING = 0.1
 {{- end }}
 
 {{- if .Values.slack.existingSecret }}

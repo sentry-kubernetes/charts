@@ -75,11 +75,11 @@ spec:
         command: ["sentry"]
         args:
           - "run"
-          - "consumer"
-          - "post-process-forwarder-transactions"
-          - "--consumer-group"
           - "post-process-forwarder"
-          - "--synchronize-commit-log-topic=snuba-transactions-commit-log"
+          - "--entity"
+          - "transactions"
+          - "--commit-log-topic"
+          - {{ .Values.externalKafka.topics.commitLog | quote }}
           - "--synchronize-commit-group"
           - "transactions_group"
         env:

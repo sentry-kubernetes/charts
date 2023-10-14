@@ -32,13 +32,28 @@ data:
         - name: "message.max.bytes"
           value: 50000000  # 50MB or bust
 
+      {{- if and (not .Values.kafka.enabled) .Values.externalKafka.topics }}
+      topics:
+      {{- with .Values.externalKafka.topics }}
+        events: {{ .ingestEvents | quote }}
+        attachments: {{ .ingestAttachments | quote }}
+        transactions: {{ .ingestTransactions | quote }}
+        sessions: {{ .ingestSessions | quote }}
+        outcomes: {{ .outcomes | quote }}
+        metrics_transactions: {{ .ingestPerformanceMetrics | quote }}
+        metrics_sessions: {{ .ingestMetrics | quote }}
+      {{- end }}
+      {{- end }}
+
       {{- if $redisPass }}
       redis: "redis://:{{ $redisPass }}@{{ $redisHost }}:{{ $redisPort }}"
       {{- else }}
       redis: "redis://{{ $redisHost }}:{{ $redisPort }}"
       {{- end }}
-      topics:
-        metrics_transactions: ingest-performance-metrics
-        metrics_sessions: ingest-metrics
+    {{ if .Values.metrics.enabled }}
+    metrics:
+      statsd: {{ template "sentry.fullname" . }}-metrics:9125
+      prefix: sentry.relay
+    {{- end }}
 
 {{ .Values.config.relay | indent 4 }}

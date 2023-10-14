@@ -33,51 +33,7 @@ data:
         <timezone>{{ .Values.timezone | default "Asia/Shanghai" }}</timezone>
         <umask>{{ .Values.clickhouse.configmap.umask | default "027" }}</umask>
         <mlock_executable>{{ .Values.clickhouse.configmap.mlock_executable | default "false" }}</mlock_executable>
-        {{- if .Values.clickhouse.configmap.remote_servers.enabled }}
-        <remote_servers>
-            <{{ include "clickhouse.fullname" . }}>
-            {{- range untilStep 0 (int .Values.clickhouse.replicas) 1 }}
-                <shard>
-                    <replica>
-                        <internal_replication>{{ $.Values.clickhouse.configmap.remote_servers.internal_replication | default "false" }}</internal_replication>
-                        <host>{{ include "clickhouse.fullname" $ }}-{{ . }}.{{ include "clickhouse.fullname" $ }}-headless.{{ $.Release.Namespace }}.svc.{{ $.Values.clusterDomain }}</host>
-                        <port>{{ $.Values.clickhouse.tcp_port}}</port>
-                      {{- if $.Values.clickhouse.configmap.remote_servers.replica.user }}
-                        <user>{{ $.Values.clickhouse.configmap.remote_servers.replica.user }}</user>
-                      {{- end }}
-                      {{- if $.Values.clickhouse.configmap.remote_servers.replica.password }}
-                        <password>{{ $.Values.clickhouse.configmap.remote_servers.replica.password }}</password>
-                      {{- end }}
-                      {{- if $.Values.clickhouse.configmap.remote_servers.replica.secure }}
-                        <secure>{{ $.Values.clickhouse.configmap.remote_servers.replica.secure }}</secure>
-                      {{- end }}
-                      {{- if $.Values.clickhouse.configmap.remote_servers.replica.compression }}
-                        <compression>{{ $.Values.clickhouse.configmap.remote_servers.replica.compression }}</compression>
-                      {{- end }}
-                    </replica>
-                    {{- if $.Values.clickhouse.configmap.remote_servers.replica.backup.enabled }}
-                    <replica>
-                        <host>{{ include "clickhouse.fullname" $ }}-replica-{{ . }}.{{ include "clickhouse.fullname" $ }}-replica-headless.{{ $.Release.Namespace }}.svc.{{ $.Values.clusterDomain }}</host>
-                        <port>{{ $.Values.clickhouse.tcp_port}}</port>
-                      {{- if $.Values.clickhouse.configmap.remote_servers.replica.user }}
-                        <user>{{ $.Values.clickhouse.configmap.remote_servers.replica.user }}</user>
-                      {{- end }}
-                      {{- if $.Values.clickhouse.configmap.remote_servers.replica.password }}
-                        <password>{{ $.Values.clickhouse.configmap.remote_servers.replica.password }}</password>
-                      {{- end }}
-                      {{- if $.Values.clickhouse.configmap.remote_servers.replica.secure }}
-                        <secure>{{ $.Values.clickhouse.configmap.remote_servers.replica.secure }}</secure>
-                      {{- end }}
-                      {{- if $.Values.clickhouse.configmap.remote_servers.replica.compression }}
-                        <compression>{{ $.Values.clickhouse.configmap.remote_servers.replica.compression }}</compression>
-                      {{- end }}
-                    </replica>
-                    {{- end }}
-                </shard>   
-            {{- end }}
-            </{{ include "clickhouse.fullname" . }}>
-        </remote_servers>
-        {{- end }}
+        <remote_servers incl="clickhouse_remote_servers" optional="true" />
         <zookeeper incl="zookeeper-servers" optional="true" />
         <macros incl="macros" optional="true" />
         <builtin_dictionaries_reload_interval>{{ .Values.clickhouse.configmap.builtin_dictionaries_reload_interval | default "3600" }}</builtin_dictionaries_reload_interval>

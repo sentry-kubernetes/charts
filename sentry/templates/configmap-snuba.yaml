@@ -18,6 +18,8 @@ data:
 
     DEBUG = env("DEBUG", "0").lower() in ("1", "true")
 
+    DEFAULT_RETENTION_DAYS = env("SENTRY_EVENT_RETENTION_DAYS", 90)
+
     # Clickhouse Options
     CLUSTERS = [
       {
@@ -48,21 +50,44 @@ data:
             "spans",
             "group_attributes",
         },
-        {{- /*
-          The default clickhouse installation runs in distributed mode, while the external
-          clickhouse configured can be configured any way you choose
-        */}}
-        {{- if and .Values.externalClickhouse.singleNode (not .Values.clickhouse.enabled) }}
-        "single_node": True,
-        {{- else }}
+        {{- if or (and .Values.clickhouse.enabled (not .Values.clickhouse.singleNode)) (not .Values.externalClickhouse.singleNode) }}
         "single_node": False,
         {{- end }}
         {{- if or .Values.clickhouse.enabled (not .Values.externalClickhouse.singleNode) }}
         "cluster_name": {{ include "sentry.clickhouse.cluster.name" . | quote }},
         "distributed_cluster_name": {{ include "sentry.clickhouse.cluster.name" . | quote }},
+        {{- else }}
+        "single_node": True,
         {{- end }}
       },
     ]
+
+    {{ if and (not .Values.kafka.enabled) .Values.externalKafka.topics }}
+    {{- with .Values.externalKafka.topics }}
+    KAFKA_TOPIC_MAP = {
+      "events": {{ .sentryEvents | quote }},
+      "event-replacements": {{ .replacement | quote }},
+      "snuba-commit-log": {{ .commitLog | quote }},
+      "cdc": {{ .cdc | default "cdc" | quote }},
+      "snuba-metrics": {{ .snubaMetrics | default "snuba-metrics" | quote }},
+      "outcomes": {{ .outcomes | quote }},
+      "ingest-sessions": {{ .ingestSessions | quote }},
+      "snuba-sessions-commit-log": {{ .commitLog | quote }},
+      "snuba-metrics-commit-log": {{ .commitLog | quote }},
+      "scheduled-subscriptions-events": {{ .scheduledSubscriptionsEvents | default "scheduled-subscriptions-events" | quote }},
+      "scheduled-subscriptions-transactions": {{ .scheduledSubscriptionsTransactions | default "scheduled-subscriptions-transactions" | quote }},
+      "scheduled-subscriptions-sessions": {{ .scheduledSubscriptionsSessions | default "scheduled-subscriptions-sessions" | quote }},
+      "scheduled-subscriptions-metrics": {{ .scheduledSubscriptionsMetrics | default "scheduled-subscriptions-metrics" | quote }},
+      "events-subscription-results": {{ .eventsSubscriptionResults | quote }},
+      "transactions-subscription-results": {{ .transactionsSubscriptionResults | quote }},
+      "sessions-subscription-results": {{ .sessionsSubscriptionResults | default "sessions-subscription-results" | quote }},
+      "metrics-subscription-results": {{ .metricsSubscriptionResults | default "metrics-subscription-results" | quote }},
+      "snuba-queries": {{ .snubaQueries | default "snuba-queries" | quote }},
+      "processed-profiles": {{ .processedProfiles | default "processed-profiles" | quote }},
+    }
+    {{- end }}
+    {{- end }}
+
 
     # Redis Options
     REDIS_HOST = {{ include "sentry.redis.host" . | quote }}
@@ -76,5 +101,7 @@ data:
     DOGSTATSD_HOST = "{{ template "sentry.fullname" . }}-metrics"
     DOGSTATSD_PORT = 9125
 {{- end }}
+
+    SENTRY_DSN = env("SENTRY_DSN")
 
 {{ .Values.config.snubaSettingsPy | indent 4 }}

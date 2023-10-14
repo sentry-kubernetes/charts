@@ -75,12 +75,11 @@ spec:
         command: ["sentry"]
         args:
           - "run"
-          - "consumer" 
-          - "post-process-forwarder-errors"
-          - "--consumer-group"
           - "post-process-forwarder"
-          - "--synchronize-commit-log-topic=snuba-commit-log"
-          - "--synchronize-commit-group=snuba-consumers"
+          - --commit-log-topic
+          - {{ .Values.externalKafka.topics.commitLog | quote }}
+          - "--entity"
+          - "errors"
         env:
 {{ include "sentry.env" . | indent 8 }}
 {{- if .Values.sentry.postProcessForwardErrors.env }}

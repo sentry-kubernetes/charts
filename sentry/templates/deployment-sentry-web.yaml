@@ -68,9 +68,18 @@ spec:
         image: "{{ template "sentry.image" . }}"
         imagePullPolicy: {{ default "IfNotPresent" .Values.images.sentry.pullPolicy }}
         command: ["sentry", "run", "web"]
+        args:
+          {{- if .Values.sentry.web.workers }}
+          - --workers
+          - {{ .Values.sentry.web.workers | quote }}
+          {{- end }}
         ports:
         - containerPort: {{ template "sentry.port" }}
         env:
+        - name: METRICS_PREFIX
+          value: "web"
+        - name: SENTRY_LOG_LEVEL
+          value: {{ .Values.sentry.logging.level | default "INFO" | quote }}
 {{ include "sentry.env" . | indent 8 }}
         {{ if .Values.sentry.web.customCA }}
         - name: REQUESTS_CA_BUNDLE
@@ -79,6 +88,9 @@ spec:
 {{- if .Values.sentry.web.env }}
 {{ toYaml .Values.sentry.web.env | indent 8 }}
 {{- end }}
+        envFrom:
+        - secretRef:
+            name: {{ template "sentry.fullname" . }}-sentry-env
         volumeMounts:
         - mountPath: /etc/sentry
           name: config

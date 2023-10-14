@@ -77,13 +77,16 @@ spec:
       containers:
       - name: snuba-migrate
         image: "{{ template "snuba.image" . }}"
-        command: [snuba, migrations, migrate, --force]
+        args: 
+        - migrations
+        - migrate
+        - --force
         env:
         - name: LOG_LEVEL
           value: debug
 {{ include "sentry.snuba.env" . | indent 8 }}
-{{- if .Values.snuba.migrateJob.env }}
-{{ toYaml .Values.snuba.migrateJob.env | indent 8 }}
+{{- if .Values.hooks.snubaInit.env }}
+{{ toYaml .Values.hooks.snubaInit.env | indent 8 }}
 {{- end }}
         envFrom:
         - secretRef:

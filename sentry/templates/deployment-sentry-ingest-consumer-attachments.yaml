@@ -81,10 +81,6 @@ spec:
           - "ingest-attachments"
           - "--consumer-group"
           - "ingest-consumer"
-          {{- if .Values.sentry.ingestConsumer.concurrency }}
-          - "--concurrency"
-          - "{{ .Values.sentry.ingestConsumer.concurrency }}"
-          {{- end }}
           {{- if .Values.sentry.ingestConsumer.maxBatchSize }}
           - "--max-batch-size"
           - "{{ .Values.sentry.ingestConsumer.maxBatchSize }}"

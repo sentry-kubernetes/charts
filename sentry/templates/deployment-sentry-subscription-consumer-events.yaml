@@ -67,16 +67,29 @@ spec:
         imagePullPolicy: {{ default "IfNotPresent" .Values.images.sentry.pullPolicy }}
         command: ["sentry"]
         args:
-          - "run"
-          - "consumer"
-          - "events-subscription-results"
-          - "--consumer-group"
-          - "query-subscription-consumer"
+          - run
+          - query-subscription-consumer
+          - --max-batch-size={{ default "1" .Values.sentry.subscriptionConsumerEvents.commitBatchSize }}
+          {{- if and (not .Values.kafka.enabled) .Values.externalKafka.topics }}
+          - --topic={{ .Values.externalKafka.topics.eventsSubscriptionResults }}
+          {{- else }}
+          - --topic=events-subscription-results
+          {{- end }}
+          {{- if and (not .Values.kafka.enabled) .Values.externalKafka.consumerGroups }}
+          - --group={{ .Values.externalKafka.consumerGroups.sentrySubscription }}
+          {{- end }}
         env:
+        - name: METRICS_PREFIX
+          value: "subscription_consumer_events"
+        - name: SENTRY_LOG_LEVEL
+          value: {{ .Values.sentry.logging.level | default "INFO" | quote }}
 {{ include "sentry.env" . | indent 8 }}
 {{- if .Values.sentry.subscriptionConsumerEvents.env }}
 {{ toYaml .Values.sentry.subscriptionConsumerEvents.env | indent 8 }}
 {{- end }}
+        envFrom:
+        - secretRef:
+            name: {{ template "sentry.fullname" . }}-sentry-env
         volumeMounts:
         - mountPath: /etc/sentry
           name: config

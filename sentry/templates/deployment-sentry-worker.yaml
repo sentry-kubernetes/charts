@@ -76,10 +76,17 @@ spec:
         env:
         - name: C_FORCE_ROOT
           value: "true"
+        - name: METRICS_PREFIX
+          value: "worker"
+        - name: SENTRY_LOG_LEVEL
+          value: {{ .Values.sentry.logging.level | default "INFO" | quote }}
 {{ include "sentry.env" . | indent 8 }}
 {{- if .Values.sentry.worker.env }}
 {{ toYaml .Values.sentry.worker.env | indent 8 }}
 {{- end }}
+        envFrom:
+        - secretRef:
+            name: {{ template "sentry.fullname" . }}-sentry-env
         volumeMounts:
         - mountPath: /etc/sentry
           name: config

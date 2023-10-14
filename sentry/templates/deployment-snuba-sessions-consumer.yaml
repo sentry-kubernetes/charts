@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ template "sentry.fullname" . }}-sessions-consumer
+  name: {{ template "sentry.fullname" . }}-snuba-sessions-consumer
   labels:
     app: {{ template "sentry.fullname" . }}
     chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
@@ -71,46 +71,51 @@ spec:
       - name: {{ .Chart.Name }}-snuba
         image: "{{ template "snuba.image" . }}"
         imagePullPolicy: {{ default "IfNotPresent" .Values.images.snuba.pullPolicy }}
-        command:
-          - "snuba"
-          - "consumer"
-          - "--storage"
-          - "sessions_raw"
-          - "--auto-offset-reset"
-          - "{{ .Values.snuba.sessionsConsumer.autoOffsetReset }}"
-          - "--max-batch-time-ms"
-          - "750"
-          {{- if .Values.snuba.sessionsConsumer.maxBatchSize }}
-          - "--max-batch-size"
-          - "{{ .Values.snuba.sessionsConsumer.maxBatchSize }}"
-          {{- end }}
-          {{- if .Values.snuba.sessionsConsumer.processes }}
-          - "--processes"
-          - "{{ .Values.snuba.sessionsConsumer.processes }}"
-          {{- end }}
-          {{- if .Values.snuba.sessionsConsumer.inputBlockSize }}
-          - "--input-block-size"
-          - "{{ .Values.snuba.sessionsConsumer.inputBlockSize }}"
-          {{- end }}
-          {{- if .Values.snuba.sessionsConsumer.outputBlockSize }}
-          - "--output-block-size"
-          - "{{ .Values.snuba.sessionsConsumer.outputBlockSize }}"
-          {{- end }}
-          {{- if .Values.snuba.sessionsConsumer.maxBatchTimeMs }}
-          - "--max-batch-time-ms"
-          - "{{ .Values.snuba.sessionsConsumer.maxBatchTimeMs }}"
-          {{- end }}
-          {{- if .Values.snuba.sessionsConsumer.queuedMaxMessagesKbytes }}
-          - "--queued-max-messages-kbytes"
-          - "{{ .Values.snuba.sessionsConsumer.queuedMaxMessagesKbytes }}"
-          {{- end }}
-          {{- if .Values.snuba.sessionsConsumer.queuedMinMessages }}
-          - "--queued-min-messages"
-          - "{{ .Values.snuba.sessionsConsumer.queuedMinMessages }}"
-          {{- end }}
-          {{- if .Values.snuba.sessionsConsumer.noStrictOffsetReset }}
-          - "--no-strict-offset-reset"
-          {{- end }}
+        args:
+        - consumer
+        - --storage
+        - sessions_raw
+        - "--auto-offset-reset"
+        - "{{ .Values.snuba.sessionsConsumer.autoOffsetReset }}"
+        {{- if .Values.snuba.sessionsConsumer.maxBatchTimeMs }}
+        - "--max-batch-time-ms"
+        - "{{ .Values.snuba.sessionsConsumer.maxBatchTimeMs }}"
+        {{- end }}
+        {{- if .Values.snuba.sessionsConsumer.maxBatchSize }}
+        - "--max-batch-size"
+        - "{{ .Values.snuba.sessionsConsumer.maxBatchSize }}"
+        {{- end }}
+        {{- if .Values.snuba.sessionsConsumer.queuedMaxMessagesKbytes }}
+        - "--queued-max-messages-kbytes"
+        - "{{ .Values.snuba.sessionsConsumer.queuedMaxMessagesKbytes }}"
+        {{- end }}
+        {{- if .Values.snuba.sessionsConsumer.queuedMinMessages }}
+        - "--queued-min-messages"
+        - "{{ .Values.snuba.sessionsConsumer.queuedMinMessages }}"
+        {{- end }}
+        {{- if .Values.snuba.sessionsConsumer.noStrictOffsetReset }}
+        - "--no-strict-offset-reset"
+        {{- end }}
+        {{- if and (not .Values.kafka.enabled) .Values.externalKafka.topics }}
+        {{- with .Values.externalKafka.topics }}
+        - --raw-events-topic
+        - {{ .ingestSessions | quote }}
+        - --commit-log-topic
+        - {{ .commitLog | quote }}
+        {{- end }}
+        - --consumer-group
+        - {{ .Values.externalKafka.consumerGroups.commitLog | quote }}
+        {{- end }}
+        - --log-level
+        - {{ .Values.snuba.logging.level }}
+        {{- if .Values.snuba.sessionsConsumer.processes }}
+        - --processes
+        - {{ .Values.snuba.sessionsConsumer.processes | quote }}
+        - --input-block-size
+        - {{ required "A valid .Values.sessionsConsumer.inputBlockSize is required" .Values.snuba.sessionsConsumer.inputBlockSize | quote }}
+        - --output-block-size
+        - {{ required "A valid .Values.sessionsConsumer.outputBlockSize is required" .Values.snuba.sessionsConsumer.outputBlockSize | quote }}
+        {{- end }}
         ports:
         - containerPort: {{ template "snuba.port" }}
         env:
@@ -125,6 +130,10 @@ spec:
         - mountPath: /etc/snuba
           name: config
           readOnly: true
+        {{- if .Values.snuba.sessionsConsumer.processes }}
+        - mountPath: /dev/shm
+          name: shm
+        {{- end }}
 {{- if .Values.snuba.sessionsConsumer.volumeMounts }}
 {{ toYaml .Values.snuba.sessionsConsumer.volumeMounts | indent 8 }}
 {{- end }}
@@ -141,6 +150,11 @@ spec:
         - name: config
           configMap:
             name: {{ template "sentry.fullname" . }}-snuba
+        {{- if .Values.snuba.sessionsConsumer.processes }}
+        - emptyDir:
+            medium: Memory
+          name: shm
+        {{- end }}
 {{- if .Values.snuba.sessionsConsumer.volumes }}
 {{ toYaml .Values.snuba.sessionsConsumer.volumes | indent 8 }}
 {{- end }}

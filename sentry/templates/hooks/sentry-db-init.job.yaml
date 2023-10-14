@@ -76,12 +76,17 @@ spec:
       - name: db-init-job
         image: "{{ template "sentry.image" . }}"
         imagePullPolicy: {{ default "IfNotPresent" .Values.images.sentry.pullPolicy }}
-        command: ["sentry","upgrade","--noinput"]
+        args:
+        - upgrade
+        - --noinput
         env:
 {{ include "sentry.env" . | indent 8 }}
         {{- if .Values.hooks.dbInit.env }}
 {{ toYaml .Values.hooks.dbInit.env | indent 8 }}
         {{- end }}
+        envFrom:
+        - secretRef:
+            name: {{ template "sentry.fullname" . }}-sentry-env
         volumeMounts:
         - mountPath: /etc/sentry
           name: config

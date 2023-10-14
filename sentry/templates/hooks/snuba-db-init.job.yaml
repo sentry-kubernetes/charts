@@ -77,22 +77,19 @@ spec:
       containers:
       - name: snuba-init
         image: "{{ template "snuba.image" . }}"
-        command:
-        - snuba
+        args:
         - bootstrap
         - --no-migrate
-        {{- if .Values.hooks.snubaInit.kafka.enabled }}
-        - --kafka
-        {{- else }}
+        - --force
+        {{- if not .Values.hooks.snubaInit.kafka }}
         - --no-kafka
         {{- end }}
-        - --force
         env:
         - name: LOG_LEVEL
           value: debug
 {{ include "sentry.snuba.env" . | indent 8 }}
-{{- if .Values.snuba.dbInitJob.env }}
-{{ toYaml .Values.snuba.dbInitJob.env | indent 8 }}
+{{- if .Values.hooks.snubaInit.env }}
+{{ toYaml .Values.hooks.snubaInit.env | indent 8 }}
 {{- end }}
         envFrom:
         - secretRef:

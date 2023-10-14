@@ -81,14 +81,11 @@ spec:
           - "ingest-transactions"
           - "--consumer-group"
           - "ingest-consumer"
-          {{- if .Values.sentry.ingestConsumer.concurrency }}
-          - "--concurrency"
-          - "{{ .Values.sentry.ingestConsumer.concurrency }}"
-          {{- end }}
           {{- if .Values.sentry.ingestConsumer.maxBatchSize }}
           - "--max-batch-size"
           - "{{ .Values.sentry.ingestConsumer.maxBatchSize }}"
           {{- end }}
+
         env:
         - name: C_FORCE_ROOT
           value: "true"

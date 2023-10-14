@@ -66,20 +66,27 @@ spec:
           - name: {{ .Chart.Name }}-sentry-cleanup
             image: "{{ template "sentry.image" . }}"
             imagePullPolicy: {{ default "IfNotPresent" .Values.images.sentry.pullPolicy }}
-            command: ["sentry"]
             args:
               - "cleanup"
-              - "--concurrency"
-              - {{ .Values.sentry.cleanup.concurrency | quote }}
               - "--days"
-              - "{{ .Values.sentry.cleanup.days }}"
+              - "{{ .Values.sentry.eventRetentionDays }}"
+              {{- if .Values.sentry.cleanup.timed }}
+              - "--timed"
+              {{ end }}
             env:
             - name: C_FORCE_ROOT
               value: "true"
-{{ include "sentry.env" . | indent 12 }}
+            - name: METRICS_PREFIX
+              value: "cleanup"
+            - name: SENTRY_LOG_LEVEL
+              value: {{ .Values.sentry.logging.level | default "INFO" | quote }}
+{{ include "sentry.snuba.env" . | indent 12 }}
 {{- if .Values.sentry.cleanup.env }}
 {{ toYaml .Values.sentry.cleanup.env | indent 12 }}
 {{- end }}
+            envFrom:
+            - secretRef:
+                name: {{ template "sentry.fullname" . }}-sentry-env
             volumeMounts:
             - mountPath: /etc/sentry
               name: config
@@ -130,7 +137,7 @@ spec:
           {{- if .Values.sentry.cleanup.priorityClassName }}
           priorityClassName: "{{ .Values.sentry.cleanup.priorityClassName }}"
           {{- end }}
-          {{- if .Values.serviceAccount.enabled }}
-          serviceAccountName: {{ .Values.serviceAccount.name }}-cleanup
+          {{- if .Values.sentry.cleanup.serviceAccount }}
+          serviceAccountName: {{ .Values.sentry.cleanup.serviceAccount.name }}
           {{- end }}
 {{- end }}

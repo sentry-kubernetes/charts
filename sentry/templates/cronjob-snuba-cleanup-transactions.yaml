@@ -1,0 +1,110 @@
+{{- if .Values.snuba.cleanupTransactions.enabled }}
+{{- $batchApiIsStable := eq (include "sentry.batch.isStable" .) "true" -}}
+apiVersion: {{ include "sentry.batch.apiVersion" . }}
+kind: CronJob
+metadata:
+  name: {{ template "sentry.fullname" . }}-snuba-cleanup-transactions
+  labels:
+    app: {{ template "sentry.fullname" . }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
+    release: "{{ .Release.Name }}"
+    heritage: "{{ .Release.Service }}"
+spec:
+  schedule: "{{ .Values.snuba.cleanupTransactions.schedule }}"
+  successfulJobsHistoryLimit: {{ .Values.snuba.cleanupTransactions.successfulJobsHistoryLimit }}
+  failedJobsHistoryLimit: {{ .Values.snuba.cleanupTransactions.failedJobsHistoryLimit }}
+  concurrencyPolicy: "{{ .Values.snuba.cleanupTransactions.concurrencyPolicy }}"
+  jobTemplate:
+    spec:
+      {{- if .Values.snuba.cleanupTransactions.activeDeadlineSeconds }}
+      activeDeadlineSeconds: {{ .Values.snuba.cleanupTransactions.activeDeadlineSeconds }}
+      {{- end}}
+      template:
+        metadata:
+          annotations:
+            checksum/snubaSettingsPy: {{ .Values.config.snubaSettingsPy | sha256sum }}
+            checksum/config.yaml: {{ include (print $.Template.BasePath "/configmap-snuba.yaml") . | sha256sum }}
+            {{- if .Values.snuba.cleanupTransactions.annotations }}
+{{ toYaml .Values.snuba.cleanupTransactions.annotations | indent 12 }}
+            {{- end }}
+          labels:
+            app: {{ template "sentry.fullname" . }}
+            release: "{{ .Release.Name }}"
+            {{- if .Values.snuba.cleanupTransactions.podLabels }}
+{{ toYaml .Values.snuba.cleanupTransactions.podLabels | indent 12 }}
+            {{- end }}
+        spec:
+          affinity:
+            {{- if .Values.snuba.cleanupTransactions.affinity }}
+{{ toYaml .Values.snuba.cleanupTransactions.affinity | indent 12 }}
+            {{- end }}
+            {{- if .Values.snuba.cleanupTransactions.nodeSelector }}
+          nodeSelector:
+{{ toYaml .Values.snuba.cleanupTransactions.nodeSelector | indent 12 }}
+            {{- end }}
+            {{- if .Values.snuba.cleanupTransactions.tolerations }}
+          tolerations:
+{{ toYaml .Values.snuba.cleanupTransactions.tolerations | indent 12 }}
+            {{- end }}
+            {{- if .Values.dnsPolicy }}
+          dnsPolicy: {{ .Values.dnsPolicy | quote }}
+            {{- end }}
+            {{- if .Values.dnsConfig }}
+          dnsConfig:
+{{ toYaml .Values.dnsConfig | indent 12 }}
+            {{- end }}
+            {{- if .Values.images.snuba.imagePullSecrets }}
+          imagePullSecrets:
+{{ toYaml .Values.images.snuba.imagePullSecrets | indent 12 }}
+            {{- end }}
+            {{- if .Values.snuba.cleanupTransactions.securityContext }}
+          securityContext:
+{{ toYaml .Values.snuba.cleanupTransactions.securityContext | indent 12 }}
+      {{- end }}
+          containers:
+          - name: {{ .Chart.Name }}-snuba-cleanup-transactions
+            image: "{{ template "snuba.image" . }}"
+            imagePullPolicy: {{ default "IfNotPresent" .Values.images.snuba.pullPolicy }}
+            args:
+              - cleanup
+              - --storage
+              - transactions
+              - --dry-run
+              - "False"
+              - --log-level
+              - {{ .Values.snuba.logging.level }}
+            env:
+{{ include "sentry.snuba.env" . | indent 14 }}
+{{- if .Values.snuba.cleanupTransactions.env }}
+{{ toYaml .Values.snuba.cleanupTransactions.env | indent 14 }}
+{{- end }}
+            envFrom:
+              - secretRef:
+                  name: {{ template "sentry.fullname" . }}-snuba-env
+            volumeMounts:
+              - mountPath: /etc/snuba
+                name: config
+                readOnly: true
+{{- if .Values.snuba.cleanupTransactions.volumeMounts }}
+{{ toYaml .Values.snuba.cleanupTransactions.volumeMounts | indent 14 }}
+{{- end }}
+            resources:
+{{ toYaml .Values.snuba.cleanupTransactions.resources | indent 14 }}
+{{- if .Values.snuba.cleanupTransactions.sidecars }}
+{{ toYaml .Values.snuba.cleanupTransactions.sidecars | indent 10 }}
+{{- end }}
+          restartPolicy: Never
+          volumes:
+            - name: config
+              configMap:
+                name: {{ template "sentry.fullname" . }}-snuba
+{{- if .Values.snuba.cleanupTransactions.volumes }}
+{{ toYaml .Values.snuba.cleanupTransactions.volumes | indent 12 }}
+{{- end }}
+          {{- if .Values.snuba.cleanupTransactions.priorityClassName }}
+          priorityClassName: "{{ .Values.snuba.cleanupTransactions.priorityClassName }}"
+          {{- end }}
+          {{- if .Values.snuba.cleanupTransactions.serviceAccount }}
+          serviceAccountName: {{ .Values.snuba.cleanupTransactions.serviceAccount.name }}
+          {{- end }}
+{{- end }}

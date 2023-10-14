@@ -68,12 +68,19 @@ spec:
           - "run"
           - "cron"
         env:
+        - name: SENTRY_LOG_LEVEL
+          value: {{ .Values.sentry.logging.level | default "INFO" | quote }}
         - name: C_FORCE_ROOT
           value: "true"
+        - name: METRICS_PREFIX
+          value: "cron"
 {{ include "sentry.env" . | indent 8 }}
 {{- if .Values.sentry.cron.env }}
 {{ toYaml .Values.sentry.cron.env | indent 8 }}
 {{- end }}
+        envFrom:
+        - secretRef:
+            name: {{ template "sentry.fullname" . }}-sentry-env
         volumeMounts:
         - mountPath: /etc/sentry
           name: config

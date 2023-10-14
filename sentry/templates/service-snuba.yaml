@@ -30,6 +30,7 @@ spec:
 {{- end }}
   selector:
     app: {{ template "sentry.fullname" . }}
+    release: {{ .Release.Name }}
     role: snuba-api
   {{- with .Values.service.loadBalancerSourceRanges }}
   loadBalancerSourceRanges:

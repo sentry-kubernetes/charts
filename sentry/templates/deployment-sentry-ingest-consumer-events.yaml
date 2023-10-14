@@ -71,24 +71,19 @@ spec:
 {{ toYaml .Values.sentry.ingestConsumer.securityContext | indent 8 }}
       {{- end }}
       containers:
-      - name: {{ .Chart.Name }}-ingest-consumer-events
+      - name: {{ .Chart.Name }}-ingest-consumer
         image: "{{ template "sentry.image" . }}"
         imagePullPolicy: {{ default "IfNotPresent" .Values.images.sentry.pullPolicy }}
         command: ["sentry"]
         args:
           - "run"
-          - "consumer"
-          - "ingest-events"
-          - "--consumer-group"
           - "ingest-consumer"
-          {{- if .Values.sentry.ingestConsumer.concurrency }}
-          - "--concurrency"
-          - "{{ .Values.sentry.ingestConsumer.concurrency }}"
-          {{- end }}
           {{- if .Values.sentry.ingestConsumer.maxBatchSize }}
           - "--max-batch-size"
           - "{{ .Values.sentry.ingestConsumer.maxBatchSize }}"
           {{- end }}
+          - "--consumer-type"
+          - "events"
         env:
         - name: C_FORCE_ROOT
           value: "true"
@@ -119,7 +114,7 @@ spec:
 {{ toYaml .Values.sentry.ingestConsumer.sidecars | indent 6 }}
 {{- end }}
       {{- if .Values.serviceAccount.enabled }}
-      serviceAccountName: {{ .Values.serviceAccount.name }}-ingest-consumer-events
+      serviceAccountName: {{ .Values.serviceAccount.name }}-ingest-consumer
       {{- end }}
       volumes:
       - name: config

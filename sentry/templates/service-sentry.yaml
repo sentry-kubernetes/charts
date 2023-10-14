@@ -31,6 +31,7 @@ spec:
   selector:
     app: {{ template "sentry.fullname" . }}
     role: web
+    release: {{ .Release.Name }}
   {{- with .Values.service.loadBalancerSourceRanges }}
   loadBalancerSourceRanges:
     {{- toYaml . | nindent 4 }}

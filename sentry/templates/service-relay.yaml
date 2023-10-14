@@ -23,4 +23,5 @@ spec:
     name: {{ .Values.service.name }}-relay
   selector:
     app: {{ template "sentry.fullname" . }}
+    release: {{ .Release.Name }}
     role: relay

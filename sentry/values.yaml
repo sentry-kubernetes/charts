@@ -35,7 +35,7 @@ images:
     imagePullSecrets: []
   symbolicator:
     # repository: getsentry/symbolicator
-    # tag: Chart.AppVersion
+    tag: 0.6.0
     # pullPolicy: IfNotPresent
     imagePullSecrets: []
   vroom:
@@ -132,6 +132,17 @@ sentry:
   # existingSecret: "my-secret"
   # existingSecretKey: "my-secret-key"
   singleOrganization: true
+  eventRetentionDays: 14
+  beacon: false
+  logging:
+    level: INFO
+  features:
+    orgSubdomains: false
+    vstsLimitedScopes: true
+    enableInvites: false
+    auth:
+      register: false
+
   web:
     # if using filestore backend filesystem with RWO access, set strategyType to Recreate
     strategyType: RollingUpdate
@@ -145,6 +156,7 @@ sentry:
     resources: {}
     affinity: {}
     nodeSelector: {}
+    workers: 4
     securityContext: {}
     containerSecurityContext: {}
     service:
@@ -197,6 +209,83 @@ sentry:
     volumeMounts: []
 
   ingestConsumer:
+    replicas: 1
+    env: []
+    resources: {}
+    affinity: {}
+    nodeSelector: {}
+    securityContext: {}
+    # tolerations: []
+    # podLabels: []
+    # maxBatchSize: ""
+
+    # it's better to use prometheus adapter and scale based on
+    # the size of the rabbitmq queue
+    autoscaling:
+      enabled: false
+      minReplicas: 1
+      maxReplicas: 3
+      targetCPUUtilizationPercentage: 50
+    sidecars: []
+    volumes: []
+
+    # volumeMounts:
+    #   - mountPath: /dev/shm
+    #     name: dshm
+
+  ingestMetricsConsumerPerf:
+    replicas: 1
+    # concurrency: 4
+    env: []
+    resources: {}
+    affinity: {}
+    nodeSelector: {}
+    securityContext: {}
+    # tolerations: []
+    # podLabels: []
+    # maxBatchSize: ""
+
+    # it's better to use prometheus adapter and scale based on
+    # the size of the rabbitmq queue
+    autoscaling:
+      enabled: false
+      minReplicas: 1
+      maxReplicas: 3
+      targetCPUUtilizationPercentage: 50
+    sidecars: []
+    volumes: []
+
+    # volumeMounts:
+    #   - mountPath: /dev/shm
+    #     name: dshm
+
+  ingestMetricsConsumerRh:
+    replicas: 1
+    # concurrency: 4
+    env: []
+    resources: {}
+    affinity: {}
+    nodeSelector: {}
+    securityContext: {}
+    # tolerations: []
+    # podLabels: []
+    # maxBatchSize: ""
+
+    # it's better to use prometheus adapter and scale based on
+    # the size of the rabbitmq queue
+    autoscaling:
+      enabled: false
+      minReplicas: 1
+      maxReplicas: 3
+      targetCPUUtilizationPercentage: 50
+    sidecars: []
+    volumes: []
+
+    # volumeMounts:
+    #   - mountPath: /dev/shm
+    #     name: dshm
+
+  billingMetricsConsumer:
     replicas: 1
     # concurrency: 4
     env: []
@@ -277,105 +366,6 @@ sentry:
     #   - mountPath: /dev/shm
     #     name: dshm
 
-  ingestReplayRecordings:
-    replicas: 1
-    env: []
-    resources: {}
-    affinity: {}
-    nodeSelector: {}
-    securityContext: {}
-    containerSecurityContext: {}
-    # tolerations: []
-    # podLabels: []
-
-    # it's better to use prometheus adapter and scale based on
-    # the size of the rabbitmq queue
-    autoscaling:
-      enabled: false
-      minReplicas: 1
-      maxReplicas: 3
-      targetCPUUtilizationPercentage: 50
-    sidecars: []
-    volumes: []
-
-    # volumeMounts:
-    #   - mountPath: /dev/shm
-    #     name: dshm
-
-  ingestProfiles:
-    replicas: 1
-    env: []
-    resources: {}
-    affinity: {}
-    nodeSelector: {}
-    securityContext: {}
-    containerSecurityContext: {}
-    # tolerations: []
-    # podLabels: []
-
-    # it's better to use prometheus adapter and scale based on
-    # the size of the rabbitmq queue
-    autoscaling:
-      enabled: false
-      minReplicas: 1
-      maxReplicas: 3
-      targetCPUUtilizationPercentage: 50
-    sidecars: []
-    volumes: []
-
-    # volumeMounts:
-    #   - mountPath: /dev/shm
-    #     name: dshm
-  ingestOccurrences:
-    replicas: 1
-    env: []
-    resources: {}
-    affinity: {}
-    nodeSelector: {}
-    securityContext: {}
-    containerSecurityContext: {}
-    # tolerations: []
-    # podLabels: []
-
-    # it's better to use prometheus adapter and scale based on
-    # the size of the rabbitmq queue
-    autoscaling:
-      enabled: false
-      minReplicas: 1
-      maxReplicas: 3
-      targetCPUUtilizationPercentage: 50
-    sidecars: []
-    volumes: []
-
-    # volumeMounts:
-    #   - mountPath: /dev/shm
-    #     name: dshm
-
-  ingestMonitors:
-    replicas: 1
-    env: []
-    resources: {}
-    affinity: {}
-    nodeSelector: {}
-    securityContext: {}
-    containerSecurityContext: {}
-    # tolerations: []
-    # podLabels: []
-
-    # it's better to use prometheus adapter and scale based on
-    # the size of the rabbitmq queue
-    autoscaling:
-      enabled: false
-      minReplicas: 1
-      maxReplicas: 3
-      targetCPUUtilizationPercentage: 50
-    sidecars: []
-    volumes: []
-
-    # volumeMounts:
-    #   - mountPath: /dev/shm
-    #     name: dshm
-
   billingMetricsConsumer:
     replicas: 1
     # concurrency: 4
@@ -425,21 +415,7 @@ sentry:
     containerSecurityContext: {}
     # tolerations: []
     # podLabels: []
-    sidecars: []
-    volumes: []
-    # noStrictOffsetReset: false
-    # volumeMounts: []
-
-  subscriptionConsumerSessions:
-    replicas: 1
-    env: []
-    resources: {}
-    affinity: {}
-    nodeSelector: {}
-    securityContext: {}
-    containerSecurityContext: {}
-    # tolerations: []
-    # podLabels: []
+    # commitBatchSize: 1
     sidecars: []
     volumes: []
     # noStrictOffsetReset: false
@@ -455,6 +431,7 @@ sentry:
     containerSecurityContext: {}
     # tolerations: []
     # podLabels: []
+    # commitBatchSize: 1
     sidecars: []
     volumes: []
     # noStrictOffsetReset: false
@@ -470,6 +447,7 @@ sentry:
     containerSecurityContext: {}
     # tolerations: []
     # podLabels: []
+    # commitBatchSize: 1
     sidecars: []
     volumes: []
     # volumeMounts: []
@@ -506,7 +484,7 @@ sentry:
     failedJobsHistoryLimit: 5
     activeDeadlineSeconds: 100
     concurrencyPolicy: Allow
-    concurrency: 1
+    timed: true
     enabled: true
     schedule: "0 0 * * *"
     days: 90
@@ -518,6 +496,8 @@ sentry:
     serviceAccount: {}
 
 snuba:
+  logging:
+    level: INFO
   api:
     replicas: 1
     # set command to ["snuba","api"] if securityContext.runAsUser > 0
@@ -581,7 +561,13 @@ snuba:
   outcomesConsumer:
     replicas: 1
     env: []
-    resources: {}
+    resources:
+      limits:
+        cpu: 500m
+        memory: 512Mi
+      requests:
+        cpu: 200m
+        memory: 256Mi
     affinity: {}
     nodeSelector: {}
     securityContext: {}
@@ -617,6 +603,7 @@ snuba:
     # tolerations: []
     # podLabels: []
     autoOffsetReset: "earliest"
+    maxBatchSize: "3"
     # maxBatchTimeMs: ""
     # queuedMaxMessagesKbytes: ""
     # queuedMinMessages: ""
@@ -650,51 +637,6 @@ snuba:
     autoOffsetReset: "earliest"
     # volumes: []
     # volumeMounts: []
-
-  subscriptionConsumerSessions:
-    replicas: 1
-    env: []
-    resources: {}
-    affinity: {}
-    nodeSelector: {}
-    securityContext: {}
-    containerSecurityContext: {}
-    # tolerations: []
-    # podLabels: []
-    # commitBatchSize: 1
-    autoOffsetReset: "earliest"
-    sidecars: []
-    volumes: []
-    # noStrictOffsetReset: false
-    # volumeMounts: []
-
-  replaysConsumer:
-    replicas: 1
-    env: []
-    resources: {}
-    affinity: {}
-    nodeSelector: {}
-    securityContext: {}
-    containerSecurityContext: {}
-    # tolerations: []
-    # podLabels: []
-    autoOffsetReset: "earliest"
-    # noStrictOffsetReset: false
-    # maxBatchSize: ""
-    # processes: ""
-    # inputBlockSize: ""
-    # outputBlockSize: ""
-    # maxBatchTimeMs: ""
-    # queuedMaxMessagesKbytes: ""
-    # queuedMinMessages: ""
-
-    # volumeMounts:
-    #   - mountPath: /dev/shm
-    #     name: dshm
-    # volumes:
-    #   - name: dshm
-    #     emptyDir:
-    #       medium: Memory
 
   sessionsConsumer:
     replicas: 1
@@ -810,7 +752,13 @@ snuba:
   issueOccurrenceConsumer:
     replicas: 1
     env: []
-    resources: {}
+    resources:
+      limits:
+        memory: 256Mi
+        cpu: 200m
+      requests:
+        memory: 128Mi
+        cpu: 100m
     affinity: {}
     nodeSelector: {}
     securityContext: {}
@@ -835,11 +783,52 @@ snuba:
     #     emptyDir:
     #       medium: Memory
 
-  dbInitJob:
+  subscriptionConsumerEvents:
+    replicas: 1
     env: []
+    resources: {}
+    affinity: {}
+    nodeSelector: {}
+    # maxQueryWorkers: 8
+    # tolerations: []
+    # podLabels: []
 
-  migrateJob:
+  subscriptionConsumerTransactions:
+    replicas: 1
     env: []
+    resources: {}
+    affinity: {}
+    nodeSelector: {}
+    # maxQueryWorkers: 8
+    # tolerations: []
+    # podLabels: []
+
+  cleanupErrors:
+    successfulJobsHistoryLimit: 5
+    activeDeadlineSeconds: 100
+    concurrencyPolicy: Allow
+    enabled: true
+    schedule: "0 * * * *"
+    sidecars: []
+    volumes: []
+    # securityContext: {}
+    serviceAccount: {}
+    # volumes: []
+    # volumeMounts: []
+
+  cleanupTransactions:
+    successfulJobsHistoryLimit: 5
+    failedJobsHistoryLimit: 5
+    activeDeadlineSeconds: 100
+    concurrencyPolicy: Allow
+    enabled: true
+    schedule: "0 * * * *"
+    sidecars: []
+    volumes: []
+    # securityContext: {}
+    serviceAccount: {}
+    # volumes: []
+    # volumeMounts: []
 
 hooks:
   enabled: true
@@ -874,6 +863,7 @@ hooks:
     podAnnotations: {}
     resources:
       limits:
+        cpu: 300m
         memory: 2048Mi
       requests:
         cpu: 300m
@@ -886,20 +876,17 @@ hooks:
     # volumes: []
     # volumeMounts: []
   snubaInit:
-    # As snubaInit doesn't support configuring partition and replication factor, you can disable snubaInit's kafka topic creation by setting `kafka.enabled` to `false`,
-    # and create the topics using `kafka.provisioning.topics` with the desired partition and replication factor.
-    # Note that when you set `kafka.enabled` to `false`, snuba component might fail to start if newly added topics are not created by `kafka.provisioning`.
-    kafka:
-      enabled: true
+    env: []
+    kafka: false
     # podLabels: []
     podAnnotations: {}
     resources:
       limits:
-        cpu: 2000m
-        memory: 1Gi
+        cpu: 500m
+        memory: 256Mi
       requests:
-        cpu: 700m
-        memory: 1Gi
+        cpu: 250m
+        memory: 256Mi
     affinity: {}
     nodeSelector: {}
     # tolerations: []
@@ -918,6 +905,9 @@ system:
   public: false
   ## This will generate one for you (it's must be given upon updates)
   # secretKey: "xx"
+  ## This will disable or enable transaction recording of internal components
+  transactionEvents:
+    forceDisableInternalProject: false
 
 mail:
   # For example: smtp
@@ -932,6 +922,7 @@ mail:
   port: 25
   host: ""
   from: ""
+  listNamespace: ""
 
 symbolicator:
   enabled: false
@@ -947,6 +938,7 @@ symbolicator:
     # tolerations: []
     # podLabels: []
     # priorityClassName: "xxx"
+
     config: |-
       # See: https://getsentry.github.io/symbolicator/#configuration
       cache_dir: "/data"
@@ -954,9 +946,9 @@ symbolicator:
       logging:
         level: "warn"
       metrics:
-        statsd: null
+        statsd: bazaar-sentry-metrics:9125
         prefix: "symbolicator"
-      sentry_dsn: null
+      sentry_dsn: https://ed2e75a1f57e44718e220b8a672a48fa@sentry.cafebazaar.org/256
       connect_to_reserved_ips: true
       # caches:
       #   downloaded:
@@ -986,9 +978,6 @@ symbolicator:
     # podLabels: []
     # affinity: {}
     # env: []
-
-auth:
-  register: true
 
 service:
   name: sentry
@@ -1230,90 +1219,7 @@ kafka:
   maxMessageBytes: "50000000"
   # 50 MB
   socketRequestMaxBytes: "50000000"
-  provisioning:
-    enabled: true
-    # Topic list is based on files below.
-    # - https://github.com/getsentry/snuba/blob/master/snuba/utils/streams/topics.py
-    # - https://github.com/getsentry/self-hosted/blob/master/install/create-kafka-topics.sh#L6
-    # Note that snuba component might fail if you set `hooks.snubaInit.kafka.enabled` to `false` and remove the topics from this default topic list.
-    topics:
-      - name: events
-        config:
-          "message.timestamp.type": LogAppendTime
-      - name: event-replacements
-      - name: snuba-commit-log
-      - name: cdc
-      - name: transactions
-        config:
-          "message.timestamp.type": LogAppendTime
-      - name: snuba-transactions-commit-log
-      - name: snuba-metrics
-        config:
-          "message.timestamp.type": LogAppendTime
-      - name: outcomes
-      - name: ingest-sessions
-      - name: snuba-sessions-commit-log
-      - name: snuba-metrics-commit-log
-      - name: scheduled-subscriptions-events
-      - name: scheduled-subscriptions-transactions
-      - name: scheduled-subscriptions-sessions
-      - name: scheduled-subscriptions-metrics
-      - name: scheduled-subscriptions-generic-metrics-sets
-      - name: scheduled-subscriptions-generic-metrics-distributions
-      - name: scheduled-subscriptions-generic-metrics-counters
-      - name: events-subscription-results
-      - name: transactions-subscription-results
-      - name: sessions-subscription-results
-      - name: metrics-subscription-results
-      - name: generic-metrics-subscription-results
-      - name: snuba-queries
-        config:
-          "message.timestamp.type": LogAppendTime
-      - name: processed-profiles
-        config:
-          "message.timestamp.type": LogAppendTime
-      - name: profiles-call-tree
-      - name: ingest-replay-events
-        config:
-          "message.timestamp.type": LogAppendTime
-          "max.message.bytes": "15000000"
-      - name: snuba-generic-metrics
-        config:
-          "message.timestamp.type": LogAppendTime
-      - name: snuba-generic-metrics-sets-commit-log
-      - name: snuba-generic-metrics-distributions-commit-log
-      - name: snuba-generic-metrics-counters-commit-log
-      - name: generic-events
-        config:
-          "message.timestamp.type": LogAppendTime
-      - name: snuba-generic-events-commit-log
-      - name: group-attributes
-        config:
-          "message.timestamp.type": LogAppendTime
-      - name: snuba-attribution
-      - name: snuba-dead-letter-metrics
-      - name: snuba-dead-letter-metrics-sets
-      - name: snuba-dead-letter-metrics-counters
-      - name: snuba-dead-letter-metrics-distributions
-      - name: snuba-dead-letter-sessions
-      - name: snuba-dead-letter-generic-metrics
-      - name: snuba-dead-letter-replays
-      - name: snuba-dead-letter-generic-events
-      - name: snuba-dead-letter-querylog
-      - name: snuba-dead-letter-group-attributes
-      - name: ingest-attachments
-      - name: ingest-transactions
-      - name: ingest-events
-      - name: ingest-replay-recordings
-      - name: ingest-metrics
-      - name: ingest-performance-metrics
-      - name: ingest-monitors
-      - name: profiles
-      - name: ingest-occurrences
-  zookeeper:
-    enabled: true
-  kraft:
-    enabled: false
+
   service:
     ports:
       client: 9092
@@ -1334,8 +1240,40 @@ kafka:
 externalKafka:
   ## Hostname or ip address of external kafka
   ##
-  # host: "kafka-confluent"
+  # hosts:
+  #   - "kafka-confluent"
   port: 9092
+  # topics:
+  #   ingestEvents: ""
+  #   ingestAttachments: ""
+  #   ingestTransactions: ""
+  #   ingestSessions: ""
+  #   outcomes: ""
+  #   eventsSubscriptionResults: ""
+  #   transactionsSubscriptionResults: ""
+  #   replacement: ""
+  #   commitLog: ""
+  #   sentryEvents: ""
+  #   cdc: ""
+  #   snubaMetrics: ""
+  #   scheduledSubscriptionsEvents: ""
+  #   scheduledSubscriptionsTransactions: ""
+  #   scheduledSubscriptionsSessions: ""
+  #   scheduledSubscriptionsMetrics: ""
+  #   sessionsSubscriptionResults: ""
+  #   metricsSubscriptionResults: ""
+  #   snubaQueries: ""
+  #   processedProfiles: ""
+  #   snubaDeadLetterInserts: ""
+  # consumerGroups:
+  #   commitLog: ""
+  #   transactionCommitLog: ""
+  #   sentrySubscription: ""
+  #   ingestConsumer: ""
+  #   postProcessor: ""
+  #   replacers: ""
+  #   snubaTransactionsSubscriptionsConsumers: ""
+  #   snubaEventsSubscriptionsConsumers: ""
 
 sourcemaps:
   enabled: false
@@ -1370,8 +1308,8 @@ externalRedis:
 postgresql:
   enabled: true
   nameOverride: sentry-postgresql
-  auth:
-    database: sentry
+  postgresqlUsername: postgres
+  postgresqlDatabase: sentry
   replication:
     enabled: false
     readReplicas: 2
@@ -1524,7 +1462,7 @@ metrics:
 
   image:
     repository: prom/statsd-exporter
-    tag: v0.17.0
+    tag: v0.22.2
     pullPolicy: IfNotPresent
 
   # Enable this if you're using https://github.com/coreos/prometheus-operator

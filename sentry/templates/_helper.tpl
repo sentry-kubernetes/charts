@@ -194,6 +194,17 @@ We truncate at 63 chars because some Kubernetes name fields are limited to this 
 {{- end -}}
 {{- end -}}
 
+/*
+Set Snuba api address
+*/
+{{- define "snuba.api" -}}
+{{- if .Values.snuba.api.address -}}
+{{ .Values.snuba.api.address }}
+{{- else -}}
+http://{{ template "sentry.fullname" . }}-snuba:{{ template "snuba.port" . }}
+{{- end -}}
+{{- end -}}
+
 {{/*
 Set postgres host
 */}}
@@ -213,6 +224,17 @@ Set postgres secret
 {{- template "sentry.postgresql.fullname" . -}}
 {{- else -}}
 {{- template "sentry.fullname" . -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Set postgresql password
+*/}}
+{{- define "sentry.postgresql.password" -}}
+{{- if .Values.postgresql.enabled -}}
+{{- default "" .Values.postgresql.postgresqlPassword }}
+{{- else -}}
+{{ required "A valid .Values.externalPostgresql.password is required" .Values.externalPostgresql.password }}
 {{- end -}}
 {{- end -}}
 
@@ -288,7 +310,7 @@ Set redis password
 {{- define "sentry.redis.password" -}}
 {{- if .Values.redis.enabled -}}
 {{ .Values.redis.password }}
-{{- else -}}
+{{- else if .Values.externalRedis.password -}}
 {{ .Values.externalRedis.password }}
 {{- end -}}
 {{- end -}}
@@ -384,18 +406,18 @@ Set ClickHouse cluster name
 {{- if .Values.clickhouse.enabled -}}
 {{ .Release.Name | printf "%s-clickhouse" }}
 {{- else -}}
-{{ required "A valid .Values.externalClickhouse.clusterName is required" .Values.externalClickhouse.clusterName }}
+{{ default "" .Values.externalClickhouse.clusterName }}
 {{- end -}}
 {{- end -}}
 
 {{/*
-Set Kafka Confluent host
+Set Kafka Confluent hosts
 */}}
-{{- define "sentry.kafka.host" -}}
+{{- define "sentry.kafka.hosts" -}}
 {{- if .Values.kafka.enabled -}}
 {{- template "sentry.kafka.fullname" . -}}
-{{- else if and (.Values.externalKafka) (not (kindIs "slice" .Values.externalKafka)) -}}
-{{ required "A valid .Values.externalKafka.host is required" .Values.externalKafka.host }}
+{{- else if and (.Values.externalKafka) (not (kindIs "slice" .Values.externalKafka.hosts)) -}}
+{{ required "A valid .Values.externalKafka.hosts is required" .Values.externalKafka.hosts }}
 {{- end -}}
 {{- end -}}
 
@@ -403,22 +425,23 @@ Set Kafka Confluent host
 Set Kafka Confluent port
 */}}
 {{- define "sentry.kafka.port" -}}
-{{- if and (.Values.kafka.enabled) (.Values.kafka.service.ports.client) -}}
-{{- .Values.kafka.service.ports.client }}
-{{- else if and (.Values.externalKafka) (not (kindIs "slice" .Values.externalKafka)) -}}
+{{- if and (.Values.kafka.enabled) (.Values.kafka.service.port) -}}
+{{- .Values.kafka.service.port }}
+{{- else if .Values.externalKafka -}}
 {{ required "A valid .Values.externalKafka.port is required" .Values.externalKafka.port }}
 {{- end -}}
 {{- end -}}
+
 
 {{/*
 Set Kafka bootstrap servers string
 */}}
 {{- define "sentry.kafka.bootstrap_servers_string" -}}
-{{- if or (.Values.kafka.enabled) (not (kindIs "slice" .Values.externalKafka)) -}}
-{{ printf "%s:%s" (include "sentry.kafka.host" .) (include "sentry.kafka.port" .) }}
+{{- if or (.Values.kafka.enabled) (not (kindIs "slice" .Values.externalKafka.hosts)) -}}
+{{ printf "%s:%s" (include "sentry.kafka.hosts" .) (include "sentry.kafka.port" .) }}
 {{- else -}}
-{{- range $index, $elem := .Values.externalKafka -}}
-{{- if $index -}},{{- end -}}{{ printf "%s:%s" $elem.host (toString $elem.port) }}
+{{- range $index, $elem := .Values.externalKafka.hosts -}}
+{{- if $index -}},{{- end -}}{{- printf "%s:%s" $elem ($.Values.externalKafka.port | toString) -}}
 {{- end -}}
 {{- end -}}
 {{- end -}}
@@ -435,12 +458,21 @@ Set RabbitMQ host
 {{- end -}}
 {{- end -}}
 
+
 {{/*
 Common Snuba environment variables
 */}}
 {{- define "sentry.snuba.env" -}}
 - name: SNUBA_SETTINGS
   value: /etc/snuba/settings.py
+- name: SENTRY_EVENT_RETENTION_DAYS
+  value: {{ .Values.sentry.eventRetentionDays | quote }}
+{{- if .Values.metrics.enabled }}
+- name: DOGSTATSD_HOST
+  value: "{{ template "sentry.fullname" . }}-metrics"
+- name: DOGSTATSD_PORT
+  value: "9125"
+{{- end}}
 - name: DEFAULT_BROKERS
   value: {{ include "sentry.kafka.bootstrap_servers_string" . | quote }}
 {{- if .Values.externalClickhouse.existingSecret }}
@@ -450,6 +482,16 @@ Common Snuba environment variables
       name: {{ .Values.externalClickhouse.existingSecret }}
       key: {{ default "clickhouse-password" .Values.externalClickhouse.existingSecretKey }}
 {{- end }}
+- name: SENTRY_DSN
+  value: {{ .Values.snuba.sentryDsn | quote }}
+- name: CLICKHOUSE_HOST
+  value: {{ include "sentry.clickhouse.host" . | quote }}
+- name: REDIS_HOST
+  value: {{ include "sentry.redis.host" . | quote }}
+- name: REDIS_PORT
+  value: {{ include "sentry.redis.port" . | quote }}
+- name: CLICKHOUSE_HTTP_PORT
+  value: {{ include "sentry.clickhouse.http_port" . | quote }}
 {{- end -}}
 
 {{- define "vroom.env" -}}

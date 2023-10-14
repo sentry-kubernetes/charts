@@ -64,20 +64,22 @@ spec:
       - name: {{ .Chart.Name }}-snuba
         image: "{{ template "snuba.image" . }}"
         imagePullPolicy: {{ default "IfNotPresent" .Values.images.snuba.pullPolicy }}
-        command:
-          - "snuba"
-          - "subscriptions-scheduler-executor"
-          - "--auto-offset-reset={{ .Values.snuba.subscriptionConsumerTransactions.autoOffsetReset }}"
-          - "--dataset=transactions"
-          - "--entity=transactions"
+        args:
+          - subscriptions-scheduler-executor
+          - "--auto-offset-reset"
+          - "{{ .Values.snuba.subscriptionConsumerTransactions.autoOffsetReset }}"
+          - --delay-seconds=60
+          - --schedule-ttl=60
+          - --stale-threshold-seconds=900
+          - --dataset=events
+          - --entity=events
+          - --followed-consumer-group=transactions_group
           {{- if .Values.snuba.subscriptionConsumerTransactions.noStrictOffsetReset }}
           - "--no-strict-offset-reset"
           {{- end }}
           - "--consumer-group=snuba-transactions-subscriptions-consumers"
-          - "--followed-consumer-group=transactions_group"
-          - "--delay-seconds=60"
-          - "--schedule-ttl=60"
-          - "--stale-threshold-seconds=900"
+          - --log-level
+          - {{ .Values.snuba.logging.level }}
         ports:
         - containerPort: {{ template "snuba.port" }}
         env:
@@ -85,9 +87,6 @@ spec:
 {{- if .Values.snuba.subscriptionConsumerTransactions.env }}
 {{ toYaml .Values.snuba.subscriptionConsumerTransactions.env | indent 8 }}
 {{- end }}
-        envFrom:
-        - secretRef:
-            name: {{ template "sentry.fullname" . }}-snuba-env
         volumeMounts:
         - mountPath: /etc/snuba
           name: config
