@@ -42,7 +42,7 @@ data:
       }
 
       location /_static/ {
-			  proxy_hide_header Content-Disposition;
-		  }
+        proxy_hide_header Content-Disposition;
+      }
     }
 {{- end }}
