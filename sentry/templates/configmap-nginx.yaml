@@ -28,7 +28,7 @@ data:
 
       location ~ ^/api/[1-9]\d*/ {
         proxy_pass http://relay;
-      }
+      }  
 
       {{ if and .Values.nginx.metrics.enabled .Values.nginx.metrics.serviceMonitor.enabled -}}
       location = /status/ {
@@ -40,5 +40,9 @@ data:
       location / {
         proxy_pass http://sentry;
       }
+
+      location /_static/ {
+			  proxy_hide_header Content-Disposition;
+		  }
     }
 {{- end }}
