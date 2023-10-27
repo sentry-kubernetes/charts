@@ -1534,6 +1534,9 @@ postgresql:
   ## Use this to enable an extra service account
   # serviceAccount:
   #   enabled: false
+  ## Default connection max age is 0 (unlimited connections)
+  ## Set to a higher number to close connections after a period of time in seconds
+  connMaxAge: 0
 
 ## This value is only used when postgresql.enabled is set to false
 ## Set either externalPostgresql.password or externalPostgresql.existingSecret to configure password
@@ -1548,6 +1551,9 @@ externalPostgresql:
   # existingSecretKey: secret-key-name
   database: sentry
   # sslMode: require
+  ## Default connection max age is 0 (unlimited connections)
+  ## Set to a higher number to close connections after a period of time in seconds
+  connMaxAge: 0
 
 rabbitmq:
   ## If disabled, Redis will be used instead as the broker.

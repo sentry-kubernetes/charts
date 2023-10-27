@@ -167,6 +167,11 @@ data:
             "PASSWORD": os.environ.get("POSTGRES_PASSWORD", ""),
             "HOST": {{ include "sentry.postgresql.host" . | quote }},
             "PORT": {{ template "sentry.postgresql.port" . }},
+            {{- if .Values.postgresql.enabled }}
+            "CONN_MAX_AGE": {{ .Values.postgresql.connMaxAge }},
+            {{- else }}
+            "CONN_MAX_AGE": {{ .Values.externalPostgresql.connMaxAge }},
+            {{- end }}
             {{- if .Values.externalPostgresql.sslMode }}
             'OPTIONS': {
                 'sslmode': '{{ .Values.externalPostgresql.sslMode }}',
