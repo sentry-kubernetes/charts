@@ -169,6 +169,7 @@ sentry:
     orgSubdomains: false
     vstsLimitedScopes: true
     enableProfiling: false
+    enableSessionReplay: true
 
   worker:
     replicas: 3
