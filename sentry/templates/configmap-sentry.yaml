@@ -447,7 +447,26 @@ data:
                 "organizations:metrics",
                 "organizations:metrics-extraction",
                 "organizations:transaction-metrics-extraction",
+
+                {{- if .Values.sentry.features.enableSessionReplay}}
                 "organizations:session-replay",
+                "organizations:session-replay-ui",
+                "organizations:session-replay-sdk",
+                "organizations:session-replay-count-query-optimize",
+                "organizations:session-replay-sdk-errors-only",
+                "organizations:session-replay-recording-scrubbing",
+                "organizations:session-replay-a11y-tab",
+                "organizations:session-replay-slack-new-issue",
+                "organizations:session-replay-issue-emails",
+                "organizations:session-replay-event-linking",
+                "organizations:session-replay-weekly-email",
+                "organizations:session-replay-trace-table",
+                "organizations:session-replay-rage-dead-selectors",
+                "organizations:session-replay-new-event-counts",
+                "organizations:session-replay-new-timeline",
+                "organizations:issue-details-replay-event",
+                {{ end -}}
+
                 "organizations:issue-platform",
 
                 {{- if .Values.sentry.features.enableProfiling }}
