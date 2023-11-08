@@ -79,6 +79,11 @@ spec:
 {{- if .Values.sentry.web.env }}
 {{ toYaml .Values.sentry.web.env | indent 8 }}
 {{- end }}
+{{- if .Values.sentry.web.existingSecretEnv }}
+        envFrom:
+        - secretRef:
+          name: "{{.Values.sentry.web.existingSecretEnv}}"
+{{- end }}
         volumeMounts:
         - mountPath: /etc/sentry
           name: config

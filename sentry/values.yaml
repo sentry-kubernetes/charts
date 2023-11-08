@@ -137,6 +137,7 @@ sentry:
     strategyType: RollingUpdate
     replicas: 1
     env: []
+    existingSecretEnv: []
     probeFailureThreshold: 5
     probeInitialDelaySeconds: 10
     probePeriodSeconds: 10
@@ -175,6 +176,7 @@ sentry:
     replicas: 3
     # concurrency: 4
     env: []
+    existingSecretEnv: []
     resources: {}
     affinity: {}
     nodeSelector: {}
