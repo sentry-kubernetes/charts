@@ -518,17 +518,17 @@ Common Sentry environment variables
 - name: SLACK_CLIENT_ID
   valueFrom:
     secretKeyRef:
-      name: {{ .Values.slack.existingSecret }}
+      name: {{ default "client-id" .Values.slack.existingSecretClientId }}
       key: "client-id"
 - name: SLACK_CLIENT_SECRET
   valueFrom:
     secretKeyRef:
-      name: {{ .Values.slack.existingSecret }}
+      name: {{ default "client-secret" .Values.slack.existingSecretClientSecret }}
       key: "client-secret"
 - name: SLACK_SIGNING_SECRET
   valueFrom:
     secretKeyRef:
-      name: {{ .Values.slack.existingSecret }}
+      name: {{ default "signing-secret" .Values.slack.existingSecretSigningSecret }}
       key: "signing-secret"
 {{- end }}
 {{- if and .Values.github.existingSecret }}
