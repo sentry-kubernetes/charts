@@ -1,5 +1,5 @@
 {{- if .Values.sentry.ingestConsumer.autoscaling.enabled }}
-apiVersion: autoscaling/v2
+apiVersion: {{ template "sentry.autoscaling.apiVersion" . }}
 kind: HorizontalPodAutoscaler
 metadata:
   name: {{ template "sentry.fullname" . }}-sentry-ingest-consumer-attachments
@@ -10,12 +10,15 @@ spec:
     name: {{ template "sentry.fullname" . }}-ingest-consumer-attachments
   minReplicas: {{ .Values.sentry.ingestConsumer.autoscaling.minReplicas }}
   maxReplicas: {{ .Values.sentry.ingestConsumer.autoscaling.maxReplicas }}
+  {{- if not (.Capabilities.APIVersions.Has "autoscaling/v2") }}
+  targetCPUUtilizationPercentage: {{ .Values.sentry.ingestConsumer.autoscaling.targetCPUUtilizationPercentage }}
+  {{- else if semverCompare ">=1.27-0" .Capabilities.KubeVersion.GitVersion }}
   metrics:
-  {{- if semverCompare ">=1.27-0" .Capabilities.KubeVersion.GitVersion }}
   - type: ContainerResource
     containerResource:
       container: {{ .Chart.Name }}-ingest-consumer-attachments
   {{- else }}
+  metrics:
   - type: Resource
     resource:
   {{- end }}
@@ -24,7 +27,7 @@ spec:
         type: Utilization
         averageUtilization: {{ .Values.sentry.ingestConsumer.autoscaling.targetCPUUtilizationPercentage }}
 ---
-apiVersion: autoscaling/v2
+apiVersion: {{ template "sentry.autoscaling.apiVersion" . }}
 kind: HorizontalPodAutoscaler
 metadata:
   name: {{ template "sentry.fullname" . }}-sentry-ingest-consumer-events
@@ -35,12 +38,15 @@ spec:
     name: {{ template "sentry.fullname" . }}-ingest-consumer-events
   minReplicas: {{ .Values.sentry.ingestConsumer.autoscaling.minReplicas }}
   maxReplicas: {{ .Values.sentry.ingestConsumer.autoscaling.maxReplicas }}
+  {{- if not (.Capabilities.APIVersions.Has "autoscaling/v2") }}
+  targetCPUUtilizationPercentage: {{ .Values.sentry.ingestConsumer.autoscaling.targetCPUUtilizationPercentage }}
+  {{- else if semverCompare ">=1.27-0" .Capabilities.KubeVersion.GitVersion }}
   metrics:
-  {{- if semverCompare ">=1.27-0" .Capabilities.KubeVersion.GitVersion }}
   - type: ContainerResource
     containerResource:
       container: {{ .Chart.Name }}-ingest-consumer-events
   {{- else }}
+  metrics:
   - type: Resource
     resource:
   {{- end }}
@@ -49,7 +55,7 @@ spec:
         type: Utilization
         averageUtilization: {{ .Values.sentry.ingestConsumer.autoscaling.targetCPUUtilizationPercentage }}
 ---
-apiVersion: autoscaling/v2
+apiVersion: {{ template "sentry.autoscaling.apiVersion" . }}
 kind: HorizontalPodAutoscaler
 metadata:
   name: {{ template "sentry.fullname" . }}-sentry-ingest-consumer-transactions
@@ -60,12 +66,15 @@ spec:
     name: {{ template "sentry.fullname" . }}-ingest-consumer-transactions
   minReplicas: {{ .Values.sentry.ingestConsumer.autoscaling.minReplicas }}
   maxReplicas: {{ .Values.sentry.ingestConsumer.autoscaling.maxReplicas }}
+  {{- if not (.Capabilities.APIVersions.Has "autoscaling/v2") }}
+  targetCPUUtilizationPercentage: {{ .Values.sentry.ingestConsumer.autoscaling.targetCPUUtilizationPercentage }}
+  {{- else if semverCompare ">=1.27-0" .Capabilities.KubeVersion.GitVersion }}
   metrics:
-  {{- if semverCompare ">=1.27-0" .Capabilities.KubeVersion.GitVersion }}
   - type: ContainerResource
     containerResource:
       container: {{ .Chart.Name }}-ingest-consumer-transactions
   {{- else }}
+  metrics:
   - type: Resource
     resource:
   {{- end }}

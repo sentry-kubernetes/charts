@@ -1,5 +1,5 @@
 {{- if .Values.snuba.api.autoscaling.enabled }}
-apiVersion: autoscaling/v2
+apiVersion: {{ template "sentry.autoscaling.apiVersion" . }}
 kind: HorizontalPodAutoscaler
 metadata:
   name: {{ template "sentry.fullname" . }}-snuba-api
@@ -10,12 +10,15 @@ spec:
     name: {{ template "sentry.fullname" . }}-snuba-api
   minReplicas: {{ .Values.snuba.api.autoscaling.minReplicas }}
   maxReplicas: {{ .Values.snuba.api.autoscaling.maxReplicas }}
+  {{- if not (.Capabilities.APIVersions.Has "autoscaling/v2") }}
+  targetCPUUtilizationPercentage: {{ .Values.snuba.api.autoscaling.targetCPUUtilizationPercentage }}
+  {{- else if semverCompare ">=1.27-0" .Capabilities.KubeVersion.GitVersion }}
   metrics:
-  {{- if semverCompare ">=1.27-0" .Capabilities.KubeVersion.GitVersion }}
   - type: ContainerResource
     containerResource:
       container: {{ .Chart.Name }}-snuba
   {{- else }}
+  metrics:
   - type: Resource
     resource:
   {{- end }}

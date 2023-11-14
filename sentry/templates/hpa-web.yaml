@@ -1,5 +1,5 @@
 {{- if .Values.sentry.web.autoscaling.enabled }}
-apiVersion: autoscaling/v2
+apiVersion: {{ template "sentry.autoscaling.apiVersion" . }}
 kind: HorizontalPodAutoscaler
 metadata:
   name: {{ template "sentry.fullname" . }}-sentry-web
@@ -10,12 +10,15 @@ spec:
     name: {{ template "sentry.fullname" . }}-web
   minReplicas: {{ .Values.sentry.web.autoscaling.minReplicas }}
   maxReplicas: {{ .Values.sentry.web.autoscaling.maxReplicas }}
+  {{- if not (.Capabilities.APIVersions.Has "autoscaling/v2") }}
+  targetCPUUtilizationPercentage: {{ .Values.sentry.web.autoscaling.targetCPUUtilizationPercentage }}
+  {{- else if semverCompare ">=1.27-0" .Capabilities.KubeVersion.GitVersion }}
   metrics:
-  {{- if semverCompare ">=1.27-0" .Capabilities.KubeVersion.GitVersion }}
   - type: ContainerResource
     containerResource:
       container: {{ .Chart.Name }}-web
   {{- else }}
+  metrics:
   - type: Resource
     resource:
   {{- end }}

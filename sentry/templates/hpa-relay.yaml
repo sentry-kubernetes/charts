@@ -1,5 +1,5 @@
 {{- if .Values.relay.autoscaling.enabled }}
-apiVersion: autoscaling/v2
+apiVersion: {{ template "sentry.autoscaling.apiVersion" . }}
 kind: HorizontalPodAutoscaler
 metadata:
   name: {{ template "sentry.fullname" . }}-relay
@@ -15,12 +15,15 @@ spec:
     name: {{ template "sentry.fullname" . }}-relay
   minReplicas: {{ .Values.relay.autoscaling.minReplicas }}
   maxReplicas: {{ .Values.relay.autoscaling.maxReplicas }}
+  {{- if not (.Capabilities.APIVersions.Has "autoscaling/v2") }}
+  targetCPUUtilizationPercentage: {{ .Values.relay.autoscaling.targetCPUUtilizationPercentage }}
+  {{- else if semverCompare ">=1.27-0" .Capabilities.KubeVersion.GitVersion }}
   metrics:
-  {{- if semverCompare ">=1.27-0" .Capabilities.KubeVersion.Version }}
   - type: ContainerResource
     containerResource:
       container: {{ .Chart.Name }}-relay
   {{- else }}
+  metrics:
   - type: Resource
     resource:
   {{- end }}
