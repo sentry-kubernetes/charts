@@ -1,5 +1,5 @@
 {{- if .Values.vroom.autoscaling.enabled }}
-apiVersion: autoscaling/v1
+apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
   name: {{ template "sentry.fullname" . }}-vroom
@@ -10,5 +10,17 @@ spec:
     name: {{ template "sentry.fullname" . }}-vroom
   minReplicas: {{ .Values.vroom.autoscaling.minReplicas }}
   maxReplicas: {{ .Values.vroom.autoscaling.maxReplicas }}
-  targetCPUUtilizationPercentage: {{ .Values.vroom.autoscaling.targetCPUUtilizationPercentage }}
+  metrics:
+  {{- if semverCompare ">=1.27-0" .Capabilities.KubeVersion.GitVersion }}
+  - type: ContainerResource
+    containerResource:
+      container: {{ .Chart.Name }}-vroom
+  {{- else }}
+  - type: Resource
+    resource:
+  {{- end }}
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: {{ .Values.vroom.autoscaling.targetCPUUtilizationPercentage }}
 {{- end }}
