@@ -10,7 +10,7 @@ spec:
     name: {{ template "sentry.fullname" . }}-web
   minReplicas: {{ .Values.sentry.web.autoscaling.minReplicas }}
   maxReplicas: {{ .Values.sentry.web.autoscaling.maxReplicas }}
-  {{- if not (eq (include "sentry.autoscaling.apiVersion" .) "autoscaling/v2") }}
+  {{- if eq (include "sentry.autoscaling.apiVersion" .) "autoscaling/v1" }}
   targetCPUUtilizationPercentage: {{ .Values.sentry.web.autoscaling.targetCPUUtilizationPercentage }}
   {{- else if semverCompare ">=1.27-0" .Capabilities.KubeVersion.GitVersion }}
   metrics:
