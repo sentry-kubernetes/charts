@@ -10,7 +10,7 @@ spec:
     name: {{ template "sentry.fullname" . }}-vroom
   minReplicas: {{ .Values.vroom.autoscaling.minReplicas }}
   maxReplicas: {{ .Values.vroom.autoscaling.maxReplicas }}
-  {{- if not (.Capabilities.APIVersions.Has "autoscaling/v2") }}
+  {{- if not (eq (include "sentry.autoscaling.apiVersion" .) "autoscaling/v2") }}
   targetCPUUtilizationPercentage: {{ .Values.vroom.autoscaling.targetCPUUtilizationPercentage }}
   {{- else if semverCompare ">=1.27-0" .Capabilities.KubeVersion.GitVersion }}
   metrics:

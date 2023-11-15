@@ -15,7 +15,7 @@ spec:
     name: {{ template "sentry.fullname" . }}-relay
   minReplicas: {{ .Values.relay.autoscaling.minReplicas }}
   maxReplicas: {{ .Values.relay.autoscaling.maxReplicas }}
-  {{- if not (.Capabilities.APIVersions.Has "autoscaling/v2") }}
+  {{- if not (eq (include "sentry.autoscaling.apiVersion" .) "autoscaling/v2") }}
   targetCPUUtilizationPercentage: {{ .Values.relay.autoscaling.targetCPUUtilizationPercentage }}
   {{- else if semverCompare ">=1.27-0" .Capabilities.KubeVersion.GitVersion }}
   metrics:

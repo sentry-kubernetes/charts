@@ -10,7 +10,7 @@ spec:
     name: {{ template "sentry.fullname" . }}-snuba-api
   minReplicas: {{ .Values.snuba.api.autoscaling.minReplicas }}
   maxReplicas: {{ .Values.snuba.api.autoscaling.maxReplicas }}
-  {{- if not (.Capabilities.APIVersions.Has "autoscaling/v2") }}
+  {{- if not (eq (include "sentry.autoscaling.apiVersion" .) "autoscaling/v2") }}
   targetCPUUtilizationPercentage: {{ .Values.snuba.api.autoscaling.targetCPUUtilizationPercentage }}
   {{- else if semverCompare ">=1.27-0" .Capabilities.KubeVersion.GitVersion }}
   metrics:

@@ -10,7 +10,7 @@ spec:
     name: {{ template "sentry.fullname" . }}-ingest-consumer-attachments
   minReplicas: {{ .Values.sentry.ingestConsumer.autoscaling.minReplicas }}
   maxReplicas: {{ .Values.sentry.ingestConsumer.autoscaling.maxReplicas }}
-  {{- if not (.Capabilities.APIVersions.Has "autoscaling/v2") }}
+  {{- if not (eq (include "sentry.autoscaling.apiVersion" .) "autoscaling/v2") }}
   targetCPUUtilizationPercentage: {{ .Values.sentry.ingestConsumer.autoscaling.targetCPUUtilizationPercentage }}
   {{- else if semverCompare ">=1.27-0" .Capabilities.KubeVersion.GitVersion }}
   metrics:
@@ -38,7 +38,7 @@ spec:
     name: {{ template "sentry.fullname" . }}-ingest-consumer-events
   minReplicas: {{ .Values.sentry.ingestConsumer.autoscaling.minReplicas }}
   maxReplicas: {{ .Values.sentry.ingestConsumer.autoscaling.maxReplicas }}
-  {{- if not (.Capabilities.APIVersions.Has "autoscaling/v2") }}
+  {{- if not (eq (include "sentry.autoscaling.apiVersion" .) "autoscaling/v2") }}
   targetCPUUtilizationPercentage: {{ .Values.sentry.ingestConsumer.autoscaling.targetCPUUtilizationPercentage }}
   {{- else if semverCompare ">=1.27-0" .Capabilities.KubeVersion.GitVersion }}
   metrics:
@@ -66,7 +66,7 @@ spec:
     name: {{ template "sentry.fullname" . }}-ingest-consumer-transactions
   minReplicas: {{ .Values.sentry.ingestConsumer.autoscaling.minReplicas }}
   maxReplicas: {{ .Values.sentry.ingestConsumer.autoscaling.maxReplicas }}
-  {{- if not (.Capabilities.APIVersions.Has "autoscaling/v2") }}
+  {{- if not (eq (include "sentry.autoscaling.apiVersion" .) "autoscaling/v2") }}
   targetCPUUtilizationPercentage: {{ .Values.sentry.ingestConsumer.autoscaling.targetCPUUtilizationPercentage }}
   {{- else if semverCompare ">=1.27-0" .Capabilities.KubeVersion.GitVersion }}
   metrics:
