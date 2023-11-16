@@ -75,7 +75,6 @@ spec:
           {{- end }}
           - "--consumer-group=snuba-events-subscriptions-consumers"
           - "--followed-consumer-group=snuba-consumers"
-          - "--delay-seconds=60"
           - "--schedule-ttl=60"
           - "--stale-threshold-seconds=900"
         ports:
