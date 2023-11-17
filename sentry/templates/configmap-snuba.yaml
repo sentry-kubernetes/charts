@@ -47,6 +47,7 @@ data:
             "generic_metrics_counters",
             "spans",
             "group_attributes",
+            "generic_metrics_gauges",
         },
         {{- /*
           The default clickhouse installation runs in distributed mode, while the external
