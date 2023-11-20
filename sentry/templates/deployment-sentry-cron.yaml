@@ -67,6 +67,9 @@ spec:
         args:
           - "run"
           - "cron"
+          {{- if .Values.sentry.cron.logLevel }}
+          - "-l{{ .Values.sentry.cron.logLevel}}"
+          {{- end }}
         env:
         - name: C_FORCE_ROOT
           value: "true"

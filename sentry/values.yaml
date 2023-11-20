@@ -469,6 +469,8 @@ sentry:
     sidecars: []
     volumes: []
     # volumeMounts: []
+    ## Log level can be any of: DEBUG, INFO, WARNING, ERROR, CRITICAL, FATAL
+    # logLevel: info
 
   subscriptionConsumerEvents:
     replicas: 1
