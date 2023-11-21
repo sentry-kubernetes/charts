@@ -17,13 +17,17 @@ spec:
   - type: ContainerResource
     containerResource:
       container: {{ .Chart.Name }}-worker
-  {{- else }}
-  metrics:
-  - type: Resource
-    resource:
-  {{- end }}
       name: cpu
       target:
         type: Utilization
         averageUtilization: {{ .Values.sentry.worker.autoscaling.targetCPUUtilizationPercentage }}
+  {{- else }}
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: {{ .Values.sentry.worker.autoscaling.targetCPUUtilizationPercentage }}
+  {{- end }}
 {{- end }}

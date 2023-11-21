@@ -17,13 +17,17 @@ spec:
   - type: ContainerResource
     containerResource:
       container: {{ .Chart.Name }}-snuba
-  {{- else }}
-  metrics:
-  - type: Resource
-    resource:
-  {{- end }}
       name: cpu
       target:
         type: Utilization
         averageUtilization: {{ .Values.snuba.api.autoscaling.targetCPUUtilizationPercentage }}
+  {{- else }}
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: {{ .Values.snuba.api.autoscaling.targetCPUUtilizationPercentage }}
+  {{- end }}
 {{- end }}

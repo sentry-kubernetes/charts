@@ -17,13 +17,17 @@ spec:
   - type: ContainerResource
     containerResource:
       container: {{ .Chart.Name }}-vroom
-  {{- else }}
-  metrics:
-  - type: Resource
-    resource:
-  {{- end }}
       name: cpu
       target:
         type: Utilization
         averageUtilization: {{ .Values.vroom.autoscaling.targetCPUUtilizationPercentage }}
+  {{- else }}
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: {{ .Values.vroom.autoscaling.targetCPUUtilizationPercentage }}
+  {{- end }}
 {{- end }}

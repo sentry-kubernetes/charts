@@ -17,15 +17,19 @@ spec:
   - type: ContainerResource
     containerResource:
       container: {{ .Chart.Name }}-ingest-consumer-attachments
-  {{- else }}
-  metrics:
-  - type: Resource
-    resource:
-  {{- end }}
       name: cpu
       target:
         type: Utilization
         averageUtilization: {{ .Values.sentry.ingestConsumer.autoscaling.targetCPUUtilizationPercentage }}
+  {{- else }}
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: {{ .Values.sentry.ingestConsumer.autoscaling.targetCPUUtilizationPercentage }}
+  {{- end }}
 ---
 apiVersion: {{ template "sentry.autoscaling.apiVersion" . }}
 kind: HorizontalPodAutoscaler
@@ -45,15 +49,19 @@ spec:
   - type: ContainerResource
     containerResource:
       container: {{ .Chart.Name }}-ingest-consumer-events
-  {{- else }}
-  metrics:
-  - type: Resource
-    resource:
-  {{- end }}
       name: cpu
       target:
         type: Utilization
         averageUtilization: {{ .Values.sentry.ingestConsumer.autoscaling.targetCPUUtilizationPercentage }}
+  {{- else }}
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: {{ .Values.sentry.ingestConsumer.autoscaling.targetCPUUtilizationPercentage }}
+  {{- end }}
 ---
 apiVersion: {{ template "sentry.autoscaling.apiVersion" . }}
 kind: HorizontalPodAutoscaler
@@ -73,13 +81,17 @@ spec:
   - type: ContainerResource
     containerResource:
       container: {{ .Chart.Name }}-ingest-consumer-transactions
-  {{- else }}
-  metrics:
-  - type: Resource
-    resource:
-  {{- end }}
       name: cpu
       target:
         type: Utilization
         averageUtilization: {{ .Values.sentry.ingestConsumer.autoscaling.targetCPUUtilizationPercentage }}
+  {{- else }}
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: {{ .Values.sentry.ingestConsumer.autoscaling.targetCPUUtilizationPercentage }}
+  {{- end }}
 {{- end }}
