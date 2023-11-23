@@ -482,6 +482,7 @@ sentry:
     containerSecurityContext: {}
     # tolerations: []
     # podLabels: []
+
     sidecars: []
     volumes: []
     # noStrictOffsetReset: false
@@ -655,6 +656,20 @@ snuba:
     # maxBatchTimeMs: ""
     # queuedMaxMessagesKbytes: ""
     # queuedMinMessages: ""
+    additionalArgs: []
+    # additionalArgs:
+    #  - --health-check-file=/tmp/health.txt
+
+    livenessProbe: {}
+    # livenessProbe:
+    #  exec:
+    #    command:
+    #      - rm
+    #      - /tmp/health.txt
+    #  initialDelaySeconds: 5
+    #  periodSeconds: 320  # should be higher than max.poll.interval.ms (defaults 30000ms)
+
+    readinessProbe: {}
 
     # volumeMounts:
     #   - mountPath: /dev/shm
@@ -683,7 +698,20 @@ snuba:
     # maxBatchTimeMs: ""
     # queuedMaxMessagesKbytes: ""
     # queuedMinMessages: ""
+    additionalArgs: []
+    # additionalArgs:
+    #  - --health-check-file=/tmp/health.txt
 
+    livenessProbe: {}
+    # livenessProbe:
+    #  exec:
+    #    command:
+    #      - rm
+    #      - /tmp/health.txt
+    #  initialDelaySeconds: 5
+    #  periodSeconds: 320  # should be higher than max.poll.interval.ms (defaults 30000ms)
+
+    readinessProbe: {}
     # volumeMounts:
     #   - mountPath: /dev/shm
     #     name: dshm
@@ -722,7 +750,20 @@ snuba:
     autoOffsetReset: "earliest"
     # volumes: []
     # volumeMounts: []
+    additionalArgs: []
+    # additionalArgs:
+    #  - --health-check-file=/tmp/health.txt
 
+    livenessProbe: {}
+    # livenessProbe:
+    #  exec:
+    #    command:
+    #      - rm
+    #      - /tmp/health.txt
+    #  initialDelaySeconds: 5
+    #  periodSeconds: 320  # should be higher than max.poll.interval.ms (defaults 30000ms)
+
+    readinessProbe: {}
   subscriptionConsumerEvents:
     replicas: 1
     env: []
@@ -736,6 +777,20 @@ snuba:
     autoOffsetReset: "earliest"
     # volumes: []
     # volumeMounts: []
+    additionalArgs: []
+    # additionalArgs:
+    #  - --health-check-file=/tmp/health.txt
+
+    livenessProbe: {}
+    # livenessProbe:
+    #  exec:
+    #    command:
+    #      - rm
+    #      - /tmp/health.txt
+    #  initialDelaySeconds: 5
+    #  periodSeconds: 320  # should be higher than max.poll.interval.ms (defaults 30000ms)
+
+    readinessProbe: {}
 
   genericMetricsCountersConsumer:
     replicas: 1
@@ -750,6 +805,21 @@ snuba:
     autoOffsetReset: "earliest"
     # volumes: []
     # volumeMounts: []
+    additionalArgs: []
+    # additionalArgs:
+    #  - --health-check-file=/tmp/health.txt
+
+    livenessProbe: {}
+    # livenessProbe:
+    #  exec:
+    #    command:
+    #      - rm
+    #      - /tmp/health.txt
+    #  initialDelaySeconds: 5
+    #  periodSeconds: 320  # should be higher than max.poll.interval.ms (defaults 30000ms)
+
+    readinessProbe: {}
+
 
   genericMetricsDistributionConsumer:
     replicas: 1
@@ -764,6 +834,20 @@ snuba:
     autoOffsetReset: "earliest"
     # volumes: []
     # volumeMounts: []
+    additionalArgs: []
+    # additionalArgs:
+    #  - --health-check-file=/tmp/health.txt
+
+    livenessProbe: {}
+    # livenessProbe:
+    #  exec:
+    #    command:
+    #      - rm
+    #      - /tmp/health.txt
+    #  initialDelaySeconds: 5
+    #  periodSeconds: 320  # should be higher than max.poll.interval.ms (defaults 30000ms)
+
+    readinessProbe: {}
 
   genericMetricsSetsConsumer:
     replicas: 1
@@ -778,6 +862,20 @@ snuba:
     autoOffsetReset: "earliest"
     # volumes: []
     # volumeMounts: []
+    additionalArgs: []
+    # additionalArgs:
+    #  - --health-check-file=/tmp/health.txt
+
+    livenessProbe: {}
+    # livenessProbe:
+    #  exec:
+    #    command:
+    #      - rm
+    #      - /tmp/health.txt
+    #  initialDelaySeconds: 5
+    #  periodSeconds: 320  # should be higher than max.poll.interval.ms (defaults 30000ms)
+
+    readinessProbe: {}
 
   subscriptionConsumerMetrics:
     replicas: 1
@@ -792,6 +890,20 @@ snuba:
     autoOffsetReset: "earliest"
     # volumes: []
     # volumeMounts: []
+    additionalArgs: []
+    # additionalArgs:
+    #  - --health-check-file=/tmp/health.txt
+
+    livenessProbe: {}
+    # livenessProbe:
+    #  exec:
+    #    command:
+    #      - rm
+    #      - /tmp/health.txt
+    #  initialDelaySeconds: 5
+    #  periodSeconds: 320  # should be higher than max.poll.interval.ms (defaults 30000ms)
+
+    readinessProbe: {}
 
   subscriptionConsumerTransactions:
     replicas: 1
@@ -806,6 +918,20 @@ snuba:
     autoOffsetReset: "earliest"
     # volumes: []
     # volumeMounts: []
+    additionalArgs: []
+    # additionalArgs:
+    #  - --health-check-file=/tmp/health.txt
+
+    livenessProbe: {}
+    # livenessProbe:
+    #  exec:
+    #    command:
+    #      - rm
+    #      - /tmp/health.txt
+    #  initialDelaySeconds: 5
+    #  periodSeconds: 320  # should be higher than max.poll.interval.ms (defaults 30000ms)
+
+    readinessProbe: {}
 
   subscriptionConsumerSessions:
     replicas: 1
@@ -843,7 +969,20 @@ snuba:
     # maxBatchTimeMs: ""
     # queuedMaxMessagesKbytes: ""
     # queuedMinMessages: ""
+    additionalArgs: []
+    # additionalArgs:
+    #  - --health-check-file=/tmp/health.txt
 
+    livenessProbe: {}
+    # livenessProbe:
+    #  exec:
+    #    command:
+    #      - rm
+    #      - /tmp/health.txt
+    #  initialDelaySeconds: 5
+    #  periodSeconds: 320  # should be higher than max.poll.interval.ms (defaults 30000ms)
+
+    readinessProbe: {}
     # volumeMounts:
     #   - mountPath: /dev/shm
     #     name: dshm
@@ -900,6 +1039,21 @@ snuba:
     # queuedMaxMessagesKbytes: ""
     # queuedMinMessages: ""
 
+    additionalArgs: []
+    # additionalArgs:
+    #  - --health-check-file=/tmp/health.txt
+
+    livenessProbe: {}
+    # livenessProbe:
+    #  exec:
+    #    command:
+    #      - rm
+    #      - /tmp/health.txt
+    #  initialDelaySeconds: 5
+    #  periodSeconds: 320  # should be higher than max.poll.interval.ms (defaults 30000ms)
+
+    readinessProbe: {}
+
     # volumeMounts:
     #   - mountPath: /dev/shm
     #     name: dshm
@@ -927,7 +1081,20 @@ snuba:
     # maxBatchTimeMs: ""
     # queuedMaxMessagesKbytes: ""
     # queuedMinMessages: ""
+    additionalArgs: []
+    # additionalArgs:
+    #  - --health-check-file=/tmp/health.txt
 
+    livenessProbe: {}
+    # livenessProbe:
+    #  exec:
+    #    command:
+    #      - rm
+    #      - /tmp/health.txt
+    #  initialDelaySeconds: 5
+    #  periodSeconds: 320  # should be higher than max.poll.interval.ms (defaults 30000ms)
+
+    readinessProbe: {}
     # volumeMounts:
     #   - mountPath: /dev/shm
     #     name: dshm
@@ -955,7 +1122,20 @@ snuba:
     # maxBatchTimeMs: ""
     # queuedMaxMessagesKbytes: ""
     # queuedMinMessages: ""
+    additionalArgs: []
+    # additionalArgs:
+    #  - --health-check-file=/tmp/health.txt
 
+    livenessProbe: {}
+    # livenessProbe:
+    #  exec:
+    #    command:
+    #      - rm
+    #      - /tmp/health.txt
+    #  initialDelaySeconds: 5
+    #  periodSeconds: 320  # should be higher than max.poll.interval.ms (defaults 30000ms)
+
+    readinessProbe: {}
     # volumeMounts:
     #   - mountPath: /dev/shm
     #     name: dshm
@@ -982,7 +1162,20 @@ snuba:
     # maxBatchTimeMs: ""
     # queuedMaxMessagesKbytes: ""
     # queuedMinMessages: ""
+    additionalArgs: []
+    # additionalArgs:
+    #  - --health-check-file=/tmp/health.txt
 
+    livenessProbe: {}
+    # livenessProbe:
+    #  exec:
+    #    command:
+    #      - rm
+    #      - /tmp/health.txt
+    #  initialDelaySeconds: 5
+    #  periodSeconds: 320  # should be higher than max.poll.interval.ms (defaults 30000ms)
+
+    readinessProbe: {}
     # volumeMounts:
     #   - mountPath: /dev/shm
     #     name: dshm
