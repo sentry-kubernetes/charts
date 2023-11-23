@@ -78,6 +78,17 @@ spec:
           - "--followed-consumer-group=snuba-metrics-consumers"
           - "--schedule-ttl=60"
           - "--stale-threshold-seconds=900"
+          {{- range .Values.snuba.subscriptionConsumerMetrics.additionalArgs}}
+          - "{{ . }}"
+          {{- end}}
+        {{- with .Values.snuba.subscriptionConsumerMetrics.livenessProbe }}
+        livenessProbe:
+          {{- toYaml . | nindent 10 }}
+        {{- end}}
+        {{- with .Values.snuba.subscriptionConsumerMetrics.readinessProbeProbe }}
+        readinessProbeProbe:
+          {{- toYaml . | nindent 10 }}
+        {{- end}}
         ports:
         - containerPort: {{ template "snuba.port" }}
         env:
