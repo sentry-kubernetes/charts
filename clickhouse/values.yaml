@@ -371,6 +371,8 @@ clickhouse:
       parts_to_throw_insert: 300
       # The maximum number of threads that read parts when ClickHouse starts.
       max_part_loading_threads: auto
+      # If the number of broken parts in a single partition exceeds the max_suspicious_broken_parts value, automatic deletion is denied.
+      max_suspicious_broken_parts: 100
 
 ##
 ## Web interface for ClickHouse in the Tabix project.
