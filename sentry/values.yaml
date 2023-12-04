@@ -1184,8 +1184,8 @@ google: {}
 #   clientId: ""
 #   clientSecret: ""
 #   existingSecret: ""
-#   existingSecretClientIdKey: "" # by default "client-id"
-#   existingSecretClientSecretKey: "" # by default "client-secret"
+#   existingSecretClientIdKey: ""       # by default "client-id"
+#   existingSecretClientSecretKey: ""   # by default "client-secret"
 
 slack: {}
 # slack:
@@ -1193,9 +1193,13 @@ slack: {}
 #   clientSecret:
 #   signingSecret:
 #   existingSecret:
+#   existingSecretClientIdKey: ""       # by default "client-id"
+#   existingSecretClientSecretKey: ""   # by default "client-secret"
+#   existingSecretSigningSecretKey: ""  # by default "signing-secret"
 #   Reference -> https://develop.sentry.dev/integrations/slack/
 
 openai: {}
+# openai:
 #   existingSecret: "xxxxx"
 #   existingSecretKey: ""   # by default "api-token"
 
