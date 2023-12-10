@@ -573,3 +573,11 @@ Common Sentry environment variables
       key: {{ default "api-token" .Values.openai.existingSecretKey }}
 {{- end }}
 {{- end -}}
+
+{{- define "sentry.autoscaling.apiVersion" -}}
+{{- if .Capabilities.APIVersions.Has "autoscaling/v2" -}}
+{{- print "autoscaling/v2" -}}
+{{- else -}}
+{{- print "autoscaling/v1" -}}
+{{- end -}}
+{{- end -}}
