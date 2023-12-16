@@ -84,8 +84,8 @@ spec:
         livenessProbe:
           {{- toYaml . | nindent 10 }}
         {{- end}}
-        {{- with .Values.snuba.subscriptionConsumerEvents.readinessProbeProbe }}
-        readinessProbeProbe:
+        {{- with .Values.snuba.subscriptionConsumerEvents.readinessProbe }}
+        readinessProbe:
           {{- toYaml . | nindent 10 }}
         {{- end}}
         ports:
