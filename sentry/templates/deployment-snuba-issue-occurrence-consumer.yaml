@@ -120,8 +120,8 @@ spec:
         livenessProbe:
           {{- toYaml . | nindent 10 }}
         {{- end}}
-        {{- with .Values.snuba.issueOccurrenceConsumer.readinessProbeProbe }}
-        readinessProbeProbe:
+        {{- with .Values.snuba.issueOccurrenceConsumer.readinessProbe }}
+        readinessProbe:
           {{- toYaml . | nindent 10 }}
         {{- end}}
         ports:

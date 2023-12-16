@@ -121,8 +121,8 @@ spec:
         livenessProbe:
           {{- toYaml . | nindent 10 }}
         {{- end}}
-        {{- with .Values.snuba.profilingFunctionsConsumer.readinessProbeProbe }}
-        readinessProbeProbe:
+        {{- with .Values.snuba.profilingFunctionsConsumer.readinessProbe }}
+        readinessProbe:
           {{- toYaml . | nindent 10 }}
         {{- end}}
         ports:
