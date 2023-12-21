@@ -134,6 +134,8 @@ clickhouse:
   imageVersion: "19.14"
   imagePullPolicy: "IfNotPresent"
 
+  priorityClassName: ~
+
   ## The resource limits and requests used by clickhouse
   resources: {}
 
