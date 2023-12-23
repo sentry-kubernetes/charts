@@ -1,5 +1,5 @@
 {{- if .Values.sentry.worker.autoscaling.enabled }}
-apiVersion: autoscaling/v1
+apiVersion: {{ template "sentry.autoscaling.apiVersion" . }}
 kind: HorizontalPodAutoscaler
 metadata:
   name: {{ template "sentry.fullname" . }}-sentry-worker
@@ -10,5 +10,24 @@ spec:
     name: {{ template "sentry.fullname" . }}-worker
   minReplicas: {{ .Values.sentry.worker.autoscaling.minReplicas }}
   maxReplicas: {{ .Values.sentry.worker.autoscaling.maxReplicas }}
+  {{- if eq (include "sentry.autoscaling.apiVersion" .) "autoscaling/v1" }}
   targetCPUUtilizationPercentage: {{ .Values.sentry.worker.autoscaling.targetCPUUtilizationPercentage }}
+  {{- else if semverCompare ">=1.27-0" .Capabilities.KubeVersion.GitVersion }}
+  metrics:
+  - type: ContainerResource
+    containerResource:
+      container: {{ .Chart.Name }}-worker
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: {{ .Values.sentry.worker.autoscaling.targetCPUUtilizationPercentage }}
+  {{- else }}
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: {{ .Values.sentry.worker.autoscaling.targetCPUUtilizationPercentage }}
+  {{- end }}
 {{- end }}
