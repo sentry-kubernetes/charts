@@ -98,6 +98,9 @@ spec:
 {{- if .Values.hooks.dbInit.sidecars }}
 {{ toYaml .Values.hooks.dbInit.sidecars | indent 6 }}
 {{- end }}
+      { { - if .Values.serviceAccount.enabled } }
+      serviceAccountName: { { .Values.serviceAccount.name } }-hook-sentry-dbinit
+      {{- end }}
       volumes:
       - name: config
         configMap:
