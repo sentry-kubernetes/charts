@@ -14,6 +14,16 @@ Big thanks to the maintainers of the [deprecated chart](https://github.com/helm/
 
 For now the full list of values is not documented but you can get inspired by the values.yaml specific to each directory.
 
+## Upgrading from 20.x.x version of this Chart to 21.x.x
+
+Bumped dependencies:
+- memcached > 6.5.9
+- kafka > 23.0.7
+- clickhouse > 3.7.0
+- zookeeper > 11.4.11
+- rabbitmq > 11.16.2
+
+
 ## Upgrading from 19.x.x version of this Chart to 20.x.x
 
 Bumped dependencies:
