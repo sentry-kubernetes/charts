@@ -18,9 +18,9 @@ For now the full list of values is not documented but you can get inspired by th
 
 Bumped dependencies:
 - memcached > 6.5.9
-- kafka > 23.0.7
-- clickhouse > 3.7.0
-- zookeeper > 11.4.11
+- kafka > 23.0.7 - This is a major update, but only kafka version is updated. See [bitnami charts' update note](https://github.com/bitnami/charts/tree/main/bitnami/kafka#to-2300)
+- clickhouse > 3.7.0 - Supports priorityClassName and max_suspicious_broken_parts config.
+- zookeeper > 11.4.11 - 2 Major updates from v9 to v11. See [To v10 upgrade notes](https://github.com/bitnami/charts/tree/main/bitnami/zookeeper#to-1000) and [To v11 upgrade notes](https://github.com/bitnami/charts/tree/main/bitnami/zookeeper#to-1100)
 - rabbitmq > 11.16.2
 
 
