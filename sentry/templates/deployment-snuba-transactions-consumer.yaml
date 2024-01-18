@@ -113,6 +113,17 @@ spec:
           {{- if .Values.snuba.transactionsConsumer.noStrictOffsetReset }}
           - "--no-strict-offset-reset"
           {{- end }}
+          {{- range .Values.snuba.transactionsConsumer.additionalArgs}}
+          - "{{ . }}"
+          {{- end}}
+        {{- with .Values.snuba.transactionsConsumer.livenessProbe }}
+        livenessProbe:
+          {{- toYaml . | nindent 10 }}
+        {{- end}}
+        {{- with .Values.snuba.transactionsConsumer.readinessProbe }}
+        readinessProbe:
+          {{- toYaml . | nindent 10 }}
+        {{- end}}
         ports:
         - containerPort: {{ template "snuba.port" }}
         env:

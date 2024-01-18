@@ -77,6 +77,17 @@ spec:
           - "--followed-consumer-group=transactions_group"
           - "--schedule-ttl=60"
           - "--stale-threshold-seconds=900"
+          {{- range .Values.snuba.subscriptionConsumerTransactions.additionalArgs}}
+          - "{{ . }}"
+          {{- end}}
+        {{- with .Values.snuba.subscriptionConsumerTransactions.livenessProbe }}
+        livenessProbe:
+          {{- toYaml . | nindent 10 }}
+        {{- end}}
+        {{- with .Values.snuba.subscriptionConsumerTransactions.readinessProbe }}
+        readinessProbe:
+          {{- toYaml . | nindent 10 }}
+        {{- end}}
         ports:
         - containerPort: {{ template "snuba.port" }}
         env:
