@@ -101,6 +101,7 @@ relay:
   affinity: {}
   nodeSelector: {}
   securityContext: {}
+  securityPolicy: ""
   containerSecurityContext: {}
   service:
     annotations: {}
@@ -146,6 +147,7 @@ sentry:
     affinity: {}
     nodeSelector: {}
     securityContext: {}
+    securityPolicy: ""
     containerSecurityContext: {}
     service:
       annotations: {}
