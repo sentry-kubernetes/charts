@@ -3,7 +3,7 @@ name: Build and push Chart
 on:
   push:
     branches:    
-      - develop
+      - gke-backendconfig
 
 jobs:
   build-push:
