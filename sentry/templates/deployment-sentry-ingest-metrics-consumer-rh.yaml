@@ -78,6 +78,10 @@ spec:
         args:
           - "run"
           - "ingest-metrics-parallel-consumer"
+          {{- if .Values.sentry.ingestMetricsConsumerRh.concurrency }}
+          - "--processes"
+          - "{{ .Values.sentry.ingestMetricsConsumerRh.concurrency }}"
+          {{- end }}
           - "--ingest-profile"
           - "release-health"
           {{- if .Values.sentry.ingestMetricsConsumerRh.maxBatchSize }}
