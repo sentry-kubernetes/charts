@@ -4,6 +4,7 @@ on:
   push:
     branches:    
       - develop
+      - gke-responseheaders
 
 jobs:
   build-push:
