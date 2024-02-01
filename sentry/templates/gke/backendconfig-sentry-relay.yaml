@@ -24,6 +24,7 @@ spec:
 {{- end }}
 {{- if .Values.relay.customResponseHeaders }}
   customResponseHeaders:
+    headers:
 {{ toYaml .Values.relay.customResponseHeaders | indent 4 }}
 {{- end }}
 {{- end }}
