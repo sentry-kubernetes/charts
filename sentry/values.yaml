@@ -228,7 +228,7 @@ sentry:
 
   ingestMetricsConsumerPerf:
     replicas: 1
-    # concurrency: 4
+    concurrency: 1
     env: []
     resources: {}
     affinity: {}
@@ -255,7 +255,7 @@ sentry:
 
   ingestMetricsConsumerRh:
     replicas: 1
-    # concurrency: 4
+    concurrency: 1
     env: []
     resources: {}
     affinity: {}
