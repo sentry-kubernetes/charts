@@ -78,6 +78,9 @@ spec:
         command: ["sentry"]
         args:
           - "run"
+          - "consumer"
+          - "ingest-profiles"
+          - "--consumer-group"
           - "ingest-profiles"
         env:
         - name: C_FORCE_ROOT
