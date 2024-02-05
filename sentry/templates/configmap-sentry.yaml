@@ -153,8 +153,6 @@ data:
             "OPTIONS": {"ignore_exc": True}
         }
     }
-    import memcache
-    memcache.SERVER_MAX_VALUE_LENGTH = {{ .Values.memcached.maxItemSize }}
     {{- end }}
 
     DATABASES = {
