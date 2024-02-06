@@ -1358,18 +1358,30 @@ kafka:
           "message.timestamp.type": LogAppendTime
       - name: event-replacements
       - name: snuba-commit-log
+        config:
+          "cleanup.policy": "compact.delete"
+          "min.compaction.lag.ms": "3600000"
       - name: cdc
       - name: transactions
         config:
           "message.timestamp.type": LogAppendTime
       - name: snuba-transactions-commit-log
+        config:
+          "cleanup.policy": "compact.delete"
+          "min.compaction.lag.ms": "3600000"
       - name: snuba-metrics
         config:
           "message.timestamp.type": LogAppendTime
       - name: outcomes
       - name: ingest-sessions
       - name: snuba-sessions-commit-log
+        config:
+          "cleanup.policy": "compact.delete"
+          "min.compaction.lag.ms": "3600000"
       - name: snuba-metrics-commit-log
+        config:
+          "cleanup.policy": "compact.delete"
+          "min.compaction.lag.ms": "3600000"
       - name: scheduled-subscriptions-events
       - name: scheduled-subscriptions-transactions
       - name: scheduled-subscriptions-sessions
@@ -1397,12 +1409,24 @@ kafka:
         config:
           "message.timestamp.type": LogAppendTime
       - name: snuba-generic-metrics-sets-commit-log
+        config:
+          "cleanup.policy": "compact.delete"
+          "min.compaction.lag.ms": "3600000"
       - name: snuba-generic-metrics-distributions-commit-log
+        config:
+          "cleanup.policy": "compact.delete"
+          "min.compaction.lag.ms": "3600000"
       - name: snuba-generic-metrics-counters-commit-log
+        config:
+          "cleanup.policy": "compact.delete"
+          "min.compaction.lag.ms": "3600000"
       - name: generic-events
         config:
           "message.timestamp.type": LogAppendTime
       - name: snuba-generic-events-commit-log
+        config:
+          "cleanup.policy": "compact.delete"
+          "min.compaction.lag.ms": "3600000"
       - name: group-attributes
         config:
           "message.timestamp.type": LogAppendTime
@@ -1427,6 +1451,7 @@ kafka:
       - name: profiles
       - name: ingest-occurrences
       - name: snuba-spans
+      - name: shared-resources-usage
   zookeeper:
     enabled: true
   kraft:
