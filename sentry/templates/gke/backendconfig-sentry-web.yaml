@@ -22,4 +22,9 @@ spec:
   securityPolicy:
     name: {{ .Values.sentry.web.securityPolicy }}
 {{- end }}
+{{- if .Values.sentry.web.customResponseHeaders }}
+  customResponseHeaders:
+    headers:
+{{ toYaml .Values.sentry.web.customResponseHeaders | indent 4 }}
+{{- end }}
 {{- end }}

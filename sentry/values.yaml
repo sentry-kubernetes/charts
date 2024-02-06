@@ -102,6 +102,7 @@ relay:
   nodeSelector: {}
   securityContext: {}
   securityPolicy: ""
+  customResponseHeaders: []
   containerSecurityContext: {}
   service:
     annotations: {}
@@ -148,6 +149,7 @@ sentry:
     nodeSelector: {}
     securityContext: {}
     securityPolicy: ""
+    customResponseHeaders: []
     containerSecurityContext: {}
     service:
       annotations: {}
