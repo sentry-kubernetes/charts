@@ -10,6 +10,14 @@ metadata:
     release: "{{ .Release.Name }}"
     heritage: "{{ .Release.Service }}"
 spec:
+  {{- if .Values.sentry.web.customResponseHeaders }}
+  customResponseHeaders:
+    headers:
+      {{- if .Values.ingress.tls }}
+      - "strict-transport-security: max-age=31536000; includeSubDomains"
+      {{- end -}}
+      {{ toYaml .Values.sentry.web.customResponseHeaders | nindent 6 }}
+  {{- end }} 
   healthCheck:
     checkIntervalSec: {{ .Values.sentry.web.probePeriodSeconds }}
     timeoutSec: {{ .Values.sentry.web.probeTimeoutSeconds }}
@@ -18,8 +26,8 @@ spec:
     type: HTTP
     requestPath: {{ template "sentry.healthCheck.requestPath" }}
     port: {{ .Values.service.externalPort }}
-{{- if .Values.sentry.web.securityPolicy }}
+  {{- if .Values.sentry.web.securityPolicy }}
   securityPolicy:
     name: {{ .Values.sentry.web.securityPolicy }}
-{{- end }}
+  {{- end }}
 {{- end }}
