@@ -101,7 +101,10 @@ relay:
   affinity: {}
   nodeSelector: {}
   securityContext: {}
+  # if you are using GKE Ingress controller use 'securityPolicy' to add Google Cloud Armor Ingress policy
   securityPolicy: ""
+  # if you are using GKE Ingress controller use 'customResponseHeaders' to add custom response header
+  customResponseHeaders: []
   containerSecurityContext: {}
   service:
     annotations: {}
@@ -147,7 +150,10 @@ sentry:
     affinity: {}
     nodeSelector: {}
     securityContext: {}
+    # if you are using GKE Ingress controller use 'securityPolicy' to add Google Cloud Armor Ingress policy
     securityPolicy: ""
+    # if you are using GKE Ingress controller use 'customResponseHeaders' to add custom response header
+    customResponseHeaders: []
     containerSecurityContext: {}
     service:
       annotations: {}

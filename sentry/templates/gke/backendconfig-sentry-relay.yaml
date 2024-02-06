@@ -10,6 +10,14 @@ metadata:
     release: "{{ .Release.Name }}"
     heritage: "{{ .Release.Service }}"
 spec:
+  {{- if .Values.relay.customResponseHeaders }}
+  customResponseHeaders:
+    headers:
+      {{- if .Values.ingress.tls }}
+      - "strict-transport-security: max-age=31536000; includeSubDomains"
+      {{- end -}}
+      {{ toYaml .Values.relay.customResponseHeaders | nindent 6 }}
+  {{- end }}      
   healthCheck:
     checkIntervalSec: {{ .Values.relay.probePeriodSeconds }}
     timeoutSec: {{ .Values.relay.probeTimeoutSeconds }}
@@ -18,8 +26,8 @@ spec:
     type: HTTP
     requestPath: {{ template "relay.healthCheck.requestPath" }}
     port: {{ template "relay.port" . }}
-{{- if .Values.relay.securityPolicy }}
+  {{- if .Values.relay.securityPolicy }}
   securityPolicy:
     name: {{ .Values.relay.securityPolicy }}
-{{- end }}
+  {{- end }}
 {{- end }}
