@@ -35,18 +35,38 @@ spec:
               secretKeyRef:
                 name: {{ template "sentry-kubernetes.secretName" . }}
                 key: sentry.dsn
-          {{ if .Values.sentry.environment }}
+          {{ if .Values.sentry.environment -}}
           - name: ENVIRONMENT
             value: {{ .Values.sentry.environment }}
           {{ end }}
-          {{ if .Values.sentry.release }}
+          {{- if .Values.sentry.release -}}
           - name: RELEASE
             value: {{ .Values.sentry.release }}
           {{ end }}
-          {{ if .Values.sentry.logLevel }}
+          {{- if .Values.sentry.logLevel -}}
           - name: LOG_LEVEL
             value: {{ .Values.sentry.logLevel }}
           {{ end }}
+          {{- if .Values.sentry.eventNamespaces -}}
+          - name: EVENT_NAMESPACES
+            value: {{ .Values.sentry.eventNamespaces }}
+          {{ end }}
+          {{- if .Values.sentry.eventNamespacesExcluded -}}
+          - name: EVENT_NAMESPACES_EXCLUDED
+            value: {{ .Values.sentry.eventNamespacesExcluded }}
+          {{ end }}
+          {{- if .Values.sentry.componentFilter -}}
+          - name: COMPONENT_FILTER
+            value: {{ .Values.sentry.componentFilter }}
+          {{ end }}
+          {{- if .Values.sentry.eventLevels -}}
+          - name: EVENT_LEVELS
+            value: {{ .Values.sentry.eventLevels }}
+          {{ end }}
+          {{- if .Values.sentry.mangleNames -}}
+          - name: MANGLE_NAMES
+            value: {{ .Values.sentry.mangleNames }}
+          {{ end }}          
         resources:
 {{ toYaml .Values.resources | indent 10 }}
     {{- if .Values.nodeSelector }}
