@@ -477,6 +477,14 @@ data:
                 "organizations:profiling-view",
                 {{ end -}}
 
+                {{- if .Values.sentry.features.enableFeedback }}
+                "organizations:user-feedback-ui",
+                "organizations:user-feedback-ingest",
+                "organizations:feedback-ingest",
+                "organizations:feedback-post-process-group",
+                "organizations:feedback-visible",
+                {{ end -}}
+
                 "organizations:dashboards-mep",
                 "organizations:mep-rollout-flag",
                 "organizations:dashboards-rh-widget",
