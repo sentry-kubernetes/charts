@@ -108,7 +108,7 @@ spec:
               - sentry
               - exec
               - -c
-              - 'import celery, os; dest="celery@{}".format(os.environ["HOSTNAME"]); print(celery.task.control.ping(destination=[dest], timeout=5)[0][dest]["ok"])'
+              - 'from sentry.celery import app; import os; dest="celery@{}".format(os.environ["HOSTNAME"]); print(app.control.ping(destination=[dest], timeout=5)[0][dest]["ok"])'
 {{- end }}
         resources:
 {{ toYaml .Values.sentry.worker.resources | indent 12 }}
