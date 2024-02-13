@@ -500,6 +500,18 @@ Common Sentry environment variables
       name: {{ .Values.externalPostgresql.existingSecret }}
       key: {{ default "postgresql-password" .Values.externalPostgresql.existingSecretKey }}
 {{- end }}
+{{- if and (eq .Values.filestore.backend "s3") .Values.filestore.s3.existingSecret }}
+- name: S3_ACCESS_KEY_ID
+  valueFrom:
+    secretKeyRef:
+      name: {{ .Values.filestore.s3.existingSecret }}
+      key: {{ default "s3-access-key-id" .Values.filestore.s3.accessKeyIdRef }}
+- name: S3_SECRET_ACCESS_KEY
+  valueFrom:
+    secretKeyRef:
+      name: {{ .Values.filestore.s3.existingSecret }}
+      key: {{ default "s3-secret-access-key" .Values.filestore.s3.secretAccessKeyRef }}
+{{- end }}
 {{- if and (eq .Values.filestore.backend "gcs") .Values.filestore.gcs.secretName }}
 - name: GOOGLE_APPLICATION_CREDENTIALS
   value: /var/run/secrets/google/{{ .Values.filestore.gcs.credentialsFile }}

@@ -1235,7 +1235,12 @@ filestore:
   # bucketName:
 
   ## Currently unconfigured and changing this has no impact on the template configuration.
+  ## Note that you can use a secret with default references "s3-access-key-id" and "s3-secret-access-key".
+  ## Otherwise, you can use custom secret references, or use plain text values.
   s3: {}
+  #  existingSecret:
+  #  accessKeyIdRef:
+  #  secretAccessKeyRef:
   #  accessKey:
   #  secretKey:
   #  bucketName:

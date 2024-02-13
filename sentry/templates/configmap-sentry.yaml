@@ -96,37 +96,6 @@ data:
     filestore.options:
       bucket_name: {{ .Values.filestore.gcs.bucketName | quote }}
     {{ end }}
-    {{- if eq .Values.filestore.backend "s3" }}
-    filestore.options:
-      {{- if .Values.filestore.s3.accessKey }}
-      access_key: {{ .Values.filestore.s3.accessKey | quote }}
-      {{- end }}
-      {{- if .Values.filestore.s3.secretKey }}
-      secret_key: {{ .Values.filestore.s3.secretKey | quote }}
-      {{- end }}
-      {{- if .Values.filestore.s3.bucketName }}
-      bucket_name: {{ .Values.filestore.s3.bucketName | quote }}
-      {{- end }}
-      {{- if .Values.filestore.s3.endpointUrl }}
-      endpoint_url: {{ .Values.filestore.s3.endpointUrl | quote }}
-      {{- end }}
-      {{- if .Values.filestore.s3.signature_version }}
-      signature_version: {{ .Values.filestore.s3.signature_version | quote }}
-      {{- end }}
-      {{- if .Values.filestore.s3.region_name }}
-      region_name: {{ .Values.filestore.s3.region_name | quote }}
-      {{- end }}
-      {{- if .Values.filestore.s3.default_acl }}
-      default_acl: {{ .Values.filestore.s3.default_acl | quote }}
-      {{- end }}
-      #add comfig params for s3
-      {{- if .Values.filestore.s3.addressing_style }}
-      addressing_style: {{ .Values.filestore.s3.addressing_style | quote }}
-      {{- end }}
-      {{- if .Values.filestore.s3.location }}
-      location: {{ .Values.filestore.s3.location | quote }}
-      {{- end }}
-    {{ end }}
 
     {{- if .Values.config.configYml }}
 {{ .Values.config.configYml | toYaml | indent 4 }}
@@ -521,6 +490,38 @@ data:
     SENTRY_OPTIONS['mail.port'] = int(os.getenv("SENTRY_EMAIL_PORT", {{ .Values.mail.port | quote }}))
     SENTRY_OPTIONS['mail.host'] = os.getenv("SENTRY_EMAIL_HOST", {{ .Values.mail.host | quote }})
     SENTRY_OPTIONS['mail.from'] = os.getenv("SENTRY_EMAIL_FROM", {{ .Values.mail.from | quote }})
+
+    #######################
+    # Filestore S3 Configuration #
+    #######################
+    {{- if eq .Values.filestore.backend "s3" }}
+    SENTRY_OPTIONS['filestore.options'] = {
+        'access_key': os.getenv("S3_ACCESS_KEY_ID", {{ .Values.filestore.s3.accessKey | default "" | quote }}),
+        'secret_key': os.getenv("S3_SECRET_ACCESS_KEY", {{ .Values.filestore.s3.secretKey | default "" | quote }}),
+        {{- if .Values.filestore.s3.bucketName }}
+        'bucket_name': {{ .Values.filestore.s3.bucketName | quote }},
+        {{- end }}
+        {{- if .Values.filestore.s3.endpointUrl }}
+        'endpoint_url': {{ .Values.filestore.s3.endpointUrl | quote }},
+        {{- end }}
+        {{- if .Values.filestore.s3.signature_version }}
+        'signature_version': {{ .Values.filestore.s3.signature_version | quote }},
+        {{- end }}
+        {{- if .Values.filestore.s3.region_name }}
+        'region_name': {{ .Values.filestore.s3.region_name | quote }},
+        {{- end }}
+        {{- if .Values.filestore.s3.default_acl }}
+        'default_acl': {{ .Values.filestore.s3.default_acl | quote }},
+        {{- end }}
+        #add comfig params for s3
+        {{- if .Values.filestore.s3.addressing_style }}
+        'addressing_style': {{ .Values.filestore.s3.addressing_style | quote }},
+        {{- end }}
+        {{- if .Values.filestore.s3.location }}
+        'location': {{ .Values.filestore.s3.location | quote }},
+        {{- end }}
+    }
+    {{- end }}
 
     #########################
     # Bitbucket Integration #
