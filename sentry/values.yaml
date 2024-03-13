@@ -212,12 +212,14 @@ sentry:
     env: []
     resources: {}
     affinity: {}
+    liveness: {}
     nodeSelector: {}
     securityContext: {}
     containerSecurityContext: {}
     # tolerations: []
     # podLabels: []
     # maxBatchSize: ""
+    # healthCheckFilePath: ""
 
     # it's better to use prometheus adapter and scale based on
     # the size of the rabbitmq queue
@@ -840,6 +842,7 @@ snuba:
     env: []
     resources: {}
     affinity: {}
+    liveness: {}
     nodeSelector: {}
     securityContext: {}
     containerSecurityContext: {}
@@ -854,6 +857,7 @@ snuba:
     # maxBatchTimeMs: ""
     # queuedMaxMessagesKbytes: ""
     # queuedMinMessages: ""
+    # healthCheckFile: ""
 
     # volumeMounts:
     #   - mountPath: /dev/shm

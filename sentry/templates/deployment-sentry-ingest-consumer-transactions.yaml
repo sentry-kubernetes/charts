@@ -89,6 +89,14 @@ spec:
           - "--max-batch-size"
           - "{{ .Values.sentry.ingestConsumer.maxBatchSize }}"
           {{- end }}
+          {{- if .Values.sentry.ingestConsumer.healthCheckFilePath }}
+          - "--healthcheck-file-path"
+          - "{{ .Values.sentry.ingestConsumer.healthCheckFilePath }}"
+          {{- end }}
+        {{- if .Values.sentry.ingestConsumer.livenessProbe }}
+        livenessProbe:
+{{ toYaml .Values.sentry.ingestConsumer.livenessProbe | indent 10 }}
+        {{- end }}
         env:
         - name: C_FORCE_ROOT
           value: "true"
