@@ -998,7 +998,7 @@ snuba:
 hooks:
   enabled: true
   removeOnSuccess: true
-  activeDeadlineSeconds: 100
+  activeDeadlineSeconds: 600
   shareProcessNamespace: false
   dbCheck:
     image:
