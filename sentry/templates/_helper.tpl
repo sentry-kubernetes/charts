@@ -287,7 +287,7 @@ Set redis password
 */}}
 {{- define "sentry.redis.password" -}}
 {{- if .Values.redis.enabled -}}
-{{ .Values.redis.password }}
+{{ .Values.redis.auth.password }}
 {{- else -}}
 {{ .Values.externalRedis.password }}
 {{- end -}}
