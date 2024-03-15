@@ -25,3 +25,5 @@ The following table lists the configurable parameters of the sentry-kubernetes c
 | `serviceAccount.name`   | Service account to be used. If not set and serviceAccount.create is `true`, a name is generated using the fullname template | ``                            |
 | `serviceAccount.create` | If true, create a new service account                                                                                       | `true`                        |
 | `priorityClassName`     | pod priorityClassName                                                                                                       | Empty                         |
+| `customCA.secretName`   | Allows mounting a custom CA secret                                                                                          | `nil`                         |
+| `customCA.item`         | Key of CA cert object within the secret                                                                                     | `nil`                         |
