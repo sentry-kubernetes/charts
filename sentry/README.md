@@ -67,7 +67,7 @@ Note: this table is incomplete, so have a look at the values.yaml in case you mi
 | `sentry.features.vstsLimitedScopes`           | Disables the azdo-integrations with limited scopes that is the cause of so much pain                                                                                | `true`                         |
 | `sentry.web.customCA.secretName`              | Allows mounting a custom CA secret                                                                                                                                  | `nil`                          |
 | `sentry.web.customCA.item`                    | Key of CA cert object within the secret                                                                                                                             | `ca.crt`                       |
-| `symbolicator.api.enabled`                    | Enable Symbolicator                                                                                                                                                 | `false`                        |
+| `symbolicator.enabled`                    | Enable Symbolicator                                                                                                                                                 | `false`                        |
 | `symbolicator.api.config`                     | Config file for Symbolicator, see [its docs](https://getsentry.github.io/symbolicator/#configuration)                                                               | see values.yaml                |
 
 ## NGINX and/or Ingress
