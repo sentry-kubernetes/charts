@@ -89,7 +89,7 @@ spec:
           - "--max-batch-size"
           - "{{ .Values.sentry.ingestConsumer.maxBatchSize }}"
           {{- end }}
-          {{- if .Values.snuba.ingestConsumer.noStrictOffsetReset }}
+          {{- if .Values.sentry.ingestConsumer.noStrictOffsetReset }}
           - "--no-strict-offset-reset"
           {{- end }}
         env:
