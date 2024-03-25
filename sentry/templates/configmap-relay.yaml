@@ -1,3 +1,4 @@
+{{- if .Values.relay.enabled }}
 {{- $redisHost := include "sentry.redis.host" . -}}
 {{- $redisPort := include "sentry.redis.port" . -}}
 {{- $redisPass := include "sentry.redis.password" . -}}
@@ -42,3 +43,4 @@ data:
         metrics_sessions: ingest-metrics
 
 {{ .Values.config.relay | indent 4 }}
+{{- end }}
