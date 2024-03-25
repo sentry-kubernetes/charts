@@ -88,6 +88,7 @@ vroom:
     # volumeMounts: []
 
 relay:
+  enabled: true
   replicas: 1
   # args: []
   mode: managed
