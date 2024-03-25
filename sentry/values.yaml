@@ -424,6 +424,7 @@ sentry:
     #     name: dshm
 
   cron:
+    enabled: true
     replicas: 1
     env: []
     resources: {}
