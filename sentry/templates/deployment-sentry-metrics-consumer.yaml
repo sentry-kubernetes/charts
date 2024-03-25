@@ -1,3 +1,4 @@
+{{- if .Values.sentry.metricsConsumer.enabled }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -146,3 +147,4 @@ spec:
       {{- if .Values.sentry.metricsConsumer.priorityClassName }}
       priorityClassName: "{{ .Values.sentry.metricsConsumer.priorityClassName }}"
       {{- end }}
+{{- end }}

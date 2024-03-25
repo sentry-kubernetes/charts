@@ -207,6 +207,7 @@ sentry:
     volumeMounts: []
 
   ingestConsumer:
+    enabled: true
     replicas: 1
     # concurrency: 4
     env: []
@@ -235,6 +236,7 @@ sentry:
 
     # noStrictOffsetReset: false
   ingestReplayRecordings:
+    enabled: true
     replicas: 1
     env: []
     resources: {}
@@ -284,6 +286,7 @@ sentry:
     #   - mountPath: /dev/shm
     #     name: dshm
   ingestOccurrences:
+    enabled: true
     replicas: 1
     env: []
     resources: {}
@@ -309,6 +312,7 @@ sentry:
     #     name: dshm
 
   ingestMonitors:
+    enabled: true
     replicas: 1
     env: []
     resources: {}
@@ -334,6 +338,7 @@ sentry:
     #     name: dshm
 
   billingMetricsConsumer:
+    enabled: true
     replicas: 1
     # concurrency: 4
     env: []
@@ -361,6 +366,7 @@ sentry:
     #     name: dshm
 
   genericMetricsConsumer:
+    enabled: true
     replicas: 1
     # concurrency: 4
     env: []
@@ -388,6 +394,7 @@ sentry:
     #     name: dshm
 
   metricsConsumer:
+    enabled: true
     replicas: 1
     # concurrency: 4
     env: []
@@ -429,6 +436,7 @@ sentry:
     # logLevel: info
 
   subscriptionConsumerEvents:
+    enabled: true
     replicas: 1
     env: []
     resources: {}
@@ -459,6 +467,7 @@ sentry:
     # volumeMounts: []
 
   subscriptionConsumerTransactions:
+    enabled: true
     replicas: 1
     env: []
     resources: {}
@@ -475,6 +484,7 @@ sentry:
 
 
   postProcessForwardErrors:
+    enabled: true
     replicas: 1
     env: []
     resources: {}
@@ -489,6 +499,7 @@ sentry:
     # volumeMounts: []
 
   postProcessForwardTransactions:
+    enabled: true
     replicas: 1
     env: []
     resources: {}
@@ -502,6 +513,7 @@ sentry:
     volumes: []
     # volumeMounts: []
   postProcessForwardIssuePlatform:
+    enabled: true
     replicas: 1
     env: []
     resources: {}
@@ -516,6 +528,7 @@ sentry:
     # volumeMounts: []
 
   subscriptionConsumerGenericMetrics:
+    enabled: true
     replicas: 1
     env: []
     resources: {}
@@ -530,6 +543,7 @@ sentry:
     # volumeMounts: []
 
   subscriptionConsumerMetrics:
+    enabled: true
     replicas: 1
     env: []
     resources: {}

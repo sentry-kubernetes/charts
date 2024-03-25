@@ -1,3 +1,4 @@
+{{- if .Values.sentry.subscriptionConsumerEvents.enabled }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -129,3 +130,4 @@ spec:
       {{- if .Values.sentry.subscriptionConsumerEvents.priorityClassName }}
       priorityClassName: "{{ .Values.sentry.subscriptionConsumerEvents.priorityClassName }}"
       {{- end }}
+{{- end }}
