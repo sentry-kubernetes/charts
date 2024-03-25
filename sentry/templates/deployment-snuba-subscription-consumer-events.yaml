@@ -1,3 +1,4 @@
+{{- if .Values.snuba.subscriptionConsumerEvents.enabled }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -109,4 +110,5 @@ spec:
           name: {{ template "sentry.fullname" . }}-snuba
 {{- if .Values.snuba.subscriptionConsumerEvents.volumes }}
 {{ toYaml .Values.snuba.subscriptionConsumerEvents.volumes | indent 6 }}
+{{- end }}
 {{- end }}
