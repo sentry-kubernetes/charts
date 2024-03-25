@@ -963,6 +963,7 @@ hooks:
   activeDeadlineSeconds: 100
   shareProcessNamespace: false
   dbCheck:
+    enabled: true
     image:
       # repository: subfuzion/netcat
       # tag: latest
@@ -985,6 +986,7 @@ hooks:
     # volumes: []
     # volumeMounts: []
   dbInit:
+    enabled: true
     env: []
     # podLabels: []
     podAnnotations: {}
@@ -1002,6 +1004,7 @@ hooks:
     # volumes: []
     # volumeMounts: []
   snubaInit:
+    enabled: true
     # As snubaInit doesn't support configuring partition and replication factor, you can disable snubaInit's kafka topic creation by setting `kafka.enabled` to `false`,
     # and create the topics using `kafka.provisioning.topics` with the desired partition and replication factor.
     # Note that when you set `kafka.enabled` to `false`, snuba component might fail to start if newly added topics are not created by `kafka.provisioning`.
@@ -1021,7 +1024,8 @@ hooks:
     # tolerations: []
     # volumes: []
     # volumeMounts: []
-  snubaMigrate: {}
+  snubaMigrate:
+    enabled: true
     # podLabels: []
     # volumes: []
     # volumeMounts: []
