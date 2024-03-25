@@ -1,3 +1,4 @@
+{{- if .Values.snuba.replacer.enabled }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -122,4 +123,5 @@ spec:
           name: {{ template "sentry.fullname" . }}-snuba
 {{- if .Values.snuba.replacer.volumes }}
 {{ toYaml .Values.snuba.replacer.volumes | indent 6 }}
+{{- end }}
 {{- end }}

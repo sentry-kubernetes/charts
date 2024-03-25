@@ -607,6 +607,7 @@ snuba:
     # volumeMounts: []
 
   consumer:
+    enabled: true
     replicas: 1
     env: []
     resources: {}
@@ -635,6 +636,7 @@ snuba:
     #       medium: Memory
 
   outcomesConsumer:
+    enabled: true
     replicas: 1
     env: []
     resources: {}
@@ -663,6 +665,7 @@ snuba:
     #       medium: Memory
 
   replacer:
+    enabled: true
     replicas: 1
     env: []
     resources: {}
@@ -680,6 +683,7 @@ snuba:
     # volumeMounts: []
 
   metricsConsumer:
+    enabled: true
     replicas: 1
     env: []
     resources: {}
@@ -694,6 +698,7 @@ snuba:
     # volumeMounts: []
 
   subscriptionConsumerEvents:
+    enabled: true
     replicas: 1
     env: []
     resources: {}
@@ -708,6 +713,7 @@ snuba:
     # volumeMounts: []
 
   genericMetricsCountersConsumer:
+    enabled: true
     replicas: 1
     env: []
     resources: {}
@@ -722,6 +728,7 @@ snuba:
     # volumeMounts: []
 
   genericMetricsDistributionConsumer:
+    enabled: true
     replicas: 1
     env: []
     resources: {}
@@ -736,6 +743,7 @@ snuba:
     # volumeMounts: []
 
   genericMetricsSetsConsumer:
+    enabled: true
     replicas: 1
     env: []
     resources: {}
@@ -750,6 +758,7 @@ snuba:
     # volumeMounts: []
 
   subscriptionConsumerMetrics:
+    enabled: true
     replicas: 1
     env: []
     resources: {}
@@ -764,6 +773,7 @@ snuba:
     # volumeMounts: []
 
   subscriptionConsumerTransactions:
+    enabled: true
     replicas: 1
     env: []
     resources: {}
@@ -795,6 +805,7 @@ snuba:
     # volumeMounts: []
 
   replaysConsumer:
+    enabled: true
     replicas: 1
     env: []
     resources: {}
@@ -851,6 +862,7 @@ snuba:
     #       medium: Memory
 
   transactionsConsumer:
+    enabled: true
     replicas: 1
     env: []
     resources: {}
@@ -934,6 +946,7 @@ snuba:
     #     emptyDir:
     #       medium: Memory
   issueOccurrenceConsumer:
+    enabled: true
     replicas: 1
     env: []
     resources: {}
