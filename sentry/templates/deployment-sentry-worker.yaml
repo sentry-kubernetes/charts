@@ -1,3 +1,4 @@
+{{- if .Values.sentry.worker.enabled }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -148,4 +149,5 @@ spec:
       {{- end }}
 {{- if .Values.sentry.worker.volumes }}
 {{ toYaml .Values.sentry.worker.volumes | indent 6 }}
+{{- end }}
 {{- end }}

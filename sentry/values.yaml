@@ -184,6 +184,7 @@ sentry:
     enableFeedback: false
 
   worker:
+    enabled: true
     replicas: 3
     # concurrency: 4
     env: []
