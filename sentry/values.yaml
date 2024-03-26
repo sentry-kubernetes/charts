@@ -139,6 +139,7 @@ sentry:
   # existingSecretKey: "my-secret-key"
   singleOrganization: true
   web:
+    enabled: true
     # if using filestore backend filesystem with RWO access, set strategyType to Recreate
     strategyType: RollingUpdate
     replicas: 1
