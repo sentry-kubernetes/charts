@@ -1,4 +1,4 @@
-{{- if .Values.snuba.api.autoscaling.enabled }}
+{{- if and .Values.snuba.api.enabled .Values.snuba.api.autoscaling.enabled }}
 apiVersion: {{ template "sentry.autoscaling.apiVersion" . }}
 kind: HorizontalPodAutoscaler
 metadata:
