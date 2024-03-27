@@ -451,7 +451,7 @@ Common Snuba environment variables
       key: {{ default "clickhouse-password" .Values.externalClickhouse.existingSecretKey }}
 {{- end }}
 - name: CLICKHOUSE_MAX_CONNECTIONS
-  value {{ .Values.snuba.clickhouse.maxConnections | quote }}
+  value: {{ .Values.snuba.clickhouse.maxConnections | quote }}
 {{- end -}}
 
 {{- define "vroom.env" -}}
