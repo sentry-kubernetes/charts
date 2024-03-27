@@ -31,23 +31,23 @@ jobs:
       #     command: dep update main/sentry
 
       - name: Build zips
-        uses: yeouchien/helm3-action@f3a7c239c5c60777210c8e631839edf5dd3fa29c
+        uses: yeouchien/helm3-action@d143356cad04091228a880bb987108182e31234c
         with:
           command: package main/sentry --destination gh-pages/charts
 
 
       - name: Build zips
-        uses: yeouchien/helm3-action@f3a7c239c5c60777210c8e631839edf5dd3fa29c
+        uses: yeouchien/helm3-action@d143356cad04091228a880bb987108182e31234c
         with:
           command: package main/clickhouse --destination gh-pages/charts
 
       - name: Build zips
-        uses: yeouchien/helm3-action@f3a7c239c5c60777210c8e631839edf5dd3fa29c
+        uses: yeouchien/helm3-action@d143356cad04091228a880bb987108182e31234c
         with:
           command: package main/sentry-kubernetes --destination gh-pages/charts
 
       - name: Create index file
-        uses: yeouchien/helm3-action@f3a7c239c5c60777210c8e631839edf5dd3fa29c
+        uses: yeouchien/helm3-action@d143356cad04091228a880bb987108182e31234c
         with:
           command: repo index --url https://sentry-kubernetes.github.io/charts ./gh-pages/charts
 
