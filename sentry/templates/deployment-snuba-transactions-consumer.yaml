@@ -113,6 +113,15 @@ spec:
           {{- if .Values.snuba.transactionsConsumer.noStrictOffsetReset }}
           - "--no-strict-offset-reset"
           {{- end }}
+          {{- if .Values.snuba.transactionsConsumer.healthCheckFile }}
+          - "--health-check-file"
+          - "{{ .Values.snuba.transactionsConsumer.healthCheckFile }}"
+          {{- end }}
+        {{- if .Values.snuba.transactionsConsumer.livenessProbe }}
+        livenessProbe:
+{{ toYaml .Values.snuba.transactionsConsumer.livenessProbe | indent 10 }}
+        {{- end }}
+
         ports:
         - containerPort: {{ template "snuba.port" }}
         env:
