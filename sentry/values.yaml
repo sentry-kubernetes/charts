@@ -235,6 +235,7 @@ sentry:
     #   - mountPath: /dev/shm
     #     name: dshm
 
+    # noStrictOffsetReset: false
   ingestReplayRecordings:
     replicas: 1
     env: []

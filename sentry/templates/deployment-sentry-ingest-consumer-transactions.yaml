@@ -89,6 +89,9 @@ spec:
           - "--max-batch-size"
           - "{{ .Values.sentry.ingestConsumer.maxBatchSize }}"
           {{- end }}
+          {{- if .Values.sentry.ingestConsumer.noStrictOffsetReset }}
+          - "--no-strict-offset-reset"
+          {{- end }}
           {{- if .Values.sentry.ingestConsumer.healthCheckFilePath }}
           - "--healthcheck-file-path"
           - "{{ .Values.sentry.ingestConsumer.healthCheckFilePath }}"
