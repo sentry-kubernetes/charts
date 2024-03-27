@@ -19,7 +19,7 @@ jobs:
             echo "::set-output name=changed::true"
           fi
       - name: Lint Sentry Helm Chart
-        uses: WyriHaximus/github-action-helm3@v2
+        uses: WyriHaximus/github-action-helm3@v4
         if: steps.list-changed.outputs.changed == 'true'
         with:
           exec: for chart in $(ls -d ./*/); do helm lint $chart; done
