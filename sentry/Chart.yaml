@@ -7,7 +7,7 @@ appVersion: 24.2.0
 dependencies:
   - name: memcached
     repository: oci://registry-1.docker.io/bitnamicharts
-    version: 6.5.9
+    version: 6.14.0
     condition: sourcemaps.enabled
   - name: redis
     repository: oci://registry-1.docker.io/bitnamicharts
