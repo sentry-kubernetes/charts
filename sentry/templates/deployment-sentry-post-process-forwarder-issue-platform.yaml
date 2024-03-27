@@ -1,3 +1,4 @@
+{{- if .Values.sentry.postProcessForwardIssuePlatform.enabled }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -139,3 +140,4 @@ spec:
       {{- if .Values.sentry.postProcessForwardIssuePlatform.priorityClassName }}
       priorityClassName: "{{ .Values.sentry.postProcessForwardIssuePlatform.priorityClassName }}"
       {{- end }}
+{{- end }}

@@ -1,4 +1,5 @@
 ---
+{{- if .Values.sourcemaps.enabled }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -6,3 +7,4 @@ metadata:
 data:
   MEMCACHED_MEMORY_LIMIT: "{{ .Values.memcached.memoryLimit }}"
   MEMCACHED_MAX_ITEM_SIZE: "{{ .Values.memcached.maxItemSize }}"
+{{- end }}

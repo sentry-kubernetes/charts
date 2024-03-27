@@ -1,4 +1,4 @@
-{{- if .Values.hooks.enabled -}}
+{{- if and .Values.hooks.enabled .Values.hooks.snubaMigrate.enabled -}}
 {{- $clickhouseHost := include "sentry.clickhouse.host" . -}}
 apiVersion: batch/v1
 kind: Job

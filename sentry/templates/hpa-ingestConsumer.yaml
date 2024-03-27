@@ -1,4 +1,4 @@
-{{- if .Values.sentry.ingestConsumer.autoscaling.enabled }}
+{{- if and .Values.sentry.ingestConsumer.enabled .Values.sentry.ingestConsumer.autoscaling.enabled }}
 apiVersion: {{ template "sentry.autoscaling.apiVersion" . }}
 kind: HorizontalPodAutoscaler
 metadata:
