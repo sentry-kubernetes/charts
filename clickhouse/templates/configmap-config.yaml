@@ -166,7 +166,6 @@ data:
             <parts_to_throw_insert>{{ .Values.clickhouse.configmap.merge_tree.parts_to_throw_insert }}</parts_to_throw_insert> 
             <max_part_loading_threads>{{ .Values.clickhouse.configmap.merge_tree.max_part_loading_threads }}</max_part_loading_threads> 
             <max_suspicious_broken_parts>{{ .Values.clickhouse.configmap.merge_tree.max_suspicious_broken_parts }}</max_suspicious_broken_parts>
-          </merge_tree>
         </merge_tree>
         {{- end }}
     </yandex>
