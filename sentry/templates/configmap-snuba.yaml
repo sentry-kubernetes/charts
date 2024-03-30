@@ -25,6 +25,7 @@ data:
         "port": int({{ include "sentry.clickhouse.port" . }}),
         "user":  env("CLICKHOUSE_USER", "default"),
         "password": env("CLICKHOUSE_PASSWORD", ""),
+        "max_connections": int(os.environ.get("CLICKHOUSE_MAX_CONNECTIONS", 100)),
         "database": env("CLICKHOUSE_DATABASE", "default"),
         "http_port": {{ include "sentry.clickhouse.http_port" . }},
         "storage_sets": {
