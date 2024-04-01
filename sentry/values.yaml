@@ -501,6 +501,7 @@ sentry:
     sidecars: []
     volumes: []
     # volumeMounts: []
+    # noStrictOffsetReset: false
   postProcessForwardIssuePlatform:
     replicas: 1
     env: []
