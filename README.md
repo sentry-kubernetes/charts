@@ -4,8 +4,7 @@ Sentry is a cross-platform crash reporting and aggregation platform.
 
 This repository aims to support Sentry >=10 and move out from the deprecated Helm charts official repo.
 
-Big thanks to the maintainers of the [deprecated chart](https://github.com/helm/charts/tree/master/stable/sentry). This
-work has been partly inspired by it.
+Big thanks to the maintainers of the [deprecated chart](https://github.com/helm/charts/tree/master/stable/sentry). This work has been partly inspired by it.
 
 ## How this chart works
 
@@ -13,8 +12,7 @@ work has been partly inspired by it.
 
 ## Values
 
-For now the full list of values is not documented but you can get inspired by the values.yaml specific to each
-directory.
+For now the full list of values is not documented but you can get inspired by the values.yaml specific to each directory.
 
 ## Upgrading from 21.x.x Version of This Chart to 22.x.x
 
@@ -105,7 +103,7 @@ Bumped dependencies:
 
 Example:
 
-```yaml
+```
 kafka:
   zookeeper:
     enabled: false
@@ -200,15 +198,14 @@ relay:
       alb.ingress.kubernetes.io/healthcheck-port: traffic-port
 ```
 
+
 ## Upgrading from 10.x.x version of this Chart to 11.0.0
 
 If you were using clickhouse tabix externally, we disabled it per default.
 
 ## Upgrading from 9.x.x version of this Chart to 10.0.0
 
-If you were using clickhouse
-ImagePullSecrets, [we unified](https://github.com/sentry-kubernetes/charts/commit/573ca29d03bf2c044004c1aa387f652a36ada23a)
-the way it's used.
+If you were using clickhouse ImagePullSecrets, [we unified](https://github.com/sentry-kubernetes/charts/commit/573ca29d03bf2c044004c1aa387f652a36ada23a) the way it's used.
 
 ## Upgrading from 8.x.x version of this Chart to 9.0.0
 
@@ -223,9 +220,7 @@ clickhouse.clickhouse.configmap.remote_servers.replica.backup
 ## Upgrading from 6.x.x version of this Chart to 7.0.0
 
 - the default mode of relay is now "proxy". You can change it through the values.yaml file
-- we removed the `githubSso` variable for the oauth github configuration. It was using the old environment variable,
-  that doesn't work with Sentry anymore. Just use the common github.xxxx configuration for both oauth & the application
-  integration.
+- we removed the `githubSso` variable for the oauth github configuration. It was using the old environment variable, that doesn't work with Sentry anymore. Just use the common github.xxxx configuration for both oauth & the application integration.
 
 ## Upgrading from 5.x.x version of this Chart to 6.0.0
 
@@ -234,27 +229,19 @@ clickhouse.clickhouse.configmap.remote_servers.replica.backup
 
 ## Upgrading from 4.x.x version of this Chart to 5.0.0
 
-As Relay is now part of this chart your need to make sure you enable either Nginx or the Ingress. Please read the next
-paragraph for more informations.
+As Relay is now part of this chart your need to make sure you enable either Nginx or the Ingress. Please read the next paragraph for more informations.
 
 If you are using an ingress gateway (like istio), you have to change your inbound path from sentry-web to nginx.
 
 ## NGINX and/or Ingress
 
-By default, NGINX is enabled to allow sending the incoming requests
-to [Sentry Relay](https://getsentry.github.io/relay/) or the Django backend depending on the path. When Sentry is meant
-to be exposed outside of the Kubernetes cluster, it is recommended to disable NGINX and let the Ingress do the same.
-It's recommended to go with the go to Ingress Controller, [NGINX Ingress](https://kubernetes.github.io/ingress-nginx/)
-but others should work as well.
+By default, NGINX is enabled to allow sending the incoming requests to [Sentry Relay](https://getsentry.github.io/relay/) or the Django backend depending on the path. When Sentry is meant to be exposed outside of the Kubernetes cluster, it is recommended to disable NGINX and let the Ingress do the same. It's recommended to go with the go to Ingress Controller, [NGINX Ingress](https://kubernetes.github.io/ingress-nginx/) but others should work as well.
 
-Note: if you are using NGINX Ingress, please set this annotation on your ingress :
-nginx.ingress.kubernetes.io/use-regex: "true".
-If you are using `additionalHostNames` the `nginx.ingress.kubernetes.io/upstream-vhost` annotation might also come in
-handy.
+Note: if you are using NGINX Ingress, please set this annotation on your ingress : nginx.ingress.kubernetes.io/use-regex: "true".
+If you are using `additionalHostNames` the `nginx.ingress.kubernetes.io/upstream-vhost` annotation might also come in handy.
 It sets the `Host` header to the value you provide to avoid CSRF issues.
 
 ### Letsencrypt on NGINX Ingress Controller
-
 ```
 nginx:
   ingress:
@@ -272,14 +259,13 @@ Snuba only supports a UTC timezone for Clickhouse. Please keep the initial value
 
 ## Upgrading from 3.1.0 version of this Chart to 4.0.0
 
-Following Helm Chart best practices the new version introduces some breaking changes, all configuration for external
-resources moved to separate config
-branches: `externalClickhouse`, `externalKafka`, `externalRedis`, `externalPostgresql`.
+Following Helm Chart best practices the new version introduces some breaking changes, all configuration for external
+resources moved to separate config branches: `externalClickhouse`, `externalKafka`, `externalRedis`, `externalPostgresql`.
 
 Here is a mapping table of old values and new values:
 
 | Before                          | After                         |
-|---------------------------------|-------------------------------|
+| ------------------------------- | ----------------------------- |
 | `postgresql.postgresqlHost`     | `externalPostgresql.host`     |
 | `postgresql.postgresqlPort`     | `externalPostgresql.port`     |
 | `postgresql.postgresqlUsername` | `externalPostgresql.username` |
@@ -292,8 +278,7 @@ Here is a mapping table of old values and new values:
 
 ## Upgrading from deprecated 9.0 -> 10.0 Chart
 
-As this chart runs in helm 3 and also tries its best to follow on from the original Sentry chart. There are some steps
-that needs to be taken in order to correctly upgrade.
+As this chart runs in helm 3 and also tries its best to follow on from the original Sentry chart. There are some steps that needs to be taken in order to correctly upgrade.
 
 From the previous upgrade, make sure to get the following from your previous installation:
 
@@ -303,14 +288,11 @@ From the previous upgrade, make sure to get the following from your previous ins
 
 #### Upgrade Steps
 
-Due to an issue where transferring from Helm 2 to 3. Statefulsets that use the
-following: `heritage: {{ .Release.Service }}` in the metadata field will error out with a `Forbidden` error during the
-upgrade. The only workaround is to delete the existing statefulsets (Don't worry, PVC will be retained):
+Due to an issue where transferring from Helm 2 to 3. Statefulsets that use the following: `heritage: {{ .Release.Service }}` in the metadata field will error out with a `Forbidden` error during the upgrade. The only workaround is to delete the existing statefulsets (Don't worry, PVC will be retained):
 
 > `kubectl delete --all sts -n <Sentry Namespace>`
 
-Once the statefulsets are deleted. Next steps is to convert the helm release from version 2 to 3 using the helm 3
-plugin:
+Once the statefulsets are deleted. Next steps is to convert the helm release from version 2 to 3 using the helm 3 plugin:
 
 > `helm3 2to3 convert <Sentry Release Name>`
 
@@ -328,24 +310,15 @@ Please also follow the steps for Major version 3 to 4 migration
 
 ## PostgreSQL
 
-By default, PostgreSQL is installed as part of the chart. To use an external PostgreSQL server set `postgresql.enabled`
-to `false` and then set `postgresql.postgresHost` and `postgresql.postgresqlPassword`. The other
-options (`postgresql.postgresqlDatabase`, `postgresql.postgresqlUsername` and `postgresql.postgresqlPort`) may also want
-changing from their default values.
+By default, PostgreSQL is installed as part of the chart. To use an external PostgreSQL server set `postgresql.enabled` to `false` and then set `postgresql.postgresHost` and `postgresql.postgresqlPassword`. The other options (`postgresql.postgresqlDatabase`, `postgresql.postgresqlUsername` and `postgresql.postgresqlPort`) may also want changing from their default values.
 
-To avoid issues when upgrade this chart, provide `postgresql.postgresqlPassword` for subsequent upgrades. This is due to
-an issue in the PostgreSQL chart where password will be overwritten with randomly generated passwords otherwise.
-See https://github.com/helm/charts/tree/master/stable/postgresql#upgrade for more detail.
+To avoid issues when upgrade this chart, provide `postgresql.postgresqlPassword` for subsequent upgrades. This is due to an issue in the PostgreSQL chart where password will be overwritten with randomly generated passwords otherwise. See https://github.com/helm/charts/tree/master/stable/postgresql#upgrade for more detail.
 
 ## Persistence
 
-This chart is capable of mounting the sentry-data PV in the Sentry worker and cron pods. This feature is disabled by
-default, but is needed for some advanced features such as private sourcemaps.
+This chart is capable of mounting the sentry-data PV in the Sentry worker and cron pods. This feature is disabled by default, but is needed for some advanced features such as private sourcemaps.
 
-You may enable mounting of the sentry-data PV across worker and cron pods by changing
-filestore.filesystem.persistence.persistentWorkers to true. If you plan on deploying Sentry containers across multiple
-nodes, you may need to change your PVC's access mode to ReadWriteMany and check that your PV supports mounting across
-multiple nodes.
+You may enable mounting of the sentry-data PV across worker and cron pods by changing filestore.filesystem.persistence.persistentWorkers to true. If you plan on deploying Sentry containers across multiple nodes, you may need to change your PVC's access mode to ReadWriteMany and check that your PV supports mounting across multiple nodes.
 
 ## Roadmap
 
