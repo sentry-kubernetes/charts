@@ -14,6 +14,78 @@ Big thanks to the maintainers of the [deprecated chart](https://github.com/helm/
 
 For now the full list of values is not documented but you can get inspired by the values.yaml specific to each directory.
 
+## Upgrading from 21.x.x Version of This Chart to 22.x.x
+
+This version introduces a significant change by dropping support for Kafka Zookeeper and transitioning to Kafka Kraft
+mode. This change requires action on your part to ensure a smooth upgrade.
+
+### Major Changes
+
+- **Kafka Upgrade**: We have upgraded from Kafka `23.0.7` to `27.1.2`. This involves moving from Zookeeper to Kraft,
+  requiring a fresh setup of Kafka.
+
+### Migration Guide
+
+1. **Backup Your Data**: Ensure all your data is backed up before starting the migration process.
+2. **Retrieve the Cluster ID from Zookeeper** by executing:
+
+    ```shell
+    kubectl exec -it <your-zookeeper-pod> -- zkCli.sh get /cluster/id
+    ```
+
+3. **Deploy at least one Kraft controller-only** in your deployment with zookeeperMigrationMode=true. The Kraft
+    controllers will migrate the data from your Kafka ZkBroker to Kraft mode.
+
+    To do this, add the following values to your Zookeeper deployment when upgrading:
+
+    ```yaml
+    controller:
+        replicaCount: 1
+        controllerOnly: true
+        zookeeperMigrationMode: true
+    broker:
+        zookeeperMigrationMode: true
+    kraft:
+        enabled: true
+        clusterId: "<your_cluster_id>"
+    ```
+
+4. **Wait until all brokers are ready.** You should see the following log in the broker logs:
+
+    ```shell
+    INFO [KafkaServer id=100] Finished catching up on KRaft metadata log, requesting that the KRaft controller unfence this broker (kafka.server.KafkaServer)
+    INFO [BrokerLifecycleManager id=100 isZkBroker=true] The broker has been unfenced. Transitioning from RECOVERY to RUNNING. (kafka.server.BrokerLifecycleManager)
+    ```
+    In the controllers, the following message should show up:
+    ```shell
+    Transitioning ZK migration state from PRE_MIGRATION to MIGRATION (org.apache.kafka.controller.FeatureControlManager)
+    ```
+
+5. **Once all brokers have been successfully migrated,** set **'broker.zookeeperMigrationMode=false'** to fully migrate them.
+    ```yaml
+    broker:
+      zookeeperMigrationMode: false
+    ```
+
+6. **To conclude the migration**, switch off migration mode on controllers and stop Zookeeper:
+
+    ```yaml
+    controller:
+        zookeeperMigrationMode: false
+    zookeeper:
+        enabled: false
+    ```
+    After the migration is complete, you should see the following message in your controllers:
+
+    ```shell
+    [2023-07-13 13:07:45,226] INFO [QuorumController id=1] Transitioning ZK migration state from MIGRATION to POST_MIGRATION (org.apache.kafka.controller.FeatureControlManager)
+    ```
+7. **(Optional)** If you would like to switch to a non-dedicated cluster, set **'controller.controllerOnly=false'**. This will cause controller-only nodes to switch to controller+broker nodes.
+
+    At this point, you could manually decommission broker-only nodes by reassigning its partitions to controller-eligible nodes.
+    
+    For more information about decommissioning a Kafka broker, check the official documentation.
+
 ## Upgrading from 20.x.x version of this Chart to 21.x.x
 
 Bumped dependencies:

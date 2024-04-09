@@ -112,15 +112,47 @@ spec:
             while [ $KAFKA_STATUS -eq 0 ]; do
               KAFKA_STATUS=1
               {{- if .Values.kafka.enabled }}
-              KAFKA_REPLICAS={{ .Values.kafka.replicaCount }}
-              i=0; while [ $i -lt $KAFKA_REPLICAS ]; do
-                KAFKA_HOST={{ $kafkaHost }}-$i.{{ $kafkaHost }}-headless
-                if ! nc -z "$KAFKA_HOST" {{ $kafkaPort }}; then
-                  KAFKA_STATUS=0
-                  echo "$KAFKA_HOST is not available yet"
+              KAFKA_REPLICAS={{ .Values.kafka.controller.replicaCount | default 3 }}
+              {{- if .Values.kafka.zookeeper.enabled }}
+              echo "Kafka Zookeeper is enabled, checking if Zookeeper is up"
+              ZOOKEEPER_STATUS=0
+              while [ $ZOOKEEPER_STATUS -eq 0 ]; do
+                ZOOKEEPER_STATUS=1
+                i=0; while [ $i -lt $KAFKA_REPLICAS ]; do
+                  ZOOKEEPER_HOST={{ $kafkaHost }}-$i.{{ $kafkaHost }}-headless
+                  if ! nc -z "$ZOOKEEPER_HOST" {{ .Values.kafka.zookeeper.port }}; then
+                    ZOOKEEPER_STATUS=0
+                    echo "$ZOOKEEPER_HOST is not available yet"
+                  fi
+                  i=$((i+1))
+                done
+                if [ "$ZOOKEEPER_STATUS" -eq 0 ]; then
+                  echo "Zookeeper not ready. Sleeping for 10s before trying again"
+                  sleep 10;
                 fi
-                i=$((i+1))
               done
+              echo "Zookeeper is up"
+              {{- end }}
+              {{- if .Values.kafka.kraft.enabled }}
+              echo "Kafka Kraft is enabled, checking if Kraft controllers are up"
+              KRAFT_STATUS=0
+              while [ $KRAFT_STATUS -eq 0 ]; do
+                KRAFT_STATUS=1
+                i=0; while [ $i -lt $KAFKA_REPLICAS ]; do
+                  KRAFT_HOST={{ $kafkaHost }}-controller-$i.{{ $kafkaHost }}-controller-headless
+                  if ! nc -z "$KRAFT_HOST" {{ $kafkaPort }}; then
+                    KRAFT_STATUS=0
+                    echo "$KRAFT_HOST is not available yet"
+                  fi
+                  i=$((i+1))
+                done
+                if [ "$KRAFT_STATUS" -eq 0 ]; then
+                  echo "Kraft controllers not ready. Sleeping for 10s before trying again"
+                  sleep 10;
+                fi
+              done
+              echo "Kraft controllers are up"
+              {{- end }}
               {{- else if (not (kindIs "slice" .Values.externalKafka)) }}
               KAFKA_HOST={{ .Values.externalKafka.host }}
               if ! nc -z "$KAFKA_HOST" {{ $kafkaPort }}; then
