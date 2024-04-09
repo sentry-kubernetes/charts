@@ -112,7 +112,7 @@ spec:
             while [ $KAFKA_STATUS -eq 0 ]; do
               KAFKA_STATUS=1
               {{- if .Values.kafka.enabled }}
-              KAFKA_REPLICAS={{ .Values.kafka.replicaCount }}
+              KAFKA_REPLICAS={{ .Values.kafka.controller.replicaCount | default 3 }}
               {{- if .Values.kafka.zookeeper.enabled }}
               echo "Kafka Zookeeper is enabled, checking if Zookeeper is up"
               ZOOKEEPER_STATUS=0
