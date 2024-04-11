@@ -1,0 +1,15 @@
+name: Conventional Commits Check
+
+on:
+  pull_request:
+    branches: [ develop ]
+
+jobs:
+  check-conventional-commits:
+    name: Conventional Commits
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check Commit Conventions
+        uses: webiny/action-conventional-commits@v1.3.0
