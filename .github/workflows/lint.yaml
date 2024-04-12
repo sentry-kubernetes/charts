@@ -13,6 +13,19 @@ jobs:
         uses: HexF/chart-testing-action@v3.0.0
         with:
           command: lint sentry
+      - name: Lint Sentry Helm Chart
+        uses: WyriHaximus/github-action-helm3@v3
+        with:
+          exec: helm lint sentry
+      - name: Lint Sentry Helm Chart
+        uses: WyriHaximus/github-action-helm3@v3
+        with:
+          exec: helm lint clickhouse
+      - name: Lint Sentry Helm Chart
+        uses: WyriHaximus/github-action-helm3@v3
+        with:
+          exec: helm lint sentry-kubernetes
+
       # - name: Set up chart-testing
       #   uses: helm/chart-testing-action@v2.1.0
       # - name: Run chart-testing (list-changed)
