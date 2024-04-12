@@ -17,6 +17,11 @@ user:
 # deploys relay & snuba consumers as post hooks
 asHook: true
 
+# Global parameter for all deployments
+global:
+  sidecars: [] 
+  volumes: []
+
 images:
   sentry:
     # repository: getsentry/sentry
@@ -1094,6 +1099,7 @@ symbolicator:
 
     # volumes: []
     # volumeMounts: []
+    # sidecars: []
 
   # TODO The cleanup cronjob is not yet implemented
   cleanup:
@@ -1101,6 +1107,8 @@ symbolicator:
     # podLabels: []
     # affinity: {}
     # env: []
+    # volumes: []
+    # sidecars: []
 
 auth:
   register: true
@@ -1638,6 +1646,10 @@ metrics:
   affinity: {}
   securityContext: {}
   containerSecurityContext: {}
+
+  volumes: []
+  sidecars: []
+
   # schedulerName:
   # Optional extra labels for pod, i.e. redis-client: "true"
   # podLabels: []

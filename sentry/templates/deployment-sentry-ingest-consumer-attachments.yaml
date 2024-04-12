@@ -118,6 +118,9 @@ spec:
 {{- if .Values.sentry.ingestConsumer.sidecars }}
 {{ toYaml .Values.sentry.ingestConsumer.sidecars | indent 6 }}
 {{- end }}
+{{- if .Values.global.sidecars }}
+{{ toYaml .Values.global.sidecars | indent 6 }}
+{{- end }}
       {{- if .Values.serviceAccount.enabled }}
       serviceAccountName: {{ .Values.serviceAccount.name }}-ingest-consumer-attachments
       {{- end }}
@@ -144,6 +147,9 @@ spec:
       {{ end }}
 {{- if .Values.sentry.ingestConsumer.volumes }}
 {{ toYaml .Values.sentry.ingestConsumer.volumes | indent 6 }}
+{{- end }}
+{{- if .Values.global.volumes }}
+{{ toYaml .Values.global.volumes | indent 6 }}
 {{- end }}
       {{- if .Values.sentry.ingestConsumer.priorityClassName }}
       priorityClassName: "{{ .Values.sentry.ingestConsumer.priorityClassName }}"

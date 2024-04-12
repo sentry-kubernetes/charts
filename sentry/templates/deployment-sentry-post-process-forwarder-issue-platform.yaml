@@ -100,6 +100,9 @@ spec:
 {{- if .Values.sentry.postProcessForwardIssuePlatform.volumeMounts }}
 {{ toYaml .Values.sentry.postProcessForwardIssuePlatform.volumeMounts | indent 8 }}
 {{- end }}
+{{- if .Values.global.volumeMounts }}
+{{ toYaml .Values.global.volumeMounts | indent 8 }}
+{{- end }}
         resources:
 {{ toYaml .Values.sentry.postProcessForwardIssuePlatform.resources | indent 12 }}
 {{- if .Values.sentry.postProcessForwardIssuePlatform.containerSecurityContext }}
@@ -108,6 +111,9 @@ spec:
 {{- end }}
 {{- if .Values.sentry.postProcessForwardIssuePlatform.sidecars }}
 {{ toYaml .Values.sentry.postProcessForwardIssuePlatform.sidecars | indent 6 }}
+{{- end }}
+{{- if .Values.global.sidecars }}
+{{ toYaml .Values.global.sidecars | indent 6 }}
 {{- end }}
       {{- if .Values.serviceAccount.enabled }}
       serviceAccountName: {{ .Values.serviceAccount.name }}-post-process-forwarder-issue-platform
@@ -135,6 +141,9 @@ spec:
       {{ end }}
 {{- if .Values.sentry.postProcessForwardIssuePlatform.volumes }}
 {{ toYaml .Values.sentry.postProcessForwardIssuePlatform.volumes | indent 6 }}
+{{- end }}
+{{- if .Values.global.volumes }}
+{{ toYaml .Values.global.volumes | indent 6 }}
 {{- end }}
       {{- if .Values.sentry.postProcessForwardIssuePlatform.priorityClassName }}
       priorityClassName: "{{ .Values.sentry.postProcessForwardIssuePlatform.priorityClassName }}"

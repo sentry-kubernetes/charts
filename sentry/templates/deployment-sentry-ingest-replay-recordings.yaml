@@ -110,6 +110,9 @@ spec:
 {{- if .Values.sentry.ingestReplayRecordings.sidecars }}
 {{ toYaml .Values.sentry.ingestReplayRecordings.sidecars | indent 6 }}
 {{- end }}
+{{- if .Values.global.sidecars }}
+{{ toYaml .Values.global.sidecars | indent 6 }}
+{{- end }}
       {{- if .Values.serviceAccount.enabled }}
       serviceAccountName: {{ .Values.serviceAccount.name }}-ingest-replay-recordings
       {{- end }}
@@ -136,6 +139,9 @@ spec:
       {{ end }}
 {{- if .Values.sentry.ingestReplayRecordings.volumes }}
 {{ toYaml .Values.sentry.ingestReplayRecordings.volumes | indent 6 }}
+{{- end }}
+{{- if .Values.global.volumes }}
+{{ toYaml .Values.global.volumes | indent 6 }}
 {{- end }}
       {{- if .Values.sentry.ingestReplayRecordings.priorityClassName }}
       priorityClassName: "{{ .Values.sentry.ingestReplayRecordings.priorityClassName }}"

@@ -108,6 +108,9 @@ spec:
 {{- if .Values.sentry.postProcessForwardErrors.sidecars }}
 {{ toYaml .Values.sentry.postProcessForwardErrors.sidecars | indent 6 }}
 {{- end }}
+{{- if .Values.global.sidecars }}
+{{ toYaml .Values.global.sidecars | indent 6 }}
+{{- end }}
       {{- if .Values.serviceAccount.enabled }}
       serviceAccountName: {{ .Values.serviceAccount.name }}-post-process-forwarder-errors
       {{- end }}
@@ -134,6 +137,9 @@ spec:
       {{ end }}
 {{- if .Values.sentry.postProcessForwardErrors.volumes }}
 {{ toYaml .Values.sentry.postProcessForwardErrors.volumes | indent 6 }}
+{{- end }}
+{{- if .Values.global.volumes }}
+{{ toYaml .Values.global.volumes | indent 6 }}
 {{- end }}
       {{- if .Values.sentry.postProcessForwardErrors.priorityClassName }}
       priorityClassName: "{{ .Values.sentry.postProcessForwardErrors.priorityClassName }}"

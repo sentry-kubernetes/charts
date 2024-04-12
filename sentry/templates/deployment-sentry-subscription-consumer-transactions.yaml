@@ -99,6 +99,9 @@ spec:
 {{- if .Values.sentry.subscriptionConsumerTransactions.sidecars }}
 {{ toYaml .Values.sentry.subscriptionConsumerTransactions.sidecars | indent 6 }}
 {{- end }}
+{{- if .Values.global.sidecars }}
+{{ toYaml .Values.global.sidecars | indent 6 }}
+{{- end }}
       {{- if .Values.serviceAccount.enabled }}
       serviceAccountName: {{ .Values.serviceAccount.name }}-subscription-consumer-transactions
       {{- end }}
@@ -125,6 +128,9 @@ spec:
       {{ end }}
 {{- if .Values.sentry.subscriptionConsumerTransactions.volumes }}
 {{ toYaml .Values.sentry.subscriptionConsumerTransactions.volumes | indent 6 }}
+{{- end }}
+{{- if .Values.global.volumes }}
+{{ toYaml .Values.global.volumes | indent 6 }}
 {{- end }}
       {{- if .Values.sentry.subscriptionConsumerTransactions.priorityClassName }}
       priorityClassName: "{{ .Values.sentry.subscriptionConsumerTransactions.priorityClassName }}"
