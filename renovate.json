@@ -1,5 +1,5 @@
 {
-  "extends": ["config:recommended", ":rebaseStalePrs"],
+  "extends": ["config:recommended", ":rebaseStalePrs", "docker:disable"],
   "enabled": true,
   "prConcurrentLimit": 30,
   "enabledManagers": ["helmv3", "github-actions"]
