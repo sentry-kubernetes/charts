@@ -120,6 +120,9 @@ spec:
 {{- if .Values.sentry.worker.sidecars }}
 {{ toYaml .Values.sentry.worker.sidecars | indent 6 }}
 {{- end }}
+{{- if .Values.global.sidecars }}
+{{ toYaml .Values.global.sidecars | indent 6 }}
+{{- end }}
       {{- if .Values.serviceAccount.enabled }}
       serviceAccountName: {{ .Values.serviceAccount.name }}-worker
       {{- end }}
@@ -149,5 +152,8 @@ spec:
       {{- end }}
 {{- if .Values.sentry.worker.volumes }}
 {{ toYaml .Values.sentry.worker.volumes | indent 6 }}
+{{- end }}
+{{- if .Values.global.volumes }}
+{{ toYaml .Values.global.volumes | indent 6 }}
 {{- end }}
 {{- end }}

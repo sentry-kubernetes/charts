@@ -111,6 +111,9 @@ spec:
 {{- if .Values.sentry.ingestOccurrences.sidecars }}
 {{ toYaml .Values.sentry.ingestOccurrences.sidecars | indent 6 }}
 {{- end }}
+{{- if .Values.global.sidecars }}
+{{ toYaml .Values.global.sidecars | indent 6 }}
+{{- end }}
       {{- if .Values.serviceAccount.enabled }}
       serviceAccountName: {{ .Values.serviceAccount.name }}-ingest-occurrences
       {{- end }}
@@ -137,6 +140,9 @@ spec:
       {{ end }}
 {{- if .Values.sentry.ingestOccurrences.volumes }}
 {{ toYaml .Values.sentry.ingestOccurrences.volumes | indent 6 }}
+{{- end }}
+{{- if .Values.global.volumes }}
+{{ toYaml .Values.global.volumes | indent 6 }}
 {{- end }}
       {{- if .Values.sentry.ingestOccurrences.priorityClassName }}
       priorityClassName: "{{ .Values.sentry.ingestOccurrences.priorityClassName }}"

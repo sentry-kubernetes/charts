@@ -117,6 +117,9 @@ spec:
 {{- if .Values.sentry.genericMetricsConsumer.sidecars }}
 {{ toYaml .Values.sentry.genericMetricsConsumer.sidecars | indent 6 }}
 {{- end }}
+{{- if .Values.global.sidecars }}
+{{ toYaml .Values.global.sidecars | indent 6 }}
+{{- end }}
       {{- if .Values.serviceAccount.enabled }}
       serviceAccountName: {{ .Values.serviceAccount.name }}-generic-metrics-consumer
       {{- end }}
@@ -143,6 +146,9 @@ spec:
       {{ end }}
 {{- if .Values.sentry.genericMetricsConsumer.volumes }}
 {{ toYaml .Values.sentry.genericMetricsConsumer.volumes | indent 6 }}
+{{- end }}
+{{- if .Values.global.volumes }}
+{{ toYaml .Values.global.volumes | indent 6 }}
 {{- end }}
       {{- if .Values.sentry.genericMetricsConsumer.priorityClassName }}
       priorityClassName: "{{ .Values.sentry.genericMetricsConsumer.priorityClassName }}"

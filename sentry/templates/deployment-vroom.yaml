@@ -110,12 +110,20 @@ spec:
 {{- if .Values.vroom.sidecars }}
 {{ toYaml .Values.vroom.sidecars | indent 6 }}
 {{- end }}
+{{- if .Values.global.sidecars }}
+{{ toYaml .Values.global.sidecars | indent 6 }}
+{{- end }}
       {{- if .Values.serviceAccount.enabled }}
       serviceAccountName: {{ .Values.serviceAccount.name }}-vroom
       {{- end }}
-{{- if .Values.vroom.volumes }}
+{{- if or .Values.vroom.volumes .Values.global.volumes }}
       volumes:
+{{- if .Values.vroom.volumes }}
 {{ toYaml .Values.vroom.volumes | indent 6 }}
+{{- end }}
+{{- if .Values.global.volumes }}
+{{ toYaml .Values.global.volumes | indent 6 }}
+{{- end }}
 {{- end }}
       {{- if .Values.vroom.priorityClassName }}
       priorityClassName: "{{ .Values.vroom.priorityClassName }}"

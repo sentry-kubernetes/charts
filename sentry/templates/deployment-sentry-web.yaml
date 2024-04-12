@@ -130,6 +130,9 @@ spec:
 {{- if .Values.sentry.web.sidecars }}
 {{ toYaml .Values.sentry.web.sidecars | indent 6 }}
 {{- end }}
+{{- if .Values.global.sidecars }}
+{{ toYaml .Values.global.sidecars | indent 6 }}
+{{- end }}
       {{- if .Values.serviceAccount.enabled }}
       serviceAccountName: {{ .Values.serviceAccount.name }}-web
       {{- end }}
@@ -164,5 +167,8 @@ spec:
       {{- end }}
 {{- if .Values.sentry.web.volumes }}
 {{ toYaml .Values.sentry.web.volumes | indent 6 }}
+{{- end }}
+{{- if .Values.global.volumes }}
+{{ toYaml .Values.global.volumes | indent 6 }}
 {{- end }}
 {{- end }}
