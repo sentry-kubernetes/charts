@@ -3,6 +3,7 @@
 {{- $clickhousePort := include "sentry.clickhouse.port" . -}}
 {{- $kafkaHost := include "sentry.kafka.host" . -}}
 {{- $kafkaPort := include "sentry.kafka.port" . -}}
+{{- $kafkaControllerPort := include "sentry.kafka.controller_port" . -}}
 apiVersion: batch/v1
 kind: Job
 metadata:
@@ -140,7 +141,7 @@ spec:
                 KRAFT_STATUS=1
                 i=0; while [ $i -lt $KAFKA_REPLICAS ]; do
                   KRAFT_HOST={{ $kafkaHost }}-controller-$i.{{ $kafkaHost }}-controller-headless
-                  if ! nc -z "$KRAFT_HOST" {{ $kafkaPort }}; then
+                  if ! nc -z "$KRAFT_HOST" {{ $kafkaControllerPort }}; then
                     KRAFT_STATUS=0
                     echo "$KRAFT_HOST is not available yet"
                   fi
