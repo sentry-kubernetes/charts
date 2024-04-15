@@ -23,9 +23,9 @@ spec:
     matchLabels:
       app: {{ template "sentry.fullname" . }}
       release: "{{ .Release.Name }}"
-      role: ingest-consumer
-{{- if not .Values.sentry.ingestConsumer.autoscaling.enabled }}
-  replicas: {{ .Values.sentry.ingestConsumer.replicas }}
+      role: ingest-consumer-attachments
+{{- if not .Values.sentry.ingestConsumer.attachments.autoscaling.enabled }}
+  replicas: {{ .Values.sentry.ingestConsumer.attachments.replicas }}
 {{- end }}
   template:
     metadata:
@@ -39,7 +39,7 @@ spec:
       labels:
         app: {{ template "sentry.fullname" . }}
         release: "{{ .Release.Name }}"
-        role: ingest-consumer
+        role: ingest-consumer-attachments
         {{- if .Values.sentry.ingestConsumer.podLabels }}
 {{ toYaml .Values.sentry.ingestConsumer.podLabels | indent 8 }}
         {{- end }}
@@ -111,7 +111,7 @@ spec:
 {{ toYaml .Values.sentry.ingestConsumer.volumeMounts | indent 8 }}
 {{- end }}
         resources:
-{{ toYaml .Values.sentry.ingestConsumer.resources | indent 12 }}
+{{ toYaml .Values.sentry.ingestConsumer.attachments.resources | indent 12 }}
 {{- if .Values.sentry.ingestConsumer.containerSecurityContext }}
         securityContext:
 {{ toYaml .Values.sentry.ingestConsumer.containerSecurityContext | indent 12 }}
