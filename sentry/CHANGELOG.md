@@ -1,5 +1,12 @@
 # Changelog
 
+## [22.1.1](https://github.com/sentry-kubernetes/charts/compare/sentry-v22.1.0...sentry-v22.1.1) (2024-04-15)
+
+
+### Bug Fixes
+
+* When set to controller only, port 9092 is not listened on ([#1218](https://github.com/sentry-kubernetes/charts/issues/1218)) ([d5cbba6](https://github.com/sentry-kubernetes/charts/commit/d5cbba6b65da9f77f78299ddc9b07c24fd7b3cef))
+
 ## [22.1.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v22.0.2...sentry-v22.1.0) (2024-04-12)
 
 
