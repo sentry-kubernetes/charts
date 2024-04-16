@@ -68,7 +68,7 @@ spec:
           imagePullPolicy: {{ default "IfNotPresent" .Values.images.sentry.pullPolicy }}
           args:
             - "credentials"
-            - "generate"
+            - {{ .Values.relay.init.credentialsSubcommand | default "generate" | quote }}
 {{- if .Values.relay.init.additionalArgs }}
 {{ toYaml .Values.relay.init.additionalArgs | indent 12 }}
 {{- end }}
