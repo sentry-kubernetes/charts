@@ -233,6 +233,7 @@ sentry:
     #   - mountPath: /dev/shm
     #     name: dshm
 
+    # noStrictOffsetReset: false
   ingestReplayRecordings:
     replicas: 1
     env: []
@@ -500,6 +501,7 @@ sentry:
     sidecars: []
     volumes: []
     # volumeMounts: []
+    # noStrictOffsetReset: false
   postProcessForwardIssuePlatform:
     replicas: 1
     env: []
@@ -952,6 +954,8 @@ snuba:
   migrateJob:
     env: []
 
+  clickhouse:
+    maxConnections: 100
 hooks:
   enabled: true
   removeOnSuccess: true
@@ -1336,16 +1340,6 @@ zookeeper:
 # See https://github.com/bitnami/charts/tree/master/bitnami/kafka
 kafka:
   enabled: true
-  replicaCount: 3
-  allowPlaintextListener: true
-  defaultReplicationFactor: 3
-  offsetsTopicReplicationFactor: 3
-  transactionStateLogReplicationFactor: 3
-  transactionStateLogMinIsr: 3
-  # 50 MB
-  maxMessageBytes: "50000000"
-  # 50 MB
-  socketRequestMaxBytes: "50000000"
   provisioning:
     enabled: true
     # Topic list is based on files below.
@@ -1452,13 +1446,19 @@ kafka:
       - name: ingest-occurrences
       - name: snuba-spans
       - name: shared-resources-usage
+  listeners:
+    client:
+      protocol: "PLAINTEXT"
+    controller:
+      protocol: "PLAINTEXT"
+    interBroker:
+      protocol: "PLAINTEXT"
+    external:
+      protocol: "PLAINTEXT"
   zookeeper:
-    enabled: true
-  kraft:
     enabled: false
-  service:
-    ports:
-      client: 9092
+  kraft:
+    enabled: true
 
   ## Use this to enable an extra service account
   # serviceAccount:

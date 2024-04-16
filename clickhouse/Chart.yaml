@@ -1,16 +1,17 @@
 apiVersion: v1
 appVersion: "19.14"
-description: ClickHouse is an open source column-oriented database management system
-  capable of real time generation of analytical data reports using SQL queries
+description: ClickHouse is an open source column-oriented database management
+  system capable of real time generation of analytical data reports using SQL
+  queries
 home: https://clickhouse.yandex/
 icon: https://clickhouse.yandex/images/logo.png
 keywords:
-- clickhouse
-- olap
-- database
+  - clickhouse
+  - olap
+  - database
 name: clickhouse
 sources:
-- https://github.com/sentry-kubernetes/charts
-version: 3.7.0
+  - https://github.com/sentry-kubernetes/charts
+version: 3.8.0
 maintainers:
   - name: sentry-kubernetes
