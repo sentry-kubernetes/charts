@@ -1,3 +1,4 @@
+{{- if .Values.sentry.cron.enabled }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -129,3 +130,4 @@ spec:
       {{- if .Values.sentry.cron.priorityClassName }}
       priorityClassName: "{{ .Values.sentry.cron.priorityClassName }}"
       {{- end }}
+{{- end }}

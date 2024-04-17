@@ -1,3 +1,4 @@
+{{- if .Values.sentry.ingestMonitors.enabled }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -140,3 +141,4 @@ spec:
       {{- if .Values.sentry.ingestMonitors.priorityClassName }}
       priorityClassName: "{{ .Values.sentry.ingestMonitors.priorityClassName }}"
       {{- end }}
+{{- end }}

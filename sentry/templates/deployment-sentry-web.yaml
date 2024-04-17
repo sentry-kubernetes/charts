@@ -1,3 +1,4 @@
+{{- if .Values.sentry.web.enabled }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -163,4 +164,5 @@ spec:
       {{- end }}
 {{- if .Values.sentry.web.volumes }}
 {{ toYaml .Values.sentry.web.volumes | indent 6 }}
+{{- end }}
 {{- end }}

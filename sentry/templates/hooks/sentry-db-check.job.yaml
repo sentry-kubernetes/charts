@@ -1,4 +1,4 @@
-{{- if .Values.hooks.enabled -}}
+{{- if and .Values.hooks.enabled .Values.hooks.dbCheck.enabled -}}
 {{- $clickhouseHost := include "sentry.clickhouse.host" . -}}
 {{- $clickhousePort := include "sentry.clickhouse.port" . -}}
 {{- $kafkaHost := include "sentry.kafka.host" . -}}

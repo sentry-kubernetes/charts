@@ -1,3 +1,4 @@
+{{- if .Values.snuba.transactionsConsumer.enabled }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -145,4 +146,5 @@ spec:
             name: {{ template "sentry.fullname" . }}-snuba
 {{- if .Values.snuba.transactionsConsumer.volumes }}
 {{ toYaml .Values.snuba.transactionsConsumer.volumes | indent 8 }}
+{{- end }}
 {{- end }}

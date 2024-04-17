@@ -88,6 +88,7 @@ vroom:
     # volumeMounts: []
 
 relay:
+  enabled: true
   replicas: 1
   # args: []
   mode: managed
@@ -138,6 +139,7 @@ sentry:
   # existingSecretKey: "my-secret-key"
   singleOrganization: true
   web:
+    enabled: true
     # if using filestore backend filesystem with RWO access, set strategyType to Recreate
     strategyType: RollingUpdate
     replicas: 1
@@ -182,6 +184,7 @@ sentry:
     enableFeedback: false
 
   worker:
+    enabled: true
     replicas: 3
     # concurrency: 4
     env: []
@@ -208,6 +211,7 @@ sentry:
     volumeMounts: []
 
   ingestConsumer:
+    enabled: true
     replicas: 1
     # concurrency: 4
     env: []
@@ -236,6 +240,7 @@ sentry:
 
     # noStrictOffsetReset: false
   ingestReplayRecordings:
+    enabled: true
     replicas: 1
     env: []
     resources: {}
@@ -285,6 +290,7 @@ sentry:
     #   - mountPath: /dev/shm
     #     name: dshm
   ingestOccurrences:
+    enabled: true
     replicas: 1
     env: []
     resources: {}
@@ -310,6 +316,7 @@ sentry:
     #     name: dshm
 
   ingestMonitors:
+    enabled: true
     replicas: 1
     env: []
     resources: {}
@@ -335,6 +342,7 @@ sentry:
     #     name: dshm
 
   billingMetricsConsumer:
+    enabled: true
     replicas: 1
     # concurrency: 4
     env: []
@@ -362,6 +370,7 @@ sentry:
     #     name: dshm
 
   genericMetricsConsumer:
+    enabled: true
     replicas: 1
     # concurrency: 4
     env: []
@@ -389,6 +398,7 @@ sentry:
     #     name: dshm
 
   metricsConsumer:
+    enabled: true
     replicas: 1
     # concurrency: 4
     env: []
@@ -416,6 +426,7 @@ sentry:
     #     name: dshm
 
   cron:
+    enabled: true
     replicas: 1
     env: []
     resources: {}
@@ -430,6 +441,7 @@ sentry:
     # logLevel: info
 
   subscriptionConsumerEvents:
+    enabled: true
     replicas: 1
     env: []
     resources: {}
@@ -460,6 +472,7 @@ sentry:
     # volumeMounts: []
 
   subscriptionConsumerTransactions:
+    enabled: true
     replicas: 1
     env: []
     resources: {}
@@ -476,6 +489,7 @@ sentry:
 
 
   postProcessForwardErrors:
+    enabled: true
     replicas: 1
     env: []
     resources: {}
@@ -490,6 +504,7 @@ sentry:
     # volumeMounts: []
 
   postProcessForwardTransactions:
+    enabled: true
     replicas: 1
     env: []
     resources: {}
@@ -504,6 +519,7 @@ sentry:
     # volumeMounts: []
     # noStrictOffsetReset: false
   postProcessForwardIssuePlatform:
+    enabled: true
     replicas: 1
     env: []
     resources: {}
@@ -518,6 +534,7 @@ sentry:
     # volumeMounts: []
 
   subscriptionConsumerGenericMetrics:
+    enabled: true
     replicas: 1
     env: []
     resources: {}
@@ -532,6 +549,7 @@ sentry:
     # volumeMounts: []
 
   subscriptionConsumerMetrics:
+    enabled: true
     replicas: 1
     env: []
     resources: {}
@@ -563,6 +581,7 @@ sentry:
 
 snuba:
   api:
+    enabled: true
     replicas: 1
     # set command to ["snuba","api"] if securityContext.runAsUser > 0
     # see: https://github.com/getsentry/snuba/issues/956
@@ -595,6 +614,7 @@ snuba:
     # volumeMounts: []
 
   consumer:
+    enabled: true
     replicas: 1
     env: []
     resources: {}
@@ -623,6 +643,7 @@ snuba:
     #       medium: Memory
 
   outcomesConsumer:
+    enabled: true
     replicas: 1
     env: []
     resources: {}
@@ -651,6 +672,7 @@ snuba:
     #       medium: Memory
 
   replacer:
+    enabled: true
     replicas: 1
     env: []
     resources: {}
@@ -668,6 +690,7 @@ snuba:
     # volumeMounts: []
 
   metricsConsumer:
+    enabled: true
     replicas: 1
     env: []
     resources: {}
@@ -682,6 +705,7 @@ snuba:
     # volumeMounts: []
 
   subscriptionConsumerEvents:
+    enabled: true
     replicas: 1
     env: []
     resources: {}
@@ -696,6 +720,7 @@ snuba:
     # volumeMounts: []
 
   genericMetricsCountersConsumer:
+    enabled: true
     replicas: 1
     env: []
     resources: {}
@@ -710,6 +735,7 @@ snuba:
     # volumeMounts: []
 
   genericMetricsDistributionConsumer:
+    enabled: true
     replicas: 1
     env: []
     resources: {}
@@ -724,6 +750,7 @@ snuba:
     # volumeMounts: []
 
   genericMetricsSetsConsumer:
+    enabled: true
     replicas: 1
     env: []
     resources: {}
@@ -738,6 +765,7 @@ snuba:
     # volumeMounts: []
 
   subscriptionConsumerMetrics:
+    enabled: true
     replicas: 1
     env: []
     resources: {}
@@ -752,6 +780,7 @@ snuba:
     # volumeMounts: []
 
   subscriptionConsumerTransactions:
+    enabled: true
     replicas: 1
     env: []
     resources: {}
@@ -783,6 +812,7 @@ snuba:
     # volumeMounts: []
 
   replaysConsumer:
+    enabled: true
     replicas: 1
     env: []
     resources: {}
@@ -839,6 +869,7 @@ snuba:
     #       medium: Memory
 
   transactionsConsumer:
+    enabled: true
     replicas: 1
     env: []
     resources: {}
@@ -922,6 +953,7 @@ snuba:
     #     emptyDir:
     #       medium: Memory
   issueOccurrenceConsumer:
+    enabled: true
     replicas: 1
     env: []
     resources: {}
@@ -963,6 +995,7 @@ hooks:
   activeDeadlineSeconds: 100
   shareProcessNamespace: false
   dbCheck:
+    enabled: true
     image:
       # repository: subfuzion/netcat
       # tag: latest
@@ -985,6 +1018,7 @@ hooks:
     # volumes: []
     # volumeMounts: []
   dbInit:
+    enabled: true
     env: []
     # podLabels: []
     podAnnotations: {}
@@ -1002,6 +1036,7 @@ hooks:
     # volumes: []
     # volumeMounts: []
   snubaInit:
+    enabled: true
     # As snubaInit doesn't support configuring partition and replication factor, you can disable snubaInit's kafka topic creation by setting `kafka.enabled` to `false`,
     # and create the topics using `kafka.provisioning.topics` with the desired partition and replication factor.
     # Note that when you set `kafka.enabled` to `false`, snuba component might fail to start if newly added topics are not created by `kafka.provisioning`.
@@ -1021,7 +1056,8 @@ hooks:
     # tolerations: []
     # volumes: []
     # volumeMounts: []
-  snubaMigrate: {}
+  snubaMigrate:
+    enabled: true
     # podLabels: []
     # volumes: []
     # volumeMounts: []
