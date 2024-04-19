@@ -1,5 +1,25 @@
 # Changelog
 
+## [22.2.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v22.1.1...sentry-v22.2.0) (2024-04-17)
+
+
+### Features
+
+* added flags on individual components ([#1188](https://github.com/sentry-kubernetes/charts/issues/1188)) ([fb4d6f1](https://github.com/sentry-kubernetes/charts/commit/fb4d6f14b50c545a798b3a27012f28013d36e2d5))
+* update kafka topic provisioning config ([#1134](https://github.com/sentry-kubernetes/charts/issues/1134)) ([cd508ff](https://github.com/sentry-kubernetes/charts/commit/cd508ff4e02b44189eae30d993deb3fb368fd5ee))
+
+
+### Bug Fixes
+
+* kafka.listeners.interBroker typo ([#1222](https://github.com/sentry-kubernetes/charts/issues/1222)) ([63e7062](https://github.com/sentry-kubernetes/charts/commit/63e70626a6bb0ea4caeac8dfd80b216ffcfe9c28))
+
+## [22.1.1](https://github.com/sentry-kubernetes/charts/compare/sentry-v22.1.0...sentry-v22.1.1) (2024-04-15)
+
+
+### Bug Fixes
+
+* When set to controller only, port 9092 is not listened on ([#1218](https://github.com/sentry-kubernetes/charts/issues/1218)) ([d5cbba6](https://github.com/sentry-kubernetes/charts/commit/d5cbba6b65da9f77f78299ddc9b07c24fd7b3cef))
+
 ## [22.1.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v22.0.2...sentry-v22.1.0) (2024-04-12)
 
 

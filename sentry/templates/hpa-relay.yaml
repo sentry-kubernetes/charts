@@ -1,4 +1,4 @@
-{{- if .Values.relay.autoscaling.enabled }}
+{{- if and .Values.relay.enabled .Values.relay.autoscaling.enabled }}
 apiVersion: {{ template "sentry.autoscaling.apiVersion" . }}
 kind: HorizontalPodAutoscaler
 metadata:

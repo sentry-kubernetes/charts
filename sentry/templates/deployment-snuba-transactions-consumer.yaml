@@ -1,3 +1,4 @@
+{{- if .Values.snuba.transactionsConsumer.enabled }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:

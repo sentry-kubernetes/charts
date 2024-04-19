@@ -411,6 +411,17 @@ Set Kafka Confluent port
 {{- end -}}
 
 {{/*
+Set Kafka Confluent Controller port
+*/}}
+{{- define "sentry.kafka.controller_port" -}}
+{{- if and (.Values.kafka.enabled) (.Values.kafka.service.ports.controller ) -}}
+{{- .Values.kafka.service.ports.controller }}
+{{- else if and (.Values.externalKafka) (not (kindIs "slice" .Values.externalKafka)) -}}
+{{ required "A valid .Values.externalKafka.port is required" .Values.externalKafka.port }}
+{{- end -}}
+{{- end -}}
+
+{{/*
 Set Kafka bootstrap servers string
 */}}
 {{- define "sentry.kafka.bootstrap_servers_string" -}}
