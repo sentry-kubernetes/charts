@@ -31,7 +31,7 @@ spec:
     metadata:
       annotations:
         checksum/relay: {{ .Values.config.relay | sha256sum }}
-        checksum/config.yaml: {{ include (print $.Template.BasePath "/configmap-relay.yaml") . | sha256sum }}
+        checksum/config.yaml: {{ include "sentry.relay.config" . | sha256sum }}
         {{- if .Values.relay.annotations }}
 {{ toYaml .Values.relay.annotations | indent 8 }}
         {{- end }}
