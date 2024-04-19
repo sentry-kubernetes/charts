@@ -29,7 +29,7 @@ spec:
     metadata:
       annotations:
         checksum/snubaSettingsPy: {{ .Values.config.snubaSettingsPy | sha256sum }}
-        checksum/config.yaml: {{ include (print $.Template.BasePath "/configmap-snuba.yaml") . | sha256sum }}
+        checksum/config.yaml: {{ include "sentry.snuba.config" . | sha256sum }}
         {{- if .Values.snuba.replacer.annotations }}
 {{ toYaml .Values.snuba.replacer.annotations | indent 8 }}
         {{- end }}
