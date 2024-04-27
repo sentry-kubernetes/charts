@@ -82,6 +82,19 @@ spec:
           - "ingest-profiles"
           - "--consumer-group"
           - "ingest-profiles"
+          {{- if .Values.sentry.ingestProfiles.livenessProbe.enabled }}
+          - "--healthcheck-file-path"
+          - "/tmp/health.txt"
+          {{- end }}
+        {{- if .Values.sentry.ingestProfiles.livenessProbe.enabled }}
+        livenessProbe:
+          exec:
+            command:
+              - rm
+              - /tmp/health.txt
+          initialDelaySeconds: {{ .Values.sentry.ingestProfiles.livenessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.sentry.ingestProfiles.livenessProbe.periodSeconds }}
+        {{- end }}
         env:
         - name: C_FORCE_ROOT
           value: "true"

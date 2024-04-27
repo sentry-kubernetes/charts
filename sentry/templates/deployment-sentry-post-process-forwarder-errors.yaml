@@ -82,6 +82,19 @@ spec:
           - "post-process-forwarder"
           - "--synchronize-commit-log-topic=snuba-commit-log"
           - "--synchronize-commit-group=snuba-consumers"
+          {{- if .Values.sentry.postProcessForwardErrors.livenessProbe.enabled }}
+          - "--healthcheck-file-path"
+          - "/tmp/health.txt"
+          {{- end }}
+        {{- if .Values.sentry.postProcessForwardErrors.livenessProbe.enabled }}
+        livenessProbe:
+          exec:
+            command:
+              - rm
+              - /tmp/health.txt
+          initialDelaySeconds: {{ .Values.sentry.postProcessForwardErrors.livenessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.sentry.postProcessForwardErrors.livenessProbe.periodSeconds }}
+        {{- end }}
         env:
 {{ include "sentry.env" . | indent 8 }}
 {{- if .Values.sentry.postProcessForwardErrors.env }}

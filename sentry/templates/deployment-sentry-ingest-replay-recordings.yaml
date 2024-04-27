@@ -82,6 +82,19 @@ spec:
           - "ingest-replay-recordings"
           - "--consumer-group"
           - "ingest-replay-recordings"
+          {{- if .Values.sentry.ingestReplayRecordings.livenessProbe.enabled }}
+          - "--healthcheck-file-path"
+          - "/tmp/health.txt"
+          {{- end }}
+        {{- if .Values.sentry.ingestReplayRecordings.livenessProbe.enabled }}
+        livenessProbe:
+          exec:
+            command:
+              - rm
+              - /tmp/health.txt
+          initialDelaySeconds: {{ .Values.sentry.ingestReplayRecordings.livenessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.sentry.ingestReplayRecordings.livenessProbe.periodSeconds }}
+        {{- end }}
         env:
         - name: C_FORCE_ROOT
           value: "true"
