@@ -1,5 +1,12 @@
 # Changelog
 
+## [22.3.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v22.2.1...sentry-v22.3.0) (2024-04-29)
+
+
+### Features
+
+* Add liveness to consumers ([#1240](https://github.com/sentry-kubernetes/charts/issues/1240)) ([60aaa3d](https://github.com/sentry-kubernetes/charts/commit/60aaa3d5f485320dc3bca1161b786cb20df34b73))
+
 ## [22.2.1](https://github.com/sentry-kubernetes/charts/compare/sentry-v22.2.0...sentry-v22.2.1) (2024-04-24)
 
 
