@@ -88,6 +88,19 @@ spec:
           - "--max-batch-size"
           - "{{ .Values.sentry.subscriptionConsumerGenericMetrics.maxBatchSize }}"
           {{- end }}
+          {{- if .Values.sentry.subscriptionConsumerGenericMetrics.livenessProbe.enabled }}
+          - "--healthcheck-file-path"
+          - "/tmp/health.txt"
+          {{- end }}
+        {{- if .Values.sentry.subscriptionConsumerGenericMetrics.livenessProbe.enabled }}
+        livenessProbe:
+          exec:
+            command:
+              - rm
+              - /tmp/health.txt
+          initialDelaySeconds: {{ .Values.sentry.subscriptionConsumerGenericMetrics.livenessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.sentry.subscriptionConsumerGenericMetrics.livenessProbe.periodSeconds }}
+        {{- end }}
         env:
         - name: C_FORCE_ROOT
           value: "true"
