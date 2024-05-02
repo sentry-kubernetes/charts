@@ -86,6 +86,19 @@ spec:
           {{- if .Values.sentry.postProcessForwardTransactions.noStrictOffsetReset }}
           - "--no-strict-offset-reset"
           {{- end }}
+          {{- if .Values.sentry.postProcessForwardTransactions.livenessProbe.enabled }}
+          - "--healthcheck-file-path"
+          - "/tmp/health.txt"
+          {{- end }}
+        {{- if .Values.sentry.postProcessForwardTransactions.livenessProbe.enabled }}
+        livenessProbe:
+          exec:
+            command:
+              - rm
+              - /tmp/health.txt
+          initialDelaySeconds: {{ .Values.sentry.postProcessForwardTransactions.livenessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.sentry.postProcessForwardTransactions.livenessProbe.periodSeconds }}
+        {{- end }}
         env:
 {{ include "sentry.env" . | indent 8 }}
 {{- if .Values.sentry.postProcessForwardTransactions.env }}
