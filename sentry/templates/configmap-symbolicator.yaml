@@ -9,5 +9,5 @@ metadata:
     release: "{{ .Release.Name }}"
     heritage: "{{ .Release.Service }}"
 data:
-  config.yml: {{ toYaml .Values.symbolicator.api.config | indent 2 }}
+  {{ include "sentry.symbolicator.config" . | nindent 2 }}
 {{- end }}

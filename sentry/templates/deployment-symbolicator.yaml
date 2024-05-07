@@ -21,7 +21,7 @@ spec:
   template:
     metadata:
       annotations:
-        checksum/config.yaml: {{ include (print $.Template.BasePath "/configmap-symbolicator.yaml") . | sha256sum }}
+        checksum/config.yaml: {{ include "sentry.symbolicator.config" . | sha256sum }}
         {{- if .Values.symbolicator.api.annotations }}
 {{ toYaml .Values.symbolicator.api.annotations | indent 8 }}
         {{- end }}
