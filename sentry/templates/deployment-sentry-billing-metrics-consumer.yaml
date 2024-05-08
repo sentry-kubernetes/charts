@@ -82,17 +82,18 @@ spec:
           - "billing-metrics-consumer"
           - "--consumer-group"
           - "billing-metrics-consumer"
-          {{- if .Values.sentry.billingMetricsConsumer.concurrency }}
-          - "--concurrency"
-          - "{{ .Values.sentry.billingMetricsConsumer.concurrency }}"
+          {{- if .Values.sentry.billingMetricsConsumer.livenessProbe.enabled }}
+          - "--healthcheck-file-path"
+          - "/tmp/health.txt"
           {{- end }}
+          - "--"
           {{- if .Values.sentry.billingMetricsConsumer.maxBatchSize }}
           - "--max-batch-size"
           - "{{ .Values.sentry.billingMetricsConsumer.maxBatchSize }}"
           {{- end }}
-          {{- if .Values.sentry.billingMetricsConsumer.livenessProbe.enabled }}
-          - "--healthcheck-file-path"
-          - "/tmp/health.txt"
+          {{- if .Values.sentry.billingMetricsConsumer.concurrency }}
+          - "--processes"
+          - "{{ .Values.sentry.billingMetricsConsumer.concurrency }}"
           {{- end }}
         {{- if .Values.sentry.billingMetricsConsumer.livenessProbe.enabled }}
         livenessProbe:

@@ -80,17 +80,18 @@ spec:
           - "ingest-metrics"
           - "--consumer-group"
           - "metrics-consumer"
-          {{- if .Values.sentry.metricsConsumer.concurrency }}
-          - "--concurrency"
-          - "{{ .Values.sentry.metricsConsumer.concurrency }}"
+          {{- if .Values.sentry.metricsConsumer.livenessProbe.enabled }}
+          - "--healthcheck-file-path"
+          - "/tmp/health.txt"
           {{- end }}
+          - "--"
           {{- if .Values.sentry.metricsConsumer.maxBatchSize }}
           - "--max-batch-size"
           - "{{ .Values.sentry.metricsConsumer.maxBatchSize }}"
           {{- end }}
-          {{- if .Values.sentry.metricsConsumer.livenessProbe.enabled }}
-          - "--healthcheck-file-path"
-          - "/tmp/health.txt"
+          {{- if .Values.sentry.metricsConsumer.concurrency }}
+          - "--processes"
+          - "{{ .Values.sentry.metricsConsumer.concurrency }}"
           {{- end }}
         {{- if .Values.sentry.metricsConsumer.livenessProbe.enabled }}
         livenessProbe:
