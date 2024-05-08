@@ -1,5 +1,17 @@
 # Changelog
 
+## [22.4.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v22.3.0...sentry-v22.4.0) (2024-05-08)
+
+
+### Features
+
+* checksum only for configmap contents ([#1228](https://github.com/sentry-kubernetes/charts/issues/1228)) ([97829b0](https://github.com/sentry-kubernetes/charts/commit/97829b0e0ebf705ec3083d3d01e52b4d09200946))
+
+
+### Bug Fixes
+
+* actualize Sentry consumer additional options usage ([#1244](https://github.com/sentry-kubernetes/charts/issues/1244)) ([e24d459](https://github.com/sentry-kubernetes/charts/commit/e24d4596feeb6b1fc7fe9da806d1bac2c43bcfc6))
+
 ## [22.3.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v22.2.1...sentry-v22.3.0) (2024-04-29)
 
 
