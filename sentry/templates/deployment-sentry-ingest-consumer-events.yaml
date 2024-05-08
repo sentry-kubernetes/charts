@@ -82,20 +82,21 @@ spec:
           - "ingest-events"
           - "--consumer-group"
           - "ingest-consumer"
-          {{- if .Values.sentry.ingestConsumer.concurrency }}
-          - "--concurrency"
-          - "{{ .Values.sentry.ingestConsumer.concurrency }}"
-          {{- end }}
-          {{- if .Values.sentry.ingestConsumer.maxBatchSize }}
-          - "--max-batch-size"
-          - "{{ .Values.sentry.ingestConsumer.maxBatchSize }}"
-          {{- end }}
           {{- if .Values.sentry.ingestConsumer.noStrictOffsetReset }}
           - "--no-strict-offset-reset"
           {{- end }}
           {{- if .Values.sentry.ingestConsumer.livenessProbe.enabled }}
           - "--healthcheck-file-path"
           - "/tmp/health.txt"
+          {{- end }}
+          - "--"
+          {{- if .Values.sentry.ingestConsumer.maxBatchSize }}
+          - "--max-batch-size"
+          - "{{ .Values.sentry.ingestConsumer.maxBatchSize }}"
+          {{- end }}
+          {{- if .Values.sentry.ingestConsumer.concurrency }}
+          - "--processes"
+          - "{{ .Values.sentry.ingestConsumer.concurrency }}"
           {{- end }}
         {{- if .Values.sentry.ingestConsumer.livenessProbe.enabled }}
         livenessProbe:
