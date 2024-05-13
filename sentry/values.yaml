@@ -210,6 +210,64 @@ sentry:
     volumes: []
     volumeMounts: []
 
+  # allows to dedicate some workers to specific queues
+  workerEvents:
+    enabled: false
+    queues: "events.save_event,post_process_errors"
+    replicas: 1
+    # concurrency: 4
+    env: []
+    resources: {}
+    affinity: {}
+    nodeSelector: {}
+    # tolerations: []
+    # podLabels: []
+
+    # it's better to use prometheus adapter and scale based on
+    # the size of the rabbitmq queue
+    autoscaling:
+      enabled: false
+      minReplicas: 2
+      maxReplicas: 5
+      targetCPUUtilizationPercentage: 50
+    livenessProbe:
+      enabled: false
+      periodSeconds: 60
+      timeoutSeconds: 10
+      failureThreshold: 3
+    sidecars: []
+    volumes: []
+    volumeMounts: []
+
+  # allows to dedicate some workers to specific queues
+  workerTransactions:
+    enabled: true
+    queues: "events.save_event_transaction,post_process_transactions"
+    replicas: 1
+    # concurrency: 4
+    env: []
+    resources: {}
+    affinity: {}
+    nodeSelector: {}
+    # tolerations: []
+    # podLabels: []
+
+    # it's better to use prometheus adapter and scale based on
+    # the size of the rabbitmq queue
+    autoscaling:
+      enabled: false
+      minReplicas: 2
+      maxReplicas: 5
+      targetCPUUtilizationPercentage: 50
+    livenessProbe:
+      enabled: false
+      periodSeconds: 60
+      timeoutSeconds: 10
+      failureThreshold: 3
+    sidecars: []
+    volumes: []
+    volumeMounts: []
+
   ingestConsumer:
     enabled: true
     replicas: 1
