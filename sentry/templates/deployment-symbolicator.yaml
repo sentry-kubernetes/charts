@@ -128,7 +128,7 @@ spec:
         secret:
           secretName: {{ .Values.filestore.gcs.secretName }}
       {{ end }}
-{{- if .Values.sentry.ingestConsumer.volumes }}
+{{- if .Values.symbolicator.api.volumes }}
 {{ toYaml .Values.symbolicator.api.volumes | indent 6 }}
 {{- end }}
       {{- if .Values.symbolicator.api.priorityClassName }}
