@@ -739,6 +739,39 @@ snuba:
     #     emptyDir:
     #       medium: Memory
 
+  outcomesBillingConsumer:
+    enabled: true
+    replicas: 1
+    env: []
+    resources: {}
+    affinity: {}
+    nodeSelector: {}
+    securityContext: {}
+    containerSecurityContext: {}
+    # tolerations: []
+    # podLabels: []
+    autoOffsetReset: "earliest"
+    # noStrictOffsetReset: false
+    maxBatchSize: "3"
+    livenessProbe:
+      enabled: true
+      initialDelaySeconds: 5
+      periodSeconds: 320
+    # processes: ""
+    # inputBlockSize: ""
+    # outputBlockSize: ""
+    # maxBatchTimeMs: ""
+    # queuedMaxMessagesKbytes: ""
+    # queuedMinMessages: ""
+
+    # volumeMounts:
+    #   - mountPath: /dev/shm
+    #     name: dshm
+    # volumes:
+    #   - name: dshm
+    #     emptyDir:
+    #       medium: Memory
+
   replacer:
     enabled: true
     replicas: 1
