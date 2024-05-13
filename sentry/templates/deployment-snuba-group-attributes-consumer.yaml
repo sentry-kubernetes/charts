@@ -76,7 +76,7 @@ spec:
           - "snuba"
           - "rust-consumer"
           - "--storage"
-          - "group-attributes"
+          - "group_attributes"
           - "--consumer-group"
           - "snuba-group-attributes-group"
           - "--auto-offset-reset"
