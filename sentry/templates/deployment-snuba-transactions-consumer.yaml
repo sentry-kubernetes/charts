@@ -74,7 +74,7 @@ spec:
         imagePullPolicy: {{ default "IfNotPresent" .Values.images.snuba.pullPolicy }}
         command:
           - "snuba"
-          - "consumer"
+          - "rust-consumer"
           - "--storage"
           - "transactions"
           - "--consumer-group"
