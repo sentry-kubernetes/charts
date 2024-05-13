@@ -460,6 +460,7 @@ sentry.conf.py: |-
               "organizations:mobile-ttid-ttfd-contribution",
               "organizations:starfish-mobile-appstart",
               "organizations:standalone-span-ingestion",
+              "organizations:spans-first-ui",
               {{ end -}}
 
               "organizations:dashboards-mep",

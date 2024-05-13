@@ -1619,6 +1619,7 @@ kafka:
         config:
           "message.timestamp.type": LogAppendTime
       - name: outcomes
+      - name: outcomes-billing
       - name: ingest-sessions
       - name: snuba-sessions-commit-log
         config:
@@ -1678,9 +1679,6 @@ kafka:
           "message.timestamp.type": LogAppendTime
       - name: snuba-attribution
       - name: snuba-dead-letter-metrics
-      - name: snuba-dead-letter-metrics-sets
-      - name: snuba-dead-letter-metrics-counters
-      - name: snuba-dead-letter-metrics-distributions
       - name: snuba-dead-letter-sessions
       - name: snuba-dead-letter-generic-metrics
       - name: snuba-dead-letter-replays
@@ -1698,6 +1696,7 @@ kafka:
       - name: ingest-occurrences
       - name: snuba-spans
       - name: shared-resources-usage
+      - name: snuba-metrics-summaries
   listeners:
     client:
       protocol: "PLAINTEXT"
