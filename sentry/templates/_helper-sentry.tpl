@@ -445,6 +445,27 @@ sentry.conf.py: |-
               "organizations:feedback-visible",
               {{ end -}}
 
+              {{- if .Values.sentry.features.enableSpan }}
+              "projects:span-metrics-extraction",
+              "organizations:starfish-browser-resource-module-image-view",
+              "organizations:starfish-browser-resource-module-ui",
+              "organizations:starfish-browser-webvitals",
+              "organizations:starfish-browser-webvitals-pageoverview-v2",
+              "organizations:starfish-browser-webvitals-use-backend-scores",
+              "organizations:performance-calculate-score-relay",
+              "organizations:starfish-browser-webvitals-replace-fid-with-inp",
+              "organizations:deprecate-fid-from-performance-score",
+              "organizations:performance-database-view",
+              "organizations:starfish-browser-webvitals",
+              "organizations:performance-screens-view",
+              "organizations:starfish-browser-resource-module-ui",
+              "organizations:starfish-browser-webvitals-pageoverview-v2",
+              "organizations:starfish-browser-webvitals-use-backend-scores",
+              "organizations:mobile-ttid-ttfd-contribution",
+              "organizations:starfish-mobile-appstart",
+              "organizations:standalone-span-ingestion",
+              {{ end -}}
+
               "organizations:dashboards-mep",
               "organizations:mep-rollout-flag",
               "organizations:dashboards-rh-widget",
