@@ -182,6 +182,7 @@ sentry:
     enableProfiling: false
     enableSessionReplay: true
     enableFeedback: false
+    enableSpan: false
 
   worker:
     enabled: true
@@ -738,6 +739,39 @@ snuba:
     #     emptyDir:
     #       medium: Memory
 
+  outcomesBillingConsumer:
+    enabled: true
+    replicas: 1
+    env: []
+    resources: {}
+    affinity: {}
+    nodeSelector: {}
+    securityContext: {}
+    containerSecurityContext: {}
+    # tolerations: []
+    # podLabels: []
+    autoOffsetReset: "earliest"
+    # noStrictOffsetReset: false
+    maxBatchSize: "3"
+    livenessProbe:
+      enabled: true
+      initialDelaySeconds: 5
+      periodSeconds: 320
+    # processes: ""
+    # inputBlockSize: ""
+    # outputBlockSize: ""
+    # maxBatchTimeMs: ""
+    # queuedMaxMessagesKbytes: ""
+    # queuedMinMessages: ""
+
+    # volumeMounts:
+    #   - mountPath: /dev/shm
+    #     name: dshm
+    # volumes:
+    #   - name: dshm
+    #     emptyDir:
+    #       medium: Memory
+
   replacer:
     enabled: true
     replicas: 1
@@ -1096,6 +1130,72 @@ snuba:
     #     emptyDir:
     #       medium: Memory
 
+  spansConsumer:
+    enabled: true
+    replicas: 1
+    env: []
+    resources: {}
+    affinity: {}
+    nodeSelector: {}
+    securityContext: {}
+    containerSecurityContext: {}
+    # tolerations: []
+    # podLabels: []
+    autoOffsetReset: "earliest"
+    livenessProbe:
+      enabled: true
+      initialDelaySeconds: 5
+      periodSeconds: 320
+    # noStrictOffsetReset: false
+    # maxBatchSize: ""
+    # processes: ""
+    # inputBlockSize: ""
+    # outputBlockSize: ""
+    # maxBatchTimeMs: ""
+    # queuedMaxMessagesKbytes: ""
+    # queuedMinMessages: ""
+
+    # volumeMounts:
+    #   - mountPath: /dev/shm
+    #     name: dshm
+    # volumes:
+    #   - name: dshm
+    #     emptyDir:
+    #       medium: Memory
+
+  groupAttributesConsumer:
+    enabled: true
+    replicas: 1
+    env: []
+    resources: {}
+    affinity: {}
+    nodeSelector: {}
+    securityContext: {}
+    containerSecurityContext: {}
+    # tolerations: []
+    # podLabels: []
+    autoOffsetReset: "earliest"
+    livenessProbe:
+      enabled: true
+      initialDelaySeconds: 5
+      periodSeconds: 320
+    # noStrictOffsetReset: false
+    # maxBatchSize: ""
+    # processes: ""
+    # inputBlockSize: ""
+    # outputBlockSize: ""
+    # maxBatchTimeMs: ""
+    # queuedMaxMessagesKbytes: ""
+    # queuedMinMessages: ""
+
+    # volumeMounts:
+    #   - mountPath: /dev/shm
+    #     name: dshm
+    # volumes:
+    #   - name: dshm
+    #     emptyDir:
+    #       medium: Memory
+
   dbInitJob:
     env: []
 
@@ -1104,8 +1204,12 @@ snuba:
 
   clickhouse:
     maxConnections: 100
+
+  rustConsumer: false
+
 hooks:
   enabled: true
+  preUpgrade: false
   removeOnSuccess: true
   activeDeadlineSeconds: 100
   shareProcessNamespace: false
@@ -1519,6 +1623,7 @@ kafka:
         config:
           "message.timestamp.type": LogAppendTime
       - name: outcomes
+      - name: outcomes-billing
       - name: ingest-sessions
       - name: snuba-sessions-commit-log
         config:
@@ -1578,9 +1683,6 @@ kafka:
           "message.timestamp.type": LogAppendTime
       - name: snuba-attribution
       - name: snuba-dead-letter-metrics
-      - name: snuba-dead-letter-metrics-sets
-      - name: snuba-dead-letter-metrics-counters
-      - name: snuba-dead-letter-metrics-distributions
       - name: snuba-dead-letter-sessions
       - name: snuba-dead-letter-generic-metrics
       - name: snuba-dead-letter-replays
@@ -1598,6 +1700,7 @@ kafka:
       - name: ingest-occurrences
       - name: snuba-spans
       - name: shared-resources-usage
+      - name: snuba-metrics-summaries
   listeners:
     client:
       protocol: "PLAINTEXT"

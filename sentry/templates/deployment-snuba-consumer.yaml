@@ -74,9 +74,11 @@ spec:
         imagePullPolicy: {{ default "IfNotPresent" .Values.images.snuba.pullPolicy }}
         command:
           - "snuba"
-          - "consumer"
+          - {{ if .Values.snuba.rustConsumer -}}"rust-consumer"{{- else -}}"consumer"{{- end }}
           - "--storage"
           - "errors"
+          - "--consumer-group"
+          - "snuba-consumers"
           - "--auto-offset-reset"
           - "{{ .Values.snuba.consumer.autoOffsetReset }}"
           - "--max-batch-time-ms"

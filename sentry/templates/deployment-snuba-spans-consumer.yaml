@@ -1,8 +1,8 @@
-{{- if .Values.snuba.issueOccurrenceConsumer.enabled }}
+{{- if .Values.snuba.spansConsumer.enabled }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ template "sentry.fullname" . }}-issue-occurrence-consumer
+  name: {{ template "sentry.fullname" . }}-snuba-spans-consumer
   labels:
     app: {{ template "sentry.fullname" . }}
     chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
@@ -15,7 +15,7 @@ metadata:
     meta.helm.sh/release-name: "{{ .Release.Name }}"
     meta.helm.sh/release-namespace: "{{ .Release.Namespace }}"
     "helm.sh/hook": "post-install,post-upgrade"
-    "helm.sh/hook-weight": "16"
+    "helm.sh/hook-weight": "12"
   {{- end }}
 spec:
   revisionHistoryLimit: {{ .Values.revisionHistoryLimit }}
@@ -23,35 +23,35 @@ spec:
     matchLabels:
         app: {{ template "sentry.fullname" . }}
         release: "{{ .Release.Name }}"
-        role: issue-occurrence-consumer
-  replicas: {{ .Values.snuba.issueOccurrenceConsumer.replicas }}
+        role: snuba-spans-consumer
+  replicas: {{ .Values.snuba.spansConsumer.replicas }}
   template:
     metadata:
       annotations:
         checksum/snubaSettingsPy: {{ .Values.config.snubaSettingsPy | sha256sum }}
         checksum/config.yaml: {{ include "sentry.snuba.config" . | sha256sum }}
-        {{- if .Values.snuba.issueOccurrenceConsumer.annotations }}
-{{ toYaml .Values.snuba.issueOccurrenceConsumer.annotations | indent 8 }}
+        {{- if .Values.snuba.spansConsumer.annotations }}
+{{ toYaml .Values.snuba.spansConsumer.annotations | indent 8 }}
         {{- end }}
       labels:
         app: {{ template "sentry.fullname" . }}
         release: "{{ .Release.Name }}"
-        role: issue-occurrence-consumer
-        {{- if .Values.snuba.issueOccurrenceConsumer.podLabels }}
-{{ toYaml .Values.snuba.issueOccurrenceConsumer.podLabels | indent 8 }}
+        role: snuba-spans-consumer
+        {{- if .Values.snuba.spansConsumer.podLabels }}
+{{ toYaml .Values.snuba.spansConsumer.podLabels | indent 8 }}
         {{- end }}
     spec:
       affinity:
-      {{- if .Values.snuba.issueOccurrenceConsumer.affinity }}
-{{ toYaml .Values.snuba.issueOccurrenceConsumer.affinity | indent 8 }}
+      {{- if .Values.snuba.spansConsumer.affinity }}
+{{ toYaml .Values.snuba.spansConsumer.affinity | indent 8 }}
       {{- end }}
-      {{- if .Values.snuba.issueOccurrenceConsumer.nodeSelector }}
+      {{- if .Values.snuba.spansConsumer.nodeSelector }}
       nodeSelector:
-{{ toYaml .Values.snuba.issueOccurrenceConsumer.nodeSelector | indent 8 }}
+{{ toYaml .Values.snuba.spansConsumer.nodeSelector | indent 8 }}
       {{- end }}
-      {{- if .Values.snuba.issueOccurrenceConsumer.tolerations }}
+      {{- if .Values.snuba.spansConsumer.tolerations }}
       tolerations:
-{{ toYaml .Values.snuba.issueOccurrenceConsumer.tolerations | indent 8 }}
+{{ toYaml .Values.snuba.spansConsumer.tolerations | indent 8 }}
       {{- end }}
       {{- if .Values.images.snuba.imagePullSecrets }}
       imagePullSecrets:
@@ -64,9 +64,9 @@ spec:
       dnsConfig:
 {{ toYaml .Values.dnsConfig | indent 8 }}
       {{- end }}
-      {{- if .Values.snuba.issueOccurrenceConsumer.securityContext }}
+      {{- if .Values.snuba.spansConsumer.securityContext }}
       securityContext:
-{{ toYaml .Values.snuba.issueOccurrenceConsumer.securityContext | indent 8 }}
+{{ toYaml .Values.snuba.spansConsumer.securityContext | indent 8 }}
       {{- end }}
       containers:
       - name: {{ .Chart.Name }}-snuba
@@ -76,63 +76,63 @@ spec:
           - "snuba"
           - {{ if .Values.snuba.rustConsumer -}}"rust-consumer"{{- else -}}"consumer"{{- end }}
           - "--storage"
-          - "search_issues"
+          - "spans"
           - "--consumer-group"
-          - "generic_events_group"
+          - "snuba-spans-group"
           - "--auto-offset-reset"
-          - "{{ .Values.snuba.issueOccurrenceConsumer.autoOffsetReset }}"
+          - "{{ .Values.snuba.spansConsumer.autoOffsetReset }}"
           - "--max-batch-time-ms"
           - "750"
-          {{- if .Values.snuba.issueOccurrenceConsumer.maxBatchSize }}
+          {{- if .Values.snuba.spansConsumer.maxBatchSize }}
           - "--max-batch-size"
-          - "{{ .Values.snuba.issueOccurrenceConsumer.maxBatchSize }}"
+          - "{{ .Values.snuba.spansConsumer.maxBatchSize }}"
           {{- end }}
-          {{- if .Values.snuba.issueOccurrenceConsumer.processes }}
+          {{- if .Values.snuba.spansConsumer.processes }}
           - "--processes"
-          - "{{ .Values.snuba.issueOccurrenceConsumer.processes }}"
+          - "{{ .Values.snuba.spansConsumer.processes }}"
           {{- end }}
-          {{- if .Values.snuba.issueOccurrenceConsumer.inputBlockSize }}
+          {{- if .Values.snuba.spansConsumer.inputBlockSize }}
           - "--input-block-size"
-          - "{{ .Values.snuba.issueOccurrenceConsumer.inputBlockSize }}"
+          - "{{ .Values.snuba.spansConsumer.inputBlockSize }}"
           {{- end }}
-          {{- if .Values.snuba.issueOccurrenceConsumer.outputBlockSize }}
+          {{- if .Values.snuba.spansConsumer.outputBlockSize }}
           - "--output-block-size"
-          - "{{ .Values.snuba.issueOccurrenceConsumer.outputBlockSize }}"
+          - "{{ .Values.snuba.spansConsumer.outputBlockSize }}"
           {{- end }}
-          {{- if .Values.snuba.issueOccurrenceConsumer.maxBatchTimeMs }}
+          {{- if .Values.snuba.spansConsumer.maxBatchTimeMs }}
           - "--max-batch-time-ms"
-          - "{{ .Values.snuba.issueOccurrenceConsumer.maxBatchTimeMs }}"
+          - "{{ .Values.snuba.spansConsumer.maxBatchTimeMs }}"
           {{- end }}
-          {{- if .Values.snuba.issueOccurrenceConsumer.queuedMaxMessagesKbytes }}
+          {{- if .Values.snuba.spansConsumer.queuedMaxMessagesKbytes }}
           - "--queued-max-messages-kbytes"
-          - "{{ .Values.snuba.issueOccurrenceConsumer.queuedMaxMessagesKbytes }}"
+          - "{{ .Values.snuba.spansConsumer.queuedMaxMessagesKbytes }}"
           {{- end }}
-          {{- if .Values.snuba.issueOccurrenceConsumer.queuedMinMessages }}
+          {{- if .Values.snuba.spansConsumer.queuedMinMessages }}
           - "--queued-min-messages"
-          - "{{ .Values.snuba.issueOccurrenceConsumer.queuedMinMessages }}"
+          - "{{ .Values.snuba.spansConsumer.queuedMinMessages }}"
           {{- end }}
-          {{- if .Values.snuba.issueOccurrenceConsumer.noStrictOffsetReset }}
+          {{- if .Values.snuba.spansConsumer.noStrictOffsetReset }}
           - "--no-strict-offset-reset"
           {{- end }}
-          {{- if .Values.snuba.issueOccurrenceConsumer.livenessProbe.enabled }}
+          {{- if .Values.snuba.spansConsumer.livenessProbe.enabled }}
           - "--health-check-file"
           - "/tmp/health.txt"
           {{- end }}
-        {{- if .Values.snuba.issueOccurrenceConsumer.livenessProbe.enabled }}
+        {{- if .Values.snuba.spansConsumer.livenessProbe.enabled }}
         livenessProbe:
           exec:
             command:
               - rm
               - /tmp/health.txt
-          initialDelaySeconds: {{ .Values.snuba.issueOccurrenceConsumer.livenessProbe.initialDelaySeconds }}
-          periodSeconds: {{ .Values.snuba.issueOccurrenceConsumer.livenessProbe.periodSeconds }}
+          initialDelaySeconds: {{ .Values.snuba.spansConsumer.livenessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.snuba.spansConsumer.livenessProbe.periodSeconds }}
         {{- end }}
         ports:
         - containerPort: {{ template "snuba.port" }}
         env:
 {{ include "sentry.snuba.env" . | indent 8 }}
-{{- if .Values.snuba.issueOccurrenceConsumer.env }}
-{{ toYaml .Values.snuba.issueOccurrenceConsumer.env | indent 8 }}
+{{- if .Values.snuba.spansConsumer.env }}
+{{ toYaml .Values.snuba.spansConsumer.env | indent 8 }}
 {{- end }}
         envFrom:
         - secretRef:
@@ -141,14 +141,14 @@ spec:
         - mountPath: /etc/snuba
           name: config
           readOnly: true
-{{- if .Values.snuba.issueOccurrenceConsumer.volumeMounts }}
-{{ toYaml .Values.snuba.issueOccurrenceConsumer.volumeMounts | indent 8 }}
+{{- if .Values.snuba.spansConsumer.volumeMounts }}
+{{ toYaml .Values.snuba.spansConsumer.volumeMounts | indent 8 }}
 {{- end }}
         resources:
-{{ toYaml .Values.snuba.issueOccurrenceConsumer.resources | indent 12 }}
-{{- if .Values.snuba.issueOccurrenceConsumer.containerSecurityContext }}
+{{ toYaml .Values.snuba.spansConsumer.resources | indent 12 }}
+{{- if .Values.snuba.spansConsumer.containerSecurityContext }}
         securityContext:
-{{ toYaml .Values.snuba.issueOccurrenceConsumer.containerSecurityContext | indent 12 }}
+{{ toYaml .Values.snuba.spansConsumer.containerSecurityContext | indent 12 }}
 {{- end }}
       {{- if .Values.serviceAccount.enabled }}
       serviceAccountName: {{ .Values.serviceAccount.name }}-snuba
@@ -157,7 +157,7 @@ spec:
         - name: config
           configMap:
             name: {{ template "sentry.fullname" . }}-snuba
-{{- if .Values.snuba.issueOccurrenceConsumer.volumes }}
-{{ toYaml .Values.snuba.issueOccurrenceConsumer.volumes | indent 8 }}
+{{- if .Values.snuba.spansConsumer.volumes }}
+{{ toYaml .Values.snuba.spansConsumer.volumes | indent 8 }}
 {{- end }}
 {{- end }}
