@@ -1,5 +1,12 @@
 # Changelog
 
+## [22.5.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v22.4.0...sentry-v22.5.0) (2024-05-14)
+
+
+### Features
+
+* bump sentry to 24.4.2 ([#1248](https://github.com/sentry-kubernetes/charts/issues/1248)) ([c4ea3fb](https://github.com/sentry-kubernetes/charts/commit/c4ea3fbf8b646de66251f37521f744ac84228a9b))
+
 ## [22.4.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v22.3.0...sentry-v22.4.0) (2024-05-08)
 
 
