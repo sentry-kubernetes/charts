@@ -1,5 +1,12 @@
 # Changelog
 
+## [22.5.1](https://github.com/sentry-kubernetes/charts/compare/sentry-v22.5.0...sentry-v22.5.1) (2024-05-14)
+
+
+### Bug Fixes
+
+* fix snuba-outcomes-billing-consumer args ([#1254](https://github.com/sentry-kubernetes/charts/issues/1254)) ([ac821d6](https://github.com/sentry-kubernetes/charts/commit/ac821d61f94bcedd399b970f4c58e605c1d04602))
+
 ## [22.5.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v22.4.0...sentry-v22.5.0) (2024-05-14)
 
 
