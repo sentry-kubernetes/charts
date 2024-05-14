@@ -80,9 +80,9 @@ spec:
           - "--consumer-group"
           - "snuba-consumers"
           - "--auto-offset-reset"
+          - "{{ .Values.snuba.outcomesBillingConsumer.autoOffsetReset }}"
           - "--raw-events-topic"
           - "outcomes-billing"
-          - "{{ .Values.snuba.outcomesBillingConsumer.autoOffsetReset }}"
           - "--max-batch-time-ms"
           - "750"
           {{- if .Values.snuba.outcomesBillingConsumer.maxBatchSize }}
