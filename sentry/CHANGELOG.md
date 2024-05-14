@@ -1,5 +1,21 @@
 # Changelog
 
+## [23.0.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v22.5.1...sentry-v23.0.0) (2024-05-14)
+
+
+### ⚠ BREAKING CHANGES
+
+* ingest consumers and workers separation ([#1245](https://github.com/sentry-kubernetes/charts/issues/1245))
+
+### Features
+
+* ingest consumers and workers separation ([#1245](https://github.com/sentry-kubernetes/charts/issues/1245)) ([5969544](https://github.com/sentry-kubernetes/charts/commit/596954497af0acef2cce4014056ca756c5eb3592))
+
+
+### Bug Fixes
+
+* fix order snuba-outcomes-billing-consumer args ([#1257](https://github.com/sentry-kubernetes/charts/issues/1257)) ([0645404](https://github.com/sentry-kubernetes/charts/commit/06454040e45fd3d13236d011802a1e6436da5f8a))
+
 ## [22.5.1](https://github.com/sentry-kubernetes/charts/compare/sentry-v22.5.0...sentry-v22.5.1) (2024-05-14)
 
 
