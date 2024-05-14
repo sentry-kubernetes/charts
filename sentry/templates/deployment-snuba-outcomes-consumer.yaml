@@ -77,6 +77,8 @@ spec:
           - "rust-consumer"
           - "--storage"
           - "outcomes_raw"
+          - "--consumer-group"
+          - "snuba-consumers"
           - "--auto-offset-reset"
           - "{{ .Values.snuba.outcomesConsumer.autoOffsetReset }}"
           - "--max-batch-size"

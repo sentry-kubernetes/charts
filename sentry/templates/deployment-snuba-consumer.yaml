@@ -77,6 +77,8 @@ spec:
           - "rust-consumer"
           - "--storage"
           - "errors"
+          - "--consumer-group"
+          - "snuba-consumers"
           - "--auto-offset-reset"
           - "{{ .Values.snuba.consumer.autoOffsetReset }}"
           - "--max-batch-time-ms"
