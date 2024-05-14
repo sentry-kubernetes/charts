@@ -1209,6 +1209,7 @@ snuba:
 
 hooks:
   enabled: true
+  preUpgrade: false
   removeOnSuccess: true
   activeDeadlineSeconds: 100
   shareProcessNamespace: false
