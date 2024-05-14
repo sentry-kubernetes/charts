@@ -1204,6 +1204,9 @@ snuba:
 
   clickhouse:
     maxConnections: 100
+
+  rustConsumer: false
+
 hooks:
   enabled: true
   removeOnSuccess: true
