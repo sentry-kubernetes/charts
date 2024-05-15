@@ -1,5 +1,12 @@
 # Changelog
 
+## [23.0.1](https://github.com/sentry-kubernetes/charts/compare/sentry-v23.0.0...sentry-v23.0.1) (2024-05-15)
+
+
+### Bug Fixes
+
+* fix worker deployments ([#1261](https://github.com/sentry-kubernetes/charts/issues/1261)) ([eb3e7af](https://github.com/sentry-kubernetes/charts/commit/eb3e7af7f0e74fee19c10a08d1dcd193bd8de429))
+
 ## [23.0.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v22.5.1...sentry-v23.0.0) (2024-05-14)
 
 
