@@ -1,5 +1,12 @@
 # Changelog
 
+## [23.0.2](https://github.com/sentry-kubernetes/charts/compare/sentry-v23.0.1...sentry-v23.0.2) (2024-05-16)
+
+
+### Bug Fixes
+
+* worker hpa ([#1263](https://github.com/sentry-kubernetes/charts/issues/1263)) ([0b55646](https://github.com/sentry-kubernetes/charts/commit/0b55646e696f6be42755b58308f3127532a60d70))
+
 ## [23.0.1](https://github.com/sentry-kubernetes/charts/compare/sentry-v23.0.0...sentry-v23.0.1) (2024-05-15)
 
 
