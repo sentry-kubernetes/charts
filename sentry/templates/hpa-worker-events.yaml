@@ -2,12 +2,12 @@
 apiVersion: {{ template "sentry.autoscaling.apiVersion" . }}
 kind: HorizontalPodAutoscaler
 metadata:
-  name: {{ template "sentry.fullname" . }}-sentry-worker
+  name: {{ template "sentry.fullname" . }}-sentry-worker-events
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: {{ template "sentry.fullname" . }}-worker
+    name: {{ template "sentry.fullname" . }}-worker-events
   minReplicas: {{ .Values.sentry.workerEvents.autoscaling.minReplicas }}
   maxReplicas: {{ .Values.sentry.workerEvents.autoscaling.maxReplicas }}
   {{- if eq (include "sentry.autoscaling.apiVersion" .) "autoscaling/v1" }}
