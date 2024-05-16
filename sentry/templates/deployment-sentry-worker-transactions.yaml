@@ -14,7 +14,7 @@ spec:
     matchLabels:
         app: {{ template "sentry.fullname" . }}
         release: "{{ .Release.Name }}"
-        role: worker
+        role: worker-transactions
 {{- if not .Values.sentry.workerTransactions.autoscaling.enabled }}
   replicas: {{ .Values.sentry.workerTransactions.replicas }}
 {{- end }}
@@ -30,7 +30,7 @@ spec:
       labels:
         app: {{ template "sentry.fullname" . }}
         release: "{{ .Release.Name }}"
-        role: worker
+        role: worker-transactions
         {{- if .Values.sentry.workerTransactions.podLabels }}
 {{ toYaml .Values.sentry.workerTransactions.podLabels | indent 8 }}
         {{- end }}
