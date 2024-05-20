@@ -130,8 +130,8 @@ clickhouse:
   ## The instance number of Clickhouse
   replicas: "3"
   ## Clickhouse image configuration.
-  image: "yandex/clickhouse-server"
-  imageVersion: "19.14"
+  image: "clickhouse/clickhouse-server"
+  imageVersion: "21.8.13.6"
   imagePullPolicy: "IfNotPresent"
 
   priorityClassName: ~
