@@ -141,26 +141,26 @@ clickhouse:
 
   startupProbe:
     enabled: true
-    periodSeconds: "5"
-    timeoutSeconds: "5"
-    failureThreshold: "60"
-    successThreshold: "1"
+    periodSeconds: 5
+    timeoutSeconds: 5
+    failureThreshold: 60
+    successThreshold: 1
   livenessProbe:
     enabled: true
-    initialDelaySeconds: "30"
-    periodSeconds: "30"
-    timeoutSeconds: "5"
-    failureThreshold: "3"
-    successThreshold: "1"
+    initialDelaySeconds: 0
+    periodSeconds: 30
+    timeoutSeconds: 5
+    failureThreshold: 3
+    successThreshold: 1
   ## Periodic probe of container service readiness. Container will be removed from service endpoints if the probe fails. Cannot be updated.
   ## More info: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle#container-probes
   readinessProbe:
     enabled: true
-    initialDelaySeconds: "30"
-    periodSeconds: "30"
-    timeoutSeconds: "5"
-    failureThreshold: "3"
-    successThreshold: "1"
+    initialDelaySeconds: 0
+    periodSeconds: 30
+    timeoutSeconds: 5
+    failureThreshold: 3
+    successThreshold: 1
   ## volumeClaimTemplates is a list of claims that pods are allowed to reference.
   ## The StatefulSet controller is responsible for mapping network identities to claims in a way that maintains the identity of a pod.
   ## Every claim in this list must have at least one matching (by name) volumeMount in one container in the template.
