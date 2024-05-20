@@ -131,7 +131,7 @@ clickhouse:
   replicas: "3"
   ## Clickhouse image configuration.
   image: "clickhouse/clickhouse-server"
-  imageVersion: "21.8.13.6"
+  imageVersion: ~
   imagePullPolicy: "IfNotPresent"
 
   priorityClassName: ~

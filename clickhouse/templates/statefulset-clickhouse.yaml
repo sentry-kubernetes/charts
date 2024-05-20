@@ -69,7 +69,7 @@ spec:
     {{- end }}
       containers:
       - name: {{ include "clickhouse.fullname" . }}
-        image: {{ .Values.clickhouse.image }}:{{ .Values.clickhouse.imageVersion }}
+        image: {{ .Values.clickhouse.image }}:{{ .Values.clickhouse.imageVersion | default .Chart.AppVersion }}
         imagePullPolicy: {{ .Values.clickhouse.imagePullPolicy }}
         command:
           - /bin/bash
