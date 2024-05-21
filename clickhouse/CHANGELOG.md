@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.9.0](https://github.com/sentry-kubernetes/charts/compare/clickhouse-v3.8.0...clickhouse-v3.9.0) (2024-05-21)
+
+
+### Features
+
+* ability to override default clickhouse config ([#1268](https://github.com/sentry-kubernetes/charts/issues/1268)) ([1f8a5d5](https://github.com/sentry-kubernetes/charts/commit/1f8a5d58cedf3f26e759c67d2c5f50ea11d371c1))
+
 ## [3.8.0](https://github.com/sentry-kubernetes/charts/compare/clickhouse-v3.7.2...clickhouse-v3.8.0) (2024-04-12)
 
 
