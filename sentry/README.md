@@ -230,7 +230,46 @@ externalKafka:
     port: 9092
 ```
 
+## External Postgres configuration
 
+You can either pass postgres connection credentials directly in `values.yaml`:
+
+```yaml
+externalPostgresql:
+  host: postgres
+  port: 5432
+  username: postgres
+  password: postgres
+  database: sentry
+```
+
+or use existing `secret` like in the example below:
+
+```yaml
+externalPostgresql:
+  existingSecret: secret-name
+  existingSecretKeys:
+    password: password
+    username: username
+    database: database
+    port: port
+    host: host
+```
+
+it is possible to define which properties should be taken from secret or `values.yaml`, example below only takes `username` and `password` values from the secret:
+
+```yaml
+externalPostgresql:
+  existingSecret: secret-name
+  existingSecretKeys:
+    password: password
+    username: username
+  port: 8000
+  host: postgres
+  database: sentry
+```
+
+> ⚠️ `.Values.externalPostgresql.existingSecretKey` is depricated, `.Values.externalPostgresql.existingSecretKeys.password` should be used instead.
 
 # Usage
 

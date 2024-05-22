@@ -1991,8 +1991,13 @@ externalPostgresql:
   username: postgres
   # password: postgres
   # existingSecret: secret-name
-  ## set existingSecretKey if key name inside existingSecret is different from 'postgresql-password'
-  # existingSecretKey: secret-key-name
+  ## set existingSecretKeys in a secret, if not specified, value from the secret won't be used 
+  # existingSecretKeys:
+  #   password: password
+  #   username: username
+  #   database: database
+  #   port: port
+  #   host: host
   database: sentry
   # sslMode: require
   ## Default connection max age is 0 (unlimited connections)
