@@ -30,9 +30,10 @@ data:
         proxy_pass http://relay;
       }  
 
-      {{ if and .Values.nginx.metrics.enabled .Values.nginx.metrics.serviceMonitor.enabled -}}
+      {{ if or .Values.nginx.metrics.enabled .Values.nginx.metrics.serviceMonitor.enabled -}}
       location = /status/ {
-        stub_status;
+        stub_status on;
+        access_log off;
       }
 
       {{ end -}}

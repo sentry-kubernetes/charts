@@ -30,7 +30,7 @@ spec:
       annotations:
         checksum/configYml: {{ .Values.config.configYml | toYaml | toString | sha256sum }}
         checksum/sentryConfPy: {{ .Values.config.sentryConfPy | sha256sum }}
-        checksum/config.yaml: {{ include (print $.Template.BasePath "/configmap-sentry.yaml") . | sha256sum }}
+        checksum/config.yaml: {{ include "sentry.config" . | sha256sum }}
         {{- if .Values.sentry.subscriptionConsumerTransactions.annotations }}
 {{ toYaml .Values.sentry.subscriptionConsumerTransactions.annotations | indent 8 }}
         {{- end }}
@@ -73,6 +73,19 @@ spec:
           - "transactions-subscription-results"
           - "--consumer-group"
           - "query-subscription-consumer"
+          {{- if .Values.sentry.subscriptionConsumerTransactions.livenessProbe.enabled }}
+          - "--healthcheck-file-path"
+          - "/tmp/health.txt"
+          {{- end }}
+        {{- if .Values.sentry.subscriptionConsumerTransactions.livenessProbe.enabled }}
+        livenessProbe:
+          exec:
+            command:
+              - rm
+              - /tmp/health.txt
+          initialDelaySeconds: {{ .Values.sentry.subscriptionConsumerTransactions.livenessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.sentry.subscriptionConsumerTransactions.livenessProbe.periodSeconds }}
+        {{- end }}
         env:
 {{ include "sentry.env" . | indent 8 }}
 {{- if .Values.sentry.subscriptionConsumerTransactions.env }}

@@ -1,5 +1,76 @@
 # Changelog
 
+## [23.0.2](https://github.com/sentry-kubernetes/charts/compare/sentry-v23.0.1...sentry-v23.0.2) (2024-05-16)
+
+
+### Bug Fixes
+
+* worker hpa ([#1263](https://github.com/sentry-kubernetes/charts/issues/1263)) ([0b55646](https://github.com/sentry-kubernetes/charts/commit/0b55646e696f6be42755b58308f3127532a60d70))
+
+## [23.0.1](https://github.com/sentry-kubernetes/charts/compare/sentry-v23.0.0...sentry-v23.0.1) (2024-05-15)
+
+
+### Bug Fixes
+
+* fix worker deployments ([#1261](https://github.com/sentry-kubernetes/charts/issues/1261)) ([eb3e7af](https://github.com/sentry-kubernetes/charts/commit/eb3e7af7f0e74fee19c10a08d1dcd193bd8de429))
+
+## [23.0.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v22.5.1...sentry-v23.0.0) (2024-05-14)
+
+
+### ⚠ BREAKING CHANGES
+
+* ingest consumers and workers separation ([#1245](https://github.com/sentry-kubernetes/charts/issues/1245))
+
+### Features
+
+* ingest consumers and workers separation ([#1245](https://github.com/sentry-kubernetes/charts/issues/1245)) ([5969544](https://github.com/sentry-kubernetes/charts/commit/596954497af0acef2cce4014056ca756c5eb3592))
+
+
+### Bug Fixes
+
+* fix order snuba-outcomes-billing-consumer args ([#1257](https://github.com/sentry-kubernetes/charts/issues/1257)) ([0645404](https://github.com/sentry-kubernetes/charts/commit/06454040e45fd3d13236d011802a1e6436da5f8a))
+
+## [22.5.1](https://github.com/sentry-kubernetes/charts/compare/sentry-v22.5.0...sentry-v22.5.1) (2024-05-14)
+
+
+### Bug Fixes
+
+* fix snuba-outcomes-billing-consumer args ([#1254](https://github.com/sentry-kubernetes/charts/issues/1254)) ([ac821d6](https://github.com/sentry-kubernetes/charts/commit/ac821d61f94bcedd399b970f4c58e605c1d04602))
+
+## [22.5.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v22.4.0...sentry-v22.5.0) (2024-05-14)
+
+
+### Features
+
+* bump sentry to 24.4.2 ([#1248](https://github.com/sentry-kubernetes/charts/issues/1248)) ([c4ea3fb](https://github.com/sentry-kubernetes/charts/commit/c4ea3fbf8b646de66251f37521f744ac84228a9b))
+
+## [22.4.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v22.3.0...sentry-v22.4.0) (2024-05-08)
+
+
+### Features
+
+* checksum only for configmap contents ([#1228](https://github.com/sentry-kubernetes/charts/issues/1228)) ([97829b0](https://github.com/sentry-kubernetes/charts/commit/97829b0e0ebf705ec3083d3d01e52b4d09200946))
+
+
+### Bug Fixes
+
+* actualize Sentry consumer additional options usage ([#1244](https://github.com/sentry-kubernetes/charts/issues/1244)) ([e24d459](https://github.com/sentry-kubernetes/charts/commit/e24d4596feeb6b1fc7fe9da806d1bac2c43bcfc6))
+
+## [22.3.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v22.2.1...sentry-v22.3.0) (2024-04-29)
+
+
+### Features
+
+* Add liveness to consumers ([#1240](https://github.com/sentry-kubernetes/charts/issues/1240)) ([60aaa3d](https://github.com/sentry-kubernetes/charts/commit/60aaa3d5f485320dc3bca1161b786cb20df34b73))
+
+## [22.2.1](https://github.com/sentry-kubernetes/charts/compare/sentry-v22.2.0...sentry-v22.2.1) (2024-04-24)
+
+
+### Bug Fixes
+
+* issues with nginx configuration for metrics ([#1232](https://github.com/sentry-kubernetes/charts/issues/1232)) ([b227a6b](https://github.com/sentry-kubernetes/charts/commit/b227a6b801d244dba9baf7180eeaaaef96dfccc3))
+* sentry metrics deployment annotations ([#1239](https://github.com/sentry-kubernetes/charts/issues/1239)) ([59c6245](https://github.com/sentry-kubernetes/charts/commit/59c6245f0b79b6eafff14e301cd1378cbb432bc7))
+
 ## [22.2.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v22.1.1...sentry-v22.2.0) (2024-04-17)
 
 

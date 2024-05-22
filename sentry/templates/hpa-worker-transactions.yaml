@@ -1,0 +1,33 @@
+{{- if and .Values.sentry.workerTransactions.enabled .Values.sentry.workerTransactions.autoscaling.enabled }}
+apiVersion: {{ template "sentry.autoscaling.apiVersion" . }}
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ template "sentry.fullname" . }}-sentry-worker-transactions
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ template "sentry.fullname" . }}-worker-transactions
+  minReplicas: {{ .Values.sentry.workerTransactions.autoscaling.minReplicas }}
+  maxReplicas: {{ .Values.sentry.workerTransactions.autoscaling.maxReplicas }}
+  {{- if eq (include "sentry.autoscaling.apiVersion" .) "autoscaling/v1" }}
+  targetCPUUtilizationPercentage: {{ .Values.sentry.workerTransactions.autoscaling.targetCPUUtilizationPercentage }}
+  {{- else if semverCompare ">=1.27-0" .Capabilities.KubeVersion.GitVersion }}
+  metrics:
+  - type: ContainerResource
+    containerResource:
+      container: {{ .Chart.Name }}-worker
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: {{ .Values.sentry.workerTransactions.autoscaling.targetCPUUtilizationPercentage }}
+  {{- else }}
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: {{ .Values.sentry.workerTransactions.autoscaling.targetCPUUtilizationPercentage }}
+  {{- end }}
+{{- end }}

@@ -187,6 +187,7 @@ sentry:
     enableProfiling: false
     enableSessionReplay: true
     enableFeedback: false
+    enableSpan: false
 
   worker:
     enabled: true
@@ -215,7 +216,65 @@ sentry:
     volumes: []
     volumeMounts: []
 
-  ingestConsumer:
+  # allows to dedicate some workers to specific queues
+  workerEvents:
+    enabled: false
+    queues: "events.save_event,post_process_errors"
+    replicas: 1
+    # concurrency: 4
+    env: []
+    resources: {}
+    affinity: {}
+    nodeSelector: {}
+    # tolerations: []
+    # podLabels: []
+
+    # it's better to use prometheus adapter and scale based on
+    # the size of the rabbitmq queue
+    autoscaling:
+      enabled: false
+      minReplicas: 2
+      maxReplicas: 5
+      targetCPUUtilizationPercentage: 50
+    livenessProbe:
+      enabled: false
+      periodSeconds: 60
+      timeoutSeconds: 10
+      failureThreshold: 3
+    sidecars: []
+    volumes: []
+    volumeMounts: []
+
+  # allows to dedicate some workers to specific queues
+  workerTransactions:
+    enabled: true
+    queues: "events.save_event_transaction,post_process_transactions"
+    replicas: 1
+    # concurrency: 4
+    env: []
+    resources: {}
+    affinity: {}
+    nodeSelector: {}
+    # tolerations: []
+    # podLabels: []
+
+    # it's better to use prometheus adapter and scale based on
+    # the size of the rabbitmq queue
+    autoscaling:
+      enabled: false
+      minReplicas: 2
+      maxReplicas: 5
+      targetCPUUtilizationPercentage: 50
+    livenessProbe:
+      enabled: false
+      periodSeconds: 60
+      timeoutSeconds: 10
+      failureThreshold: 3
+    sidecars: []
+    volumes: []
+    volumeMounts: []
+
+  ingestConsumerAttachments:
     enabled: true
     replicas: 1
     # concurrency: 4
@@ -239,11 +298,84 @@ sentry:
     sidecars: []
     volumes: []
 
+    livenessProbe:
+      enabled: true
+      initialDelaySeconds: 5
+      periodSeconds: 320
     # volumeMounts:
     #   - mountPath: /dev/shm
     #     name: dshm
 
     # noStrictOffsetReset: false
+
+  ingestConsumerEvents:
+    enabled: true
+    replicas: 1
+    # concurrency: 4
+    env: []
+    resources: {}
+    affinity: {}
+    nodeSelector: {}
+    securityContext: {}
+    containerSecurityContext: {}
+    # tolerations: []
+    # podLabels: []
+    # maxBatchSize: ""
+
+    # it's better to use prometheus adapter and scale based on
+    # the size of the rabbitmq queue
+    autoscaling:
+      enabled: false
+      minReplicas: 1
+      maxReplicas: 3
+      targetCPUUtilizationPercentage: 50
+    sidecars: []
+    volumes: []
+
+    livenessProbe:
+      enabled: true
+      initialDelaySeconds: 5
+      periodSeconds: 320
+    # volumeMounts:
+    #   - mountPath: /dev/shm
+    #     name: dshm
+
+    # noStrictOffsetReset: false
+
+  ingestConsumerTransactions:
+    enabled: true
+    replicas: 1
+    # concurrency: 4
+    env: []
+    resources: {}
+    affinity: {}
+    nodeSelector: {}
+    securityContext: {}
+    containerSecurityContext: {}
+    # tolerations: []
+    # podLabels: []
+    # maxBatchSize: ""
+
+    # it's better to use prometheus adapter and scale based on
+    # the size of the rabbitmq queue
+    autoscaling:
+      enabled: false
+      minReplicas: 1
+      maxReplicas: 3
+      targetCPUUtilizationPercentage: 50
+    sidecars: []
+    volumes: []
+
+    livenessProbe:
+      enabled: true
+      initialDelaySeconds: 5
+      periodSeconds: 320
+    # volumeMounts:
+    #   - mountPath: /dev/shm
+    #     name: dshm
+
+    # noStrictOffsetReset: false
+
   ingestReplayRecordings:
     enabled: true
     replicas: 1
@@ -265,6 +397,10 @@ sentry:
       targetCPUUtilizationPercentage: 50
     sidecars: []
     volumes: []
+    livenessProbe:
+      enabled: true
+      initialDelaySeconds: 5
+      periodSeconds: 320
 
     # volumeMounts:
     #   - mountPath: /dev/shm
@@ -291,6 +427,10 @@ sentry:
     sidecars: []
     volumes: []
 
+    livenessProbe:
+      enabled: true
+      initialDelaySeconds: 5
+      periodSeconds: 320
     # volumeMounts:
     #   - mountPath: /dev/shm
     #     name: dshm
@@ -316,6 +456,10 @@ sentry:
     sidecars: []
     volumes: []
 
+    livenessProbe:
+      enabled: true
+      initialDelaySeconds: 5
+      periodSeconds: 320
     # volumeMounts:
     #   - mountPath: /dev/shm
     #     name: dshm
@@ -341,7 +485,10 @@ sentry:
       targetCPUUtilizationPercentage: 50
     sidecars: []
     volumes: []
-
+    livenessProbe:
+      enabled: true
+      initialDelaySeconds: 5
+      periodSeconds: 320
     # volumeMounts:
     #   - mountPath: /dev/shm
     #     name: dshm
@@ -370,6 +517,10 @@ sentry:
     sidecars: []
     volumes: []
 
+    livenessProbe:
+      enabled: true
+      initialDelaySeconds: 5
+      periodSeconds: 320
     # volumeMounts:
     #   - mountPath: /dev/shm
     #     name: dshm
@@ -398,6 +549,10 @@ sentry:
     sidecars: []
     volumes: []
 
+    livenessProbe:
+      enabled: true
+      initialDelaySeconds: 5
+      periodSeconds: 320
     # volumeMounts:
     #   - mountPath: /dev/shm
     #     name: dshm
@@ -426,6 +581,10 @@ sentry:
     sidecars: []
     volumes: []
 
+    livenessProbe:
+      enabled: true
+      initialDelaySeconds: 5
+      periodSeconds: 320
     # volumeMounts:
     #   - mountPath: /dev/shm
     #     name: dshm
@@ -458,6 +617,10 @@ sentry:
     # podLabels: []
     sidecars: []
     volumes: []
+    livenessProbe:
+      enabled: true
+      initialDelaySeconds: 5
+      periodSeconds: 320
     # noStrictOffsetReset: false
     # volumeMounts: []
 
@@ -489,6 +652,10 @@ sentry:
     # podLabels: []
     sidecars: []
     volumes: []
+    livenessProbe:
+      enabled: true
+      initialDelaySeconds: 5
+      periodSeconds: 320
     # noStrictOffsetReset: false
     # volumeMounts: []
 
@@ -507,6 +674,10 @@ sentry:
     sidecars: []
     volumes: []
     # volumeMounts: []
+    livenessProbe:
+      enabled: true
+      initialDelaySeconds: 5
+      periodSeconds: 320
 
   postProcessForwardTransactions:
     enabled: true
@@ -521,6 +692,10 @@ sentry:
     # podLabels: []
     sidecars: []
     volumes: []
+    livenessProbe:
+      enabled: true
+      initialDelaySeconds: 5
+      periodSeconds: 320
     # volumeMounts: []
     # noStrictOffsetReset: false
   postProcessForwardIssuePlatform:
@@ -537,6 +712,10 @@ sentry:
     sidecars: []
     volumes: []
     # volumeMounts: []
+    livenessProbe:
+      enabled: true
+      initialDelaySeconds: 5
+      periodSeconds: 320
 
   subscriptionConsumerGenericMetrics:
     enabled: true
@@ -552,6 +731,10 @@ sentry:
     sidecars: []
     volumes: []
     # volumeMounts: []
+    livenessProbe:
+      enabled: true
+      initialDelaySeconds: 5
+      periodSeconds: 320
 
   subscriptionConsumerMetrics:
     enabled: true
@@ -567,6 +750,10 @@ sentry:
     sidecars: []
     volumes: []
     # volumeMounts: []
+    livenessProbe:
+      enabled: true
+      initialDelaySeconds: 5
+      periodSeconds: 320
 
   cleanup:
     successfulJobsHistoryLimit: 5
@@ -630,6 +817,10 @@ snuba:
     # tolerations: []
     # podLabels: []
     autoOffsetReset: "earliest"
+    livenessProbe:
+      enabled: true
+      initialDelaySeconds: 5
+      periodSeconds: 320
     # noStrictOffsetReset: false
     # maxBatchSize: ""
     # processes: ""
@@ -661,6 +852,43 @@ snuba:
     autoOffsetReset: "earliest"
     # noStrictOffsetReset: false
     maxBatchSize: "3"
+    livenessProbe:
+      enabled: true
+      initialDelaySeconds: 5
+      periodSeconds: 320
+    # processes: ""
+    # inputBlockSize: ""
+    # outputBlockSize: ""
+    # maxBatchTimeMs: ""
+    # queuedMaxMessagesKbytes: ""
+    # queuedMinMessages: ""
+
+    # volumeMounts:
+    #   - mountPath: /dev/shm
+    #     name: dshm
+    # volumes:
+    #   - name: dshm
+    #     emptyDir:
+    #       medium: Memory
+
+  outcomesBillingConsumer:
+    enabled: true
+    replicas: 1
+    env: []
+    resources: {}
+    affinity: {}
+    nodeSelector: {}
+    securityContext: {}
+    containerSecurityContext: {}
+    # tolerations: []
+    # podLabels: []
+    autoOffsetReset: "earliest"
+    # noStrictOffsetReset: false
+    maxBatchSize: "3"
+    livenessProbe:
+      enabled: true
+      initialDelaySeconds: 5
+      periodSeconds: 320
     # processes: ""
     # inputBlockSize: ""
     # outputBlockSize: ""
@@ -706,6 +934,10 @@ snuba:
     # tolerations: []
     # podLabels: []
     autoOffsetReset: "earliest"
+    livenessProbe:
+      enabled: true
+      initialDelaySeconds: 5
+      periodSeconds: 320
     # volumes: []
     # volumeMounts: []
 
@@ -721,6 +953,10 @@ snuba:
     # tolerations: []
     # podLabels: []
     autoOffsetReset: "earliest"
+    livenessProbe:
+      enabled: true
+      initialDelaySeconds: 5
+      periodSeconds: 320
     # volumes: []
     # volumeMounts: []
 
@@ -736,6 +972,10 @@ snuba:
     # tolerations: []
     # podLabels: []
     autoOffsetReset: "earliest"
+    livenessProbe:
+      enabled: true
+      initialDelaySeconds: 5
+      periodSeconds: 320
     # volumes: []
     # volumeMounts: []
 
@@ -751,6 +991,10 @@ snuba:
     # tolerations: []
     # podLabels: []
     autoOffsetReset: "earliest"
+    livenessProbe:
+      enabled: true
+      initialDelaySeconds: 5
+      periodSeconds: 320
     # volumes: []
     # volumeMounts: []
 
@@ -766,6 +1010,10 @@ snuba:
     # tolerations: []
     # podLabels: []
     autoOffsetReset: "earliest"
+    livenessProbe:
+      enabled: true
+      initialDelaySeconds: 5
+      periodSeconds: 320
     # volumes: []
     # volumeMounts: []
 
@@ -781,6 +1029,10 @@ snuba:
     # tolerations: []
     # podLabels: []
     autoOffsetReset: "earliest"
+    livenessProbe:
+      enabled: true
+      initialDelaySeconds: 5
+      periodSeconds: 320
     # volumes: []
     # volumeMounts: []
 
@@ -798,6 +1050,10 @@ snuba:
     autoOffsetReset: "earliest"
     # volumes: []
     # volumeMounts: []
+    livenessProbe:
+      enabled: true
+      initialDelaySeconds: 5
+      periodSeconds: 320
 
   subscriptionConsumerSessions:
     replicas: 1
@@ -828,6 +1084,10 @@ snuba:
     # tolerations: []
     # podLabels: []
     autoOffsetReset: "earliest"
+    livenessProbe:
+      enabled: true
+      initialDelaySeconds: 5
+      periodSeconds: 320
     # noStrictOffsetReset: false
     # maxBatchSize: ""
     # processes: ""
@@ -885,6 +1145,10 @@ snuba:
     # tolerations: []
     # podLabels: []
     autoOffsetReset: "earliest"
+    livenessProbe:
+      enabled: true
+      initialDelaySeconds: 5
+      periodSeconds: 320
     # noStrictOffsetReset: false
     # maxBatchSize: ""
     # processes: ""
@@ -913,6 +1177,10 @@ snuba:
     # tolerations: []
     # podLabels: []
     autoOffsetReset: "earliest"
+    livenessProbe:
+      enabled: true
+      initialDelaySeconds: 5
+      periodSeconds: 320
     # noStrictOffsetReset: false
     # maxBatchSize: ""
     # processes: ""
@@ -941,6 +1209,10 @@ snuba:
     # tolerations: []
     # podLabels: []
     autoOffsetReset: "earliest"
+    livenessProbe:
+      enabled: true
+      initialDelaySeconds: 5
+      periodSeconds: 320
     # noStrictOffsetReset: false
     # maxBatchSize: ""
     # processes: ""
@@ -969,6 +1241,76 @@ snuba:
     # tolerations: []
     # podLabels: []
     autoOffsetReset: "earliest"
+    livenessProbe:
+      enabled: true
+      initialDelaySeconds: 5
+      periodSeconds: 320
+    # noStrictOffsetReset: false
+    # maxBatchSize: ""
+    # processes: ""
+    # inputBlockSize: ""
+    # outputBlockSize: ""
+    # maxBatchTimeMs: ""
+    # queuedMaxMessagesKbytes: ""
+    # queuedMinMessages: ""
+
+    # volumeMounts:
+    #   - mountPath: /dev/shm
+    #     name: dshm
+    # volumes:
+    #   - name: dshm
+    #     emptyDir:
+    #       medium: Memory
+
+  spansConsumer:
+    enabled: true
+    replicas: 1
+    env: []
+    resources: {}
+    affinity: {}
+    nodeSelector: {}
+    securityContext: {}
+    containerSecurityContext: {}
+    # tolerations: []
+    # podLabels: []
+    autoOffsetReset: "earliest"
+    livenessProbe:
+      enabled: true
+      initialDelaySeconds: 5
+      periodSeconds: 320
+    # noStrictOffsetReset: false
+    # maxBatchSize: ""
+    # processes: ""
+    # inputBlockSize: ""
+    # outputBlockSize: ""
+    # maxBatchTimeMs: ""
+    # queuedMaxMessagesKbytes: ""
+    # queuedMinMessages: ""
+
+    # volumeMounts:
+    #   - mountPath: /dev/shm
+    #     name: dshm
+    # volumes:
+    #   - name: dshm
+    #     emptyDir:
+    #       medium: Memory
+
+  groupAttributesConsumer:
+    enabled: true
+    replicas: 1
+    env: []
+    resources: {}
+    affinity: {}
+    nodeSelector: {}
+    securityContext: {}
+    containerSecurityContext: {}
+    # tolerations: []
+    # podLabels: []
+    autoOffsetReset: "earliest"
+    livenessProbe:
+      enabled: true
+      initialDelaySeconds: 5
+      periodSeconds: 320
     # noStrictOffsetReset: false
     # maxBatchSize: ""
     # processes: ""
@@ -994,8 +1336,12 @@ snuba:
 
   clickhouse:
     maxConnections: 100
+
+  rustConsumer: false
+
 hooks:
   enabled: true
+  preUpgrade: false
   removeOnSuccess: true
   activeDeadlineSeconds: 100
   shareProcessNamespace: false
@@ -1412,6 +1758,7 @@ kafka:
         config:
           "message.timestamp.type": LogAppendTime
       - name: outcomes
+      - name: outcomes-billing
       - name: ingest-sessions
       - name: snuba-sessions-commit-log
         config:
@@ -1471,9 +1818,6 @@ kafka:
           "message.timestamp.type": LogAppendTime
       - name: snuba-attribution
       - name: snuba-dead-letter-metrics
-      - name: snuba-dead-letter-metrics-sets
-      - name: snuba-dead-letter-metrics-counters
-      - name: snuba-dead-letter-metrics-distributions
       - name: snuba-dead-letter-sessions
       - name: snuba-dead-letter-generic-metrics
       - name: snuba-dead-letter-replays
@@ -1491,6 +1835,7 @@ kafka:
       - name: ingest-occurrences
       - name: snuba-spans
       - name: shared-resources-usage
+      - name: snuba-metrics-summaries
   listeners:
     client:
       protocol: "PLAINTEXT"
@@ -1675,6 +2020,8 @@ memcached:
 ##
 metrics:
   enabled: false
+
+  podAnnotations: {}
 
   ## Configure extra options for liveness and readiness probes
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/#configure-probes)

@@ -29,7 +29,7 @@ spec:
     metadata:
       annotations:
         checksum/snubaSettingsPy: {{ .Values.config.snubaSettingsPy | sha256sum }}
-        checksum/config.yaml: {{ include (print $.Template.BasePath "/configmap-snuba.yaml") . | sha256sum }}
+        checksum/config.yaml: {{ include "sentry.snuba.config" . | sha256sum }}
         {{- if .Values.snuba.genericMetricsDistributionConsumer.annotations }}
 {{ toYaml .Values.snuba.genericMetricsDistributionConsumer.annotations | indent 8 }}
         {{- end }}
@@ -74,7 +74,7 @@ spec:
         imagePullPolicy: {{ default "IfNotPresent" .Values.images.snuba.pullPolicy }}
         command:
           - "snuba"
-          - "consumer"
+          - {{ if .Values.snuba.rustConsumer -}}"rust-consumer"{{- else -}}"consumer"{{- end }}
           - "--storage"
           - "generic_metrics_distributions_raw"
           - "--consumer-group"
@@ -114,6 +114,19 @@ spec:
           {{- if .Values.snuba.genericMetricsDistributionConsumer.noStrictOffsetReset }}
           - "--no-strict-offset-reset"
           {{- end }}
+          {{- if .Values.snuba.genericMetricsDistributionConsumer.livenessProbe.enabled }}
+          - "--health-check-file"
+          - "/tmp/health.txt"
+          {{- end }}
+        {{- if .Values.snuba.genericMetricsDistributionConsumer.livenessProbe.enabled }}
+        livenessProbe:
+          exec:
+            command:
+              - rm
+              - /tmp/health.txt
+          initialDelaySeconds: {{ .Values.snuba.genericMetricsDistributionConsumer.livenessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.snuba.genericMetricsDistributionConsumer.livenessProbe.periodSeconds }}
+        {{- end }}
         ports:
         - containerPort: {{ template "snuba.port" }}
         env:

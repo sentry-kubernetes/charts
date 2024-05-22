@@ -29,7 +29,7 @@ spec:
     metadata:
       annotations:
         checksum/snubaSettingsPy: {{ .Values.config.snubaSettingsPy | sha256sum }}
-        checksum/config.yaml: {{ include (print $.Template.BasePath "/configmap-snuba.yaml") . | sha256sum }}
+        checksum/config.yaml: {{ include "sentry.snuba.config" . | sha256sum }}
         {{- if .Values.snuba.subscriptionConsumerTransactions.annotations }}
 {{ toYaml .Values.snuba.subscriptionConsumerTransactions.annotations | indent 8 }}
         {{- end }}
@@ -78,6 +78,19 @@ spec:
           - "--followed-consumer-group=transactions_group"
           - "--schedule-ttl=60"
           - "--stale-threshold-seconds=900"
+          {{- if .Values.snuba.subscriptionConsumerTransactions.livenessProbe.enabled }}
+          - "--health-check-file"
+          - "/tmp/health.txt"
+          {{- end }}
+        {{- if .Values.snuba.subscriptionConsumerTransactions.livenessProbe.enabled }}
+        livenessProbe:
+          exec:
+            command:
+              - rm
+              - /tmp/health.txt
+          initialDelaySeconds: {{ .Values.snuba.subscriptionConsumerTransactions.livenessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.snuba.subscriptionConsumerTransactions.livenessProbe.periodSeconds }}
+        {{- end }}
         ports:
         - containerPort: {{ template "snuba.port" }}
         env:

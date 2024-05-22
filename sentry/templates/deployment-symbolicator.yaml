@@ -21,7 +21,7 @@ spec:
   template:
     metadata:
       annotations:
-        checksum/config.yaml: {{ include (print $.Template.BasePath "/configmap-symbolicator.yaml") . | sha256sum }}
+        checksum/config.yaml: {{ include "sentry.symbolicator.config" . | sha256sum }}
         {{- if .Values.symbolicator.api.annotations }}
 {{ toYaml .Values.symbolicator.api.annotations | indent 8 }}
         {{- end }}
@@ -134,7 +134,7 @@ spec:
         secret:
           secretName: {{ .Values.filestore.gcs.secretName }}
       {{ end }}
-{{- if .Values.sentry.ingestConsumer.volumes }}
+{{- if .Values.symbolicator.api.volumes }}
 {{ toYaml .Values.symbolicator.api.volumes | indent 6 }}
 {{- end }}
 {{- if .Values.global.volumes }}

@@ -1,8 +1,8 @@
-{{- if .Values.sentry.cron.enabled }}
+{{- if .Values.sentry.workerEvents.enabled }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ template "sentry.fullname" . }}-cron
+  name: {{ template "sentry.fullname" . }}-worker-events
   labels:
     app: {{ template "sentry.fullname" . }}
     chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
@@ -14,36 +14,38 @@ spec:
     matchLabels:
         app: {{ template "sentry.fullname" . }}
         release: "{{ .Release.Name }}"
-        role: cron
-  replicas: {{ .Values.sentry.cron.replicas }}
+        role: worker-events
+{{- if not .Values.sentry.workerEvents.autoscaling.enabled }}
+  replicas: {{ .Values.sentry.workerEvents.replicas }}
+{{- end }}
   template:
     metadata:
       annotations:
         checksum/configYml: {{ .Values.config.configYml | toYaml | toString | sha256sum }}
         checksum/sentryConfPy: {{ .Values.config.sentryConfPy | sha256sum }}
         checksum/config.yaml: {{ include "sentry.config" . | sha256sum }}
-        {{- if .Values.sentry.cron.annotations }}
-{{ toYaml .Values.sentry.cron.annotations | indent 8 }}
+        {{- if .Values.sentry.workerEvents.annotations }}
+{{ toYaml .Values.sentry.workerEvents.annotations | indent 8 }}
         {{- end }}
       labels:
         app: {{ template "sentry.fullname" . }}
         release: "{{ .Release.Name }}"
-        role: cron
-        {{- if .Values.sentry.cron.podLabels }}
-{{ toYaml .Values.sentry.cron.podLabels | indent 8 }}
+        role: worker-events
+        {{- if .Values.sentry.workerEvents.podLabels }}
+{{ toYaml .Values.sentry.workerEvents.podLabels | indent 8 }}
         {{- end }}
     spec:
       affinity:
-      {{- if .Values.sentry.cron.affinity }}
-{{ toYaml .Values.sentry.cron.affinity | indent 8 }}
+      {{- if .Values.sentry.workerEvents.affinity }}
+{{ toYaml .Values.sentry.workerEvents.affinity | indent 8 }}
       {{- end }}
-      {{- if .Values.sentry.cron.nodeSelector }}
+      {{- if .Values.sentry.workerEvents.nodeSelector }}
       nodeSelector:
-{{ toYaml .Values.sentry.cron.nodeSelector | indent 8 }}
+{{ toYaml .Values.sentry.workerEvents.nodeSelector | indent 8 }}
       {{- end }}
-      {{- if .Values.sentry.cron.tolerations }}
+      {{- if .Values.sentry.workerEvents.tolerations }}
       tolerations:
-{{ toYaml .Values.sentry.cron.tolerations | indent 8 }}
+{{ toYaml .Values.sentry.workerEvents.tolerations | indent 8 }}
       {{- end }}
       {{- if .Values.images.sentry.imagePullSecrets }}
       imagePullSecrets:
@@ -56,27 +58,30 @@ spec:
       dnsConfig:
 {{ toYaml .Values.dnsConfig | indent 8 }}
       {{- end }}
-      {{- if .Values.sentry.cron.securityContext }}
+      {{- if .Values.sentry.workerEvents.securityContext }}
       securityContext:
-{{ toYaml .Values.sentry.cron.securityContext | indent 8 }}
+{{ toYaml .Values.sentry.workerEvents.securityContext | indent 8 }}
       {{- end }}
       containers:
-      - name: {{ .Chart.Name }}-cron
+      - name: {{ .Chart.Name }}-worker
         image: "{{ template "sentry.image" . }}"
         imagePullPolicy: {{ default "IfNotPresent" .Values.images.sentry.pullPolicy }}
         command: ["sentry"]
         args:
           - "run"
-          - "cron"
-          {{- if .Values.sentry.cron.logLevel }}
-          - "-l{{ .Values.sentry.cron.logLevel}}"
+          - "worker"
+          - "-Q"
+          - {{ .Values.sentry.workerEvents.queues }}
+          {{- if .Values.sentry.workerEvents.concurrency }}
+          - "-c"
+          - "{{ .Values.sentry.workerEvents.concurrency }}"
           {{- end }}
         env:
         - name: C_FORCE_ROOT
           value: "true"
 {{ include "sentry.env" . | indent 8 }}
-{{- if .Values.sentry.cron.env }}
-{{ toYaml .Values.sentry.cron.env | indent 8 }}
+{{- if .Values.sentry.workerEvents.env }}
+{{ toYaml .Values.sentry.workerEvents.env | indent 8 }}
 {{- end }}
         volumeMounts:
         - mountPath: /etc/sentry
@@ -84,27 +89,41 @@ spec:
           readOnly: true
         - mountPath: {{ .Values.filestore.filesystem.path }}
           name: sentry-data
+        {{- if .Values.geodata.volumeName }}
+        - name: {{ .Values.geodata.volumeName }}
+          mountPath: {{ .Values.geodata.mountPath }}
+        {{- end }}
         {{- if and (eq .Values.filestore.backend "gcs") .Values.filestore.gcs.secretName }}
         - name: sentry-google-cloud-key
           mountPath: /var/run/secrets/google
         {{ end }}
-{{- if .Values.sentry.cron.volumeMounts }}
-{{ toYaml .Values.sentry.cron.volumeMounts | indent 8 }}
+{{- if .Values.sentry.workerEvents.volumeMounts }}
+{{ toYaml .Values.sentry.workerEvents.volumeMounts | indent 8 }}
+{{- end }}
+  {{- if .Values.sentry.workerEvents.livenessProbe.enabled }}
+        livenessProbe:
+          periodSeconds: {{ .Values.sentry.workerEvents.livenessProbe.periodSeconds }}
+          initialDelaySeconds: 10
+          timeoutSeconds: {{ .Values.sentry.workerEvents.livenessProbe.timeoutSeconds }}
+          failureThreshold: {{ .Values.sentry.workerEvents.livenessProbe.failureThreshold }}
+          exec:
+            command:
+              - sentry
+              - exec
+              - -c
+              - 'from sentry.celery import app; import os; dest="celery@{}".format(os.environ["HOSTNAME"]); print(app.control.ping(destination=[dest], timeout=5)[0][dest]["ok"])'
 {{- end }}
         resources:
-{{ toYaml .Values.sentry.cron.resources | indent 12 }}
-{{- if .Values.sentry.cron.containerSecurityContext }}
+{{ toYaml .Values.sentry.workerEvents.resources | indent 12 }}
+{{- if .Values.sentry.workerEvents.containerSecurityContext }}
         securityContext:
-{{ toYaml .Values.sentry.cron.containerSecurityContext | indent 12 }}
+{{ toYaml .Values.sentry.workerEvents.containerSecurityContext | indent 12 }}
 {{- end }}
-{{- if .Values.sentry.cron.sidecars }}
-{{ toYaml .Values.sentry.cron.sidecars | indent 6 }}
-{{- end }}
-{{- if .Values.global.sidecars }}
-{{ toYaml .Values.global.sidecars | indent 6 }}
+{{- if .Values.sentry.workerEvents.sidecars }}
+{{ toYaml .Values.sentry.workerEvents.sidecars | indent 6 }}
 {{- end }}
       {{- if .Values.serviceAccount.enabled }}
-      serviceAccountName: {{ .Values.serviceAccount.name }}-cron
+      serviceAccountName: {{ .Values.serviceAccount.name }}-worker
       {{- end }}
       volumes:
       - name: config
@@ -127,13 +146,10 @@ spec:
         secret:
           secretName: {{ .Values.filestore.gcs.secretName }}
       {{ end }}
-{{- if .Values.sentry.cron.volumes }}
-{{ toYaml .Values.sentry.cron.volumes | indent 6 }}
-{{- end }}
-{{- if .Values.global.volumes }}
-{{ toYaml .Values.global.volumes | indent 6 }}
-{{- end }}
-      {{- if .Values.sentry.cron.priorityClassName }}
-      priorityClassName: "{{ .Values.sentry.cron.priorityClassName }}"
+      {{- if .Values.sentry.workerEvents.priorityClassName }}
+      priorityClassName: "{{ .Values.sentry.workerEvents.priorityClassName }}"
       {{- end }}
+{{- if .Values.sentry.workerEvents.volumes }}
+{{ toYaml .Values.sentry.workerEvents.volumes | indent 6 }}
+{{- end }}
 {{- end }}

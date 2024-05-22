@@ -14,6 +14,23 @@ Big thanks to the maintainers of the [deprecated chart](https://github.com/helm/
 
 For now the full list of values is not documented but you can get inspired by the values.yaml specific to each directory.
 
+## Upgrading from 22.x.x Version of This Chart to 23.x.x
+
+This version introduces changes to definitions of ingest-consumers and workers. These changes allow to balance
+ingestion pipeline with more granularity.
+
+### Major Changes
+
+- **Ingest consumers**: Templates for Deployment and HPA manifests are now separate for ingest-consumer-events,
+  ingest-consumer-attachments and ingest-consumer-transactions.
+- **Workers**: Templates for two additional worker Deployments added, each of them with its own HPA. By default they're
+  configured for error- and transaction-related tasks processing, but queues to consume can be redefined for both.
+
+### Migration Guide
+
+Since labels are immutable in k8s Deployments, `helm upgrade --force` should be used to recreate ingest-consumer Deployments.
+As an alternative, existing ingest-consumer Deployments can be removed manually with `kubectl delete` before upgrading helm release.
+
 ## Upgrading from 21.x.x Version of This Chart to 22.x.x
 
 This version introduces a significant change by dropping support for Kafka Zookeeper and transitioning to Kafka Kraft

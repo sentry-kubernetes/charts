@@ -29,7 +29,7 @@ spec:
     metadata:
       annotations:
         checksum/snubaSettingsPy: {{ .Values.config.snubaSettingsPy | sha256sum }}
-        checksum/config.yaml: {{ include (print $.Template.BasePath "/configmap-snuba.yaml") . | sha256sum }}
+        checksum/config.yaml: {{ include "sentry.snuba.config" . | sha256sum }}
         {{- if .Values.snuba.outcomesConsumer.annotations }}
 {{ toYaml .Values.snuba.outcomesConsumer.annotations | indent 8 }}
         {{- end }}
@@ -74,9 +74,11 @@ spec:
         imagePullPolicy: {{ default "IfNotPresent" .Values.images.snuba.pullPolicy }}
         command:
           - "snuba"
-          - "consumer"
+          - {{ if .Values.snuba.rustConsumer -}}"rust-consumer"{{- else -}}"consumer"{{- end }}
           - "--storage"
           - "outcomes_raw"
+          - "--consumer-group"
+          - "snuba-consumers"
           - "--auto-offset-reset"
           - "{{ .Values.snuba.outcomesConsumer.autoOffsetReset }}"
           - "--max-batch-size"
@@ -108,6 +110,19 @@ spec:
           {{- if .Values.snuba.outcomesConsumer.noStrictOffsetReset }}
           - "--no-strict-offset-reset"
           {{- end }}
+          {{- if .Values.snuba.outcomesConsumer.livenessProbe.enabled }}
+          - "--health-check-file"
+          - "/tmp/health.txt"
+          {{- end }}
+        {{- if .Values.snuba.outcomesConsumer.livenessProbe.enabled }}
+        livenessProbe:
+          exec:
+            command:
+              - rm
+              - /tmp/health.txt
+          initialDelaySeconds: {{ .Values.snuba.outcomesConsumer.livenessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.snuba.outcomesConsumer.livenessProbe.periodSeconds }}
+        {{- end }}
         ports:
         - containerPort: {{ template "snuba.port" }}
         env:

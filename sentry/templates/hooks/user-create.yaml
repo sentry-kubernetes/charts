@@ -9,7 +9,7 @@ metadata:
     release: "{{ .Release.Name }}"
     heritage: "{{ .Release.Service }}"
   annotations:
-    "helm.sh/hook": "post-install,post-upgrade"
+    "helm.sh/hook": "post-install,{{ if .Values.hooks.preUpgrade }}pre-upgrade{{ else }}post-upgrade{{ end }}"
     "helm.sh/hook-delete-policy": "{{ if .Values.hooks.removeOnSuccess }}hook-succeeded,{{ end }}before-hook-creation"
     "helm.sh/hook-weight": "9"
 spec:
@@ -20,7 +20,7 @@ spec:
     metadata:
       name: {{ template "sentry.fullname" . }}-user-create
       annotations:
-        checksum/configmap.yaml: {{ include (print $.Template.BasePath "/configmap-sentry.yaml") . | sha256sum }}
+        checksum/configmap.yaml: {{ include "sentry.config" . | sha256sum }}
         {{- if .Values.sentry.worker.annotations }}
 {{ toYaml .Values.sentry.worker.annotations | indent 8 }}
         {{- end }}

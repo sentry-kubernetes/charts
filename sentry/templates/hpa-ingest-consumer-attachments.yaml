@@ -1,0 +1,33 @@
+{{- if and .Values.sentry.ingestConsumerAttachments.enabled .Values.sentry.ingestConsumerAttachments.autoscaling.enabled }}
+apiVersion: {{ template "sentry.autoscaling.apiVersion" . }}
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ template "sentry.fullname" . }}-sentry-ingest-consumer-attachments
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ template "sentry.fullname" . }}-ingest-consumer-attachments
+  minReplicas: {{ .Values.sentry.ingestConsumerAttachments.autoscaling.minReplicas }}
+  maxReplicas: {{ .Values.sentry.ingestConsumerAttachments.autoscaling.maxReplicas }}
+  {{- if eq (include "sentry.autoscaling.apiVersion" .) "autoscaling/v1" }}
+  targetCPUUtilizationPercentage: {{ .Values.sentry.ingestConsumerAttachments.autoscaling.targetCPUUtilizationPercentage }}
+  {{- else if semverCompare ">=1.27-0" .Capabilities.KubeVersion.GitVersion }}
+  metrics:
+  - type: ContainerResource
+    containerResource:
+      container: {{ .Chart.Name }}-ingest-consumer-attachments
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: {{ .Values.sentry.ingestConsumerAttachments.autoscaling.targetCPUUtilizationPercentage }}
+  {{- else }}
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: {{ .Values.sentry.ingestConsumerAttachments.autoscaling.targetCPUUtilizationPercentage }}
+  {{- end }}
+{{- end }}
