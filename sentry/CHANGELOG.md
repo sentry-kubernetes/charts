@@ -1,5 +1,12 @@
 # Changelog
 
+## [23.0.3](https://github.com/sentry-kubernetes/charts/compare/sentry-v23.0.2...sentry-v23.0.3) (2024-05-22)
+
+
+### Bug Fixes
+
+* typo in deployment-snuba-subscription-consumer-metrics.yaml [#1271](https://github.com/sentry-kubernetes/charts/issues/1271) ([d667d0c](https://github.com/sentry-kubernetes/charts/commit/d667d0cd18e36af06e6ba3050a850265df540e1d))
+
 ## [23.0.2](https://github.com/sentry-kubernetes/charts/compare/sentry-v23.0.1...sentry-v23.0.2) (2024-05-16)
 
 
