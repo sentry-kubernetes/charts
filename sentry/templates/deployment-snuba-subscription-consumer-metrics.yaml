@@ -75,7 +75,7 @@ spec:
           {{- if .Values.snuba.subscriptionConsumerMetrics.noStrictOffsetReset }}
           - "--no-strict-offset-reset"
           {{- end }}
-          - "--consumer-group=nuba-metrics-subscriptions-consumers"
+          - "--consumer-group=snuba-metrics-subscriptions-consumers"
           - "--followed-consumer-group=snuba-metrics-consumers"
           - "--schedule-ttl=60"
           - "--stale-threshold-seconds=900"

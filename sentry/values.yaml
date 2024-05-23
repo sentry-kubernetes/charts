@@ -247,7 +247,7 @@ sentry:
 
   # allows to dedicate some workers to specific queues
   workerTransactions:
-    enabled: true
+    enabled: false
     queues: "events.save_event_transaction,post_process_transactions"
     replicas: 1
     # concurrency: 4
@@ -2091,3 +2091,5 @@ revisionHistoryLimit: 10
 #   nameservers: []
 #   searches: []
 #   options: []
+
+extraManifests: []

@@ -1,5 +1,24 @@
 # Changelog
 
+## [23.1.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v23.0.3...sentry-v23.1.0) (2024-05-23)
+
+
+### Features
+
+* bump sentry to 24.5.0 ([#1270](https://github.com/sentry-kubernetes/charts/issues/1270)) ([7d53050](https://github.com/sentry-kubernetes/charts/commit/7d53050f8c9bda2b2fca686685e44823706dc263))
+
+
+### Bug Fixes
+
+* **worker:** workerTransactions should be disabled by default ([#1275](https://github.com/sentry-kubernetes/charts/issues/1275)) ([6090619](https://github.com/sentry-kubernetes/charts/commit/6090619d326b420f6c177114ec55a5ef84f3a075))
+
+## [23.0.3](https://github.com/sentry-kubernetes/charts/compare/sentry-v23.0.2...sentry-v23.0.3) (2024-05-22)
+
+
+### Bug Fixes
+
+* typo in deployment-snuba-subscription-consumer-metrics.yaml [#1271](https://github.com/sentry-kubernetes/charts/issues/1271) ([d667d0c](https://github.com/sentry-kubernetes/charts/commit/d667d0cd18e36af06e6ba3050a850265df540e1d))
+
 ## [23.0.2](https://github.com/sentry-kubernetes/charts/compare/sentry-v23.0.1...sentry-v23.0.2) (2024-05-16)
 
 
