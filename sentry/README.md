@@ -109,6 +109,7 @@ Note: this table is incomplete, so have a look at the values.yaml in case you mi
 | `snuba.transactionsConsumer.enabled`       | Enable Snuba transactions consumer                                                                                                                                | `true`                          |
 | `symbolicator.api.enabled`                    | Enable Symbolicator                                                                                                                                                 | `false`                        |
 | `symbolicator.api.config`                     | Config file for Symbolicator, see [its docs](https://getsentry.github.io/symbolicator/#configuration)                                                               | see values.yaml                |
+| `extraManifests`                              | Extra K8s manifests to deploy                                                                                                                                       | []                             |
 
 ## NGINX and/or Ingress
 
