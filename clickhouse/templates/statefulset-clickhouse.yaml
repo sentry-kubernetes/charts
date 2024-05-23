@@ -166,6 +166,10 @@ spec:
           items:
           - key: config.xml
             path: config.xml
+          {{- if .Values.clickhouse.configmap.configOverride }}
+          - key: override.xml
+            path: override.xml
+          {{- end }}
       - name: {{ include "clickhouse.fullname" . }}-metrica
         configMap:
           name: {{ include "clickhouse.fullname" . }}-metrica

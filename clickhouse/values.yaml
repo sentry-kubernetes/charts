@@ -375,6 +375,16 @@ clickhouse:
       max_part_loading_threads: auto
       # If the number of broken parts in a single partition exceeds the max_suspicious_broken_parts value, automatic deletion is denied.
       max_suspicious_broken_parts: 100
+    ##
+    ## Allows to override default Clickhouse config via override.xml
+    ## E.g.
+    ## configOverride:
+    ##   <yandex>
+    ##     <query_log>
+    ##         <ttl>event_date + INTERVAL 1 DAY DELETE</ttl>
+    ##     </query_log>
+    ##   </yandex>
+    configOverride: ""
 
 ##
 ## Web interface for ClickHouse in the Tabix project.
