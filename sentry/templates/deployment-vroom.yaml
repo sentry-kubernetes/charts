@@ -53,6 +53,10 @@ spec:
       tolerations:
 {{ toYaml .Values.vroom.tolerations | indent 8 }}
       {{- end }}
+      {{- if .Values.vroom.topologySpreadConstraints }}
+      topologySpreadConstraints:
+{{ toYaml .Values.vroom.topologySpreadConstraints | indent 8 }}
+      {{- end }}
       {{- if .Values.images.vroom.imagePullSecrets }}
       imagePullSecrets:
 {{ toYaml .Values.images.vroom.imagePullSecrets | indent 8 }}

@@ -45,6 +45,10 @@ spec:
       tolerations:
 {{ toYaml .Values.sentry.cron.tolerations | indent 8 }}
       {{- end }}
+      {{- if .Values.sentry.cron.topologySpreadConstraints }}
+      topologySpreadConstraints:
+{{ toYaml .Values.sentry.cron.topologySpreadConstraints | indent 8 }}
+      {{- end }}
       {{- if .Values.images.sentry.imagePullSecrets }}
       imagePullSecrets:
 {{ toYaml .Values.images.sentry.imagePullSecrets | indent 8 }}

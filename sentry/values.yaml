@@ -118,6 +118,7 @@ relay:
     maxReplicas: 5
     targetCPUUtilizationPercentage: 50
   sidecars: []
+  topologySpreadConstraints: []
   volumes: []
   volumeMounts: []
   init:
@@ -173,6 +174,7 @@ sentry:
       maxReplicas: 5
       targetCPUUtilizationPercentage: 50
     sidecars: []
+    topologySpreadConstraints: []
     volumes: []
     volumeMounts: []
 
@@ -208,6 +210,7 @@ sentry:
       timeoutSeconds: 10
       failureThreshold: 3
     sidecars: []
+    topologySpreadConstraints: []
     volumes: []
     volumeMounts: []
 
@@ -237,6 +240,7 @@ sentry:
       timeoutSeconds: 10
       failureThreshold: 3
     sidecars: []
+    topologySpreadConstraints: []
     volumes: []
     volumeMounts: []
 
@@ -266,6 +270,7 @@ sentry:
       timeoutSeconds: 10
       failureThreshold: 3
     sidecars: []
+    topologySpreadConstraints: []
     volumes: []
     volumeMounts: []
 
@@ -291,6 +296,7 @@ sentry:
       maxReplicas: 3
       targetCPUUtilizationPercentage: 50
     sidecars: []
+    topologySpreadConstraints: []
     volumes: []
 
     livenessProbe:
@@ -325,6 +331,7 @@ sentry:
       maxReplicas: 3
       targetCPUUtilizationPercentage: 50
     sidecars: []
+    topologySpreadConstraints: []
     volumes: []
 
     livenessProbe:
@@ -359,6 +366,7 @@ sentry:
       maxReplicas: 3
       targetCPUUtilizationPercentage: 50
     sidecars: []
+    topologySpreadConstraints: []
     volumes: []
 
     livenessProbe:
@@ -391,6 +399,7 @@ sentry:
       maxReplicas: 3
       targetCPUUtilizationPercentage: 50
     sidecars: []
+    topologySpreadConstraints: []
     volumes: []
     livenessProbe:
       enabled: true
@@ -420,6 +429,7 @@ sentry:
       maxReplicas: 3
       targetCPUUtilizationPercentage: 50
     sidecars: []
+    topologySpreadConstraints: []
     volumes: []
 
     livenessProbe:
@@ -449,6 +459,7 @@ sentry:
       maxReplicas: 3
       targetCPUUtilizationPercentage: 50
     sidecars: []
+    topologySpreadConstraints: []
     volumes: []
 
     livenessProbe:
@@ -479,6 +490,7 @@ sentry:
       maxReplicas: 3
       targetCPUUtilizationPercentage: 50
     sidecars: []
+    topologySpreadConstraints: []
     volumes: []
     livenessProbe:
       enabled: true
@@ -510,6 +522,7 @@ sentry:
       maxReplicas: 3
       targetCPUUtilizationPercentage: 50
     sidecars: []
+    topologySpreadConstraints: []
     volumes: []
 
     livenessProbe:
@@ -542,6 +555,7 @@ sentry:
       maxReplicas: 3
       targetCPUUtilizationPercentage: 50
     sidecars: []
+    topologySpreadConstraints: []
     volumes: []
 
     livenessProbe:
@@ -574,6 +588,7 @@ sentry:
       maxReplicas: 3
       targetCPUUtilizationPercentage: 50
     sidecars: []
+    topologySpreadConstraints: []
     volumes: []
 
     livenessProbe:
@@ -594,6 +609,7 @@ sentry:
     # tolerations: []
     # podLabels: []
     sidecars: []
+    topologySpreadConstraints: []
     volumes: []
     # volumeMounts: []
     ## Log level can be any of: DEBUG, INFO, WARNING, ERROR, CRITICAL, FATAL
@@ -611,6 +627,7 @@ sentry:
     # tolerations: []
     # podLabels: []
     sidecars: []
+    topologySpreadConstraints: []
     volumes: []
     livenessProbe:
       enabled: true
@@ -630,6 +647,7 @@ sentry:
     # tolerations: []
     # podLabels: []
     sidecars: []
+    topologySpreadConstraints: []
     volumes: []
     # noStrictOffsetReset: false
     # volumeMounts: []
@@ -646,6 +664,7 @@ sentry:
     # tolerations: []
     # podLabels: []
     sidecars: []
+    topologySpreadConstraints: []
     volumes: []
     livenessProbe:
       enabled: true
@@ -667,6 +686,7 @@ sentry:
     # tolerations: []
     # podLabels: []
     sidecars: []
+    topologySpreadConstraints: []
     volumes: []
     # volumeMounts: []
     livenessProbe:
@@ -686,6 +706,7 @@ sentry:
     # tolerations: []
     # podLabels: []
     sidecars: []
+    topologySpreadConstraints: []
     volumes: []
     livenessProbe:
       enabled: true
@@ -705,6 +726,7 @@ sentry:
     # tolerations: []
     # podLabels: []
     sidecars: []
+    topologySpreadConstraints: []
     volumes: []
     # volumeMounts: []
     livenessProbe:
@@ -724,6 +746,7 @@ sentry:
     # tolerations: []
     # podLabels: []
     sidecars: []
+    topologySpreadConstraints: []
     volumes: []
     # volumeMounts: []
     livenessProbe:
@@ -743,6 +766,7 @@ sentry:
     # tolerations: []
     # podLabels: []
     sidecars: []
+    topologySpreadConstraints: []
     volumes: []
     # volumeMounts: []
     livenessProbe:
@@ -797,6 +821,7 @@ snuba:
       maxReplicas: 5
       targetCPUUtilizationPercentage: 50
     sidecars: []
+    topologySpreadConstraints: []
     volumes: []
     # volumeMounts: []
 
@@ -808,6 +833,7 @@ snuba:
     affinity: {}
     nodeSelector: {}
     securityContext: {}
+    topologySpreadConstraints: []
     containerSecurityContext: {}
     # tolerations: []
     # podLabels: []
@@ -841,6 +867,7 @@ snuba:
     affinity: {}
     nodeSelector: {}
     securityContext: {}
+    topologySpreadConstraints: []
     containerSecurityContext: {}
     # tolerations: []
     # podLabels: []
@@ -874,6 +901,7 @@ snuba:
     affinity: {}
     nodeSelector: {}
     securityContext: {}
+    topologySpreadConstraints: []
     containerSecurityContext: {}
     # tolerations: []
     # podLabels: []
@@ -907,6 +935,7 @@ snuba:
     affinity: {}
     nodeSelector: {}
     securityContext: {}
+    topologySpreadConstraints: []
     containerSecurityContext: {}
     # tolerations: []
     # podLabels: []
@@ -925,6 +954,7 @@ snuba:
     affinity: {}
     nodeSelector: {}
     securityContext: {}
+    topologySpreadConstraints: []
     containerSecurityContext: {}
     # tolerations: []
     # podLabels: []
@@ -944,6 +974,7 @@ snuba:
     affinity: {}
     nodeSelector: {}
     securityContext: {}
+    topologySpreadConstraints: []
     containerSecurityContext: {}
     # tolerations: []
     # podLabels: []
@@ -963,6 +994,7 @@ snuba:
     affinity: {}
     nodeSelector: {}
     securityContext: {}
+    topologySpreadConstraints: []
     containerSecurityContext: {}
     # tolerations: []
     # podLabels: []
@@ -982,6 +1014,7 @@ snuba:
     affinity: {}
     nodeSelector: {}
     securityContext: {}
+    topologySpreadConstraints: []
     containerSecurityContext: {}
     # tolerations: []
     # podLabels: []
@@ -1001,6 +1034,7 @@ snuba:
     affinity: {}
     nodeSelector: {}
     securityContext: {}
+    topologySpreadConstraints: []
     containerSecurityContext: {}
     # tolerations: []
     # podLabels: []
@@ -1020,6 +1054,7 @@ snuba:
     affinity: {}
     nodeSelector: {}
     securityContext: {}
+    topologySpreadConstraints: []
     containerSecurityContext: {}
     # tolerations: []
     # podLabels: []
@@ -1039,6 +1074,7 @@ snuba:
     affinity: {}
     nodeSelector: {}
     securityContext: {}
+    topologySpreadConstraints: []
     containerSecurityContext: {}
     # tolerations: []
     # podLabels: []
@@ -1057,6 +1093,7 @@ snuba:
     affinity: {}
     nodeSelector: {}
     securityContext: {}
+    topologySpreadConstraints: []
     containerSecurityContext: {}
     # tolerations: []
     # podLabels: []
@@ -1075,6 +1112,7 @@ snuba:
     affinity: {}
     nodeSelector: {}
     securityContext: {}
+    topologySpreadConstraints: []
     containerSecurityContext: {}
     # tolerations: []
     # podLabels: []
@@ -1107,6 +1145,7 @@ snuba:
     affinity: {}
     nodeSelector: {}
     securityContext: {}
+    topologySpreadConstraints: []
     containerSecurityContext: {}
     # tolerations: []
     # podLabels: []
@@ -1136,6 +1175,7 @@ snuba:
     affinity: {}
     nodeSelector: {}
     securityContext: {}
+    topologySpreadConstraints: []
     containerSecurityContext: {}
     # tolerations: []
     # podLabels: []
@@ -1168,6 +1208,7 @@ snuba:
     affinity: {}
     nodeSelector: {}
     securityContext: {}
+    topologySpreadConstraints: []
     containerSecurityContext: {}
     # tolerations: []
     # podLabels: []
@@ -1200,6 +1241,7 @@ snuba:
     affinity: {}
     nodeSelector: {}
     securityContext: {}
+    topologySpreadConstraints: []
     containerSecurityContext: {}
     # tolerations: []
     # podLabels: []
@@ -1232,6 +1274,7 @@ snuba:
     affinity: {}
     nodeSelector: {}
     securityContext: {}
+    topologySpreadConstraints: []
     containerSecurityContext: {}
     # tolerations: []
     # podLabels: []
@@ -1265,6 +1308,7 @@ snuba:
     affinity: {}
     nodeSelector: {}
     securityContext: {}
+    topologySpreadConstraints: []
     containerSecurityContext: {}
     # tolerations: []
     # podLabels: []
@@ -1298,6 +1342,7 @@ snuba:
     affinity: {}
     nodeSelector: {}
     securityContext: {}
+    topologySpreadConstraints: []
     containerSecurityContext: {}
     # tolerations: []
     # podLabels: []
@@ -1441,6 +1486,7 @@ symbolicator:
     affinity: {}
     nodeSelector: {}
     securityContext: {}
+    topologySpreadConstraints: []
     containerSecurityContext: {}
     # tolerations: []
     # podLabels: []

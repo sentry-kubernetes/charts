@@ -47,6 +47,10 @@ spec:
       tolerations:
 {{ toYaml .Values.sentry.worker.tolerations | indent 8 }}
       {{- end }}
+      {{- if .Values.sentry.worker.topologySpreadConstraints }}
+      topologySpreadConstraints:
+{{ toYaml .Values.sentry.worker.topologySpreadConstraints | indent 8 }}
+      {{- end }}
       {{- if .Values.images.sentry.imagePullSecrets }}
       imagePullSecrets:
 {{ toYaml .Values.images.sentry.imagePullSecrets | indent 8 }}

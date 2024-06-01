@@ -55,6 +55,10 @@ spec:
       tolerations:
 {{ toYaml .Values.relay.tolerations | indent 8 }}
       {{- end }}
+      {{- if .Values.relay.topologySpreadConstraints }}
+      topologySpreadConstraints:
+{{ toYaml .Values.relay.topologySpreadConstraints | indent 8 }}
+      {{- end }}
       {{- if .Values.images.relay.imagePullSecrets }}
       imagePullSecrets:
 {{ toYaml .Values.images.relay.imagePullSecrets | indent 8 }}
