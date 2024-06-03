@@ -15,6 +15,9 @@ data:
 
     server {
       listen {{ template "nginx.port" }};
+      {{- if .Values.ipv6 }}
+      listen [::]:{{ template "nginx.port" }};
+      {{- end }}
 
       proxy_redirect off;
       proxy_buffer_size          128k;
@@ -28,7 +31,7 @@ data:
 
       location ~ ^/api/[1-9]\d*/ {
         proxy_pass http://relay;
-      }  
+      }
 
       {{ if or .Values.nginx.metrics.enabled .Values.nginx.metrics.serviceMonitor.enabled -}}
       location = /status/ {

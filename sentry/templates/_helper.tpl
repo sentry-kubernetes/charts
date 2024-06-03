@@ -463,6 +463,10 @@ Common Snuba environment variables
 {{- end }}
 - name: CLICKHOUSE_MAX_CONNECTIONS
   value: {{ .Values.snuba.clickhouse.maxConnections | quote }}
+{{- if .Values.ipv6 }}
+- name: UWSGI_HTTP_SOCKET
+  value: "[::]:1218"
+{{- end }}
 {{- end -}}
 
 {{- define "vroom.env" -}}
