@@ -1,5 +1,19 @@
 # Changelog
 
+## [23.2.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v23.1.0...sentry-v23.2.0) (2024-06-03)
+
+
+### Features
+
+* allow to configure extra manifest through values ([#1278](https://github.com/sentry-kubernetes/charts/issues/1278)) ([3fec182](https://github.com/sentry-kubernetes/charts/commit/3fec18254de4675077f57f7783403317fc1bdad7))
+* dependency update before push chart ([#1283](https://github.com/sentry-kubernetes/charts/issues/1283)) ([2c2b6c2](https://github.com/sentry-kubernetes/charts/commit/2c2b6c2d966c137a7c4251eb4c81b186f886c63e))
+* supports ipv6 ([#1292](https://github.com/sentry-kubernetes/charts/issues/1292)) ([b920e3f](https://github.com/sentry-kubernetes/charts/commit/b920e3f2159f8c3e124f09cc48b29ba5aae5aedb))
+
+
+### Bug Fixes
+
+* ipv6 ([b904c79](https://github.com/sentry-kubernetes/charts/commit/b904c7935c9d51903017c1e14f74bf122cfaddde))
+
 ## [23.1.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v23.0.3...sentry-v23.1.0) (2024-05-23)
 
 
