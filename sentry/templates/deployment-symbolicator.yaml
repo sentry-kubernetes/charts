@@ -45,6 +45,10 @@ spec:
       tolerations:
 {{ toYaml .Values.symbolicator.api.tolerations | indent 8 }}
       {{- end }}
+      {{- if .Values.symbolicator.api.topologySpreadConstraints }}
+      topologySpreadConstraints:
+{{ toYaml .Values.symbolicator.api.topologySpreadConstraints | indent 8 }}
+      {{- end }}
       {{- if .Values.images.symbolicator.imagePullSecrets }}
       imagePullSecrets:
 {{ toYaml .Values.images.symbolicator.imagePullSecrets | indent 8 }}

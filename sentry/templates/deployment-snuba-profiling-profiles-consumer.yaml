@@ -53,6 +53,10 @@ spec:
       tolerations:
 {{ toYaml .Values.snuba.profilingProfilesConsumer.tolerations | indent 8 }}
       {{- end }}
+      {{- if .Values.snuba.profilingProfilesConsumer.topologySpreadConstraints }}
+      topologySpreadConstraints:
+{{ toYaml .Values.snuba.profilingProfilesConsumer.topologySpreadConstraints | indent 8 }}
+      {{- end }}
       {{- if .Values.images.snuba.imagePullSecrets }}
       imagePullSecrets:
 {{ toYaml .Values.images.snuba.imagePullSecrets | indent 8 }}
