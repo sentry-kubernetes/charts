@@ -1,5 +1,12 @@
 # Changelog
 
+## [23.3.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v23.2.0...sentry-v23.3.0) (2024-06-04)
+
+
+### Features
+
+* topologySpreadConstraint ([#1291](https://github.com/sentry-kubernetes/charts/issues/1291)) ([bc0d4e6](https://github.com/sentry-kubernetes/charts/commit/bc0d4e64987c1ea5e4d3b1386ce45ea94c3dd15b))
+
 ## [23.2.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v23.1.0...sentry-v23.2.0) (2024-06-03)
 
 
