@@ -350,7 +350,7 @@ sentry.conf.py: |-
 
               {{- if .Values.sentry.customFeatures }}
               {{- range $CustomFeature := .Values.sentry.customFeatures }}
-              {{ $CustomFeature}},
+              "{{ $CustomFeature}}",
               {{- end }}
               {{- end }}
 
