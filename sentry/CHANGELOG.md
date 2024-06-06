@@ -1,5 +1,12 @@
 # Changelog
 
+## [23.4.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v23.3.0...sentry-v23.4.0) (2024-06-06)
+
+
+### Features
+
+* add-custom-features to configmap ([#1297](https://github.com/sentry-kubernetes/charts/issues/1297)) ([300aea0](https://github.com/sentry-kubernetes/charts/commit/300aea0dfc6293892e450d359daa63ae3619ace5))
+
 ## [23.3.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v23.2.0...sentry-v23.3.0) (2024-06-04)
 
 
