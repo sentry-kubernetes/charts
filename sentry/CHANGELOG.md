@@ -1,5 +1,12 @@
 # Changelog
 
+## [23.4.1](https://github.com/sentry-kubernetes/charts/compare/sentry-v23.4.0...sentry-v23.4.1) (2024-06-06)
+
+
+### Bug Fixes
+
+* relay topic ([1ae5f66](https://github.com/sentry-kubernetes/charts/commit/1ae5f66a24260c96ae4711f1f880220f33150148))
+
 ## [23.4.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v23.3.0...sentry-v23.4.0) (2024-06-06)
 
 
