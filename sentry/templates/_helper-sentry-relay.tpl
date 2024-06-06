@@ -33,7 +33,6 @@ config.yml: |-
     redis: "redis://{{ $redisHost }}:{{ $redisPort }}"
     {{- end }}
     topics:
-      metrics_transactions: ingest-performance-metrics
       metrics_sessions: ingest-metrics
 
   {{ .Values.config.relay | nindent 2 }}
