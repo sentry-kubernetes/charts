@@ -189,6 +189,12 @@ sentry:
     enableFeedback: false
     enableSpan: false
 
+    #example customFeature to enable Metrics(beta) https://docs.sentry.io/product/metrics/
+  #customFeatures:
+    #- organizations:custom-metric
+    #- organizations:custom-metrics-experimental
+    #- organizations:derive-code-mappings
+
   worker:
     enabled: true
     replicas: 3
