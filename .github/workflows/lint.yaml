@@ -10,26 +10,26 @@ jobs:
         with:
           fetch-depth: "0"
       - name: Dependency update Sentry
-        uses: WyriHaximus/github-action-helm3@v3
+        uses: WyriHaximus/github-action-helm3@v4
         with:
           exec: helm dependency update sentry
       - name: Lint Sentry
-        uses: WyriHaximus/github-action-helm3@v3
+        uses: WyriHaximus/github-action-helm3@v4
         with:
           exec: helm lint sentry
       - name: Dependency update Clickhouse
-        uses: WyriHaximus/github-action-helm3@v3
+        uses: WyriHaximus/github-action-helm3@v4
         with:
           exec: helm dependency update clickhouse
       - name: Lint Clickhouse
-        uses: WyriHaximus/github-action-helm3@v3
+        uses: WyriHaximus/github-action-helm3@v4
         with:
           exec: helm lint clickhouse
       - name: Dependency update Sentry Kubernetes
-        uses: WyriHaximus/github-action-helm3@v3
+        uses: WyriHaximus/github-action-helm3@v4
         with:
           exec: helm dependency update sentry-kubernetes
       - name: Lint Sentry Kubernetes
-        uses: WyriHaximus/github-action-helm3@v3
+        uses: WyriHaximus/github-action-helm3@v4
         with:
           exec: helm lint sentry-kubernetes
