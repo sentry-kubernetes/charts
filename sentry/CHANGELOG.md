@@ -1,5 +1,12 @@
 # Changelog
 
+## [23.5.1](https://github.com/sentry-kubernetes/charts/compare/sentry-v23.5.0...sentry-v23.5.1) (2024-06-07)
+
+
+### Bug Fixes
+
+* **deployment-relay:** fix relay init container volume mounts ([#861](https://github.com/sentry-kubernetes/charts/issues/861)) ([72314d5](https://github.com/sentry-kubernetes/charts/commit/72314d5a5dcc53a7562e0066a54b62ac4f9eb3e0))
+
 ## [23.5.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v23.4.1...sentry-v23.5.0) (2024-06-07)
 
 
