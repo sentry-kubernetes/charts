@@ -97,7 +97,7 @@ spec:
               subPath: config.yml
               readOnly: true
 {{- if .Values.relay.init.volumeMounts }}
-{{ toYaml .Values.relay.volumeMounts | indent 12 }}
+{{ toYaml .Values.relay.init.volumeMounts | indent 12 }}
 {{- end }}
       {{- if .Values.dnsPolicy }}
       dnsPolicy: {{ .Values.dnsPolicy | quote }}
