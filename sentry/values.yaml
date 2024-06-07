@@ -1,5 +1,8 @@
 prefix:
 
+# Set this to true to support IPV6 networks
+ipv6: false
+
 user:
   create: true
   email: admin@sentry.local
@@ -185,6 +188,12 @@ sentry:
     enableSessionReplay: true
     enableFeedback: false
     enableSpan: false
+
+    #example customFeature to enable Metrics(beta) https://docs.sentry.io/product/metrics/
+  #customFeatures:
+    #- organizations:custom-metric
+    #- organizations:custom-metrics-experimental
+    #- organizations:derive-code-mappings
 
   worker:
     enabled: true

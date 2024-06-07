@@ -8,7 +8,11 @@ config.yml: |-
     mode: {{ .Values.relay.mode }}
     {{- end }}
     upstream: "http://{{ template "sentry.fullname" . }}-web:{{ .Values.service.externalPort }}/"
+    {{- if .Values.ipv6 }}
+    host: "::"
+    {{- else }}
     host: 0.0.0.0
+    {{- end }}
     port: {{ template "relay.port" }}
 
   processing:
@@ -29,7 +33,6 @@ config.yml: |-
     redis: "redis://{{ $redisHost }}:{{ $redisPort }}"
     {{- end }}
     topics:
-      metrics_transactions: ingest-performance-metrics
       metrics_sessions: ingest-metrics
 
   {{ .Values.config.relay | nindent 2 }}

@@ -1,5 +1,54 @@
 # Changelog
 
+## [23.5.1](https://github.com/sentry-kubernetes/charts/compare/sentry-v23.5.0...sentry-v23.5.1) (2024-06-07)
+
+
+### Bug Fixes
+
+* **deployment-relay:** fix relay init container volume mounts ([#861](https://github.com/sentry-kubernetes/charts/issues/861)) ([72314d5](https://github.com/sentry-kubernetes/charts/commit/72314d5a5dcc53a7562e0066a54b62ac4f9eb3e0))
+
+## [23.5.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v23.4.1...sentry-v23.5.0) (2024-06-07)
+
+
+### Features
+
+* 24.5.1 update ([6e628ad](https://github.com/sentry-kubernetes/charts/commit/6e628adc200525ebe57e9977328d8dd8b5eea471))
+
+## [23.4.1](https://github.com/sentry-kubernetes/charts/compare/sentry-v23.4.0...sentry-v23.4.1) (2024-06-06)
+
+
+### Bug Fixes
+
+* relay topic ([1ae5f66](https://github.com/sentry-kubernetes/charts/commit/1ae5f66a24260c96ae4711f1f880220f33150148))
+
+## [23.4.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v23.3.0...sentry-v23.4.0) (2024-06-06)
+
+
+### Features
+
+* add-custom-features to configmap ([#1297](https://github.com/sentry-kubernetes/charts/issues/1297)) ([300aea0](https://github.com/sentry-kubernetes/charts/commit/300aea0dfc6293892e450d359daa63ae3619ace5))
+
+## [23.3.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v23.2.0...sentry-v23.3.0) (2024-06-04)
+
+
+### Features
+
+* topologySpreadConstraint ([#1291](https://github.com/sentry-kubernetes/charts/issues/1291)) ([bc0d4e6](https://github.com/sentry-kubernetes/charts/commit/bc0d4e64987c1ea5e4d3b1386ce45ea94c3dd15b))
+
+## [23.2.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v23.1.0...sentry-v23.2.0) (2024-06-03)
+
+
+### Features
+
+* allow to configure extra manifest through values ([#1278](https://github.com/sentry-kubernetes/charts/issues/1278)) ([3fec182](https://github.com/sentry-kubernetes/charts/commit/3fec18254de4675077f57f7783403317fc1bdad7))
+* dependency update before push chart ([#1283](https://github.com/sentry-kubernetes/charts/issues/1283)) ([2c2b6c2](https://github.com/sentry-kubernetes/charts/commit/2c2b6c2d966c137a7c4251eb4c81b186f886c63e))
+* supports ipv6 ([#1292](https://github.com/sentry-kubernetes/charts/issues/1292)) ([b920e3f](https://github.com/sentry-kubernetes/charts/commit/b920e3f2159f8c3e124f09cc48b29ba5aae5aedb))
+
+
+### Bug Fixes
+
+* ipv6 ([b904c79](https://github.com/sentry-kubernetes/charts/commit/b904c7935c9d51903017c1e14f74bf122cfaddde))
+
 ## [23.1.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v23.0.3...sentry-v23.1.0) (2024-05-23)
 
 
