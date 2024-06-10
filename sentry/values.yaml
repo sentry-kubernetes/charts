@@ -792,6 +792,8 @@ sentry:
     enabled: true
     schedule: "0 0 * * *"
     days: 90
+    # logLevel: INFO
+    logLevel: ''
     # securityContext: {}
     # containerSecurityContext: {}
     sidecars: []
@@ -1606,6 +1608,13 @@ nginx:
     type: ClusterIP
     ports:
       http: 80
+  extraLocationSnippet: false
+  #extraLocationSnippet: |
+  #  location /admin {
+  #    allow 1.2.3.4; # VPN network
+  #    deny all;
+  #    proxy_pass http://sentry;
+  #  }
   ## Use this to enable an extra service account
   # serviceAccount:
   #   create: false

@@ -49,5 +49,10 @@ data:
         proxy_pass http://sentry;
         proxy_hide_header Content-Disposition;
       }
+
+      {{- if .Values.nginx.extraLocationSnippet }}
+      {{ .Values.nginx.extraLocationSnippet | nindent 6 }}
+      {{- end }}
+
     }
 {{- end }}
