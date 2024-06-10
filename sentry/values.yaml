@@ -792,6 +792,8 @@ sentry:
     enabled: true
     schedule: "0 0 * * *"
     days: 90
+    # logLevel: INFO
+    logLevel: ''
     # securityContext: {}
     # containerSecurityContext: {}
     sidecars: []

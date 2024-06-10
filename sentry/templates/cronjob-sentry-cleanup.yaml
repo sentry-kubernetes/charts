@@ -73,6 +73,10 @@ spec:
               - {{ .Values.sentry.cleanup.concurrency | quote }}
               - "--days"
               - "{{ .Values.sentry.cleanup.days }}"
+              {{- if .Values.sentry.cleanup.logLevel }}
+              - "-l"
+              - {{ .Values.sentry.cleanup.logLevel | quote }}
+              {{- end }}
             env:
             - name: C_FORCE_ROOT
               value: "true"
