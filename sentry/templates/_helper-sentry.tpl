@@ -348,12 +348,6 @@ sentry.conf.py: |-
               "organizations:org-subdomains",
               {{ end -}}
 
-              {{- if .Values.sentry.customFeatures }}
-              {{- range $CustomFeature := .Values.sentry.customFeatures }}
-              "{{ $CustomFeature}}",
-              {{- end }}
-              {{- end }}
-
               "organizations:advanced-search",
               "organizations:android-mappings",
               "organizations:api-keys",
@@ -500,6 +494,11 @@ sentry.conf.py: |-
               "projects:similarity-indexing-v2",
 
               "projects:plugins",
+              {{- if .Values.sentry.customFeatures }}
+              {{- range $CustomFeature := .Values.sentry.customFeatures }}
+              "{{ $CustomFeature}}",
+              {{- end }}
+              {{- end }}
           )
       }
   )
