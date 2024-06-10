@@ -1,5 +1,12 @@
 # Changelog
 
+## [23.5.2](https://github.com/sentry-kubernetes/charts/compare/sentry-v23.5.1...sentry-v23.5.2) (2024-06-08)
+
+
+### Bug Fixes
+
+* **snuba:** add profile_chunks to the storage sets ([#1307](https://github.com/sentry-kubernetes/charts/issues/1307)) ([df812f7](https://github.com/sentry-kubernetes/charts/commit/df812f7cf4ba28006a59c0fa49a527feac50a184))
+
 ## [23.5.1](https://github.com/sentry-kubernetes/charts/compare/sentry-v23.5.0...sentry-v23.5.1) (2024-06-07)
 
 
