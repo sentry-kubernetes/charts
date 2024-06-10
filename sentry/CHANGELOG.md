@@ -1,5 +1,17 @@
 # Changelog
 
+## [23.6.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v23.5.2...sentry-v23.6.0) (2024-06-10)
+
+
+### Features
+
+* add optional LogLevel parameter to sentry cleanup job and custom location snippet to nginx conf ([cd38e67](https://github.com/sentry-kubernetes/charts/commit/cd38e67121b04d5e4b060aaa97ae8378c837846e))
+
+
+### Bug Fixes
+
+* fix custom features ([#1309](https://github.com/sentry-kubernetes/charts/issues/1309)) ([7490ec3](https://github.com/sentry-kubernetes/charts/commit/7490ec3bbf1efeebf780b8f3aec3aa70d177d4e4))
+
 ## [23.5.2](https://github.com/sentry-kubernetes/charts/compare/sentry-v23.5.1...sentry-v23.5.2) (2024-06-08)
 
 
