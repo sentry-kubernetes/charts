@@ -1,5 +1,13 @@
 # Changelog
 
+## [23.7.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v23.6.0...sentry-v23.7.0) (2024-06-11)
+
+
+### Features
+
+* **deps:** update kafka helm to v29 ([#1285](https://github.com/sentry-kubernetes/charts/issues/1285)) ([5b24013](https://github.com/sentry-kubernetes/charts/commit/5b240133bd5f40202e9a86b9744eb32ed512da97))
+* **deps:** update nginx docker tag to v18 ([#1301](https://github.com/sentry-kubernetes/charts/issues/1301)) ([161aed6](https://github.com/sentry-kubernetes/charts/commit/161aed65c60672972dd21c242a830f33a7d837ea))
+
 ## [23.6.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v23.5.2...sentry-v23.6.0) (2024-06-10)
 
 
