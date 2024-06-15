@@ -60,6 +60,16 @@ config.yml: |-
   slack.signing-secret: {{ .Values.slack.signingSecret | quote }}
   {{ end }}
 
+  ###########
+  # Discord #
+  ###########
+  {{- if and (.Values.discord.applicationId) (.Values.discord.publicKey) (.Values.discord.clientSecret) (.Values.discord.botToken) (not .Values.discord.existingSecret) }}
+  discord.application-id: {{ .Values.discord.applicationId | quote }}
+  discord.public-key: {{ .Values.discord.publicKey | quote }}
+  discord.client-secret: {{ .Values.discord.clientSecret | quote }}
+  discord.bot-token: {{ .Values.discord.botToken | quote }}
+  {{ end }}
+
   #########
   # Redis #
   #########
@@ -583,6 +593,16 @@ sentry.conf.py: |-
   SENTRY_OPTIONS['slack.client-id'] = os.environ.get("SLACK_CLIENT_ID")
   SENTRY_OPTIONS['slack.client-secret'] = os.environ.get("SLACK_CLIENT_SECRET")
   SENTRY_OPTIONS['slack.signing-secret'] = os.environ.get("SLACK_SIGNING_SECRET")
+{{- end }}
+
+{{- if .Values.discord.existingSecret }}
+  ###########
+  # DISCORD #
+  ###########
+  SENTRY_OPTIONS['discord.application-id'] = os.environ.get("DISCORD_APPLICATION_ID")
+  SENTRY_OPTIONS['discord.public-key'] = os.environ.get("DISCORD_PUBLIC_KEY")
+  SENTRY_OPTIONS['discord.client-secret'] = os.environ.get("DISCORD_CLIENT_SECRET")
+  SENTRY_OPTIONS['discord.bot-token'] = os.environ.get("DISCORD_BOT_TOKEN")
 {{- end }}
 
 {{- if .Values.google.existingSecret }}

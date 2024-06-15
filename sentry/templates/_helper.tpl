@@ -560,6 +560,28 @@ Common Sentry environment variables
       name: {{ .Values.slack.existingSecret }}
       key: {{ default "signing-secret" .Values.slack.existingSecretSigningSecret }}
 {{- end }}
+{{- if .Values.discord.existingSecret }}
+- name: DISCORD_APPLICATION_ID
+  valueFrom:
+    secretKeyRef:
+      name: {{ .Values.discord.existingSecret }}
+      key: {{ default "application-id" .Values.slack.existingSecretApplicationId }}
+- name: DISCORD_PUBLIC_KEY
+  valueFrom:
+    secretKeyRef:
+      name: {{ .Values.discord.existingSecret }}
+      key: {{ default "public-key" .Values.slack.existingSecretPublicKey }}
+- name: DISCORD_CLIENT_SECRET
+  valueFrom:
+    secretKeyRef:
+      name: {{ .Values.discord.existingSecret }}
+      key: {{ default "client-secret" .Values.slack.existingSecretClientSecret }}
+- name: DISCORD_BOT_TOKEN
+  valueFrom:
+    secretKeyRef:
+      name: {{ .Values.discord.existingSecret }}
+      key: {{ default "bot-token" .Values.slack.existingSecretBotToken }}      
+{{- end }}
 {{- if and .Values.github.existingSecret }}
 - name: GITHUB_APP_PRIVATE_KEY
   valueFrom:
