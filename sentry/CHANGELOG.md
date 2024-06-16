@@ -1,5 +1,12 @@
 # Changelog
 
+## [23.8.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v23.7.0...sentry-v23.8.0) (2024-06-16)
+
+
+### Features
+
+* discord integration ([#1318](https://github.com/sentry-kubernetes/charts/issues/1318)) ([d480620](https://github.com/sentry-kubernetes/charts/commit/d480620b3d60d983b239a5a59f063b05a4234ecc))
+
 ## [23.7.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v23.6.0...sentry-v23.7.0) (2024-06-11)
 
 
