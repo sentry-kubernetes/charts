@@ -1,5 +1,12 @@
 # Changelog
 
+## [23.9.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v23.8.0...sentry-v23.9.0) (2024-06-17)
+
+
+### Features
+
+* Configure external postgres with values from secret ([#1279](https://github.com/sentry-kubernetes/charts/issues/1279)) ([adfb64d](https://github.com/sentry-kubernetes/charts/commit/adfb64da1dcd6ba109b64fe2e7496e88d65b38a9))
+
 ## [23.8.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v23.7.0...sentry-v23.8.0) (2024-06-16)
 
 
