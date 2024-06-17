@@ -128,11 +128,11 @@ sentry.conf.py: |-
   DATABASES = {
       "default": {
           "ENGINE": "sentry.db.postgres",
-          "NAME": {{ include "sentry.postgresql.database" . | quote }},
-          "USER": {{ include "sentry.postgresql.username" . | quote }},
+          "NAME": os.environ.get("POSTGRES_NAME", ""),
+          "USER": os.environ.get("POSTGRES_USER", ""),
           "PASSWORD": os.environ.get("POSTGRES_PASSWORD", ""),
-          "HOST": {{ include "sentry.postgresql.host" . | quote }},
-          "PORT": {{ template "sentry.postgresql.port" . }},
+          "HOST": os.environ.get("POSTGRES_HOST", ""),
+          "PORT": os.environ.get("POSTGRES_PORT", ""),
           {{- if .Values.postgresql.enabled }}
           "CONN_MAX_AGE": {{ .Values.postgresql.connMaxAge }},
           {{- else }}

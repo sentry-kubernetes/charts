@@ -515,7 +515,47 @@ Common Sentry environment variables
   valueFrom:
     secretKeyRef:
       name: {{ .Values.externalPostgresql.existingSecret }}
-      key: {{ default "postgresql-password" .Values.externalPostgresql.existingSecretKey }}
+      key: {{ or .Values.externalPostgresql.existingSecretKeys.password .Values.externalPostgresql.existingSecretKey "postgresql-password" }}
+{{- end }}
+{{- if and .Values.externalPostgresql.existingSecret .Values.externalPostgresql.existingSecretKeys.username }}
+- name: POSTGRES_USER
+  valueFrom:
+    secretKeyRef:
+      name: {{ .Values.externalPostgresql.existingSecret }}
+      key: {{ default .Values.externalPostgresql.existingSecretKeys.username }}
+{{- else }}
+- name: POSTGRES_USER
+  value: {{ include "sentry.postgresql.username" . | quote }}
+{{- end }}
+{{- if and .Values.externalPostgresql.existingSecret .Values.externalPostgresql.existingSecretKeys.database }}
+- name: POSTGRES_NAME
+  valueFrom:
+    secretKeyRef:
+      name: {{ .Values.externalPostgresql.existingSecret }}
+      key: {{ default .Values.externalPostgresql.existingSecretKeys.database }}
+{{- else }}
+- name: POSTGRES_NAME
+  value: {{ include "sentry.postgresql.database" . | quote }}
+{{- end }}
+{{- if and .Values.externalPostgresql.existingSecret .Values.externalPostgresql.existingSecretKeys.host }}
+- name: POSTGRES_HOST
+  valueFrom:
+    secretKeyRef:
+      name: {{ .Values.externalPostgresql.existingSecret }}
+      key: {{ default .Values.externalPostgresql.existingSecretKeys.host }}
+{{- else }}
+- name: POSTGRES_HOST
+  value: {{ include "sentry.postgresql.host" . | quote }}
+{{- end }}
+{{- if and .Values.externalPostgresql.existingSecret .Values.externalPostgresql.existingSecretKeys.port }}
+- name: POSTGRES_PORT
+  valueFrom:
+    secretKeyRef:
+      name: {{ .Values.externalPostgresql.existingSecret }}
+      key: {{ default .Values.externalPostgresql.existingSecretKeys.port }}
+{{- else }}
+- name: POSTGRES_PORT
+  value: {{ include "sentry.postgresql.port" . | quote }}
 {{- end }}
 {{- if and (eq .Values.filestore.backend "s3") .Values.filestore.s3.existingSecret }}
 - name: S3_ACCESS_KEY_ID
