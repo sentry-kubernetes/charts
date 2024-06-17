@@ -1,5 +1,12 @@
 # Changelog
 
+## [23.9.1](https://github.com/sentry-kubernetes/charts/compare/sentry-v23.9.0...sentry-v23.9.1) (2024-06-17)
+
+
+### Bug Fixes
+
+* template fails when existingSecretKeys is undefined ([#1323](https://github.com/sentry-kubernetes/charts/issues/1323)) ([4808c6f](https://github.com/sentry-kubernetes/charts/commit/4808c6ff76f53820c9ec8a25fd77ac42f0395d66))
+
 ## [23.9.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v23.8.0...sentry-v23.9.0) (2024-06-17)
 
 
