@@ -1992,7 +1992,7 @@ externalPostgresql:
   # password: postgres
   # existingSecret: secret-name
   ## set existingSecretKeys in a secret, if not specified, value from the secret won't be used 
-  # existingSecretKeys:
+  existingSecretKeys: {}
   #   password: password
   #   username: username
   #   database: database
