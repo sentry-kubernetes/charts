@@ -480,7 +480,9 @@ sentry.conf.py: |-
               "organizations:mobile-ttid-ttfd-contribution",
               "organizations:starfish-mobile-appstart",
               "organizations:standalone-span-ingestion",
-              "organizations:spans-first-ui",
+              "organizations:insights-entry-points",
+              "organizations:insights-initial-modules",
+              "organizations:insights-addon-modules",
               {{ end -}}
 
               "organizations:dashboards-mep",
