@@ -1,5 +1,12 @@
 # Changelog
 
+## [23.10.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v23.9.1...sentry-v23.10.0) (2024-06-21)
+
+
+### Features
+
+* add insights feature flags ([#1329](https://github.com/sentry-kubernetes/charts/issues/1329)) ([6cccdbd](https://github.com/sentry-kubernetes/charts/commit/6cccdbd1a8703c6f0a0d417654358e11e7275bce))
+
 ## [23.9.1](https://github.com/sentry-kubernetes/charts/compare/sentry-v23.9.0...sentry-v23.9.1) (2024-06-17)
 
 
