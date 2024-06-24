@@ -94,6 +94,13 @@ spec:
           - "--healthcheck-file-path"
           - "/tmp/health.txt"
           {{- end }}
+          - "--"
+          {{- if .Values.sentry.postProcessForwardTransactions.processes }}
+          - "--mode"
+          - "multiprocess"
+          - "--processes"
+          - "{{ .Values.sentry.postProcessForwardTransactions.processes }}"
+          {{- end }}
         {{- if .Values.sentry.postProcessForwardTransactions.livenessProbe.enabled }}
         livenessProbe:
           exec:

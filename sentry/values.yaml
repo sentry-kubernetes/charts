@@ -706,6 +706,7 @@ sentry:
   postProcessForwardTransactions:
     enabled: true
     replicas: 1
+    # processes: 1
     env: []
     resources: {}
     affinity: {}
