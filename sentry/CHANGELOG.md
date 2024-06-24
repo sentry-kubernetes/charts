@@ -1,5 +1,12 @@
 # Changelog
 
+## [23.11.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v23.10.0...sentry-v23.11.0) (2024-06-24)
+
+
+### Features
+
+* add multiprocess to postProcessForwardTransactions ([#1334](https://github.com/sentry-kubernetes/charts/issues/1334)) ([9de6968](https://github.com/sentry-kubernetes/charts/commit/9de696813a5e407f4ddf3657d19519500088e7d3))
+
 ## [23.10.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v23.9.1...sentry-v23.10.0) (2024-06-21)
 
 
