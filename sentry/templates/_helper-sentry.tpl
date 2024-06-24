@@ -214,7 +214,9 @@ sentry.conf.py: |-
   SENTRY_EVENTSTREAM = "sentry.eventstream.kafka.KafkaEventStream"
   SENTRY_EVENTSTREAM_OPTIONS = {"producer_configuration": DEFAULT_KAFKA_OPTIONS}
 
-  KAFKA_CLUSTERS["default"] = DEFAULT_KAFKA_OPTIONS
+  KAFKA_CLUSTERS["default"] = {
+      "common": DEFAULT_KAFKA_OPTIONS
+  }
 
   ###############
   # Rate Limits #
