@@ -189,11 +189,11 @@ sentry:
     enableFeedback: false
     enableSpan: false
 
-    #example customFeature to enable Metrics(beta) https://docs.sentry.io/product/metrics/
-  #customFeatures:
-    #- organizations:custom-metric
-    #- organizations:custom-metrics-experimental
-    #- organizations:derive-code-mappings
+  # example customFeature to enable Metrics(beta) https://docs.sentry.io/product/metrics/
+  # customFeatures:
+  # - organizations:custom-metric
+  # - organizations:custom-metrics-experimental
+  # - organizations:derive-code-mappings
 
   worker:
     enabled: true
@@ -1619,13 +1619,13 @@ nginx:
     ports:
       http: 80
   extraLocationSnippet: false
-  #extraLocationSnippet: |
+  # extraLocationSnippet: |
   #  location /admin {
   #    allow 1.2.3.4; # VPN network
   #    deny all;
   #    proxy_pass http://sentry;
   #  }
-  ## Use this to enable an extra service account
+  # Use this to enable an extra service account
   # serviceAccount:
   #   create: false
   #   name: nginx
@@ -1992,7 +1992,7 @@ externalPostgresql:
   username: postgres
   # password: postgres
   # existingSecret: secret-name
-  ## set existingSecretKeys in a secret, if not specified, value from the secret won't be used 
+  ## set existingSecretKeys in a secret, if not specified, value from the secret won't be used
   existingSecretKeys: {}
   #   password: password
   #   username: username
