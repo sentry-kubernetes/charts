@@ -15,6 +15,10 @@ spec:
       app: {{ template "sentry.fullname" . }}
       release: "{{ .Release.Name }}"
       role: symbolicator-api
+{{- if .Values.symbolicator.api.updateStrategy }}
+  strategy:
+    {{ toYaml .Values.symbolicator.api.updateStrategy | nindent 4 }}
+{{- end }}
 {{- if not .Values.symbolicator.api.autoscaling.enabled }}
   replicas: {{ .Values.symbolicator.api.replicas }}
 {{- end }}

@@ -15,6 +15,10 @@ spec:
       app: {{ template "sentry.fullname" . }}
       release: "{{ .Release.Name }}"
       role: snuba-api
+{{- if .Values.snuba.api.updateStrategy }}
+  strategy:
+    {{ toYaml .Values.snuba.api.updateStrategy | nindent 4 }}
+{{- end }}
 {{- if not .Values.snuba.api.autoscaling.enabled }}
   replicas: {{ .Values.snuba.api.replicas }}
 {{- end }}
