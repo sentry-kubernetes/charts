@@ -145,7 +145,11 @@ sentry:
   web:
     enabled: true
     # if using filestore backend filesystem with RWO access, set strategyType to Recreate
-    strategyType: RollingUpdate
+    updateStrategy:
+      type: RollingUpdate
+      # rollingUpdate:
+      #   maxSurge: 1
+      #   maxUnavailable: 0
     replicas: 1
     env: []
     probeFailureThreshold: 5
@@ -805,6 +809,11 @@ sentry:
 snuba:
   api:
     enabled: true
+    updateStrategy:
+      type: RollingUpdate
+      # rollingUpdate:
+      #   maxSurge: 1
+      #   maxUnavailable: 0
     replicas: 1
     # set command to ["snuba","api"] if securityContext.runAsUser > 0
     # see: https://github.com/getsentry/snuba/issues/956
@@ -1492,6 +1501,11 @@ symbolicator:
   enabled: false
   api:
     replicas: 1
+    updateStrategy:
+      type: RollingUpdate
+      # rollingUpdate:
+      #   maxSurge: 1
+      #   maxUnavailable: 0
     env: []
     probeInitialDelaySeconds: 10
     resources: {}

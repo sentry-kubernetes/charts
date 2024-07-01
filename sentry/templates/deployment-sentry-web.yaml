@@ -10,13 +10,15 @@ metadata:
     heritage: "{{ .Release.Service }}"
 spec:
   revisionHistoryLimit: {{ .Values.revisionHistoryLimit }}
-  strategy:
-    type: {{ .Values.sentry.web.strategyType }}
   selector:
     matchLabels:
         app: {{ template "sentry.fullname" . }}
         release: "{{ .Release.Name }}"
         role: web
+{{- if .Values.sentry.web.updateStrategy }}
+  strategy:
+    {{ toYaml .Values.sentry.web.updateStrategy | nindent 4 }}
+{{- end }}
 {{- if not .Values.sentry.web.autoscaling.enabled }}
   replicas: {{ .Values.sentry.web.replicas }}
 {{- end }}
