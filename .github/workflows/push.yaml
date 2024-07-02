@@ -28,17 +28,17 @@ jobs:
       - name: Build clickhouse chart
         uses: WyriHaximus/github-action-helm3@v4
         with:
-          exec: helm package -u main/clickhouse --destination gh-pages/charts
+          exec: helm package -u main/charts/clickhouse --destination gh-pages/charts
 
       - name: Build sentry chart
         uses: WyriHaximus/github-action-helm3@v4
         with:
-          exec: helm package -u main/sentry --destination gh-pages/charts
+          exec: helm package -u main/charts/sentry --destination gh-pages/charts
 
       - name: Build sentry-kubernetes chart
         uses: WyriHaximus/github-action-helm3@v4
         with:
-          exec: helm package -u main/sentry-kubernetes --destination gh-pages/charts
+          exec: helm package -u main/charts/sentry-kubernetes --destination gh-pages/charts
 
       - name: Build sentry-kubernetes chart
         uses: WyriHaximus/github-action-helm3@v4
