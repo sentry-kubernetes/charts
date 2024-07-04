@@ -5,9 +5,11 @@ metadata:
   name: {{ template "sentry.fullname" . }}-nginx
 data:
   server-block.conf: |
+    {{ if .Values.relay.enabled }}
     upstream relay {
       server {{ template "sentry.fullname" . }}-relay:{{ template "relay.port" }};
     }
+    {{ end -}}
 
     upstream sentry {
       server {{ template "sentry.fullname" . }}-web:{{ template "sentry.port" }};
@@ -25,6 +27,7 @@ data:
       proxy_busy_buffers_size    256k;
       proxy_set_header Host $host;
 
+      {{ if .Values.relay.enabled }}
       location /api/store/ {
         proxy_pass http://relay;
       }
@@ -32,6 +35,7 @@ data:
       location ~ ^/api/[1-9]\d*/ {
         proxy_pass http://relay;
       }
+      {{ end -}}
 
       {{ if or .Values.nginx.metrics.enabled .Values.nginx.metrics.serviceMonitor.enabled -}}
       location = /status/ {
