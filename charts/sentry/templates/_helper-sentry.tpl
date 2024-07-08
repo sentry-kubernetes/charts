@@ -307,9 +307,9 @@ sentry.conf.py: |-
       # Turn off memory reporting
       "memory-report": False,
       # Some stuff so uwsgi will cycle workers sensibly
-      'max-requests': 100000,
-      'max-requests-delta': 500,
-      'max-worker-lifetime': 86400,
+      'max-requests': {{ .Values.config.web.maxRequests }},
+      'max-requests-delta': {{ .Values.config.web.maxRequestsDelta }},
+      'max-worker-lifetime': {{ .Values.config.web.maxWorkerLifetime }},
       # Duplicate options from sentry default just so we don't get
       # bit by sentry changing a default value that we depend on.
       'thunder-lock': True,
