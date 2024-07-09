@@ -1,0 +1,174 @@
+{{- if .Values.sentry.metricsConsumer.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "sentry.fullname" . }}-metrics-consumer
+  labels:
+    app: {{ template "sentry.fullname" . }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
+    release: "{{ .Release.Name }}"
+    heritage: "{{ .Release.Service }}"
+    app.kubernetes.io/managed-by: "Helm"
+  {{- if .Values.asHook }}
+  {{- /* Add the Helm annotations so that deployment after asHook from true to false works */}}
+  annotations:
+    meta.helm.sh/release-name: "{{ .Release.Name }}"
+    meta.helm.sh/release-namespace: "{{ .Release.Namespace }}"
+    "helm.sh/hook": "post-install,post-upgrade"
+    "helm.sh/hook-weight": "10"
+  {{- end }}
+spec:
+  revisionHistoryLimit: {{ .Values.revisionHistoryLimit }}
+  selector:
+    matchLabels:
+      app: {{ template "sentry.fullname" . }}
+      release: "{{ .Release.Name }}"
+      role: metrics-consumer
+  replicas: {{ .Values.sentry.metricsConsumer.replicas }}
+  template:
+    metadata:
+      annotations:
+        checksum/configYml: {{ .Values.config.configYml | toYaml | toString | sha256sum }}
+        checksum/sentryConfPy: {{ .Values.config.sentryConfPy | sha256sum }}
+        checksum/config.yaml: {{ include "sentry.config" . | sha256sum }}
+        {{- if .Values.sentry.metricsConsumer.annotations }}
+{{ toYaml .Values.sentry.metricsConsumer.annotations | indent 8 }}
+        {{- end }}
+      labels:
+        app: {{ template "sentry.fullname" . }}
+        release: "{{ .Release.Name }}"
+        role: metrics-consumer
+        {{- if .Values.sentry.metricsConsumer.podLabels }}
+{{ toYaml .Values.sentry.metricsConsumer.podLabels | indent 8 }}
+        {{- end }}
+    spec:
+      affinity:
+      {{- if .Values.sentry.metricsConsumer.affinity }}
+{{ toYaml .Values.sentry.metricsConsumer.affinity | indent 8 }}
+      {{- end }}
+      {{- if .Values.sentry.metricsConsumer.nodeSelector }}
+      nodeSelector:
+{{ toYaml .Values.sentry.metricsConsumer.nodeSelector | indent 8 }}
+      {{- end }}
+      {{- if .Values.sentry.metricsConsumer.tolerations }}
+      tolerations:
+{{ toYaml .Values.sentry.metricsConsumer.tolerations | indent 8 }}
+      {{- end }}
+      {{- if .Values.sentry.metricsConsumer.topologySpreadConstraints }}
+      topologySpreadConstraints:
+{{ toYaml .Values.sentry.metricsConsumer.topologySpreadConstraints | indent 8 }}
+      {{- end }}
+      {{- if .Values.images.sentry.imagePullSecrets }}
+      imagePullSecrets:
+{{ toYaml .Values.images.sentry.imagePullSecrets | indent 8 }}
+      {{- end }}
+      {{- if .Values.dnsPolicy }}
+      dnsPolicy: {{ .Values.dnsPolicy | quote }}
+      {{- end }}
+      {{- if .Values.dnsConfig }}
+      dnsConfig:
+{{ toYaml .Values.dnsConfig | indent 8 }}
+      {{- end }}
+      {{- if .Values.sentry.metricsConsumer.securityContext }}
+      securityContext:
+{{ toYaml .Values.sentry.metricsConsumer.securityContext | indent 8 }}
+      {{- end }}
+      containers:
+      - name: {{ .Chart.Name }}-metrics-consumer
+        image: "{{ template "sentry.image" . }}"
+        imagePullPolicy: {{ default "IfNotPresent" .Values.images.sentry.pullPolicy }}
+        command: ["sentry"]
+        args:
+          - "run"
+          - "consumer"
+          - "ingest-metrics"
+          - "--consumer-group"
+          - "metrics-consumer"
+          {{- if .Values.sentry.metricsConsumer.livenessProbe.enabled }}
+          - "--healthcheck-file-path"
+          - "/tmp/health.txt"
+          {{- end }}
+          - "--"
+          {{- if .Values.sentry.metricsConsumer.maxBatchSize }}
+          - "--max-batch-size"
+          - "{{ .Values.sentry.metricsConsumer.maxBatchSize }}"
+          {{- end }}
+          {{- if .Values.sentry.metricsConsumer.concurrency }}
+          - "--processes"
+          - "{{ .Values.sentry.metricsConsumer.concurrency }}"
+          {{- end }}
+        {{- if .Values.sentry.metricsConsumer.livenessProbe.enabled }}
+        livenessProbe:
+          exec:
+            command:
+              - rm
+              - /tmp/health.txt
+          initialDelaySeconds: {{ .Values.sentry.metricsConsumer.livenessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.sentry.metricsConsumer.livenessProbe.periodSeconds }}
+        {{- end }}
+        env:
+        - name: C_FORCE_ROOT
+          value: "true"
+{{ include "sentry.env" . | indent 8 }}
+{{- if .Values.sentry.metricsConsumer.env }}
+{{ toYaml .Values.sentry.metricsConsumer.env | indent 8 }}
+{{- end }}
+        volumeMounts:
+        - mountPath: /etc/sentry
+          name: config
+          readOnly: true
+        - mountPath: {{ .Values.filestore.filesystem.path }}
+          name: sentry-data
+        {{- if and (eq .Values.filestore.backend "gcs") .Values.filestore.gcs.secretName }}
+        - name: sentry-google-cloud-key
+          mountPath: /var/run/secrets/google
+        {{ end }}
+{{- if .Values.sentry.metricsConsumer.volumeMounts }}
+{{ toYaml .Values.sentry.metricsConsumer.volumeMounts | indent 8 }}
+{{- end }}
+        resources:
+{{ toYaml .Values.sentry.metricsConsumer.resources | indent 12 }}
+{{- if .Values.sentry.metricsConsumer.containerSecurityContext }}
+        securityContext:
+{{ toYaml .Values.sentry.metricsConsumer.containerSecurityContext | indent 12 }}
+{{- end }}
+{{- if .Values.sentry.metricsConsumer.sidecars }}
+{{ toYaml .Values.sentry.metricsConsumer.sidecars | indent 6 }}
+{{- end }}
+{{- if .Values.global.sidecars }}
+{{ toYaml .Values.global.sidecars | indent 6 }}
+{{- end }}
+      {{- if .Values.serviceAccount.enabled }}
+      serviceAccountName: {{ .Values.serviceAccount.name }}-metrics-consumer
+      {{- end }}
+      volumes:
+      - name: config
+        configMap:
+          name: {{ template "sentry.fullname" . }}-sentry
+      - name: sentry-data
+      {{- if and (eq .Values.filestore.backend "filesystem") .Values.filestore.filesystem.persistence.enabled (.Values.filestore.filesystem.persistence.persistentWorkers) }}
+      {{- if .Values.filestore.filesystem.persistence.existingClaim }}
+        persistentVolumeClaim:
+          claimName: {{ .Values.filestore.filesystem.persistence.existingClaim }}
+      {{- else }}
+        persistentVolumeClaim:
+          claimName: {{ template "sentry.fullname" . }}-data
+      {{- end }}
+      {{- else }}
+        emptyDir: {}
+      {{ end }}
+      {{- if and (eq .Values.filestore.backend "gcs") .Values.filestore.gcs.secretName }}
+      - name: sentry-google-cloud-key
+        secret:
+          secretName: {{ .Values.filestore.gcs.secretName }}
+      {{ end }}
+{{- if .Values.sentry.metricsConsumer.volumes }}
+{{ toYaml .Values.sentry.metricsConsumer.volumes | indent 6 }}
+{{- end }}
+{{- if .Values.global.volumes }}
+{{ toYaml .Values.global.volumes | indent 6 }}
+{{- end }}
+      {{- if .Values.sentry.metricsConsumer.priorityClassName }}
+      priorityClassName: "{{ .Values.sentry.metricsConsumer.priorityClassName }}"
+      {{- end }}
+{{- end }}

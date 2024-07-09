@@ -1,15 +1,15 @@
 {
   "$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json",
   "packages": {
-    "clickhouse": {
+    "charts/clickhouse": {
       "release-type": "helm",
       "changelog-path": "CHANGELOG.md"
     },
-    "sentry": {
+    "charts/sentry": {
       "release-type": "helm",
       "changelog-path": "CHANGELOG.md"
     },
-    "sentry-kubernetes": {
+    "charts/sentry-kubernetes": {
       "release-type": "helm",
       "changelog-path": "CHANGELOG.md"
     }

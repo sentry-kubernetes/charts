@@ -1,0 +1,163 @@
+{{- if .Values.sentry.worker.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "sentry.fullname" . }}-worker
+  labels:
+    app: {{ template "sentry.fullname" . }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
+    release: "{{ .Release.Name }}"
+    heritage: "{{ .Release.Service }}"
+spec:
+  revisionHistoryLimit: {{ .Values.revisionHistoryLimit }}
+  selector:
+    matchLabels:
+        app: {{ template "sentry.fullname" . }}
+        release: "{{ .Release.Name }}"
+        role: worker
+{{- if not .Values.sentry.worker.autoscaling.enabled }}
+  replicas: {{ .Values.sentry.worker.replicas }}
+{{- end }}
+  template:
+    metadata:
+      annotations:
+        checksum/configYml: {{ .Values.config.configYml | toYaml | toString | sha256sum }}
+        checksum/sentryConfPy: {{ .Values.config.sentryConfPy | sha256sum }}
+        checksum/config.yaml: {{ include "sentry.config" . | sha256sum }}
+        {{- if .Values.sentry.worker.annotations }}
+{{ toYaml .Values.sentry.worker.annotations | indent 8 }}
+        {{- end }}
+      labels:
+        app: {{ template "sentry.fullname" . }}
+        release: "{{ .Release.Name }}"
+        role: worker
+        {{- if .Values.sentry.worker.podLabels }}
+{{ toYaml .Values.sentry.worker.podLabels | indent 8 }}
+        {{- end }}
+    spec:
+      affinity:
+      {{- if .Values.sentry.worker.affinity }}
+{{ toYaml .Values.sentry.worker.affinity | indent 8 }}
+      {{- end }}
+      {{- if .Values.sentry.worker.nodeSelector }}
+      nodeSelector:
+{{ toYaml .Values.sentry.worker.nodeSelector | indent 8 }}
+      {{- end }}
+      {{- if .Values.sentry.worker.tolerations }}
+      tolerations:
+{{ toYaml .Values.sentry.worker.tolerations | indent 8 }}
+      {{- end }}
+      {{- if .Values.sentry.worker.topologySpreadConstraints }}
+      topologySpreadConstraints:
+{{ toYaml .Values.sentry.worker.topologySpreadConstraints | indent 8 }}
+      {{- end }}
+      {{- if .Values.images.sentry.imagePullSecrets }}
+      imagePullSecrets:
+{{ toYaml .Values.images.sentry.imagePullSecrets | indent 8 }}
+      {{- end }}
+      {{- if .Values.dnsPolicy }}
+      dnsPolicy: {{ .Values.dnsPolicy | quote }}
+      {{- end }}
+      {{- if .Values.dnsConfig }}
+      dnsConfig:
+{{ toYaml .Values.dnsConfig | indent 8 }}
+      {{- end }}
+      {{- if .Values.sentry.worker.securityContext }}
+      securityContext:
+{{ toYaml .Values.sentry.worker.securityContext | indent 8 }}
+      {{- end }}
+      containers:
+      - name: {{ .Chart.Name }}-worker
+        image: "{{ template "sentry.image" . }}"
+        imagePullPolicy: {{ default "IfNotPresent" .Values.images.sentry.pullPolicy }}
+        command: ["sentry"]
+        args:
+          - "run"
+          - "worker"
+          {{- if .Values.sentry.worker.concurrency }}
+          - "-c"
+          - "{{ .Values.sentry.worker.concurrency }}"
+          {{- end }}
+        env:
+        - name: C_FORCE_ROOT
+          value: "true"
+{{ include "sentry.env" . | indent 8 }}
+{{- if .Values.sentry.worker.env }}
+{{ toYaml .Values.sentry.worker.env | indent 8 }}
+{{- end }}
+        volumeMounts:
+        - mountPath: /etc/sentry
+          name: config
+          readOnly: true
+        - mountPath: {{ .Values.filestore.filesystem.path }}
+          name: sentry-data
+        {{- if .Values.geodata.volumeName }}
+        - name: {{ .Values.geodata.volumeName }}
+          mountPath: {{ .Values.geodata.mountPath }}
+        {{- end }}
+        {{- if and (eq .Values.filestore.backend "gcs") .Values.filestore.gcs.secretName }}
+        - name: sentry-google-cloud-key
+          mountPath: /var/run/secrets/google
+        {{ end }}
+{{- if .Values.sentry.worker.volumeMounts }}
+{{ toYaml .Values.sentry.worker.volumeMounts | indent 8 }}
+{{- end }}
+  {{- if .Values.sentry.worker.livenessProbe.enabled }}
+        livenessProbe:
+          periodSeconds: {{ .Values.sentry.worker.livenessProbe.periodSeconds }}
+          initialDelaySeconds: 10
+          timeoutSeconds: {{ .Values.sentry.worker.livenessProbe.timeoutSeconds }}
+          failureThreshold: {{ .Values.sentry.worker.livenessProbe.failureThreshold }}
+          exec:
+            command:
+              - sentry
+              - exec
+              - -c
+              - 'from sentry.celery import app; import os; dest="celery@{}".format(os.environ["HOSTNAME"]); print(app.control.ping(destination=[dest], timeout=5)[0][dest]["ok"])'
+{{- end }}
+        resources:
+{{ toYaml .Values.sentry.worker.resources | indent 12 }}
+{{- if .Values.sentry.worker.containerSecurityContext }}
+        securityContext:
+{{ toYaml .Values.sentry.worker.containerSecurityContext | indent 12 }}
+{{- end }}
+{{- if .Values.sentry.worker.sidecars }}
+{{ toYaml .Values.sentry.worker.sidecars | indent 6 }}
+{{- end }}
+{{- if .Values.global.sidecars }}
+{{ toYaml .Values.global.sidecars | indent 6 }}
+{{- end }}
+      {{- if .Values.serviceAccount.enabled }}
+      serviceAccountName: {{ .Values.serviceAccount.name }}-worker
+      {{- end }}
+      volumes:
+      - name: config
+        configMap:
+          name: {{ template "sentry.fullname" . }}-sentry
+      - name: sentry-data
+      {{- if and (eq .Values.filestore.backend "filesystem") .Values.filestore.filesystem.persistence.enabled (.Values.filestore.filesystem.persistence.persistentWorkers) }}
+      {{- if .Values.filestore.filesystem.persistence.existingClaim }}
+        persistentVolumeClaim:
+          claimName: {{ .Values.filestore.filesystem.persistence.existingClaim }}
+      {{- else }}
+        persistentVolumeClaim:
+          claimName: {{ template "sentry.fullname" . }}-data
+      {{- end }}
+      {{- else }}
+        emptyDir: {}
+      {{ end }}
+      {{- if and (eq .Values.filestore.backend "gcs") .Values.filestore.gcs.secretName }}
+      - name: sentry-google-cloud-key
+        secret:
+          secretName: {{ .Values.filestore.gcs.secretName }}
+      {{ end }}
+      {{- if .Values.sentry.worker.priorityClassName }}
+      priorityClassName: "{{ .Values.sentry.worker.priorityClassName }}"
+      {{- end }}
+{{- if .Values.sentry.worker.volumes }}
+{{ toYaml .Values.sentry.worker.volumes | indent 6 }}
+{{- end }}
+{{- if .Values.global.volumes }}
+{{ toYaml .Values.global.volumes | indent 6 }}
+{{- end }}
+{{- end }}
