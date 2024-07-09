@@ -1721,6 +1721,9 @@ config:
     # No YAML relay config given
   web:
     httpKeepalive: 15
+    maxRequests: 100000
+    maxRequestsDelta: 500
+    maxWorkerLifetime: 86400
 
 clickhouse:
   enabled: true
