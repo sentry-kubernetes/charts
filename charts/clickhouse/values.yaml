@@ -118,6 +118,9 @@ clickhouse:
   ## Default value: /var/lib/clickhouse
   path: "/var/lib/clickhouse"
   ##
+  ## The host to listen on
+  listen_host: "0.0.0.0"
+  ##
   ## The port for connecting to the server over HTTP
   http_port: "8123"
   ##
