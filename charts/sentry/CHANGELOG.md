@@ -1,5 +1,17 @@
 # Changelog
 
+## 1.0.0 (2024-07-10)
+
+
+### Features
+
+* add parameters for web workers TTL ([#1355](https://github.com/sentry-kubernetes/charts/issues/1355)) ([a1b218f](https://github.com/sentry-kubernetes/charts/commit/a1b218f69a8ea20a987e11a94dbf052d5a05d3a8))
+
+
+### Bug Fixes
+
+* remove 'profiling-global-suspect-functions' as it is not supported on self hosted ([#1358](https://github.com/sentry-kubernetes/charts/issues/1358)) ([25004f6](https://github.com/sentry-kubernetes/charts/commit/25004f67e4cba551bb78d5c42af80d2e631c50de))
+
 ## [23.11.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v23.10.0...sentry-v23.11.0) (2024-06-24)
 
 
