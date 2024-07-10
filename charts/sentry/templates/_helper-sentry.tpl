@@ -451,7 +451,6 @@ sentry.conf.py: |-
               "organizations:profiling-using-transactions",
               "organizations:profiling-beta",
               "organizations:profiling-stacktrace-links",
-              "organizations:profiling-global-suspect-functions",
               "organizations:profiling-cpu-chart",
               "organizations:profiling-memory-chart",
               "organizations:profiling-view",
