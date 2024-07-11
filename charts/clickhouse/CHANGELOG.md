@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.10.0](https://github.com/sentry-kubernetes/charts/compare/clickhouse-v3.9.0...clickhouse-v3.10.0) (2024-07-11)
+
+
+### Features
+
+* **clickhouse:** allow overriding Clickhouse host ([#1356](https://github.com/sentry-kubernetes/charts/issues/1356)) ([bf0aaf3](https://github.com/sentry-kubernetes/charts/commit/bf0aaf346d5363fef2b12e2caee6f4b4750d45fd))
+
 ## [3.9.0](https://github.com/sentry-kubernetes/charts/compare/clickhouse-v3.8.0...clickhouse-v3.9.0) (2024-05-21)
 
 
