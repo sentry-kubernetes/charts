@@ -1,5 +1,12 @@
 # Changelog
 
+## [23.12.1](https://github.com/sentry-kubernetes/charts/compare/sentry-v23.12.0...sentry-v23.12.1) (2024-07-19)
+
+
+### Bug Fixes
+
+* update memcached chart to 7.4.8 ([#1352](https://github.com/sentry-kubernetes/charts/issues/1352)) ([a39ae5b](https://github.com/sentry-kubernetes/charts/commit/a39ae5b5252b0535f76ee1dbaccf723dbc1bd6fb))
+
 ## [23.12.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v23.11.0...sentry-v23.12.0) (2024-07-11)
 
 
