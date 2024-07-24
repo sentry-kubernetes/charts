@@ -16,8 +16,8 @@ spec:
             - secretRef:
                 name: {{ template "sentry.fullname" . }}-geoip-env
           volumeMounts:
-            - name: geoip-data
-              mountPath: /usr/share/GeoIP
+            - name: {{ .Values.geodata.volumeName }}
+              mountPath: {{ .Values.geodata.mountPath }}
       containers:
         - name: geoipupdate
           image: ghcr.io/maxmind/geoipupdate:v7.0.1
