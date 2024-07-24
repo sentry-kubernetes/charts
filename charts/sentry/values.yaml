@@ -134,9 +134,9 @@ relay:
 
 # enable and reference the volume
 geodata:
-  accountID: "example"
-  licenseKey: "example"
-  editionIDs: "example"
+  accountID: ""
+  licenseKey: ""
+  editionIDs: ""
   persistence:
     ## database data Persistent Volume Storage Class
     ## If defined, storageClassName: <storageClass>
@@ -147,11 +147,11 @@ geodata:
     ##
     # storageClass: "-"
     size: 1Gi
-  volumeName: "data-sentry-geoip"
+  volumeName: ""
   # mountPath of the volume containing the database
-  mountPath: "/usr/share/GeoIP"
+  mountPath: ""
   # path to the geoip database inside the volumemount
-  path: "/usr/share/GeoIP/GeoLite2-City.mmdb"
+  path: ""
 
 sentry:
   # to not generate a sentry-secret, use these 2 values to reference an existing secret
