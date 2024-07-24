@@ -207,6 +207,9 @@ geodata:
 
 or
 
+Warning:
+storage must support ReadWriteMany
+
 ```yaml
 # enable and reference the volume
 geodata:
