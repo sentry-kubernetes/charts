@@ -205,6 +205,31 @@ geodata:
   path: /geodata/GeoLite2-City.mmdb
 ```
 
+or
+
+```yaml
+# enable and reference the volume
+geodata:
+  accountID: "example"
+  licenseKey: "example"
+  editionIDs: "example"
+  persistence:
+    ## database data Persistent Volume Storage Class
+    ## If defined, storageClassName: <storageClass>
+    ## If set to "-", storageClassName: "", which disables dynamic provisioning
+    ## If undefined (the default) or set to null, no storageClassName spec is
+    ##   set, choosing the default provisioner.  (gp2 on AWS, standard on
+    ##   GKE, AWS & OpenStack)
+    ##
+    # storageClass: "-"
+    size: 1Gi
+  volumeName: "data-sentry-geoip"
+  # mountPath of the volume containing the database
+  mountPath: "/usr/share/GeoIP"
+  # path to the geoip database inside the volumemount
+  path: "/usr/share/GeoIP/GeoLite2-City.mmdb"
+```
+
 ## External Kafka configuration
 
 You can either provide a single host, which is there by default in `values.yaml`, like this:
