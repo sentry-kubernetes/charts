@@ -100,6 +100,7 @@ spec:
           - "multiprocess"
           - "--processes"
           - "{{ .Values.sentry.postProcessForwardIssuePlatform.processes }}"
+          {{- end }}
         {{- if .Values.sentry.postProcessForwardIssuePlatform.livenessProbe.enabled }}
         livenessProbe:
           exec:
