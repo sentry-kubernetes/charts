@@ -1,3 +1,4 @@
+{{- if .Values.geodata.accountID }}
 apiVersion: batch/v1
 kind: Job
 metadata:
@@ -32,3 +33,4 @@ spec:
         persistentVolumeClaim:
           claimName: data-sentry-geoip
       restartPolicy: OnFailure
+{{- end }}
