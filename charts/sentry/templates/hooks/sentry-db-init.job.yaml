@@ -76,7 +76,7 @@ spec:
       - name: db-init-job
         image: "{{ template "sentry.image" . }}"
         imagePullPolicy: {{ default "IfNotPresent" .Values.images.sentry.pullPolicy }}
-        command: ["sentry","upgrade","--noinput"]
+        command: ["sentry","upgrade","--noinput", "--create-kafka-topics"]
         env:
 {{ include "sentry.env" . | indent 8 }}
         {{- if .Values.hooks.dbInit.env }}

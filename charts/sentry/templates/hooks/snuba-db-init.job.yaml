@@ -81,11 +81,6 @@ spec:
         - snuba
         - bootstrap
         - --no-migrate
-        {{- if .Values.hooks.snubaInit.kafka.enabled }}
-        - --kafka
-        {{- else }}
-        - --no-kafka
-        {{- end }}
         - --force
         env:
         - name: LOG_LEVEL
