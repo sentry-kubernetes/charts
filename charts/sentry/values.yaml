@@ -1619,6 +1619,14 @@ nginx:
     ports:
       http: 80
   extraLocationSnippet: false
+  customReadinessProbe:
+    tcpSocket:
+      port: http
+    initialDelaySeconds: 5
+    timeoutSeconds: 3
+    periodSeconds: 5
+    successThreshold: 1
+    failureThreshold: 3
   # extraLocationSnippet: |
   #  location /admin {
   #    allow 1.2.3.4; # VPN network
@@ -1631,7 +1639,7 @@ nginx:
   #   name: nginx
 
 ingress:
-  enabled: false
+  enabled: true
   # If you are using traefik ingress controller, switch this to 'traefik'
   # if you are using AWS ALB Ingress controller, switch this to 'aws-alb'
   # if you are using GKE Ingress controller, switch this to 'gke'
