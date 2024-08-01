@@ -1787,7 +1787,7 @@ externalClickhouse:
   ## (https://clickhouse.tech/docs/en/operations/server-configuration-parameters/settings/#server-settings-remote-servers)
   ## or by executing `select * from system.clusters`
   ##
-  # clusterName: test_shard_localhost
+  clusterName: default
 
 # Settings for Zookeeper.
 # See https://github.com/bitnami/charts/tree/master/bitnami/zookeeper
