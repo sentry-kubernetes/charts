@@ -71,7 +71,7 @@ Note: this table is incomplete, so have a look at the values.yaml in case you mi
 | `sentry.ingestConsumerEvents.enabled`       | Enable Sentry ingest consumer events                                                                                                                                | `true`                          |
 | `sentry.ingestConsumerTransactions.enabled`       | Enable Sentry ingest consumer transactions                                                                                                                                | `true`                          |
 | `sentry.ingestMonitors.enabled`       | Enable Sentry ingest monitors                                                                                                                                | `true`                          |
-| `sentry.ingestOccurrences.enabled`       | Enable Sentry ingest occurences                                                                                                                                | `true`                          |
+| `sentry.ingestOccurrences.enabled`       | Enable Sentry ingest occurrences                                                                                                                                | `true`                          |
 | `sentry.ingestReplayRecordings.enabled`       | Enable Sentry ingest replay recordings                                                                                                                                | `true`                          |
 | `sentry.metricsConsumer.enabled`       | Enable Sentry metrics consumer                                                                                                                                | `true`                          |
 | `sentry.postProcessForwardErrors.enabled`       | Enable Sentry post process forward errors                                                                                                                                | `true`                          |
@@ -269,7 +269,7 @@ externalPostgresql:
   database: sentry
 ```
 
-> ⚠️ `.Values.externalPostgresql.existingSecretKey` is depricated, `.Values.externalPostgresql.existingSecretKeys.password` should be used instead.
+> ⚠️ `.Values.externalPostgresql.existingSecretKey` is deprecated, `.Values.externalPostgresql.existingSecretKeys.password` should be used instead.
 
 # Usage
 
