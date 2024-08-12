@@ -197,7 +197,7 @@ sentry:
 
   worker:
     enabled: true
-    replicas: 3
+    replicas: 1
     # concurrency: 4
     env: []
     resources: {}
@@ -214,7 +214,7 @@ sentry:
       maxReplicas: 5
       targetCPUUtilizationPercentage: 50
     livenessProbe:
-      enabled: false
+      enabled: true
       periodSeconds: 60
       timeoutSeconds: 10
       failureThreshold: 3
@@ -1619,6 +1619,14 @@ nginx:
     ports:
       http: 80
   extraLocationSnippet: false
+  customReadinessProbe:
+    tcpSocket:
+      port: http
+    initialDelaySeconds: 5
+    timeoutSeconds: 3
+    periodSeconds: 5
+    successThreshold: 1
+    failureThreshold: 3
   # extraLocationSnippet: |
   #  location /admin {
   #    allow 1.2.3.4; # VPN network
@@ -1631,7 +1639,7 @@ nginx:
   #   name: nginx
 
 ingress:
-  enabled: false
+  enabled: true
   # If you are using traefik ingress controller, switch this to 'traefik'
   # if you are using AWS ALB Ingress controller, switch this to 'aws-alb'
   # if you are using GKE Ingress controller, switch this to 'gke'
@@ -1727,6 +1735,7 @@ config:
 
 clickhouse:
   enabled: true
+  replicas: "1"
   clickhouse:
     imageVersion: "21.8.13.6"
     configmap:
@@ -1794,7 +1803,7 @@ externalClickhouse:
 zookeeper:
   enabled: true
   nameOverride: zookeeper-clickhouse
-  replicaCount: 3
+  replicaCount: 1
 
 # Settings for Kafka.
 # See https://github.com/bitnami/charts/tree/master/bitnami/kafka
@@ -1918,6 +1927,8 @@ kafka:
     enabled: false
   kraft:
     enabled: true
+  controller:
+    replicaCount: 1
 
   ## Use this to enable an extra service account
   # serviceAccount:
@@ -1943,6 +1954,8 @@ sourcemaps:
 
 redis:
   enabled: true
+  replica:
+    replicaCount: 1
   auth:
     enabled: false
     sentinel: false
@@ -2015,7 +2028,7 @@ rabbitmq:
   clustering:
     forceBoot: true
     rebalance: true
-  replicaCount: 3
+  replicaCount: 1
   auth:
     erlangCookie: pHgpy3Q6adTskzAT6bLHCFqFTF7lMxhA
     username: guest
