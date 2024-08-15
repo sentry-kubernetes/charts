@@ -128,6 +128,9 @@ spec:
 {{- if .Values.sentry.ingestProfiles.sidecars }}
 {{ toYaml .Values.sentry.ingestProfiles.sidecars | indent 6 }}
 {{- end }}
+{{- if .Values.global.sidecars }}
+{{ toYaml .Values.global.sidecars | indent 6 }}
+{{- end }}
       {{- if .Values.serviceAccount.enabled }}
       serviceAccountName: {{ .Values.serviceAccount.name }}-ingest-profiles
       {{- end }}
@@ -154,6 +157,9 @@ spec:
       {{ end }}
 {{- if .Values.sentry.ingestProfiles.volumes }}
 {{ toYaml .Values.sentry.ingestProfiles.volumes | indent 6 }}
+{{- end }}
+{{- if .Values.global.volumes }}
+{{ toYaml .Values.global.volumes | indent 6 }}
 {{- end }}
       {{- if .Values.sentry.ingestProfiles.priorityClassName }}
       priorityClassName: "{{ .Values.sentry.ingestProfiles.priorityClassName }}"

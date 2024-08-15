@@ -189,9 +189,20 @@ spec:
         securityContext:
 {{ toYaml .Values.hooks.dbCheck.containerSecurityContext | indent 10 }}
 {{- end }}
-{{- if .Values.hooks.dbCheck.volumes }}
+{{- if .Values.hooks.dbCheck.sidecars }}
+{{ toYaml .Values.hooks.dbCheck.sidecars | indent 6 }}
+{{- end }}
+{{- if .Values.global.sidecars }}
+{{ toYaml .Values.global.sidecars | indent 6 }}
+{{- end }}
+{{- if or .Values.hooks.dbCheck.volumes .Values.global.volumes }}
       volumes:
+{{- if .Values.hooks.dbCheck.volumes }}
 {{ toYaml .Values.hooks.dbCheck.volumes | indent 6 }}
+{{- end }}
+{{- if .Values.global.volumes }}
+{{ toYaml .Values.global.volumes | indent 6 }}
+{{- end }}
 {{- end }}
       {{- if .Values.hooks.shareProcessNamespace }}
       shareProcessNamespace: {{ .Values.hooks.shareProcessNamespace }}

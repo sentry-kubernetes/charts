@@ -98,12 +98,18 @@ spec:
 {{- if .Values.hooks.dbInit.sidecars }}
 {{ toYaml .Values.hooks.dbInit.sidecars | indent 6 }}
 {{- end }}
+{{- if .Values.global.sidecars }}
+{{ toYaml .Values.global.sidecars | indent 6 }}
+{{- end }}
       volumes:
       - name: config
         configMap:
           name: {{ template "sentry.fullname" . }}-sentry
 {{- if .Values.hooks.dbInit.volumes }}
 {{ toYaml .Values.hooks.dbInit.volumes | indent 6 }}
+{{- end }}
+{{- if .Values.global.volumes }}
+{{ toYaml .Values.global.volumes | indent 6 }}
 {{- end }}
       {{- if .Values.hooks.shareProcessNamespace }}
       shareProcessNamespace: {{ .Values.hooks.shareProcessNamespace }}

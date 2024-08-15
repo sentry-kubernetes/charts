@@ -165,6 +165,9 @@ spec:
 {{- if .Values.relay.sidecars }}
 {{ toYaml .Values.relay.sidecars | indent 6 }}
 {{- end }}
+{{- if .Values.global.sidecars }}
+{{ toYaml .Values.global.sidecars | indent 6 }}
+{{- end }}
       {{- if .Values.serviceAccount.enabled }}
       serviceAccountName: {{ .Values.serviceAccount.name }}-relay
       {{- end }}
@@ -177,6 +180,9 @@ spec:
         emptyDir: {}
 {{- if .Values.relay.volumes }}
 {{ toYaml .Values.relay.volumes | indent 6 }}
+{{- end }}
+{{- if .Values.global.volumes }}
+{{ toYaml .Values.global.volumes | indent 6 }}
 {{- end }}
       {{- if .Values.relay.priorityClassName }}
       priorityClassName: "{{ .Values.relay.priorityClassName }}"

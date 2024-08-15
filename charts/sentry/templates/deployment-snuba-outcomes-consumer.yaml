@@ -150,6 +150,12 @@ spec:
         securityContext:
 {{ toYaml .Values.snuba.outcomesConsumer.containerSecurityContext | indent 12 }}
 {{- end }}
+{{- if .Values.snuba.outcomesConsumer.sidecars }}
+{{ toYaml .Values.snuba.outcomesConsumer.sidecars | indent 6 }}
+{{- end }}
+{{- if .Values.global.sidecars }}
+{{ toYaml .Values.global.sidecars | indent 6 }}
+{{- end }}
       {{- if .Values.serviceAccount.enabled }}
       serviceAccountName: {{ .Values.serviceAccount.name }}-snuba
       {{- end }}
@@ -159,5 +165,8 @@ spec:
             name: {{ template "sentry.fullname" . }}-snuba
 {{- if .Values.snuba.outcomesConsumer.volumes }}
 {{ toYaml .Values.snuba.outcomesConsumer.volumes | indent 8 }}
+{{- end }}
+{{- if .Values.global.volumes }}
+{{ toYaml .Values.global.volumes | indent 8 }}
 {{- end }}
 {{- end }}
