@@ -21,6 +21,12 @@ spec:
       {{- if .Values.metrics.serviceMonitor.honorLabels }}
       honorLabels: true
       {{- end }}
+      {{- if .Values.metrics.serviceMonitor.metricRelabelings }}
+      metricRelabelings: {{- toYaml .Values.metrics.serviceMonitor.metricRelabelings | nindent 6 }}
+      {{- end }}
+      {{- if .Values.metrics.serviceMonitor.relabelings }}
+      relabelings: {{- toYaml .Values.metrics.serviceMonitor.relabelings | nindent 6 }}
+      {{- end }}
   {{- if .Values.metrics.serviceMonitor.namespaceSelector }}
   namespaceSelector:
 {{ toYaml .Values.metrics.serviceMonitor.namespaceSelector | indent 4 -}}

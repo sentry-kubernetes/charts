@@ -2166,6 +2166,8 @@ metrics:
     #   any: true
     scrapeInterval: 30s
     # honorLabels: true
+    relabelings: []
+    metricRelabelings: []
 
 revisionHistoryLimit: 10
 
