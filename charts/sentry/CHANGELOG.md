@@ -1,5 +1,21 @@
 # Changelog
 
+## [24.0.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v23.12.1...sentry-v24.0.0) (2024-08-19)
+
+
+### ⚠ BREAKING CHANGES
+
+* deployment default values ([#1379](https://github.com/sentry-kubernetes/charts/issues/1379))
+
+### Features
+
+* add optional relabeling configs to serviceMonitor object ([#1390](https://github.com/sentry-kubernetes/charts/issues/1390)) ([4f6e440](https://github.com/sentry-kubernetes/charts/commit/4f6e440c5c69ab728a2e9ac9a56b55ce274c5dc1))
+
+
+### Bug Fixes
+
+* deployment default values ([#1379](https://github.com/sentry-kubernetes/charts/issues/1379)) ([72376fd](https://github.com/sentry-kubernetes/charts/commit/72376fd0aeb9d7fdb6b30a275ae59429bb88da12))
+
 ## [23.12.1](https://github.com/sentry-kubernetes/charts/compare/sentry-v23.12.0...sentry-v23.12.1) (2024-07-19)
 
 
