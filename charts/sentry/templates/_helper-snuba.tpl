@@ -41,7 +41,7 @@ settings.py: |
           "spans",
           "group_attributes",
           "generic_metrics_gauges",
-          "profile_chunks",
+          "profile_chunks"
       },
       {{- /*
         The default clickhouse installation runs in distributed mode, while the external
