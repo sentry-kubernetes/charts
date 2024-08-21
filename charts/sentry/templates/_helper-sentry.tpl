@@ -215,8 +215,9 @@ sentry.conf.py: |-
   # SENTRY_EVENTSTREAM_OPTIONS = {"producer_configuration": DEFAULT_KAFKA_OPTIONS}
   SENTRY_EVENTSTREAM_OPTIONS = {
     "producer_configuration": {
-      "queue.buffering.max.messages": 200000,
+      "queue.buffering.max.messages": 1000000,
       "queue.buffering.max.kbytes": 2097152,
+      "queue.buffering.max.ms": 10,
     }
   }
   KAFKA_CLUSTERS["default"] = DEFAULT_KAFKA_OPTIONS
