@@ -1809,6 +1809,111 @@ zookeeper:
 # See https://github.com/bitnami/charts/tree/master/bitnami/kafka
 kafka:
   enabled: true
+  provisioning:
+    enabled: true
+    # Topic list is based on files below.
+    # - https://github.com/getsentry/snuba/blob/master/snuba/utils/streams/topics.py
+    # - https://github.com/getsentry/self-hosted/blob/master/install/create-kafka-topics.sh#L6
+    # Note that snuba component might fail if you set `hooks.snubaInit.kafka.enabled` to `false` and remove the topics from this default topic list.
+    topics:
+      - name: events
+        config:
+          "message.timestamp.type": LogAppendTime
+      - name: event-replacements
+      - name: snuba-commit-log
+        config:
+          "cleanup.policy": "compact,delete"
+          "min.compaction.lag.ms": "3600000"
+      - name: cdc
+      - name: transactions
+        config:
+          "message.timestamp.type": LogAppendTime
+      - name: snuba-transactions-commit-log
+        config:
+          "cleanup.policy": "compact,delete"
+          "min.compaction.lag.ms": "3600000"
+      - name: snuba-metrics
+        config:
+          "message.timestamp.type": LogAppendTime
+      - name: outcomes
+      - name: outcomes-billing
+      - name: ingest-sessions
+      - name: snuba-sessions-commit-log
+        config:
+          "cleanup.policy": "compact,delete"
+          "min.compaction.lag.ms": "3600000"
+      - name: snuba-metrics-commit-log
+        config:
+          "cleanup.policy": "compact,delete"
+          "min.compaction.lag.ms": "3600000"
+      - name: scheduled-subscriptions-events
+      - name: scheduled-subscriptions-transactions
+      - name: scheduled-subscriptions-sessions
+      - name: scheduled-subscriptions-metrics
+      - name: scheduled-subscriptions-generic-metrics-sets
+      - name: scheduled-subscriptions-generic-metrics-distributions
+      - name: scheduled-subscriptions-generic-metrics-counters
+      - name: events-subscription-results
+      - name: transactions-subscription-results
+      - name: sessions-subscription-results
+      - name: metrics-subscription-results
+      - name: generic-metrics-subscription-results
+      - name: snuba-queries
+        config:
+          "message.timestamp.type": LogAppendTime
+      - name: processed-profiles
+        config:
+          "message.timestamp.type": LogAppendTime
+      - name: profiles-call-tree
+      - name: ingest-replay-events
+        config:
+          "message.timestamp.type": LogAppendTime
+          "max.message.bytes": "15000000"
+      - name: snuba-generic-metrics
+        config:
+          "message.timestamp.type": LogAppendTime
+      - name: snuba-generic-metrics-sets-commit-log
+        config:
+          "cleanup.policy": "compact,delete"
+          "min.compaction.lag.ms": "3600000"
+      - name: snuba-generic-metrics-distributions-commit-log
+        config:
+          "cleanup.policy": "compact,delete"
+          "min.compaction.lag.ms": "3600000"
+      - name: snuba-generic-metrics-counters-commit-log
+        config:
+          "cleanup.policy": "compact,delete"
+          "min.compaction.lag.ms": "3600000"
+      - name: generic-events
+        config:
+          "message.timestamp.type": LogAppendTime
+      - name: snuba-generic-events-commit-log
+        config:
+          "cleanup.policy": "compact,delete"
+          "min.compaction.lag.ms": "3600000"
+      - name: group-attributes
+        config:
+          "message.timestamp.type": LogAppendTime
+      - name: snuba-attribution
+      - name: snuba-dead-letter-metrics
+      - name: snuba-dead-letter-sessions
+      - name: snuba-dead-letter-generic-metrics
+      - name: snuba-dead-letter-replays
+      - name: snuba-dead-letter-generic-events
+      - name: snuba-dead-letter-querylog
+      - name: snuba-dead-letter-group-attributes
+      - name: ingest-attachments
+      - name: ingest-transactions
+      - name: ingest-events
+      - name: ingest-replay-recordings
+      - name: ingest-metrics
+      - name: ingest-performance-metrics
+      - name: ingest-monitors
+      - name: profiles
+      - name: ingest-occurrences
+      - name: snuba-spans
+      - name: shared-resources-usage
+      - name: snuba-metrics-summaries
   listeners:
     client:
       protocol: "PLAINTEXT"
