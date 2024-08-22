@@ -1,5 +1,12 @@
 # Changelog
 
+## [24.0.1](https://github.com/sentry-kubernetes/charts/compare/sentry-v24.0.0...sentry-v24.0.1) (2024-08-22)
+
+
+### Bug Fixes
+
+* revert ClickHouse replicas number ([#1392](https://github.com/sentry-kubernetes/charts/issues/1392)) ([ad6fc29](https://github.com/sentry-kubernetes/charts/commit/ad6fc293e627f78f15b960b8d8cbc0d606cd194f))
+
 ## [24.0.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v23.12.1...sentry-v24.0.0) (2024-08-19)
 
 
