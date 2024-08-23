@@ -16,6 +16,10 @@ For now the full list of values is not documented but you can get inspired by th
 
 ## Upgrading from 22.x.x Version of This Chart to 23.x.x
 
+Make sure to revert the changes on Kafka replica & Clickhouse replica counts if the change doesn't suit you.
+
+## Upgrading from 22.x.x Version of This Chart to 23.x.x
+
 This version introduces changes to definitions of ingest-consumers and workers. These changes allow to balance
 ingestion pipeline with more granularity.
 
