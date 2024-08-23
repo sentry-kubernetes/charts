@@ -1735,8 +1735,8 @@ config:
 
 clickhouse:
   enabled: true
-  replicas: "1"
   clickhouse:
+    replicas: "1"
     imageVersion: "21.8.13.6"
     configmap:
       remote_servers:
