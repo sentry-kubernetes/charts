@@ -14,9 +14,9 @@ Big thanks to the maintainers of the [deprecated chart](https://github.com/helm/
 
 For now the full list of values is not documented but you can get inspired by the values.yaml specific to each directory.
 
-## Upgrading from 22.x.x Version of This Chart to 23.x.x
+## Upgrading from 23.x.x Version of This Chart to 24.x.x/25.x.x
 
-Make sure to revert the changes on Kafka replica & Clickhouse replica counts if the change doesn't suit you.
+Make sure to revert the changes on Clickhouse replica counts if the change doesn't suit you.
 
 ## Upgrading from 22.x.x Version of This Chart to 23.x.x
 
