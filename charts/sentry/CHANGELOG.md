@@ -1,5 +1,12 @@
 # Changelog
 
+## [25.0.1](https://github.com/sentry-kubernetes/charts/compare/sentry-v25.0.0...sentry-v25.0.1) (2024-08-23)
+
+
+### Bug Fixes
+
+* clickhouse replicas 1 ([d789562](https://github.com/sentry-kubernetes/charts/commit/d789562cbde4371b0057272976a981f66229ca50))
+
 ## [25.0.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v24.0.1...sentry-v25.0.0) (2024-08-23)
 
 
