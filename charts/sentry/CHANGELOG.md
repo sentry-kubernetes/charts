@@ -1,5 +1,16 @@
 # Changelog
 
+## [25.0.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v24.0.1...sentry-v25.0.0) (2024-08-23)
+
+
+### ⚠ BREAKING CHANGES
+
+* change default values again
+
+### Bug Fixes
+
+* change default values again ([a282b7e](https://github.com/sentry-kubernetes/charts/commit/a282b7e718c37c7d5d25aef19b6372ae00180ab0))
+
 ## [24.0.1](https://github.com/sentry-kubernetes/charts/compare/sentry-v24.0.0...sentry-v24.0.1) (2024-08-22)
 
 
