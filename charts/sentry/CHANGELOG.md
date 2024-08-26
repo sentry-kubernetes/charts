@@ -1,5 +1,12 @@
 # Changelog
 
+## [25.1.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v25.0.1...sentry-v25.1.0) (2024-08-26)
+
+
+### Features
+
+* add noStrictOffsetReset for ingest-consumer-attachments ([#1398](https://github.com/sentry-kubernetes/charts/issues/1398)) ([599294c](https://github.com/sentry-kubernetes/charts/commit/599294c33b9e5dfd076e581386a614f60fca38ef))
+
 ## [25.0.1](https://github.com/sentry-kubernetes/charts/compare/sentry-v25.0.0...sentry-v25.0.1) (2024-08-23)
 
 
