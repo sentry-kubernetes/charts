@@ -205,6 +205,8 @@ sentry:
     nodeSelector: {}
     # tolerations: []
     # podLabels: []
+    # logLevel: "WARNING"
+    # logFormat: "machine"
 
     # it's better to use prometheus adapter and scale based on
     # the size of the rabbitmq queue
@@ -331,6 +333,9 @@ sentry:
     # tolerations: []
     # podLabels: []
     # maxBatchSize: ""
+    # logLevel: "info"
+    # inputBlockSize: ""
+    # maxBatchTimeMs: ""
 
     # it's better to use prometheus adapter and scale based on
     # the size of the rabbitmq queue
@@ -366,6 +371,9 @@ sentry:
     # tolerations: []
     # podLabels: []
     # maxBatchSize: ""
+    # logLevel: "info"
+    # inputBlockSize: ""
+    # maxBatchTimeMs: ""
 
     # it's better to use prometheus adapter and scale based on
     # the size of the rabbitmq queue
@@ -555,6 +563,8 @@ sentry:
     # tolerations: []
     # podLabels: []
     # maxBatchSize: ""
+    # maxPollIntervalMs: ""
+    # logLevel: "info"
 
     # it's better to use prometheus adapter and scale based on
     # the size of the rabbitmq queue
@@ -588,6 +598,8 @@ sentry:
     # tolerations: []
     # podLabels: []
     # maxBatchSize: ""
+    # logLevel: "info"
+    # maxPollIntervalMs: ""
 
     # it's better to use prometheus adapter and scale based on
     # the size of the rabbitmq queue
@@ -1395,7 +1407,7 @@ hooks:
   enabled: true
   preUpgrade: false
   removeOnSuccess: true
-  activeDeadlineSeconds: 100
+  activeDeadlineSeconds: 600
   shareProcessNamespace: false
   dbCheck:
     enabled: true

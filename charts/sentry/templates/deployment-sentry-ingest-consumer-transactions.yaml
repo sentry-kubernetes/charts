@@ -102,6 +102,18 @@ spec:
           - "--processes"
           - "{{ .Values.sentry.ingestConsumerTransactions.concurrency }}"
           {{- end }}
+          {{- if .Values.sentry.ingestConsumerTransactions.logLevel }}
+          - "--log-level"
+          - "{{ .Values.sentry.ingestConsumerTransactions.logLevel }}"
+          {{- end }}
+          {{- if .Values.sentry.ingestConsumerTransactions.inputBlockSize }}
+          - "--input-block-size"
+          - "{{ .Values.sentry.ingestConsumerTransactions.inputBlockSize }}"
+          {{- end }}
+          {{- if .Values.sentry.ingestConsumerTransactions.maxBatchTimeMs }}
+          - "--max-batch-time-ms"
+          - "{{ .Values.sentry.ingestConsumerTransactions.maxBatchTimeMs }}"
+          {{- end }}
         {{- if .Values.sentry.ingestConsumerTransactions.livenessProbe.enabled }}
         livenessProbe:
           exec:
