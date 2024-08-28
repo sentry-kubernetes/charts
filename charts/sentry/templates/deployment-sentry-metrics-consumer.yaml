@@ -97,6 +97,14 @@ spec:
           - "--processes"
           - "{{ .Values.sentry.metricsConsumer.concurrency }}"
           {{- end }}
+          {{- if .Values.sentry.metricsConsumer.logLevel }}
+          - "--log-level"
+          - "{{ .Values.sentry.metricsConsumer.logLevel }}"
+          {{- end }}
+          {{- if .Values.sentry.metricsConsumer.maxPollIntervalMs }}
+          - "--max-poll-interval-ms"
+          - "{{ .Values.sentry.metricsConsumer.maxPollIntervalMs }}"
+          {{- end }}
         {{- if .Values.sentry.metricsConsumer.livenessProbe.enabled }}
         livenessProbe:
           exec:
