@@ -1,5 +1,12 @@
 # Changelog
 
+## [25.2.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v25.1.0...sentry-v25.2.0) (2024-08-28)
+
+
+### Features
+
+* add logLevel, maxPollIntervalMs, inputBlockSize, maxBatchTimeMs ([#1403](https://github.com/sentry-kubernetes/charts/issues/1403)) ([78de49b](https://github.com/sentry-kubernetes/charts/commit/78de49b0f94633cf098aff320a79d7a48443b9a5))
+
 ## [25.1.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v25.0.1...sentry-v25.1.0) (2024-08-26)
 
 
