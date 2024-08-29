@@ -15,7 +15,7 @@ user:
   # existingSecretKey: admin-password
 
 # this is required on the first installation, as sentry has to be initialized first
-# recommended to set false for updating the helm chart afterwards,
+# recommended to set false for updating the helm chart afterward,
 # as you will have some downtime on each update if it's a hook
 # deploys relay & snuba consumers as post hooks
 asHook: true
@@ -2190,4 +2190,3 @@ revisionHistoryLimit: 10
 #   options: []
 
 extraManifests: []
-
