@@ -8,8 +8,11 @@ Big thanks to the maintainers of the [deprecated chart](https://github.com/helm/
 
 ## How this chart works
 
-`helm repo add sentry https://sentry-kubernetes.github.io/charts`
-
+```
+helm repo add sentry https://sentry-kubernetes.github.io/charts
+helm repo update
+helm install my-sentry sentry/sentry --wait --timeout=1000s
+```
 ## Values
 
 For now the full list of values is not documented but you can get inspired by the values.yaml specific to each directory.
@@ -193,7 +196,7 @@ Otherwise, you should delete the old ClickHouse volumes in-order to upgrade to t
 
 ## Upgrading from 12.x.x version of this Chart to 13.0.0
 
-The service annotions have been moved from the `service` section to the respective service's service sub-section. So what was:
+The service annotations have been moved from the `service` section to the respective service's service sub-section. So what was:
 
 ```yaml
 service:
