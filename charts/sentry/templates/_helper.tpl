@@ -605,22 +605,22 @@ Common Sentry environment variables
   valueFrom:
     secretKeyRef:
       name: {{ .Values.discord.existingSecret }}
-      key: {{ default "application-id" .Values.slack.existingSecretApplicationId }}
+      key: {{ default "application-id" .Values.discord.existingSecretApplicationId }}
 - name: DISCORD_PUBLIC_KEY
   valueFrom:
     secretKeyRef:
       name: {{ .Values.discord.existingSecret }}
-      key: {{ default "public-key" .Values.slack.existingSecretPublicKey }}
+      key: {{ default "public-key" .Values.discord.existingSecretPublicKey }}
 - name: DISCORD_CLIENT_SECRET
   valueFrom:
     secretKeyRef:
       name: {{ .Values.discord.existingSecret }}
-      key: {{ default "client-secret" .Values.slack.existingSecretClientSecret }}
+      key: {{ default "client-secret" .Values.discord.existingSecretClientSecret }}
 - name: DISCORD_BOT_TOKEN
   valueFrom:
     secretKeyRef:
       name: {{ .Values.discord.existingSecret }}
-      key: {{ default "bot-token" .Values.slack.existingSecretBotToken }}      
+      key: {{ default "bot-token" .Values.discord.existingSecretBotToken }}      
 {{- end }}
 {{- if and .Values.github.existingSecret }}
 - name: GITHUB_APP_PRIVATE_KEY
