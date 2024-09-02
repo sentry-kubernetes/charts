@@ -8,7 +8,11 @@ Big thanks to the maintainers of the [deprecated chart](https://github.com/helm/
 
 ## How this chart works
 
-`helm repo add sentry https://sentry-kubernetes.github.io/charts`
+```
+helm repo add sentry https://sentry-kubernetes.github.io/charts
+helm repo update
+helm install my-sentry sentry/sentry --wait --timeout=1000s
+```
 
 ## Values
 
