@@ -871,7 +871,7 @@ snuba:
     # processes: ""
     # inputBlockSize: ""
     # outputBlockSize: ""
-    # maxBatchTimeMs: ""
+    maxBatchTimeMs: 750
     # queuedMaxMessagesKbytes: ""
     # queuedMinMessages: ""
 
@@ -939,7 +939,7 @@ snuba:
     # processes: ""
     # inputBlockSize: ""
     # outputBlockSize: ""
-    # maxBatchTimeMs: ""
+    maxBatchTimeMs: 750
     # queuedMaxMessagesKbytes: ""
     # queuedMinMessages: ""
 
@@ -989,6 +989,14 @@ snuba:
       periodSeconds: 320
     # volumes: []
     # volumeMounts: []
+    # maxBatchSize: ""
+    # processes: ""
+    # inputBlockSize: ""
+    # outputBlockSize: ""
+    maxBatchTimeMs: 750
+    # queuedMaxMessagesKbytes: ""
+    # queuedMinMessages: ""
+    # noStrictOffsetReset: false
 
   subscriptionConsumerEvents:
     enabled: true
@@ -1029,6 +1037,14 @@ snuba:
       periodSeconds: 320
     # volumes: []
     # volumeMounts: []
+    # maxBatchSize: ""
+    # processes: ""
+    # inputBlockSize: ""
+    # outputBlockSize: ""
+    maxBatchTimeMs: 750
+    # queuedMaxMessagesKbytes: ""
+    # queuedMinMessages: ""
+    # noStrictOffsetReset: false
 
   genericMetricsDistributionConsumer:
     enabled: true
@@ -1049,6 +1065,14 @@ snuba:
       periodSeconds: 320
     # volumes: []
     # volumeMounts: []
+    # maxBatchSize: ""
+    # processes: ""
+    # inputBlockSize: ""
+    # outputBlockSize: ""
+    maxBatchTimeMs: 750
+    # queuedMaxMessagesKbytes: ""
+    # queuedMinMessages: ""
+    # noStrictOffsetReset: false
 
   genericMetricsSetsConsumer:
     enabled: true
@@ -1069,6 +1093,14 @@ snuba:
       periodSeconds: 320
     # volumes: []
     # volumeMounts: []
+    # maxBatchSize: ""
+    # processes: ""
+    # inputBlockSize: ""
+    # outputBlockSize: ""
+    maxBatchTimeMs: 750
+    # queuedMaxMessagesKbytes: ""
+    # queuedMinMessages: ""
+    # noStrictOffsetReset: false
 
   subscriptionConsumerMetrics:
     enabled: true
@@ -1145,14 +1177,14 @@ snuba:
       enabled: true
       initialDelaySeconds: 5
       periodSeconds: 320
-    # noStrictOffsetReset: false
     # maxBatchSize: ""
     # processes: ""
     # inputBlockSize: ""
     # outputBlockSize: ""
-    # maxBatchTimeMs: ""
+    maxBatchTimeMs: 750
     # queuedMaxMessagesKbytes: ""
     # queuedMinMessages: ""
+    # noStrictOffsetReset: false
 
     # volumeMounts:
     #   - mountPath: /dev/shm
@@ -1208,14 +1240,15 @@ snuba:
       enabled: true
       initialDelaySeconds: 5
       periodSeconds: 320
-    # noStrictOffsetReset: false
     # maxBatchSize: ""
     # processes: ""
     # inputBlockSize: ""
     # outputBlockSize: ""
-    # maxBatchTimeMs: ""
+    maxBatchTimeMs: 750
     # queuedMaxMessagesKbytes: ""
     # queuedMinMessages: ""
+    # noStrictOffsetReset: false
+
 
     # volumeMounts:
     #   - mountPath: /dev/shm
@@ -1241,14 +1274,14 @@ snuba:
       enabled: true
       initialDelaySeconds: 5
       periodSeconds: 320
-    # noStrictOffsetReset: false
     # maxBatchSize: ""
     # processes: ""
     # inputBlockSize: ""
     # outputBlockSize: ""
-    # maxBatchTimeMs: ""
+    maxBatchTimeMs: 750
     # queuedMaxMessagesKbytes: ""
     # queuedMinMessages: ""
+    # noStrictOffsetReset: false
 
     # volumeMounts:
     #   - mountPath: /dev/shm
@@ -1274,14 +1307,14 @@ snuba:
       enabled: true
       initialDelaySeconds: 5
       periodSeconds: 320
-    # noStrictOffsetReset: false
     # maxBatchSize: ""
     # processes: ""
     # inputBlockSize: ""
     # outputBlockSize: ""
-    # maxBatchTimeMs: ""
+    maxBatchTimeMs: 750
     # queuedMaxMessagesKbytes: ""
     # queuedMinMessages: ""
+    # noStrictOffsetReset: false
 
     # volumeMounts:
     #   - mountPath: /dev/shm
@@ -1307,14 +1340,14 @@ snuba:
       enabled: true
       initialDelaySeconds: 5
       periodSeconds: 320
-    # noStrictOffsetReset: false
     # maxBatchSize: ""
     # processes: ""
     # inputBlockSize: ""
     # outputBlockSize: ""
-    # maxBatchTimeMs: ""
+    maxBatchTimeMs: 750
     # queuedMaxMessagesKbytes: ""
     # queuedMinMessages: ""
+    # noStrictOffsetReset: false
 
     # volumeMounts:
     #   - mountPath: /dev/shm
@@ -1341,14 +1374,14 @@ snuba:
       enabled: true
       initialDelaySeconds: 5
       periodSeconds: 320
-    # noStrictOffsetReset: false
     # maxBatchSize: ""
     # processes: ""
     # inputBlockSize: ""
     # outputBlockSize: ""
-    # maxBatchTimeMs: ""
+    maxBatchTimeMs: 750
     # queuedMaxMessagesKbytes: ""
     # queuedMinMessages: ""
+    # noStrictOffsetReset: false
 
     # volumeMounts:
     #   - mountPath: /dev/shm
@@ -1375,14 +1408,14 @@ snuba:
       enabled: true
       initialDelaySeconds: 5
       periodSeconds: 320
-    # noStrictOffsetReset: false
     # maxBatchSize: ""
     # processes: ""
     # inputBlockSize: ""
     # outputBlockSize: ""
-    # maxBatchTimeMs: ""
+    maxBatchTimeMs: 750
     # queuedMaxMessagesKbytes: ""
     # queuedMinMessages: ""
+    # noStrictOffsetReset: false
 
     # volumeMounts:
     #   - mountPath: /dev/shm

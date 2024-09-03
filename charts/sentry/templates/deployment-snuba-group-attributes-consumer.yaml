@@ -85,8 +85,6 @@ spec:
           - "snuba-group-attributes-group"
           - "--auto-offset-reset"
           - "{{ .Values.snuba.groupAttributesConsumer.autoOffsetReset }}"
-          - "--max-batch-time-ms"
-          - "750"
           {{- if .Values.snuba.groupAttributesConsumer.maxBatchSize }}
           - "--max-batch-size"
           - "{{ .Values.snuba.groupAttributesConsumer.maxBatchSize }}"

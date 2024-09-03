@@ -85,8 +85,6 @@ spec:
           - "snuba-gen-metrics-sets-consumers"
           - "--auto-offset-reset"
           - "{{ .Values.snuba.genericMetricsSetsConsumer.autoOffsetReset }}"
-          - "--max-batch-time-ms"
-          - "750"
           {{- if .Values.snuba.genericMetricsSetsConsumer.maxBatchSize }}
           - "--max-batch-size"
           - "{{ .Values.snuba.genericMetricsSetsConsumer.maxBatchSize }}"

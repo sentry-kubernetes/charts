@@ -85,8 +85,6 @@ spec:
           - "replays_group"
           - "--auto-offset-reset"
           - "{{ .Values.snuba.replaysConsumer.autoOffsetReset }}"
-          - "--max-batch-time-ms"
-          - "750"
           {{- if .Values.snuba.replaysConsumer.maxBatchSize }}
           - "--max-batch-size"
           - "{{ .Values.snuba.replaysConsumer.maxBatchSize }}"
