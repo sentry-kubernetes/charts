@@ -1,5 +1,13 @@
 # Changelog
 
+## [25.2.1](https://github.com/sentry-kubernetes/charts/compare/sentry-v25.2.0...sentry-v25.2.1) (2024-09-03)
+
+
+### Bug Fixes
+
+* del --max-batch-time-ms and enable maxBatchTimeMs in values ([#1412](https://github.com/sentry-kubernetes/charts/issues/1412)) ([086b477](https://github.com/sentry-kubernetes/charts/commit/086b47720b8fe0ee15fd65eafc5446dccc903366))
+* discord template typos ([#1408](https://github.com/sentry-kubernetes/charts/issues/1408)) ([044cc25](https://github.com/sentry-kubernetes/charts/commit/044cc254873911ae668e1c6bd1a34ac0883a1db8))
+
 ## [25.2.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v25.1.0...sentry-v25.2.0) (2024-09-02)
 
 
