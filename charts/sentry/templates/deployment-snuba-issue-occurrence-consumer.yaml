@@ -85,8 +85,6 @@ spec:
           - "generic_events_group"
           - "--auto-offset-reset"
           - "{{ .Values.snuba.issueOccurrenceConsumer.autoOffsetReset }}"
-          - "--max-batch-time-ms"
-          - "750"
           {{- if .Values.snuba.issueOccurrenceConsumer.maxBatchSize }}
           - "--max-batch-size"
           - "{{ .Values.snuba.issueOccurrenceConsumer.maxBatchSize }}"

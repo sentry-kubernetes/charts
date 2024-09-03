@@ -87,8 +87,6 @@ spec:
           - "{{ .Values.snuba.outcomesBillingConsumer.autoOffsetReset }}"
           - "--raw-events-topic"
           - "outcomes-billing"
-          - "--max-batch-time-ms"
-          - "750"
           {{- if .Values.snuba.outcomesBillingConsumer.maxBatchSize }}
           - "--max-batch-size"
           - "{{ .Values.snuba.outcomesBillingConsumer.maxBatchSize }}"

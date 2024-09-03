@@ -85,8 +85,6 @@ spec:
           - "profiles_group"
           - "--auto-offset-reset"
           - "{{ .Values.snuba.profilingProfilesConsumer.autoOffsetReset }}"
-          - "--max-batch-time-ms"
-          - "750"
           {{- if .Values.snuba.profilingProfilesConsumer.maxBatchSize }}
           - "--max-batch-size"
           - "{{ .Values.snuba.profilingProfilesConsumer.maxBatchSize }}"

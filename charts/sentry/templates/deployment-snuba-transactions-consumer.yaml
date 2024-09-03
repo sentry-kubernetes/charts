@@ -85,8 +85,6 @@ spec:
           - "transactions_group"
           - "--auto-offset-reset"
           - "{{ .Values.snuba.transactionsConsumer.autoOffsetReset }}"
-          - "--max-batch-time-ms"
-          - "750"
           {{- if .Values.snuba.transactionsConsumer.maxBatchSize }}
           - "--max-batch-size"
           - "{{ .Values.snuba.transactionsConsumer.maxBatchSize }}"
