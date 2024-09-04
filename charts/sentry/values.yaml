@@ -520,7 +520,6 @@ sentry:
   billingMetricsConsumer:
     enabled: true
     replicas: 1
-    # concurrency: 4
     env: []
     resources: {}
     affinity: {}
@@ -529,7 +528,6 @@ sentry:
     containerSecurityContext: {}
     # tolerations: []
     # podLabels: []
-    # maxBatchSize: ""
 
     # it's better to use prometheus adapter and scale based on
     # the size of the rabbitmq queue
@@ -562,7 +560,6 @@ sentry:
     containerSecurityContext: {}
     # tolerations: []
     # podLabels: []
-    # maxBatchSize: ""
     # maxPollIntervalMs: ""
     # logLevel: "info"
 
@@ -597,7 +594,6 @@ sentry:
     containerSecurityContext: {}
     # tolerations: []
     # podLabels: []
-    # maxBatchSize: ""
     # logLevel: "info"
     # maxPollIntervalMs: ""
 
