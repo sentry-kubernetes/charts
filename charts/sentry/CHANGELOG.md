@@ -1,5 +1,12 @@
 # Changelog
 
+## [25.2.2](https://github.com/sentry-kubernetes/charts/compare/sentry-v25.2.1...sentry-v25.2.2) (2024-09-04)
+
+
+### Bug Fixes
+
+* remove invalid --max-batch-size and --processes parameters from some consumers ([#1416](https://github.com/sentry-kubernetes/charts/issues/1416)) ([e42dc12](https://github.com/sentry-kubernetes/charts/commit/e42dc12e9bddee1e4d42db7173901ccde0cd3371))
+
 ## [25.2.1](https://github.com/sentry-kubernetes/charts/compare/sentry-v25.2.0...sentry-v25.2.1) (2024-09-03)
 
 
