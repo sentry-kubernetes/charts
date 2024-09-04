@@ -89,10 +89,6 @@ spec:
           - "/tmp/health.txt"
           {{- end }}
           - "--"
-          {{- if .Values.sentry.genericMetricsConsumer.maxBatchSize }}
-          - "--max-batch-size"
-          - "{{ .Values.sentry.genericMetricsConsumer.maxBatchSize }}"
-          {{- end }}
           {{- if .Values.sentry.genericMetricsConsumer.concurrency }}
           - "--processes"
           - "{{ .Values.sentry.genericMetricsConsumer.concurrency }}"

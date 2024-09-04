@@ -9,13 +9,13 @@ helm repo add sentry https://sentry-kubernetes.github.io/charts
 ## Without overrides
 
 ```
-helm install sentry sentry/sentry
+helm install sentry sentry/sentry --wait --timeout=1000s
 ```
 
 ## With your own values file
 
 ```
-helm install sentry sentry/sentry -f values.yaml
+helm install sentry sentry/sentry -f values.yaml --wait --timeout=1000s
 ```
 
 # Upgrade
