@@ -1,0 +1,38 @@
+{{- if and .Values.symbolicator.enabled .Values.symbolicator.api.autoscaling.enabled }}
+apiVersion: {{ template "sentry.autoscaling.apiVersion" . }}
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ template "sentry.fullname" . }}-sentry-symbolicator-api
+  labels:
+    app: {{ template "sentry.fullname" . }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
+    release: "{{ .Release.Name }}"
+    heritage: "{{ .Release.Service }}"
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ template "sentry.fullname" . }}-symbolicator-api
+  minReplicas: {{ .Values.symbolicator.api.autoscaling.minReplicas }}
+  maxReplicas: {{ .Values.symbolicator.api.autoscaling.maxReplicas }}
+  {{- if eq (include "sentry.autoscaling.apiVersion" .) "autoscaling/v1" }}
+  targetCPUUtilizationPercentage: {{ .Values.symbolicator.api.autoscaling.targetCPUUtilizationPercentage }}
+  {{- else if semverCompare ">=1.27-0" .Capabilities.KubeVersion.GitVersion }}
+  metrics:
+  - type: ContainerResource
+    containerResource:
+      container: {{ .Chart.Name }}-symbolicator
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: {{ .Values.symbolicator.api.autoscaling.targetCPUUtilizationPercentage }}
+  {{- else }}
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: {{ .Values.symbolicator.api.autoscaling.targetCPUUtilizationPercentage }}
+  {{- end }}
+{{- end }}

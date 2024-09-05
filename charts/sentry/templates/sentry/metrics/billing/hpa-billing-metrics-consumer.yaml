@@ -1,8 +1,8 @@
-{{- if .Values.vroom.autoscaling.enabled }}
+{{- if and .Values.sentry.billingMetricsConsumer.enabled .Values.sentry.billingMetricsConsumer.autoscaling.enabled }}
 apiVersion: {{ template "sentry.autoscaling.apiVersion" . }}
 kind: HorizontalPodAutoscaler
 metadata:
-  name: {{ template "sentry.fullname" . }}-vroom
+  name: {{ template "sentry.fullname" . }}-sentry-billing-metrics-consumer
   labels:
     app: {{ template "sentry.fullname" . }}
     chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
@@ -15,26 +15,26 @@ metadata:
     meta.helm.sh/release-name: "{{ .Release.Name }}"
     meta.helm.sh/release-namespace: "{{ .Release.Namespace }}"
     "helm.sh/hook": "post-install,post-upgrade"
-    "helm.sh/hook-weight": "25"
+    "helm.sh/hook-weight": "10"
   {{- end }}
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: {{ template "sentry.fullname" . }}-vroom
-  minReplicas: {{ .Values.vroom.autoscaling.minReplicas }}
-  maxReplicas: {{ .Values.vroom.autoscaling.maxReplicas }}
+    name: {{ template "sentry.fullname" . }}-billing-metrics-consumer
+  minReplicas: {{ .Values.sentry.billingMetricsConsumer.autoscaling.minReplicas }}
+  maxReplicas: {{ .Values.sentry.billingMetricsConsumer.autoscaling.maxReplicas }}
   {{- if eq (include "sentry.autoscaling.apiVersion" .) "autoscaling/v1" }}
-  targetCPUUtilizationPercentage: {{ .Values.vroom.autoscaling.targetCPUUtilizationPercentage }}
+  targetCPUUtilizationPercentage: {{ .Values.sentry.billingMetricsConsumer.autoscaling.targetCPUUtilizationPercentage }}
   {{- else if semverCompare ">=1.27-0" .Capabilities.KubeVersion.GitVersion }}
   metrics:
   - type: ContainerResource
     containerResource:
-      container: {{ .Chart.Name }}-vroom
+      container: {{ .Chart.Name }}-billing-metrics-consumer
       name: cpu
       target:
         type: Utilization
-        averageUtilization: {{ .Values.vroom.autoscaling.targetCPUUtilizationPercentage }}
+        averageUtilization: {{ .Values.sentry.billingMetricsConsumer.autoscaling.targetCPUUtilizationPercentage }}
   {{- else }}
   metrics:
   - type: Resource
@@ -42,6 +42,6 @@ spec:
       name: cpu
       target:
         type: Utilization
-        averageUtilization: {{ .Values.vroom.autoscaling.targetCPUUtilizationPercentage }}
+        averageUtilization: {{ .Values.sentry.billingMetricsConsumer.autoscaling.targetCPUUtilizationPercentage }}
   {{- end }}
 {{- end }}
