@@ -73,7 +73,12 @@ spec:
           - "run"
           - "cron"
           {{- if .Values.sentry.cron.logLevel }}
-          - "-l{{ .Values.sentry.cron.logLevel}}"
+          - "--loglevel"
+          - "{{ .Values.sentry.cron.logLevel }}"
+          {{- end }}
+          {{- if .Values.sentry.cron.logFormat }}
+          - "--logformat"
+          - "{{ .Values.sentry.cron.logFormat }}"
           {{- end }}
         env:
         - name: C_FORCE_ROOT

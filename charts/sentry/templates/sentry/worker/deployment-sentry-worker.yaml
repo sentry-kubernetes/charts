@@ -79,7 +79,7 @@ spec:
           - "{{ .Values.sentry.worker.concurrency }}"
           {{- end }}
           {{- if .Values.sentry.worker.logLevel }}
-          - "--log-level"
+          - "--loglevel"
           - "{{ .Values.sentry.worker.logLevel }}"
           {{- end }}
           {{- if .Values.sentry.worker.logFormat }}
