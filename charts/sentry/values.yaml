@@ -58,6 +58,8 @@ serviceAccount:
   automountServiceAccountToken: true
 
 vroom:
+  # annotations: {}
+  # args: []
   replicas: 1
   env: []
   probeFailureThreshold: 5
@@ -70,6 +72,7 @@ vroom:
   nodeSelector: {}
   securityContext: {}
   containerSecurityContext: {}
+  # priorityClassName: ""
   service:
     annotations: {}
   # tolerations: []
@@ -81,10 +84,12 @@ vroom:
     maxReplicas: 5
     targetCPUUtilizationPercentage: 50
   sidecars: []
+  # topologySpreadConstraints: []
   volumes: []
   volumeMounts: []
-  init:
-    resources: {}
+  # TODO: No files in the current directory use the parameter.
+  # init:
+    # resources: {}
     # additionalArgs: []
     # env: []
     # volumes: []
@@ -92,6 +97,7 @@ vroom:
 
 relay:
   enabled: true
+  # annotations: {}
   replicas: 1
   # args: []
   mode: managed
@@ -104,6 +110,8 @@ relay:
   resources: {}
   affinity: {}
   nodeSelector: {}
+  # healthCheck:
+  #   readinessRequestPath: ""
   securityContext: {}
   # if you are using GKE Ingress controller use 'securityPolicy' to add Google Cloud Armor Ingress policy
   securityPolicy: ""
@@ -114,12 +122,12 @@ relay:
     annotations: {}
   # tolerations: []
   # podLabels: []
-
   autoscaling:
     enabled: false
     minReplicas: 2
     maxReplicas: 5
     targetCPUUtilizationPercentage: 50
+  # priorityClassName: ""
   sidecars: []
   topologySpreadConstraints: []
   volumes: []
@@ -205,8 +213,8 @@ sentry:
     nodeSelector: {}
     # tolerations: []
     # podLabels: []
-    # logLevel: "WARNING"
-    # logFormat: "machine"
+    # logLevel: "WARNING" # DEBUG|INFO|WARNING|ERROR|CRITICAL|FATAL
+    # logFormat: "machine" # human|machine
 
     # it's better to use prometheus adapter and scale based on
     # the size of the rabbitmq queue
@@ -629,8 +637,8 @@ sentry:
     topologySpreadConstraints: []
     volumes: []
     # volumeMounts: []
-    ## Log level can be any of: DEBUG, INFO, WARNING, ERROR, CRITICAL, FATAL
-    # logLevel: info
+    # logLevel: "WARNING" # DEBUG|INFO|WARNING|ERROR|CRITICAL|FATAL
+    # logFormat: "machine" # human|machine
 
   subscriptionConsumerEvents:
     enabled: true
