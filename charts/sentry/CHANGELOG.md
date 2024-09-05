@@ -1,5 +1,12 @@
 # Changelog
 
+## [25.3.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v25.2.2...sentry-v25.3.0) (2024-09-05)
+
+
+### Features
+
+* enhance logging options and add missing configuration parameters ([#1419](https://github.com/sentry-kubernetes/charts/issues/1419)) ([c666226](https://github.com/sentry-kubernetes/charts/commit/c666226346114998ff3c04a005d494e79bd7e13e))
+
 ## [25.2.2](https://github.com/sentry-kubernetes/charts/compare/sentry-v25.2.1...sentry-v25.2.2) (2024-09-04)
 
 
