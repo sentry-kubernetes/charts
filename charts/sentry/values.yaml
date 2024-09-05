@@ -58,6 +58,8 @@ serviceAccount:
   automountServiceAccountToken: true
 
 vroom:
+  # annotations: {}
+  # args: []
   replicas: 1
   env: []
   probeFailureThreshold: 5
@@ -70,6 +72,7 @@ vroom:
   nodeSelector: {}
   securityContext: {}
   containerSecurityContext: {}
+  # priorityClassName: ""
   service:
     annotations: {}
   # tolerations: []
@@ -81,8 +84,10 @@ vroom:
     maxReplicas: 5
     targetCPUUtilizationPercentage: 50
   sidecars: []
+  # topologySpreadConstraints: []
   volumes: []
   volumeMounts: []
+  # TODO: No files in the current directory use the parameter:
   init:
     resources: {}
     # additionalArgs: []
@@ -92,6 +97,7 @@ vroom:
 
 relay:
   enabled: true
+  # annotations: {}
   replicas: 1
   # args: []
   mode: managed
@@ -104,6 +110,8 @@ relay:
   resources: {}
   affinity: {}
   nodeSelector: {}
+  # healthCheck:
+  #   readinessRequestPath: ""
   securityContext: {}
   # if you are using GKE Ingress controller use 'securityPolicy' to add Google Cloud Armor Ingress policy
   securityPolicy: ""
@@ -114,7 +122,7 @@ relay:
     annotations: {}
   # tolerations: []
   # podLabels: []
-
+  # priorityClassName: ""
   autoscaling:
     enabled: false
     minReplicas: 2
@@ -205,8 +213,8 @@ sentry:
     nodeSelector: {}
     # tolerations: []
     # podLabels: []
-    # logLevel: "WARNING"
-    # logFormat: "machine"
+    # logLevel: "WARNING" # DEBUG|INFO|WARNING|ERROR|CRITICAL|FATAL
+    # logFormat: "machine" # human|machine
 
     # it's better to use prometheus adapter and scale based on
     # the size of the rabbitmq queue
@@ -629,8 +637,8 @@ sentry:
     topologySpreadConstraints: []
     volumes: []
     # volumeMounts: []
-    ## Log level can be any of: DEBUG, INFO, WARNING, ERROR, CRITICAL, FATAL
-    # logLevel: info
+    # logLevel: "WARNING" # DEBUG|INFO|WARNING|ERROR|CRITICAL|FATAL
+    # logFormat: "machine" # human|machine
 
   subscriptionConsumerEvents:
     enabled: true
@@ -1741,7 +1749,7 @@ filestore:
     ## Point this at a pre-configured secret containing a service account. The resulting
     ## secret will be mounted at /var/run/secrets/google
     # secretName:
-    # credentialsFile: credentials.json
+  # credentialsFile: credentials.json
   # bucketName:
 
   ## Currently unconfigured and changing this has no impact on the template configuration.
@@ -2084,7 +2092,7 @@ rabbitmq:
   memoryHighWatermark: {}
     # enabled: true
     # type: relative
-    # value: 0.4
+  # value: 0.4
 
   extraSecrets:
     load-definition:
