@@ -2056,7 +2056,8 @@ externalPostgresql:
   username: postgres
   # password: postgres
   # existingSecret: secret-name
-  ## If externalPostgresql.existingSecret is used, externalPostgresql.existingSecretKeys.password must be specified.
+  # set existingSecretKeys in a secret, if not specified, value from the secret won't be used
+  # if externalPostgresql.existingSecret is used, externalPostgresql.existingSecretKeys.password must be specified.
   existingSecretKeys: {}
   #   password: password # Required if existingSecret is used.
   #   username: username
