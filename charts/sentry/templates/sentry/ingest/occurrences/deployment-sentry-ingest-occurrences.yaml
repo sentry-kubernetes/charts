@@ -24,9 +24,7 @@ spec:
       app: {{ template "sentry.fullname" . }}
       release: "{{ .Release.Name }}"
       role: ingest-occurrences
-{{- if not .Values.sentry.ingestOccurrences.autoscaling.enabled }}
   replicas: {{ .Values.sentry.ingestOccurrences.replicas }}
-{{- end }}
   template:
     metadata:
       annotations:

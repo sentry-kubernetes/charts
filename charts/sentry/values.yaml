@@ -415,14 +415,6 @@ sentry:
     containerSecurityContext: {}
     # tolerations: []
     # podLabels: []
-
-    # it's better to use prometheus adapter and scale based on
-    # the size of the rabbitmq queue
-    autoscaling:
-      enabled: false
-      minReplicas: 1
-      maxReplicas: 3
-      targetCPUUtilizationPercentage: 50
     sidecars: []
     topologySpreadConstraints: []
     volumes: []
@@ -445,14 +437,6 @@ sentry:
     containerSecurityContext: {}
     # tolerations: []
     # podLabels: []
-
-    # it's better to use prometheus adapter and scale based on
-    # the size of the rabbitmq queue
-    autoscaling:
-      enabled: false
-      minReplicas: 1
-      maxReplicas: 3
-      targetCPUUtilizationPercentage: 50
     sidecars: []
     topologySpreadConstraints: []
     volumes: []
@@ -464,6 +448,7 @@ sentry:
     # volumeMounts:
     #   - mountPath: /dev/shm
     #     name: dshm
+
   ingestOccurrences:
     enabled: true
     replicas: 1
@@ -475,14 +460,6 @@ sentry:
     containerSecurityContext: {}
     # tolerations: []
     # podLabels: []
-
-    # it's better to use prometheus adapter and scale based on
-    # the size of the rabbitmq queue
-    autoscaling:
-      enabled: false
-      minReplicas: 1
-      maxReplicas: 3
-      targetCPUUtilizationPercentage: 50
     sidecars: []
     topologySpreadConstraints: []
     volumes: []
@@ -506,14 +483,6 @@ sentry:
     containerSecurityContext: {}
     # tolerations: []
     # podLabels: []
-
-    # it's better to use prometheus adapter and scale based on
-    # the size of the rabbitmq queue
-    autoscaling:
-      enabled: false
-      minReplicas: 1
-      maxReplicas: 3
-      targetCPUUtilizationPercentage: 50
     sidecars: []
     topologySpreadConstraints: []
     volumes: []
@@ -536,14 +505,6 @@ sentry:
     containerSecurityContext: {}
     # tolerations: []
     # podLabels: []
-
-    # it's better to use prometheus adapter and scale based on
-    # the size of the rabbitmq queue
-    autoscaling:
-      enabled: false
-      minReplicas: 1
-      maxReplicas: 3
-      targetCPUUtilizationPercentage: 50
     sidecars: []
     topologySpreadConstraints: []
     volumes: []
@@ -570,14 +531,6 @@ sentry:
     # podLabels: []
     # maxPollIntervalMs: ""
     # logLevel: "info"
-
-    # it's better to use prometheus adapter and scale based on
-    # the size of the rabbitmq queue
-    autoscaling:
-      enabled: false
-      minReplicas: 1
-      maxReplicas: 3
-      targetCPUUtilizationPercentage: 50
     sidecars: []
     topologySpreadConstraints: []
     volumes: []
@@ -604,14 +557,6 @@ sentry:
     # podLabels: []
     # logLevel: "info"
     # maxPollIntervalMs: ""
-
-    # it's better to use prometheus adapter and scale based on
-    # the size of the rabbitmq queue
-    autoscaling:
-      enabled: false
-      minReplicas: 1
-      maxReplicas: 3
-      targetCPUUtilizationPercentage: 50
     sidecars: []
     topologySpreadConstraints: []
     volumes: []

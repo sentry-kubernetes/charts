@@ -24,9 +24,7 @@ spec:
       app: {{ template "sentry.fullname" . }}
       release: "{{ .Release.Name }}"
       role: ingest-replay-recordings
-{{- if not .Values.sentry.ingestReplayRecordings.autoscaling.enabled }}
   replicas: {{ .Values.sentry.ingestReplayRecordings.replicas }}
-{{- end }}
   template:
     metadata:
       annotations:

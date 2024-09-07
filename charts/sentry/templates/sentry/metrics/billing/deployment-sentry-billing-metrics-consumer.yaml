@@ -24,9 +24,7 @@ spec:
       app: {{ template "sentry.fullname" . }}
       release: "{{ .Release.Name }}"
       role: billing-metrics-consumer
-{{- if not .Values.sentry.billingMetricsConsumer.autoscaling.enabled }}
   replicas: {{ .Values.sentry.billingMetricsConsumer.replicas }}
-{{- end }}
   template:
     metadata:
       annotations:

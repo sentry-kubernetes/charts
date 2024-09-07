@@ -24,9 +24,7 @@ spec:
       app: {{ template "sentry.fullname" . }}
       release: "{{ .Release.Name }}"
       role: ingest-profiles
-{{- if not .Values.sentry.ingestProfiles.autoscaling.enabled }}
   replicas: {{ .Values.sentry.ingestProfiles.replicas }}
-{{- end }}
   template:
     metadata:
       annotations:
