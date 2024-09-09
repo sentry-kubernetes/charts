@@ -2050,16 +2050,16 @@ postgresql:
 
 ## This value is only used when postgresql.enabled is set to false
 ## Set either externalPostgresql.password or externalPostgresql.existingSecret to configure password
-## externalPostgresql.existingSecret should have a key of 'postgresql-password' which holds the password
 externalPostgresql:
   # host: postgres
   port: 5432
   username: postgres
   # password: postgres
   # existingSecret: secret-name
-  ## set existingSecretKeys in a secret, if not specified, value from the secret won't be used
+  # set existingSecretKeys in a secret, if not specified, value from the secret won't be used
+  # if externalPostgresql.existingSecret is used, externalPostgresql.existingSecretKeys.password must be specified.
   existingSecretKeys: {}
-  #   password: password
+  #   password: postgresql-password # Required if existingSecret is used. Key in existingSecret.
   #   username: username
   #   database: database
   #   port: port
