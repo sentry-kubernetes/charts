@@ -3,9 +3,21 @@
   "enabled": true,
   "prConcurrentLimit": 30,
   "enabledManagers": ["helmv3", "github-actions"],
+  "schedule": [
+    "before 5am on Monday"
+  ],
   "packageRules": [
     {
-      "matchUpdateTypes": ["patch"]
+      "updateTypes": ["patch"],
+      "schedule": [
+        "before 5am on Monday"
+      ]
+    },
+    {
+      "updateTypes": ["major"],
+      "schedule": [
+        "before 5am on the first day of the month"
+      ]
     }
   ]
 }
