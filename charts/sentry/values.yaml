@@ -139,6 +139,18 @@ relay:
     # env: []
     # volumes: []
     # volumeMounts: []
+  # cache:
+  #   envelopeBufferSize: 1000
+  # logging:
+  #   level: info
+  #   format: json
+  processing:
+    kafkaConfig:
+      messageMaxBytes: 50000000
+    #  messageTimeoutMs:
+    #  requestTimeoutMs:
+    #  deliveryTimeoutMs:
+    #  apiVersionRequestTimeoutMs:
 
 geodata:
   path: ""
