@@ -1,5 +1,13 @@
 # Changelog
 
+## [25.4.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v25.3.0...sentry-v25.4.0) (2024-09-10)
+
+
+### Features
+
+* add cache, logging, and kafka configuration options to sentry relay ([#1438](https://github.com/sentry-kubernetes/charts/issues/1438)) ([4a84c9f](https://github.com/sentry-kubernetes/charts/commit/4a84c9f5168969e044c0303ca81b60ce743303fd))
+* add excludequeues option to sentry worker deployment ([#1441](https://github.com/sentry-kubernetes/charts/issues/1441)) ([78e80fb](https://github.com/sentry-kubernetes/charts/commit/78e80fb35677b1174e9d6d5dcbc37f58a32b86ac))
+
 ## [25.3.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v25.2.2...sentry-v25.3.0) (2024-09-05)
 
 
