@@ -2,5 +2,22 @@
   "extends": ["config:recommended", ":rebaseStalePrs", "docker:disable"],
   "enabled": true,
   "prConcurrentLimit": 30,
-  "enabledManagers": ["helmv3", "github-actions"]
+  "enabledManagers": ["helmv3", "github-actions"],
+  "schedule": [
+    "before 5am on Monday"
+  ],
+  "packageRules": [
+    {
+      "updateTypes": ["patch", "minor"],
+      "schedule": [
+        "before 5am on Monday"
+      ]
+    },
+    {
+      "updateTypes": ["major"],
+      "schedule": [
+        "before 5am on the first day of the month"
+      ]
+    }
+  ]
 }
