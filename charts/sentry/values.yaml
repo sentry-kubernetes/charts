@@ -139,6 +139,18 @@ relay:
     # env: []
     # volumes: []
     # volumeMounts: []
+  # cache:
+  #   envelopeBufferSize: 100000
+  # logging:
+  #   level: info
+  #   format: json
+  processing:
+    kafkaConfig:
+      messageMaxBytes: 50000000
+    #  messageTimeoutMs:
+    #  requestTimeoutMs:
+    #  deliveryTimeoutMs:
+    #  apiVersionRequestTimeoutMs:
 
 geodata:
   path: ""
@@ -1749,7 +1761,7 @@ filestore:
     ## Point this at a pre-configured secret containing a service account. The resulting
     ## secret will be mounted at /var/run/secrets/google
     # secretName:
-    # credentialsFile: credentials.json
+  # credentialsFile: credentials.json
   # bucketName:
 
   ## Currently unconfigured and changing this has no impact on the template configuration.
@@ -2092,7 +2104,7 @@ rabbitmq:
   memoryHighWatermark: {}
     # enabled: true
     # type: relative
-    # value: 0.4
+  # value: 0.4
 
   extraSecrets:
     load-definition:
