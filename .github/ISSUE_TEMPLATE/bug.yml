@@ -1,4 +1,3 @@
-
 name: "\U0001F41E  Bug report"
 description: File a bug report
 labels: ["status/triage", "type/bug"]
@@ -17,24 +16,44 @@ body:
   - type: textarea
     attributes:
       label: Describe the bug (actual behavior)
-      description: A clear and concise description of what the bug is. Use a list, if there is more than one problem
+      description: |
+        A clear and concise description of what the bug is. Use a list, if there is more than one problem.
+        ```markdown
+        <!-- Place your description here -->
+        ```
     validations:
       required: true
 
   - type: textarea
     attributes:
       label: Expected behavior
-      description: A clear and concise description of what you expected to happen
+      description: |
+        A clear and concise description of what you expected to happen.
+        ```markdown
+        <!-- Place your expected behavior here -->
+        ```
     validations:
       required: false
 
   - type: textarea
     attributes:
-      label: Your installation details
+      label: values.yaml
       description: |
-        How do you run the app? Please provide as much info as possible:
-        1. values.yaml
-        2. Helm chart version
+        Please provide the relevant part of your `values.yaml` file.
+        ```yaml
+        <!-- Place your values.yaml content here -->
+        ```
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: Helm chart version
+      description: |
+        Please provide the version of the Helm chart you are using.
+        ```markdown
+        <!-- Place your Helm chart version here -->
+        ```
     validations:
       required: true
 
@@ -45,6 +64,9 @@ body:
         Please write down the order of the actions required to reproduce the issue.
         For the advanced setups/complicated issue, we might need you to provide
         a minimal [reproducible example](https://stackoverflow.com/help/minimal-reproducible-example).
+        ```markdown
+        <!-- Place your steps to reproduce here -->
+        ```
     validations:
       required: true
 
@@ -52,7 +74,10 @@ body:
     attributes:
       label: Screenshots
       description: |
-        If applicable, add screenshots to help explain your problem
+        If applicable, add screenshots to help explain your problem.
+        ```markdown
+        <!-- Place your screenshots here -->
+        ```
     validations:
       required: false
 
@@ -60,7 +85,10 @@ body:
     attributes:
       label: Logs
       description: |
-        If applicable, *upload* logs to help explain your problem
+        If applicable, *upload* logs to help explain your problem.
+        ```markdown
+        <!-- Place your logs here -->
+        ```
     validations:
       required: false
 
@@ -74,5 +102,8 @@ body:
         2. Related issues (if there are any).
         3. Logs (if available)
         4. Is there any serious impact or behaviour on the end-user because of this issue, that can be overlooked?
+        ```markdown
+        <!-- Place your additional context here -->
+        ```
     validations:
       required: false
