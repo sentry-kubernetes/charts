@@ -74,6 +74,10 @@ spec:
         args:
           - "run"
           - "worker"
+          {{- if .Values.sentry.worker.excludeQueues }}
+          - "--exclude-queues"
+          - "{{ .Values.sentry.worker.excludeQueues }}"
+          {{- end }}
           {{- if .Values.sentry.worker.concurrency }}
           - "-c"
           - "{{ .Values.sentry.worker.concurrency }}"
