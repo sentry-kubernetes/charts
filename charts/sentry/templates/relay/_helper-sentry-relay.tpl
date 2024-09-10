@@ -17,7 +17,7 @@ config.yml: |-
 
     {{- if .Values.relay.cache.envelopeBufferSize }}
     cache:
-      envelope_buffer_size: {{ .Values.relay.cache.envelopeBufferSize }}
+      envelope_buffer_size: {{ int64 .Values.relay.cache.envelopeBufferSize | quote }}
     {{- end }}
 
     {{- if .Values.relay.logging }}
@@ -41,23 +41,23 @@ config.yml: |-
         value: {{ (include "sentry.kafka.bootstrap_servers_string" .) | quote }}
       {{- if .Values.relay.processing.kafkaConfig.messageMaxBytes }}
       - name: "message.max.bytes"
-        value: {{ .Values.relay.processing.kafkaConfig.messageMaxBytes }}
+        value: {{ int64 .Values.relay.processing.kafkaConfig.messageMaxBytes | quote }}
       {{- end }}
       {{- if .Values.relay.processing.kafkaConfig.messageTimeoutMs }}
       - name: "message.timeout.ms"
-        value: {{ .Values.relay.processing.kafkaConfig.messageTimeoutMs }}
+        value: {{ int64 .Values.relay.processing.kafkaConfig.messageTimeoutMs | quote }}
       {{- end }}
       {{- if .Values.relay.processing.kafkaConfig.requestTimeoutMs }}
       - name: "request.timeout.ms"
-        value: {{ .Values.relay.processing.kafkaConfig.requestTimeoutMs }}
+        value: {{ int64 .Values.relay.processing.kafkaConfig.requestTimeoutMs | quote }}
       {{- end }}
       {{- if .Values.relay.processing.kafkaConfig.deliveryTimeoutMs }}
       - name: "delivery.timeout.ms"
-        value: {{ .Values.relay.processing.kafkaConfig.deliveryTimeoutMs }}
+        value: {{ int64 .Values.relay.processing.kafkaConfig.deliveryTimeoutMs | quote }}
       {{- end }}
       {{- if .Values.relay.processing.kafkaConfig.apiVersionRequestTimeoutMs }}
       - name: "api.version.request.timeout.ms"
-        value: {{ .Values.relay.processing.kafkaConfig.apiVersionRequestTimeoutMs }}
+        value: {{ int64 .Values.relay.processing.kafkaConfig.apiVersionRequestTimeoutMs | quote }}
       {{- end }}
 
     {{- if $redisPass }}
