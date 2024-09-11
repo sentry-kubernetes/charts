@@ -1,5 +1,12 @@
 # Changelog
 
+## [25.5.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v25.4.0...sentry-v25.5.0) (2024-09-11)
+
+
+### Features
+
+* enhance nginx config to handle disabled sentry relay ([#1430](https://github.com/sentry-kubernetes/charts/issues/1430)) ([4395dba](https://github.com/sentry-kubernetes/charts/commit/4395dba949ca41375bcf0c24435344406cc2bbb7))
+
 ## [25.4.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v25.3.0...sentry-v25.4.0) (2024-09-10)
 
 
