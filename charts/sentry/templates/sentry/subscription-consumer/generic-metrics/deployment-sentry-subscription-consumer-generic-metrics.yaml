@@ -88,7 +88,6 @@ spec:
           - "--healthcheck-file-path"
           - "/tmp/health.txt"
           {{- end }}
-          - "--"
           {{- if .Values.sentry.subscriptionConsumerGenericMetrics.maxBatchSize }}
           - "--max-batch-size"
           - "{{ .Values.sentry.subscriptionConsumerGenericMetrics.maxBatchSize }}"
@@ -97,6 +96,7 @@ spec:
           - "--processes"
           - "{{ .Values.sentry.subscriptionConsumerGenericMetrics.concurrency }}"
           {{- end }}
+          - "--"
         {{- if .Values.sentry.subscriptionConsumerGenericMetrics.livenessProbe.enabled }}
         livenessProbe:
           exec:

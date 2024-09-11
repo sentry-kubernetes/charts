@@ -88,7 +88,6 @@ spec:
           - "--healthcheck-file-path"
           - "/tmp/health.txt"
           {{- end }}
-          - "--"
           {{- if .Values.sentry.metricsConsumer.concurrency }}
           - "--processes"
           - "{{ .Values.sentry.metricsConsumer.concurrency }}"
@@ -101,6 +100,7 @@ spec:
           - "--max-poll-interval-ms"
           - "{{ .Values.sentry.metricsConsumer.maxPollIntervalMs }}"
           {{- end }}
+          - "--"
         {{- if .Values.sentry.metricsConsumer.livenessProbe.enabled }}
         livenessProbe:
           exec:
