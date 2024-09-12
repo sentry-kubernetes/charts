@@ -1,5 +1,13 @@
 # Changelog
 
+## [25.5.1](https://github.com/sentry-kubernetes/charts/compare/sentry-v25.5.0...sentry-v25.5.1) (2024-09-12)
+
+
+### Bug Fixes
+
+* correct podLabels type from list to map in values.yaml ([#1448](https://github.com/sentry-kubernetes/charts/issues/1448)) ([0c34ecc](https://github.com/sentry-kubernetes/charts/commit/0c34ecca3874c4ff1162c76457993bbe29238b96))
+* invalid parameter in deployments ([#1446](https://github.com/sentry-kubernetes/charts/issues/1446)) ([dbafa66](https://github.com/sentry-kubernetes/charts/commit/dbafa66025fd9ecb3eb4b07a5df53f97221e77da))
+
 ## [25.5.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v25.4.0...sentry-v25.5.0) (2024-09-11)
 
 
