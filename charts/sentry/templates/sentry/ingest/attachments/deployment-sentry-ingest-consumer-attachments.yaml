@@ -93,7 +93,6 @@ spec:
           - "--healthcheck-file-path"
           - "/tmp/health.txt"
           {{- end }}
-          - "--"
           {{- if .Values.sentry.ingestConsumerAttachments.maxBatchSize }}
           - "--max-batch-size"
           - "{{ .Values.sentry.ingestConsumerAttachments.maxBatchSize }}"
@@ -102,6 +101,7 @@ spec:
           - "--processes"
           - "{{ .Values.sentry.ingestConsumerAttachments.concurrency }}"
           {{- end }}
+          - "--"
         {{- if .Values.sentry.ingestConsumerAttachments.livenessProbe.enabled }}
         livenessProbe:
           exec:
