@@ -87,13 +87,6 @@ vroom:
   # topologySpreadConstraints: []
   volumes: []
   volumeMounts: []
-  # TODO: No files in the current directory use the parameter:
-  init:
-    resources: {}
-    # additionalArgs: []
-    # env: []
-    # volumes: []
-    # volumeMounts: []
 
 relay:
   enabled: true
