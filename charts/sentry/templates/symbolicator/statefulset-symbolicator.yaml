@@ -1,7 +1,7 @@
 {{- if .Values.symbolicator.enabled }}
-{{- if .Values.symbolicator.api.usedeployment }}
+{{- if not .Values.symbolicator.api.usedeployment }}
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: {{ template "sentry.fullname" . }}-symbolicator-api
   labels:
@@ -10,6 +10,7 @@ metadata:
     release: "{{ .Release.Name }}"
     heritage: "{{ .Release.Service }}"
 spec:
+  serviceName: {{ template "sentry.fullname" . }}-symbolicator-api
   revisionHistoryLimit: {{ .Values.revisionHistoryLimit }}
   selector:
     matchLabels:
@@ -126,8 +127,10 @@ spec:
       - name: config
         configMap:
           name: {{ template "sentry.fullname" . }}-symbolicator
+      {{- if not .Values.symbolicator.api.persistence.enabled }}
       - name: symbolicator-data
         emptyDir: {}
+      {{- end }}
       {{- if and (eq .Values.filestore.backend "gcs") .Values.filestore.gcs.secretName }}
       - name: sentry-google-cloud-key
         secret:
@@ -139,5 +142,20 @@ spec:
       {{- if .Values.symbolicator.api.priorityClassName }}
       priorityClassName: "{{ .Values.symbolicator.api.priorityClassName }}"
       {{- end }}
+  {{- if .Values.symbolicator.api.persistence.enabled }}
+  volumeClaimTemplates:
+    - apiVersion: v1
+      kind: PersistentVolumeClaim
+      metadata:
+        name: symbolicator-data
+      spec:
+        accessModes: {{ .Values.symbolicator.api.persistence.accessModes }}
+        {{- if hasKey .Values.symbolicator.api.persistence "storageClass" }}
+        storageClassName: {{ .Values.symbolicator.api.persistence.storageClassName | quote }}
+        {{- end }}
+        resources:
+          requests:
+            storage: {{ .Values.symbolicator.api.persistence.size }}
+  {{- end }}
 {{- end }}
 {{- end }}
