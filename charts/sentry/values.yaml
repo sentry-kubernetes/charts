@@ -1549,7 +1549,7 @@ symbolicator:
     persistence:
       enabled: true  # Set true for using PersistentVolumeClaim, false for emptyDir
       accessModes: ["ReadWriteOnce"]
-      storageClassName: standard
+      # storageClassName: standard
       size: "10Gi"
     replicas: 1
     env: []
