@@ -1691,6 +1691,8 @@ nginx:
   # serviceAccount:
   #   create: false
   #   name: nginx
+  metrics:
+    serviceMonitor: {}
 
 ingress:
   enabled: true
