@@ -1,5 +1,12 @@
 # Changelog
 
+## [25.7.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v25.6.0...sentry-v25.7.0) (2024-09-14)
+
+
+### Features
+
+* **symbolicator:** implement deployment and statefulset selection ([#1453](https://github.com/sentry-kubernetes/charts/issues/1453)) ([112c1b5](https://github.com/sentry-kubernetes/charts/commit/112c1b50456273163f6692d16787c4d04fe87cda))
+
 ## [25.6.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v25.5.1...sentry-v25.6.0) (2024-09-14)
 
 
