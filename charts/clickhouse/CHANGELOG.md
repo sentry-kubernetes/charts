@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.11.0](https://github.com/sentry-kubernetes/charts/compare/clickhouse-v3.10.0...clickhouse-v3.11.0) (2024-09-14)
+
+
+### Features
+
+* update clickhouse chart with new image version and startup probes ([#1429](https://github.com/sentry-kubernetes/charts/issues/1429)) ([efdf1b6](https://github.com/sentry-kubernetes/charts/commit/efdf1b6dcc9215335fe0128b27187aa25bf9256f))
+
 ## [3.10.0](https://github.com/sentry-kubernetes/charts/compare/clickhouse-v3.9.0...clickhouse-v3.10.0) (2024-07-11)
 
 
