@@ -1,5 +1,12 @@
 # Changelog
 
+## [25.6.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v25.5.1...sentry-v25.6.0) (2024-09-14)
+
+
+### Features
+
+* updated sentry to 24.7.1 ([#1454](https://github.com/sentry-kubernetes/charts/issues/1454)) ([7874e56](https://github.com/sentry-kubernetes/charts/commit/7874e569217e8469c5ce40087ecd656309a01bba))
+
 ## [25.5.1](https://github.com/sentry-kubernetes/charts/compare/sentry-v25.5.0...sentry-v25.5.1) (2024-09-12)
 
 
