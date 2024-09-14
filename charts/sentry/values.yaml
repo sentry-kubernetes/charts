@@ -1545,7 +1545,7 @@ mail:
 symbolicator:
   enabled: false
   api:
-    usedeployment: true # Set true to use Deployment, false for StatefulSet
+    usedeployment: true  # Set true to use Deployment, false for StatefulSet
     persistence:
       enabled: true  # Set true for using PersistentVolumeClaim, false for emptyDir
       accessModes: ["ReadWriteOnce"]
