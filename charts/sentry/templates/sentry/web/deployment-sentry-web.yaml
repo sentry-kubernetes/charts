@@ -72,7 +72,22 @@ spec:
       - name: {{ .Chart.Name }}-web
         image: "{{ template "sentry.image" . }}"
         imagePullPolicy: {{ default "IfNotPresent" .Values.images.sentry.pullPolicy }}
-        command: ["sentry", "run", "web"]
+        command: ["sentry"]
+        args:
+          - "run"
+          - "web"
+          {{- if .Values.sentry.web.workers }}
+          - "--workers"
+          - "{{ .Values.sentry.web.workers }}"
+          {{- end }}
+          {{- if .Values.sentry.web.logLevel }}
+          - "--loglevel"
+          - "{{ .Values.sentry.web.logLevel }}"
+          {{- end }}
+          {{- if .Values.sentry.web.logFormat }}
+          - "--logformat"
+          - "{{ .Values.sentry.web.logFormat }}"
+          {{- end }}
         ports:
         - containerPort: {{ template "sentry.port" }}
         env:
