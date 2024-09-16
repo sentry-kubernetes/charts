@@ -183,7 +183,8 @@ sentry:
     # customCA:
     #   secretName: custom-ca
     #   item: ca.crt
-
+    # logLevel: "WARNING" # DEBUG|INFO|WARNING|ERROR|CRITICAL|FATAL
+    # logFormat: "human" # human|machine
     autoscaling:
       enabled: false
       minReplicas: 2
@@ -193,6 +194,7 @@ sentry:
     topologySpreadConstraints: []
     volumes: []
     volumeMounts: []
+    # workers: 3
 
   features:
     orgSubdomains: false
