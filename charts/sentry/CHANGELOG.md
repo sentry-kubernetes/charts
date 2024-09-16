@@ -1,5 +1,12 @@
 # Changelog
 
+## [25.8.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v25.7.0...sentry-v25.8.0) (2024-09-16)
+
+
+### Features
+
+* add logging and worker settings to Sentry web deployment ([#1459](https://github.com/sentry-kubernetes/charts/issues/1459)) ([f0427e2](https://github.com/sentry-kubernetes/charts/commit/f0427e219773382eee4580bc4170d221f5150eee))
+
 ## [25.7.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v25.6.0...sentry-v25.7.0) (2024-09-14)
 
 
