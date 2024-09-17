@@ -1,5 +1,13 @@
 # Changelog
 
+## [25.8.1](https://github.com/sentry-kubernetes/charts/compare/sentry-v25.8.0...sentry-v25.8.1) (2024-09-17)
+
+
+### Bug Fixes
+
+* correct nginx.conf and ingress settings for sentry 24.7.1 and ([#1466](https://github.com/sentry-kubernetes/charts/issues/1466)) ([cfb90ef](https://github.com/sentry-kubernetes/charts/commit/cfb90efd05b7b1b03cf191df4324e2092f50e4dc))
+* correct order of arguments of sentry consumers ([#1463](https://github.com/sentry-kubernetes/charts/issues/1463)) ([#1464](https://github.com/sentry-kubernetes/charts/issues/1464)) ([2861efa](https://github.com/sentry-kubernetes/charts/commit/2861efa7192b8d8bc02835ef4ade16a21b2729f1))
+
 ## [25.8.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v25.7.0...sentry-v25.8.0) (2024-09-16)
 
 
