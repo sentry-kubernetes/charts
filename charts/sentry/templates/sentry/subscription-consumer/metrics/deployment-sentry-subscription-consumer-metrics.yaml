@@ -92,11 +92,11 @@ spec:
           - "--max-batch-size"
           - "{{ .Values.sentry.subscriptionConsumerMetrics.maxBatchSize }}"
           {{- end }}
+          - "--"
           {{- if .Values.sentry.subscriptionConsumerMetrics.concurrency }}
           - "--processes"
           - "{{ .Values.sentry.subscriptionConsumerMetrics.concurrency }}"
           {{- end }}
-          - "--"
         {{- if .Values.sentry.subscriptionConsumerMetrics.livenessProbe.enabled }}
         livenessProbe:
           exec:

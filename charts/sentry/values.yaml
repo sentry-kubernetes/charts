@@ -770,6 +770,7 @@ sentry:
   subscriptionConsumerGenericMetrics:
     enabled: true
     replicas: 1
+    # concurrency: 1
     env: []
     resources: {}
     affinity: {}
@@ -790,6 +791,7 @@ sentry:
   subscriptionConsumerMetrics:
     enabled: true
     replicas: 1
+    # concurrency: 1
     env: []
     resources: {}
     affinity: {}

@@ -97,11 +97,11 @@ spec:
           - "--max-batch-size"
           - "{{ .Values.sentry.ingestConsumerAttachments.maxBatchSize }}"
           {{- end }}
+          - "--"
           {{- if .Values.sentry.ingestConsumerAttachments.concurrency }}
           - "--processes"
           - "{{ .Values.sentry.ingestConsumerAttachments.concurrency }}"
           {{- end }}
-          - "--"
         {{- if .Values.sentry.ingestConsumerAttachments.livenessProbe.enabled }}
         livenessProbe:
           exec:
