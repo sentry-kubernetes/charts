@@ -97,10 +97,6 @@ spec:
           - "--max-batch-size"
           - "{{ .Values.sentry.ingestConsumerTransactions.maxBatchSize }}"
           {{- end }}
-          {{- if .Values.sentry.ingestConsumerTransactions.concurrency }}
-          - "--processes"
-          - "{{ .Values.sentry.ingestConsumerTransactions.concurrency }}"
-          {{- end }}
           {{- if .Values.sentry.ingestConsumerTransactions.logLevel }}
           - "--log-level"
           - "{{ .Values.sentry.ingestConsumerTransactions.logLevel }}"
@@ -114,6 +110,10 @@ spec:
           - "{{ .Values.sentry.ingestConsumerTransactions.maxBatchTimeMs }}"
           {{- end }}
           - "--"
+          {{- if .Values.sentry.ingestConsumerTransactions.concurrency }}
+          - "--processes"
+          - "{{ .Values.sentry.ingestConsumerTransactions.concurrency }}"
+          {{- end }}
         {{- if .Values.sentry.ingestConsumerTransactions.livenessProbe.enabled }}
         livenessProbe:
           exec:
