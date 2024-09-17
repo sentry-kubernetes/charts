@@ -35,6 +35,10 @@ data:
       location ~ ^/api/[1-9]\d*/ {
         proxy_pass http://relay;
       }
+
+      location ^~ /api/0/relays/ {
+        proxy_pass http://relay;
+      }
       {{ end -}}
 
       {{ if or .Values.nginx.metrics.enabled .Values.nginx.metrics.serviceMonitor.enabled -}}
