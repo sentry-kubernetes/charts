@@ -156,6 +156,24 @@ spec:
               serviceName: {{ template "sentry.fullname" . }}-relay
               servicePort: {{ template "relay.port" . }}
               {{- end }}
+        {{- if eq (default "nginx" .Values.ingress.regexPathStyle) "traefik" }}
+          - path: {{ default "/" .Values.ingress.path }}api/0/relays/{(.*)}
+        {{- else }}
+          - path: {{ default "/" .Values.ingress.path }}api/0/relays/(.*)
+        {{- end }}
+            {{- if $ingressSupportsPathType }}
+            pathType: {{ $ingressPathType }}
+            {{- end }}
+            backend:
+              {{- if $ingressApiIsStable }}
+              service:
+                name: {{ template "sentry.fullname" . }}-relay
+                port:
+                  number: {{ template "relay.port" . }}
+              {{- else }}
+              serviceName: {{ template "sentry.fullname" . }}-relay
+              servicePort: {{ template "relay.port" . }}
+              {{- end }}
           - path: {{ default "/" .Values.ingress.path | quote }}
             {{- if $ingressSupportsPathType }}
             pathType: {{ $ingressPathType }}
