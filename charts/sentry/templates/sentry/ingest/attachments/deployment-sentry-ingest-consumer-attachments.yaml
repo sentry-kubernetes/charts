@@ -97,6 +97,10 @@ spec:
           - "--max-batch-size"
           - "{{ .Values.sentry.ingestConsumerAttachments.maxBatchSize }}"
           {{- end }}
+          {{- if .Values.sentry.ingestConsumerAttachments.logLevel }}
+          - "--log-level"
+          - "{{ .Values.sentry.ingestConsumerAttachments.logLevel }}"
+          {{- end }}
           - "--"
           {{- if .Values.sentry.ingestConsumerAttachments.concurrency }}
           - "--processes"
