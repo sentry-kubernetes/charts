@@ -313,7 +313,7 @@ sentry:
     # tolerations: []
     # podLabels: {}
     # maxBatchSize: ""
-    # logLevel: debug
+    # logLevel: info
     # it's better to use prometheus adapter and scale based on
     # the size of the rabbitmq queue
     autoscaling:
