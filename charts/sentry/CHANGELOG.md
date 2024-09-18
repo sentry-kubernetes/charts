@@ -1,5 +1,12 @@
 # Changelog
 
+## [25.9.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v25.8.1...sentry-v25.9.0) (2024-09-18)
+
+
+### Features
+
+* add logLevel option to ingestConsumerAttachments ([#1468](https://github.com/sentry-kubernetes/charts/issues/1468)) ([8005f0f](https://github.com/sentry-kubernetes/charts/commit/8005f0fcebf9856a3a29a99f596452a2c481a58c))
+
 ## [25.8.1](https://github.com/sentry-kubernetes/charts/compare/sentry-v25.8.0...sentry-v25.8.1) (2024-09-17)
 
 
