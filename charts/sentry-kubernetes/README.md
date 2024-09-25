@@ -30,7 +30,7 @@ The following table lists the configurable parameters of the sentry-kubernetes c
 | `rbac.create`           | If `true`, create and use RBAC resources                                                                                    | `true`                        |
 | `serviceAccount.name`   | Service account to be used. If not set and serviceAccount.create is `true`, a name is generated using the fullname template | Empty                         |
 | `serviceAccount.create` | If true, create a new service account                                                                                       | `true`                        |
-| `priorityClassName`     | Pod priorityClassName                                                                                               | Empty                         |
+| `priorityClassName`     | pod priorityClassName                                                                                                       | Empty                         |
 | `resources`                     | Resource requests and limits                                                                                                | `{}`                          |
 | `nodeSelector`                  | Node labels for pod assignment                                                                                              | `{}`                          |
 | `tolerations`                   | Tolerations for pod assignment                                                                                              | `[]`                          |
