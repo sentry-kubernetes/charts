@@ -65,7 +65,7 @@ settings.py: |
   # REDIS_HOST = {{ include "sentry.redis.host" . | quote }}
   # REDIS_PORT = {{ include "sentry.redis.port" . }}
   {{- if $redisPass }}
-  SENTRY_PASSWORD = {{ $redisPass | quote }
+  SENTRY_REDIS_PASSWORD = {{ $redisPass | quote }
   # REDIS_PASSWORD = {{ $redisPass | quote }}
   {{- end }}
   # REDIS_DB = int(env("REDIS_DB", 1))
