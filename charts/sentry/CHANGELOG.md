@@ -1,5 +1,12 @@
 # Changelog
 
+## [25.10.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v25.9.0...sentry-v25.10.0) (2024-09-25)
+
+
+### Features
+
+* update kafka for fix jmx-exporter scrape path ([#1477](https://github.com/sentry-kubernetes/charts/issues/1477)) ([a1c6250](https://github.com/sentry-kubernetes/charts/commit/a1c6250f70245f6514ddbe8e15741250bd6de1a2))
+
 ## [25.9.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v25.8.1...sentry-v25.9.0) (2024-09-18)
 
 
