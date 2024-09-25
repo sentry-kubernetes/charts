@@ -2019,6 +2019,14 @@ externalKafka:
   # host: "kafka-confluent"
   port: 9092
 
+kafka-ui:
+  enabled: false
+  yamlApplicationConfig:
+    kafka:
+      clusters:
+        - name: sentry-kafka
+          bootstrapServers: sentry-kafka:9092
+
 sourcemaps:
   enabled: false
 

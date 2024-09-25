@@ -38,5 +38,9 @@ dependencies:
     repository: oci://registry-1.docker.io/bitnamicharts
     version: 18.1.14
     condition: nginx.enabled
+  - name: kafka-ui
+    repository: https://provectus.github.io/kafka-ui-charts
+    version: 0.7.6
+    condition: kafka-ui.enabled
 maintainers:
   - name: sentry-kubernetes
