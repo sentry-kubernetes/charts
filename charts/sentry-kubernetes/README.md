@@ -25,12 +25,12 @@ The following table lists the configurable parameters of the sentry-kubernetes c
 | `sentry.kubeconfigPath`         | Filesystem path to the kubeconfig used to connect to the cluster (used if `clusterConfigType` is `out-cluster`)             | Empty                         |
 | `sentry.monitorCronjobs`        | Set to `1` to enable Sentry Crons integration for CronJob objects                                                           | `0`                           |
 | `sentry.customDsns`             | Set to `1` to enable custom DSN specified in annotations with the key `k8s.sentry.io/dsn`                                   | `0`                           |
-| `image.repository`              | Container image name                                                                                                        | `getsentry/sentry-kubernetes` |
-| `image.tag`                     | Container image tag                                                                                                         | `latest`                      |
-| `rbac.create`                   | If `true`, create and use RBAC resources                                                                                    | `true`                        |
-| `serviceAccount.name`           | Service account to be used. If not set and serviceAccount.create is `true`, a name is generated using the fullname template | Empty                         |
-| `serviceAccount.create`         | If true, create a new service account                                                                                       | `true`                        |
-| `priorityClassName`             | Pod priorityClassName                                                                                                       | Empty                         |
+| `image.repository`      | Container image name                                                                                                | `getsentry/sentry-kubernetes` |
+| `image.tag`             | Container image tag                                                                                                 | `latest`                      |
+| `rbac.create`           | If `true`, create and use RBAC resources                                                                            | `true`                        |
+| `serviceAccount.name`   | Service account to be used. If not set and serviceAccount.create is `true`, a name is generated using the fullname template | Empty                         |
+| `serviceAccount.create` | If true, create a new service account                                                                                       | `true`                        |
+| `priorityClassName`     | Pod priorityClassName                                                                                               | Empty                         |
 | `resources`                     | Resource requests and limits                                                                                                | `{}`                          |
 | `nodeSelector`                  | Node labels for pod assignment                                                                                              | `{}`                          |
 | `tolerations`                   | Tolerations for pod assignment                                                                                              | `[]`                          |
