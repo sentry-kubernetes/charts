@@ -12,15 +12,15 @@ $ helm install sentry/sentry-kubernetes --name my-release --set sentry.dsn=<your
 
 The following table lists the configurable parameters of the sentry-kubernetes chart and their default values:
 
-| Parameter                       | Description                                                                                                                 | Default                       |
-| ------------------------------- | --------------------------------------------------------------------------------------------------------------------------- | ----------------------------- |
-| `sentry.dsn`                    | Sentry DSN                                                                                                                  | Empty                         |
-| `existingSecret`                | Existing secret to read DSN from                                                                                            | Empty                         |
-| `sentry.environment`            | Sentry environment                                                                                                          | Empty                         |
-| `sentry.release`                | Sentry release version                                                                                                      | Empty                         |
-| `sentry.logLevel`               | Sentry log level (trace, debug, info, warn, error, disabled)                                                                | `info`                        |
-| `sentry.watchNamespaces`        | Comma-separated list of namespaces to watch (set to `__all__` to watch all namespaces)                                      | `default`                     |
-| `sentry.watchHistorical`        | Set to `1` to report all existing (old) events, `0` to only report new events                                               | `0`                           |
+| Parameter               | Description                                                                                                                 | Default                       |
+| ----------------------- | --------------------------------------------------------------------------------------------------------------------------- | ----------------------------- |
+| `sentry.dsn`            | Sentry DSN                                                                                                                  | Empty                         |
+| `existingSecret`        | Existing secret to read DSN from                                                                                            | Empty                         |
+| `sentry.environment`    | Sentry environment                                                                                                          | Empty                         |
+| `sentry.release`        | Sentry release version                                                                                                      | Empty                         |
+| `sentry.logLevel`       | Sentry log level (trace, debug, info, warn, error, disabled)                                                                | `info`                        |
+| `sentry.watchNamespaces`| Comma-separated list of namespaces to watch (set to `__all__` to watch all namespaces)                                      | `default`                     |
+| `sentry.watchHistorical`| Set to `1` to report all existing (old) events, `0` to only report new events                                               | `0`                           |
 | `sentry.clusterConfigType`      | Cluster configuration type (`auto`, `in-cluster`, `out-cluster`)                                                            | `auto`                        |
 | `sentry.kubeconfigPath`         | Filesystem path to the kubeconfig used to connect to the cluster (used if `clusterConfigType` is `out-cluster`)             | Empty                         |
 | `sentry.monitorCronjobs`        | Set to `1` to enable Sentry Crons integration for CronJob objects                                                           | `0`                           |
