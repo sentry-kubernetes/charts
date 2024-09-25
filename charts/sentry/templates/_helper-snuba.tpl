@@ -60,15 +60,15 @@ settings.py: |
   ]
 
   # Redis Options
-  SENTRY_HOST = {{ include "sentry.redis.host" . | quote }}
-  SENTRY_PORT = {{ include "sentry.redis.port" . }}
-  REDIS_HOST = {{ include "sentry.redis.host" . | quote }}
-  REDIS_PORT = {{ include "sentry.redis.port" . }}
+  SENTRY_REDIS_HOST = {{ include "sentry.redis.host" . | quote }}
+  SENTRY_REDIS_PORT = {{ include "sentry.redis.port" . }}
+  # REDIS_HOST = {{ include "sentry.redis.host" . | quote }}
+  # REDIS_PORT = {{ include "sentry.redis.port" . }}
   {{- if $redisPass }}
   SENTRY_PASSWORD = {{ $redisPass | quote }
-  REDIS_PASSWORD = {{ $redisPass | quote }}
+  # REDIS_PASSWORD = {{ $redisPass | quote }}
   {{- end }}
-  REDIS_DB = int(env("REDIS_DB", 1))
+  # REDIS_DB = int(env("REDIS_DB", 1))
   SENTRY_REDIS_DB = int(env("REDIS_DB", 1))
 {{- if .Values.metrics.enabled }}
   DOGSTATSD_HOST = "{{ template "sentry.fullname" . }}-metrics"
