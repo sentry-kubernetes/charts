@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.0](https://github.com/sentry-kubernetes/charts/compare/sentry-kubernetes-v0.3.4...sentry-kubernetes-v0.4.0) (2024-09-26)
+
+
+### Features
+
+* switch to go version of sentry-kubernetes with first minimal version of the chart ([#1395](https://github.com/sentry-kubernetes/charts/issues/1395)) ([e643ff6](https://github.com/sentry-kubernetes/charts/commit/e643ff6c742f3b8f88a88fdfec21c769b2c0fbb3))
+
 ## [0.3.4](https://github.com/sentry-kubernetes/charts/compare/sentry-kubernetes-v0.3.3...sentry-kubernetes-v0.3.4) (2024-04-12)
 
 
