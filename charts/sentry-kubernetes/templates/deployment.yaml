@@ -17,7 +17,7 @@ spec:
         {{- end }}
       labels:
         app: {{ template "sentry-kubernetes.name" . }}
-        release: {{.Release.Name }}
+        release: {{ .Release.Name }}
         {{- if .Values.podLabels }}
 {{ toYaml .Values.podLabels | indent 8 }}
         {{- end }}
@@ -30,31 +30,60 @@ spec:
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         env:
-          - name: DSN
+          {{ if .Values.sentry.dsn }}
+          - name: SENTRY_DSN
             valueFrom:
               secretKeyRef:
                 name: {{ template "sentry-kubernetes.secretName" . }}
                 key: sentry.dsn
+          {{ end }}
           {{ if .Values.sentry.environment }}
-          - name: ENVIRONMENT
-            value: {{ .Values.sentry.environment }}
+          - name: SENTRY_ENVIRONMENT
+            value: {{ .Values.sentry.environment | quote }}
           {{ end }}
           {{ if .Values.sentry.release }}
-          - name: RELEASE
-            value: {{ .Values.sentry.release }}
+          - name: SENTRY_RELEASE
+            value: {{ .Values.sentry.release | quote}}
           {{ end }}
           {{ if .Values.sentry.logLevel }}
-          - name: LOG_LEVEL
-            value: {{ .Values.sentry.logLevel }}
+          - name: SENTRY_K8S_LOG_LEVEL
+            value: {{ .Values.sentry.logLevel | quote}}
+          {{ end }}
+          {{ if .Values.sentry.watchNamespaces }}
+          - name: SENTRY_K8S_WATCH_NAMESPACES
+            value: {{ .Values.sentry.watchNamespaces | quote}}
+          {{ end }}
+          {{ if .Values.sentry.watchHistorical }}
+          - name: SENTRY_K8S_WATCH_HISTORICAL
+            value: {{ .Values.sentry.watchHistorical | quote}}
+          {{ end }}
+          {{ if .Values.sentry.clusterConfigType }}
+          - name: SENTRY_K8S_CLUSTER_CONFIG_TYPE
+            value: {{ .Values.sentry.clusterConfigType | quote}}
+          {{ end }}
+          {{ if .Values.sentry.kubeconfigPath }}
+          - name: SENTRY_K8S_KUBECONFIG_PATH
+            value: {{ .Values.sentry.kubeconfigPath | quote}}
+          {{ end }}
+          {{ if .Values.sentry.monitorCronjobs }}
+          - name: SENTRY_K8S_MONITOR_CRONJOBS
+            value: {{ .Values.sentry.monitorCronjobs | quote}}
+          {{ end }}
+          {{ if .Values.sentry.customDsns }}
+          - name: SENTRY_K8S_CUSTOM_DSNS
+            value: {{ .Values.sentry.customDsns | quote}}
+          {{ end }}
+          {{ if .Values.sentry.appendEnv }}
+            {{- toYaml .Values.sentry.appendEnv | nindent 10 }}
           {{ end }}
         resources:
-{{ toYaml .Values.resources | indent 10 }}
+          {{- toYaml .Values.resources | nindent 10 }}
     {{- if .Values.nodeSelector }}
       nodeSelector:
-{{ toYaml .Values.nodeSelector | indent 8 }}
+        {{- toYaml .Values.nodeSelector | nindent 8 }}
     {{- end }}
     {{- if .Values.tolerations }}
       tolerations:
-{{ toYaml .Values.tolerations | indent 8 }}
+        {{- toYaml .Values.tolerations | nindent 8 }}
     {{- end }}
       serviceAccountName: {{ template "sentry-kubernetes.serviceAccountName" . }}

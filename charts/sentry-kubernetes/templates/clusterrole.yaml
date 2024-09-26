@@ -5,6 +5,10 @@ metadata:
   labels: {{ include "sentry-kubernetes.labels" . | indent 4 }}
   name: {{ template "sentry-kubernetes.fullname" . }}
 rules:
+  # Custom rules inclusion
+  {{ if .Values.rbac.custom_rules }}
+    {{- toYaml .Values.rbac.custom_rules | nindent 4 }}
+  {{ else }}
   - apiGroups:
       - ""
     resources:
@@ -13,4 +17,5 @@ rules:
       - get
       - list
       - watch
+  {{ end }}
 {{- end -}}

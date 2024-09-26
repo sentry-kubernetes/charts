@@ -2,11 +2,27 @@
 
 sentry:
   dsn: <change-me>
-  logLevel: ~
+  # environment: production
+  # release: "1.0.0"
+  # logLevel: info
+  # watchNamespaces: "default,production"
+  # watchHistorical: "1"
+  # clusterConfigType: auto
+  # kubeconfigPath: "/path/to/kubeconfig"
+  # monitorCronjobs: "1"
+  # customDsns: "1"
+  # This can be use to add custom env var to the pod if not yet supported by the chart.
+  # appendEnv:
+  #   - name: SENTRY_NEW_ENV_1
+  #     value: "newvalues"
+  #   - name: SENTRY_NEW_ENV_2
+  #     value: "newvalues"
+
 # Sentry DSN config using an existing secret:
 # existingSecret:
 image:
-  repository: getsentry/sentry-kubernetes
+  repository: ghcr.io/getsentry/sentry-kubernetes
+  # Tag should be set in hard in the charts when getsentry will do the job of releasing version.
   tag: latest
   pullPolicy: Always
 resources: {}
@@ -23,10 +39,28 @@ serviceAccount:
   # The name of the ServiceAccount to use.
   # If not set and create is true, a name is generated using the fullname template
   name:
+  # if your need more specific cluster_roles for security reason, custom will be used in place
 
 rbac:
   # Specifies whether RBAC resources should be created
   create: true
+  # Exemple of custom rules necessary for cronjob and other issues catching.
+  # custom_rules:
+  #  - verbs:
+  #      - get
+  #      - list
+  #      - watch
+  #    apiGroups:
+  #      - 'apps'
+  #      - 'batch'
+  #      - ''
+  #    resources:
+  #      - events
+  #      - jobs
+  #      - deployments
+  #      - replicasets
+  #      - cronjobs
+  #      - pods
 
 # Set priorityCLassName in deployment
 # priorityClassName: ""
