@@ -100,7 +100,10 @@ relay:
   probePeriodSeconds: 10
   probeSuccessThreshold: 1
   probeTimeoutSeconds: 2
-  resources: {}
+  resources:
+    requests:
+      cpu: 100m
+      memory: 700Mi
   affinity: {}
   nodeSelector: {}
   # healthCheck:
@@ -166,7 +169,10 @@ sentry:
     probePeriodSeconds: 10
     probeSuccessThreshold: 1
     probeTimeoutSeconds: 2
-    resources: {}
+    resources:
+      requests:
+        cpu: 200m
+        memory: 850Mi
     affinity: {}
     nodeSelector: {}
     securityContext: {}
@@ -215,7 +221,10 @@ sentry:
     replicas: 1
     # concurrency: 4
     env: []
-    resources: {}
+    resources:
+      requests:
+        cpu: 1000m
+        memory: 1100Mi
     affinity: {}
     nodeSelector: {}
     # tolerations: []
@@ -305,7 +314,10 @@ sentry:
     replicas: 1
     # concurrency: 4
     env: []
-    resources: {}
+    resources:
+      requests:
+        cpu: 200m
+        memory: 700Mi
     affinity: {}
     nodeSelector: {}
     securityContext: {}
@@ -340,7 +352,10 @@ sentry:
     replicas: 1
     # concurrency: 4
     env: []
-    resources: {}
+    resources:
+      requests:
+        cpu: 300m
+        memory: 500Mi
     affinity: {}
     nodeSelector: {}
     securityContext: {}
@@ -378,7 +393,10 @@ sentry:
     replicas: 1
     # concurrency: 4
     env: []
-    resources: {}
+    resources:
+      requests:
+        cpu: 200m
+        memory: 500Mi
     affinity: {}
     nodeSelector: {}
     securityContext: {}
@@ -415,7 +433,10 @@ sentry:
     enabled: true
     replicas: 1
     env: []
-    resources: {}
+    resources:
+      requests:
+        cpu: 100m
+        memory: 250Mi
     affinity: {}
     nodeSelector: {}
     securityContext: {}
@@ -475,7 +496,10 @@ sentry:
     enabled: true
     replicas: 1
     env: []
-    resources: {}
+    resources:
+      requests:
+        cpu: 100m
+        memory: 250Mi
     affinity: {}
     nodeSelector: {}
     securityContext: {}
@@ -506,7 +530,10 @@ sentry:
     enabled: true
     replicas: 1
     env: []
-    resources: {}
+    resources:
+      requests:
+        cpu: 100m
+        memory: 250Mi
     affinity: {}
     nodeSelector: {}
     securityContext: {}
@@ -536,7 +563,10 @@ sentry:
     enabled: true
     replicas: 1
     env: []
-    resources: {}
+    resources:
+      requests:
+        cpu: 100m
+        memory: 250Mi
     affinity: {}
     nodeSelector: {}
     securityContext: {}
@@ -568,7 +598,10 @@ sentry:
     replicas: 1
     # concurrency: 4
     env: []
-    resources: {}
+    resources:
+      requests:
+        cpu: 200m
+        memory: 500Mi
     affinity: {}
     nodeSelector: {}
     securityContext: {}
@@ -602,7 +635,10 @@ sentry:
     replicas: 1
     # concurrency: 4
     env: []
-    resources: {}
+    resources:
+      requests:
+        cpu: 200m
+        memory: 500Mi
     affinity: {}
     nodeSelector: {}
     securityContext: {}
@@ -651,7 +687,10 @@ sentry:
     enabled: true
     replicas: 1
     env: []
-    resources: {}
+    resources:
+      requests:
+        cpu: 200m
+        memory: 500Mi
     affinity: {}
     nodeSelector: {}
     securityContext: {}
@@ -688,7 +727,10 @@ sentry:
     enabled: true
     replicas: 1
     env: []
-    resources: {}
+    resources:
+      requests:
+        cpu: 200m
+        memory: 500Mi
     affinity: {}
     nodeSelector: {}
     securityContext: {}
@@ -710,7 +752,10 @@ sentry:
     enabled: true
     replicas: 1
     env: []
-    resources: {}
+    resources:
+      requests:
+        cpu: 150m
+        memory: 500Mi
     affinity: {}
     nodeSelector: {}
     securityContext: {}
@@ -731,7 +776,10 @@ sentry:
     replicas: 1
     # processes: 1
     env: []
-    resources: {}
+    resources:
+      requests:
+        cpu: 200m
+        memory: 500Mi
     affinity: {}
     nodeSelector: {}
     securityContext: {}
@@ -747,11 +795,15 @@ sentry:
       periodSeconds: 320
     # volumeMounts: []
     # noStrictOffsetReset: false
+
   postProcessForwardIssuePlatform:
     enabled: true
     replicas: 1
     env: []
-    resources: {}
+    resources:
+      requests:
+        cpu: 300m
+        memory: 500Mi
     affinity: {}
     nodeSelector: {}
     securityContext: {}
@@ -772,7 +824,10 @@ sentry:
     replicas: 1
     # concurrency: 1
     env: []
-    resources: {}
+    resources:
+      requests:
+        cpu: 200m
+        memory: 500Mi
     affinity: {}
     nodeSelector: {}
     securityContext: {}
@@ -793,7 +848,10 @@ sentry:
     replicas: 1
     # concurrency: 1
     env: []
-    resources: {}
+    resources:
+      requests:
+        cpu: 200m
+        memory: 500Mi
     affinity: {}
     nodeSelector: {}
     securityContext: {}
@@ -842,7 +900,10 @@ snuba:
       timeoutSeconds: 2
     readiness:
       timeoutSeconds: 2
-    resources: {}
+    resources:
+      requests:
+        cpu: 100m
+        memory: 150Mi
     affinity: {}
     nodeSelector: {}
     securityContext: {}
