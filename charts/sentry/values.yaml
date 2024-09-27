@@ -2109,6 +2109,10 @@ postgresql:
   ## Default connection max age is 0 (unlimited connections)
   ## Set to a higher number to close connections after a period of time in seconds
   connMaxAge: 0
+  ## If you are increasing the number of replicas, you need to increase max_connections
+  # primary:
+  #   extendedConfiguration: |
+  #     max_connections=100
 
 ## This value is only used when postgresql.enabled is set to false
 ## Set either externalPostgresql.password or externalPostgresql.existingSecret to configure password
