@@ -68,6 +68,9 @@ vroom:
   probeSuccessThreshold: 1
   probeTimeoutSeconds: 2
   resources: {}
+  #  requests:
+  #    cpu: 100m
+  #    memory: 700Mi
   affinity: {}
   nodeSelector: {}
   securityContext: {}
@@ -101,6 +104,9 @@ relay:
   probeSuccessThreshold: 1
   probeTimeoutSeconds: 2
   resources: {}
+  #  requests:
+  #    cpu: 100m
+  #    memory: 700Mi
   affinity: {}
   nodeSelector: {}
   # healthCheck:
@@ -167,6 +173,9 @@ sentry:
     probeSuccessThreshold: 1
     probeTimeoutSeconds: 2
     resources: {}
+    #  requests:
+    #    cpu: 200m
+    #    memory: 850Mi
     affinity: {}
     nodeSelector: {}
     securityContext: {}
@@ -216,6 +225,9 @@ sentry:
     # concurrency: 4
     env: []
     resources: {}
+    #  requests:
+    #    cpu: 1000m
+    #    memory: 1100Mi
     affinity: {}
     nodeSelector: {}
     # tolerations: []
@@ -282,7 +294,6 @@ sentry:
     nodeSelector: {}
     # tolerations: []
     # podLabels: {}
-
     # it's better to use prometheus adapter and scale based on
     # the size of the rabbitmq queue
     autoscaling:
@@ -306,6 +317,9 @@ sentry:
     # concurrency: 4
     env: []
     resources: {}
+    #  requests:
+    #    cpu: 200m
+    #    memory: 700Mi
     affinity: {}
     nodeSelector: {}
     securityContext: {}
@@ -324,7 +338,6 @@ sentry:
     sidecars: []
     topologySpreadConstraints: []
     volumes: []
-
     livenessProbe:
       enabled: true
       initialDelaySeconds: 5
@@ -332,7 +345,6 @@ sentry:
     # volumeMounts:
     #   - mountPath: /dev/shm
     #     name: dshm
-
     # noStrictOffsetReset: false
 
   ingestConsumerEvents:
@@ -341,6 +353,9 @@ sentry:
     # concurrency: 4
     env: []
     resources: {}
+    #  requests:
+    #    cpu: 300m
+    #    memory: 500Mi
     affinity: {}
     nodeSelector: {}
     securityContext: {}
@@ -362,7 +377,6 @@ sentry:
     sidecars: []
     topologySpreadConstraints: []
     volumes: []
-
     livenessProbe:
       enabled: true
       initialDelaySeconds: 5
@@ -370,7 +384,6 @@ sentry:
     # volumeMounts:
     #   - mountPath: /dev/shm
     #     name: dshm
-
     # noStrictOffsetReset: false
 
   ingestConsumerTransactions:
@@ -379,6 +392,9 @@ sentry:
     # concurrency: 4
     env: []
     resources: {}
+    #  requests:
+    #    cpu: 200m
+    #    memory: 500Mi
     affinity: {}
     nodeSelector: {}
     securityContext: {}
@@ -400,7 +416,6 @@ sentry:
     sidecars: []
     topologySpreadConstraints: []
     volumes: []
-
     livenessProbe:
       enabled: true
       initialDelaySeconds: 5
@@ -408,7 +423,6 @@ sentry:
     # volumeMounts:
     #   - mountPath: /dev/shm
     #     name: dshm
-
     # noStrictOffsetReset: false
 
   ingestReplayRecordings:
@@ -416,13 +430,15 @@ sentry:
     replicas: 1
     env: []
     resources: {}
+    #  requests:
+    #    cpu: 100m
+    #    memory: 250Mi
     affinity: {}
     nodeSelector: {}
     securityContext: {}
     containerSecurityContext: {}
     # tolerations: []
     # podLabels: {}
-
     # it's better to use prometheus adapter and scale based on
     # the size of the rabbitmq queue
     autoscaling:
@@ -437,7 +453,6 @@ sentry:
       enabled: true
       initialDelaySeconds: 5
       periodSeconds: 320
-
     # volumeMounts:
     #   - mountPath: /dev/shm
     #     name: dshm
@@ -452,7 +467,6 @@ sentry:
     containerSecurityContext: {}
     # tolerations: []
     # podLabels: {}
-
     # it's better to use prometheus adapter and scale based on
     # the size of the rabbitmq queue
     autoscaling:
@@ -463,7 +477,6 @@ sentry:
     sidecars: []
     topologySpreadConstraints: []
     volumes: []
-
     livenessProbe:
       enabled: true
       initialDelaySeconds: 5
@@ -471,18 +484,21 @@ sentry:
     # volumeMounts:
     #   - mountPath: /dev/shm
     #     name: dshm
+
   ingestOccurrences:
     enabled: true
     replicas: 1
     env: []
     resources: {}
+    #  requests:
+    #    cpu: 100m
+    #    memory: 250Mi
     affinity: {}
     nodeSelector: {}
     securityContext: {}
     containerSecurityContext: {}
     # tolerations: []
     # podLabels: {}
-
     # it's better to use prometheus adapter and scale based on
     # the size of the rabbitmq queue
     autoscaling:
@@ -493,7 +509,6 @@ sentry:
     sidecars: []
     topologySpreadConstraints: []
     volumes: []
-
     livenessProbe:
       enabled: true
       initialDelaySeconds: 5
@@ -507,13 +522,15 @@ sentry:
     replicas: 1
     env: []
     resources: {}
+    #  requests:
+    #    cpu: 100m
+    #    memory: 250Mi
     affinity: {}
     nodeSelector: {}
     securityContext: {}
     containerSecurityContext: {}
     # tolerations: []
     # podLabels: {}
-
     # it's better to use prometheus adapter and scale based on
     # the size of the rabbitmq queue
     autoscaling:
@@ -537,13 +554,15 @@ sentry:
     replicas: 1
     env: []
     resources: {}
+    #  requests:
+    #    cpu: 100m
+    #    memory: 250Mi
     affinity: {}
     nodeSelector: {}
     securityContext: {}
     containerSecurityContext: {}
     # tolerations: []
     # podLabels: {}
-
     # it's better to use prometheus adapter and scale based on
     # the size of the rabbitmq queue
     autoscaling:
@@ -554,7 +573,6 @@ sentry:
     sidecars: []
     topologySpreadConstraints: []
     volumes: []
-
     livenessProbe:
       enabled: true
       initialDelaySeconds: 5
@@ -569,6 +587,9 @@ sentry:
     # concurrency: 4
     env: []
     resources: {}
+    #  requests:
+    #    cpu: 200m
+    #    memory: 500Mi
     affinity: {}
     nodeSelector: {}
     securityContext: {}
@@ -577,7 +598,6 @@ sentry:
     # podLabels: {}
     # maxPollIntervalMs: ""
     # logLevel: "info"
-
     # it's better to use prometheus adapter and scale based on
     # the size of the rabbitmq queue
     autoscaling:
@@ -588,7 +608,6 @@ sentry:
     sidecars: []
     topologySpreadConstraints: []
     volumes: []
-
     livenessProbe:
       enabled: true
       initialDelaySeconds: 5
@@ -603,6 +622,9 @@ sentry:
     # concurrency: 4
     env: []
     resources: {}
+    #  requests:
+    #    cpu: 200m
+    #    memory: 500Mi
     affinity: {}
     nodeSelector: {}
     securityContext: {}
@@ -611,7 +633,6 @@ sentry:
     # podLabels: {}
     # logLevel: "info"
     # maxPollIntervalMs: ""
-
     # it's better to use prometheus adapter and scale based on
     # the size of the rabbitmq queue
     autoscaling:
@@ -622,7 +643,6 @@ sentry:
     sidecars: []
     topologySpreadConstraints: []
     volumes: []
-
     livenessProbe:
       enabled: true
       initialDelaySeconds: 5
@@ -652,6 +672,9 @@ sentry:
     replicas: 1
     env: []
     resources: {}
+    #  requests:
+    #    cpu: 200m
+    #    memory: 500Mi
     affinity: {}
     nodeSelector: {}
     securityContext: {}
@@ -689,6 +712,9 @@ sentry:
     replicas: 1
     env: []
     resources: {}
+    #  requests:
+    #    cpu: 200m
+    #    memory: 500Mi
     affinity: {}
     nodeSelector: {}
     securityContext: {}
@@ -705,12 +731,14 @@ sentry:
     # noStrictOffsetReset: false
     # volumeMounts: []
 
-
   postProcessForwardErrors:
     enabled: true
     replicas: 1
     env: []
     resources: {}
+    #  requests:
+    #    cpu: 150m
+    #    memory: 500Mi
     affinity: {}
     nodeSelector: {}
     securityContext: {}
@@ -732,6 +760,9 @@ sentry:
     # processes: 1
     env: []
     resources: {}
+    #  requests:
+    #    cpu: 200m
+    #    memory: 500Mi
     affinity: {}
     nodeSelector: {}
     securityContext: {}
@@ -747,11 +778,15 @@ sentry:
       periodSeconds: 320
     # volumeMounts: []
     # noStrictOffsetReset: false
+
   postProcessForwardIssuePlatform:
     enabled: true
     replicas: 1
     env: []
     resources: {}
+    #  requests:
+    #    cpu: 300m
+    #    memory: 500Mi
     affinity: {}
     nodeSelector: {}
     securityContext: {}
@@ -773,6 +808,9 @@ sentry:
     # concurrency: 1
     env: []
     resources: {}
+    #  requests:
+    #    cpu: 200m
+    #    memory: 500Mi
     affinity: {}
     nodeSelector: {}
     securityContext: {}
@@ -794,6 +832,9 @@ sentry:
     # concurrency: 1
     env: []
     resources: {}
+    #  requests:
+    #    cpu: 200m
+    #    memory: 500Mi
     affinity: {}
     nodeSelector: {}
     securityContext: {}
@@ -843,6 +884,9 @@ snuba:
     readiness:
       timeoutSeconds: 2
     resources: {}
+    #  requests:
+    #    cpu: 100m
+    #    memory: 150Mi
     affinity: {}
     nodeSelector: {}
     securityContext: {}
@@ -887,7 +931,6 @@ snuba:
     maxBatchTimeMs: 750
     # queuedMaxMessagesKbytes: ""
     # queuedMinMessages: ""
-
     # volumeMounts:
     #   - mountPath: /dev/shm
     #     name: dshm
@@ -921,7 +964,6 @@ snuba:
     # maxBatchTimeMs: ""
     # queuedMaxMessagesKbytes: ""
     # queuedMinMessages: ""
-
     # volumeMounts:
     #   - mountPath: /dev/shm
     #     name: dshm
@@ -955,7 +997,6 @@ snuba:
     maxBatchTimeMs: 750
     # queuedMaxMessagesKbytes: ""
     # queuedMinMessages: ""
-
     # volumeMounts:
     #   - mountPath: /dev/shm
     #     name: dshm
@@ -1120,6 +1161,9 @@ snuba:
     replicas: 1
     env: []
     resources: {}
+    #  requests:
+    #    cpu: 200m
+    #    memory: 500Mi
     affinity: {}
     nodeSelector: {}
     securityContext: {}
@@ -1140,6 +1184,9 @@ snuba:
     replicas: 1
     env: []
     resources: {}
+    #  requests:
+    #    cpu: 200m
+    #    memory: 500Mi
     affinity: {}
     nodeSelector: {}
     securityContext: {}
@@ -1198,7 +1245,6 @@ snuba:
     # queuedMaxMessagesKbytes: ""
     # queuedMinMessages: ""
     # noStrictOffsetReset: false
-
     # volumeMounts:
     #   - mountPath: /dev/shm
     #     name: dshm
@@ -1227,7 +1273,6 @@ snuba:
     # maxBatchTimeMs: ""
     # queuedMaxMessagesKbytes: ""
     # queuedMinMessages: ""
-
     # volumeMounts:
     #   - mountPath: /dev/shm
     #     name: dshm
@@ -1261,8 +1306,6 @@ snuba:
     # queuedMaxMessagesKbytes: ""
     # queuedMinMessages: ""
     # noStrictOffsetReset: false
-
-
     # volumeMounts:
     #   - mountPath: /dev/shm
     #     name: dshm
@@ -1328,7 +1371,6 @@ snuba:
     # queuedMaxMessagesKbytes: ""
     # queuedMinMessages: ""
     # noStrictOffsetReset: false
-
     # volumeMounts:
     #   - mountPath: /dev/shm
     #     name: dshm
@@ -1336,6 +1378,7 @@ snuba:
     #   - name: dshm
     #     emptyDir:
     #       medium: Memory
+
   issueOccurrenceConsumer:
     enabled: true
     replicas: 1
@@ -1361,7 +1404,6 @@ snuba:
     # queuedMaxMessagesKbytes: ""
     # queuedMinMessages: ""
     # noStrictOffsetReset: false
-
     # volumeMounts:
     #   - mountPath: /dev/shm
     #     name: dshm
@@ -1395,7 +1437,6 @@ snuba:
     # queuedMaxMessagesKbytes: ""
     # queuedMinMessages: ""
     # noStrictOffsetReset: false
-
     # volumeMounts:
     #   - mountPath: /dev/shm
     #     name: dshm
