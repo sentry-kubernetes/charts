@@ -1,5 +1,7 @@
 {{- define "sentry.snuba.config" -}}
 {{- $redisPass := include "sentry.redis.password" . -}}
+{{- $redisDb   := include "sentry.redis.db" . -}}
+{{- $redisSsl  := include "sentry.redis.ssl" . -}}
 settings.py: |
   import os
 
@@ -62,10 +64,17 @@ settings.py: |
   # Redis Options
   REDIS_HOST = {{ include "sentry.redis.host" . | quote }}
   REDIS_PORT = {{ include "sentry.redis.port" . }}
-  {{- if $redisPass }}
-  REDIS_PASSWORD = {{ $redisPass | quote }}
+  {{- if or ($redisPass) (.Values.externalRedis.existingSecret) }}
+  REDIS_PASSWORD = env("REDIS_PASSWORD")
   {{- end }}
+  {{- if $redisDb }}
+  REDIS_DB = {{ $redisDb }}
+  {{- else }}
   REDIS_DB = int(env("REDIS_DB", 1))
+  {{- end }}
+  {{- if $redisSsl  }}
+  REDIS_SSL = {{ $redisSsl | quote }}
+  {{- end }}
 
 {{- if .Values.metrics.enabled }}
   DOGSTATSD_HOST = "{{ template "sentry.fullname" . }}-metrics"

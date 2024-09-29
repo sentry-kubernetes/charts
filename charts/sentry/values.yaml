@@ -2091,6 +2091,18 @@ externalRedis:
   port: 6379
   ## Just omit the password field if your redis cluster doesn't use password
   # password: redis
+  # existingSecret: secret-name
+  ## set existingSecretKey if key name inside existingSecret is different from redis-password'
+  # existingSecretKey: secret-key-name
+  ## Integer database number to use for redis (This is an integer)
+  # db: 0
+  ## Use ssl for the connection to Redis (True/False)
+  # ssl: false
+  ## Use brokerUrl to configure a secret for the broker_url value
+  ## This allows to set a secure password for the broker.
+  #brokerUrl:
+  # existingSecret: secret-name
+  # existingSecretKey: sentry-key-name
 
 postgresql:
   enabled: true

@@ -2,6 +2,8 @@
 {{- $redisHost := include "sentry.redis.host" . -}}
 {{- $redisPort := include "sentry.redis.port" . -}}
 {{- $redisPass := include "sentry.redis.password" . -}}
+{{- $redisDb     := include "sentry.redis.db" . -}}
+{{- $redisProto  := ternary "rediss" "redis" (eq (include "sentry.redis.ssl" .) "true")  -}}
 config.yml: |-
   relay:
     {{- if .Values.relay.mode }}
@@ -63,9 +65,9 @@ config.yml: |-
       {{- end }}
 
     {{- if $redisPass }}
-    redis: "redis://:{{ $redisPass }}@{{ $redisHost }}:{{ $redisPort }}"
+    redis: "{{ $redisProto }}://{{ $redisPass }}@{{ $redisHost }}:{{ $redisPort }}/{{ $redisDb }}"
     {{- else }}
-    redis: "redis://{{ $redisHost }}:{{ $redisPort }}"
+    redis: "{{ $redisProto }}://{{ $redisPass }}@{{ $redisHost }}:{{ $redisPort }}/{{ $redisDb }}"
     {{- end }}
     topics:
       metrics_sessions: ingest-metrics

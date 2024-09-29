@@ -2,6 +2,8 @@
 {{- $redisHost := include "sentry.redis.host" . -}}
 {{- $redisPort := include "sentry.redis.port" . -}}
 {{- $redisPass := include "sentry.redis.password" . -}}
+{{- $redisDb     := include "sentry.redis.db" . -}}
+{{- $redisProto  := ternary "rediss" "redis" (eq (include "sentry.redis.ssl" .) "true")  -}}
 config.yml: |-
   {{- if .Values.system.adminEmail }}
   system.admin-email: {{ .Values.system.adminEmail | quote }}
@@ -73,15 +75,7 @@ config.yml: |-
   #########
   # Redis #
   #########
-  redis.clusters:
-    default:
-      hosts:
-        0:
-          host: {{ $redisHost | quote }}
-          port: {{ $redisPort }}
-          {{- if $redisPass }}
-          password: {{ $redisPass | quote }}
-          {{- end }}
+  # This is configured in the sentry.conf.py as that has support for environment variables.
 
   ################
   # File storage #
@@ -172,6 +166,28 @@ sentry.conf.py: |-
   SENTRY_OPTIONS["system.event-retention-days"] = int(env('SENTRY_EVENT_RETENTION_DAYS') or {{ .Values.sentry.cleanup.days | quote }})
 
   #########
+  # Redis #
+  #########
+
+  # Generic Redis configuration used as defaults for various things including:
+  # Buffers, Quotas, TSDB
+  SENTRY_OPTIONS["redis.clusters"] = {
+    "default": {
+      "hosts": {
+        0: {
+          "host": {{ $redisHost | quote }},
+          "password": os.environ.get("REDIS_PASSWORD", {{ $redisPass | quote }}),
+          "port": {{ $redisPort | quote }},
+          {{- if .Values.externalRedis.ssl }}
+          "ssl": {{ .Values.externalRedis.ssl | quote }},
+          {{- end }}
+          "db": {{ $redisDb | quote }}
+        }
+      }
+    }
+  }
+
+  #########
   # Queue #
   #########
 
@@ -182,9 +198,9 @@ sentry.conf.py: |-
   {{- if or (.Values.rabbitmq.enabled) (.Values.rabbitmq.host) }}
   BROKER_URL = os.environ.get("BROKER_URL", "amqp://{{ .Values.rabbitmq.auth.username }}:{{ .Values.rabbitmq.auth.password }}@{{ template "sentry.rabbitmq.host" . }}:5672/{{ .Values.rabbitmq.vhost }}")
   {{- else if $redisPass }}
-  BROKER_URL = os.environ.get("BROKER_URL", "redis://:{{ $redisPass }}@{{ $redisHost }}:{{ $redisPort }}/0")
+  BROKER_URL = os.environ.get("BROKER_URL", "{{ $redisProto }}://:{{ $redisPass }}@{{ $redisHost }}:{{ $redisPort }}/{{ $redisDb }}")
   {{- else }}
-  BROKER_URL = os.environ.get("BROKER_URL", "redis://{{ $redisHost }}:{{ $redisPort }}/0")
+  BROKER_URL = os.environ.get("BROKER_URL", "{{ $redisProto }}://{{ $redisHost }}:{{ $redisPort }}/{{ $redisDb }}")
   {{- end }}
 
   #########
