@@ -477,16 +477,16 @@ Common Snuba environment variables
   value: /etc/snuba/settings.py
 - name: DEFAULT_BROKERS
   value: {{ include "sentry.kafka.bootstrap_servers_string" . | quote }}
-{{- if .Values.redis.enabled }}
-{{- if .Values.redis.password }}
+{{- if and (.Values.redis.enabled) (.Values.redis.auth.enabled) }}
+{{- if .Values.redis.auth.password }}
 - name: REDIS_PASSWORD
-  value: {{ .Values.redis.password | quote }}
-{{- else if .Values.redis.existingSecret }}
+  value: {{ .Values.redis.auth.password | quote }}
+{{- else if .Values.redis.auth.existingSecret }}
 - name: REDIS_PASSWORD
   valueFrom:
     secretKeyRef:
-      name: {{ default (include "sentry.redis.fullname" .) .Values.redis.existingSecret }}
-      key: {{ default "redis-password" .Values.redis.existingSecretKey }}
+      name: {{ default (include "sentry.redis.fullname" .) .Values.redis.auth.existingSecret }}
+      key: {{ default "redis-password" .Values.redis.auth.existingSecretPasswordKey }}
 {{- end }}
 {{- else if .Values.externalRedis.password }}
 - name: REDIS_PASSWORD
