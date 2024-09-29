@@ -2100,9 +2100,9 @@ externalRedis:
   # ssl: false
   ## Use brokerUrl to configure a secret for the broker_url value
   ## This allows to set a secure password for the broker.
-  #brokerUrl:
-  # existingSecret: secret-name
-  # existingSecretKey: sentry-key-name
+  # brokerUrl:
+  #   existingSecret: secret-name
+  #   existingSecretKey: sentry-key-name
 
 postgresql:
   enabled: true
