@@ -1,4 +1,10 @@
 {{- if .Values.relay.enabled }}
+{{- $redisHost := include "sentry.redis.host" . -}}
+{{- $redisPort := include "sentry.redis.port" . -}}
+{{- $redisDb     := include "sentry.redis.db" . -}}
+{{- $redisPass := include "sentry.redis.password" . -}}
+{{- $redisProto  := ternary "rediss" "redis" (eq (include "sentry.redis.ssl" .) "true")  -}}
+
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -86,6 +92,15 @@ spec:
           env:
             - name: RELAY_PORT
               value: '{{ template "relay.port" }}'
+          {{- if and (not $redisPass) (.Values.externalRedis.existingSecret) }}
+            - name: HELM_CHARTS_RELAY_REDIS_PASSWORD_CONTROLLED
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.externalRedis.existingSecret }}
+                  key: {{ default "redis-password" .Values.externalRedis.existingSecretKey }}
+            - name: RELAY_REDIS_URL
+              value: {{ $redisProto }}://$(HELM_CHARTS_RELAY_REDIS_PASSWORD_CONTROLLED)@{{ $redisHost }}:{{ $redisPort }}/{{ $redisDb }}
+          {{- end }}
 {{- if .Values.relay.init.env }}
 {{ toYaml .Values.relay.init.env | indent 12 }}
 {{- end }}
@@ -119,6 +134,15 @@ spec:
         env:
         - name: RELAY_PORT
           value: '{{ template "relay.port" }}'
+        {{- if and (not $redisPass) (.Values.externalRedis.existingSecret) }}
+        - name: HELM_CHARTS_RELAY_REDIS_PASSWORD_CONTROLLED
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.externalRedis.existingSecret }}
+              key: {{ default "redis-password" .Values.externalRedis.existingSecretKey }}
+        - name: RELAY_REDIS_URL
+          value: {{ $redisProto }}://$(HELM_CHARTS_RELAY_REDIS_PASSWORD_CONTROLLED)@{{ $redisHost }}:{{ $redisPort }}/{{ $redisDb }}
+        {{- end }}
 {{- if .Values.relay.env }}
 {{ toYaml .Values.relay.env | indent 8 }}
 {{- end }}
