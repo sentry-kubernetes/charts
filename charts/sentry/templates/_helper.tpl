@@ -501,7 +501,7 @@ Common Snuba environment variables
   value: "[::]:1218"
 {{- end }}
 - name: REDIS_PORT
-  value:  {{ default "6379" (include "sentry.redis.port" . |quote ) -}}
+  value:  {{ default "6379" (include "sentry.redis.port" . | quote ) -}}
 {{- end -}}
 
 {{- define "vroom.env" -}}
