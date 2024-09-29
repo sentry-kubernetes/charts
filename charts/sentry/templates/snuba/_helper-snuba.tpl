@@ -64,7 +64,7 @@ settings.py: |
   # Redis Options
   REDIS_HOST = {{ include "sentry.redis.host" . | quote }}
   REDIS_PORT = {{ include "sentry.redis.port" . }}
-  {{- if or ($redisPass) (.Values.externalRedis.existingSecret) }}
+  {{- if or (not (eq $redisPass "")) (.Values.externalRedis.existingSecret) }}
   REDIS_PASSWORD = env("REDIS_PASSWORD")
   {{- end }}
   {{- if $redisDb }}
