@@ -66,8 +66,8 @@ config.yml: |-
 
     {{- if and ($redisPass) (not .Values.externalRedis.existingSecret) }}
     redis: "{{ $redisProto }}://{{ $redisPass }}@{{ $redisHost }}:{{ $redisPort }}/{{ $redisDb }}"
-    {{- else }}
-    redis: "{{ $redisProto }}://{{ $redisPass }}@{{ $redisHost }}:{{ $redisPort }}/{{ $redisDb }}"
+    {{- else if not ($redisPass) }}
+    redis: "{{ $redisProto }}://{{ $redisHost }}:{{ $redisPort }}/{{ $redisDb }}"
     {{- end }}
     topics:
       metrics_sessions: ingest-metrics
