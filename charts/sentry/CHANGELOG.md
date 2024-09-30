@@ -1,5 +1,12 @@
 # Changelog
 
+## [25.11.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v25.10.1...sentry-v25.11.0) (2024-09-30)
+
+
+### Features
+
+* reintroduce "Extend Redis functionality" ([#1492](https://github.com/sentry-kubernetes/charts/issues/1492)) ([0b7a7b4](https://github.com/sentry-kubernetes/charts/commit/0b7a7b4c874bf4d4a460c88bb259cab0e025f7ee))
+
 ## [25.10.1](https://github.com/sentry-kubernetes/charts/compare/sentry-v25.10.0...sentry-v25.10.1) (2024-09-30)
 
 
