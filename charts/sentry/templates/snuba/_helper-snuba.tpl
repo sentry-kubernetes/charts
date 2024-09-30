@@ -75,8 +75,8 @@ settings.py: |
   REDIS_DB = int(env("REDIS_DB", {{ default 1 .Values.externalRedis.db }}))
   {{- end }}
 
-  {{- if $redisSsl  }}
-  REDIS_SSL = {{ $redisSsl | quote }}
+  {{- if eq $redisSsl "true" }}
+  REDIS_SSL = True
   {{- end }}
 
 {{- if .Values.metrics.enabled }}

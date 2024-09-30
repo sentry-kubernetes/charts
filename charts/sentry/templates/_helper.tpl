@@ -310,9 +310,9 @@ Set redis ssl
 */}}
 {{- define "sentry.redis.ssl" -}}
 {{- if .Values.redis.enabled -}}
-{{ default "false" .Values.redis.ssl }}
+{{ default false .Values.redis.ssl }}
 {{- else -}}
-{{ default "false" .Values.externalRedis.ssl }}
+{{ default false .Values.externalRedis.ssl }}
 {{- end -}}
 {{- end -}}
 
