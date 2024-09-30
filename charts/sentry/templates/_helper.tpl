@@ -527,15 +527,14 @@ Common Snuba environment variables
   value: http://{{ template "sentry.fullname" . }}-snuba:{{ template "snuba.port" . }}
 {{- end -}}
 
-{{- $redisHost := include "sentry.redis.host" . -}}
-{{- $redisPort := include "sentry.redis.port" . -}}
-{{- $redisDb     := include "sentry.redis.db" . -}}
-{{- $redisProto  := ternary "rediss" "redis" (eq (include "sentry.redis.ssl" .) "true")  -}}
-
 {{/*
 Common Sentry environment variables
 */}}
 {{- define "sentry.env" -}}
+{{- $redisHost := include "sentry.redis.host" . -}}
+{{- $redisPort := include "sentry.redis.port" . -}}
+{{- $redisDb     := include "sentry.redis.db" . -}}
+{{- $redisProto  := ternary "rediss" "redis" (eq (include "sentry.redis.ssl" .) "true")  -}}
 - name: SNUBA
   value: http://{{ template "sentry.fullname" . }}-snuba:{{ template "snuba.port" . }}
 - name: VROOM
