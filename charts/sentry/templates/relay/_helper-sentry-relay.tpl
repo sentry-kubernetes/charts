@@ -64,9 +64,11 @@ config.yml: |-
         value: {{ int64 .Values.relay.processing.kafkaConfig.apiVersionRequestTimeoutMs | quote }}
       {{- end }}
 
-    {{- if and ($redisPass) (not .Values.externalRedis.existingSecret) (not .Values.redis.auth.existingSecret) }}
+    {{- if $redisPass }}
+    {{- if and (not .Values.externalRedis.existingSecret) (not .Values.redis.auth.existingSecret)}}
     redis: "{{ $redisProto }}://:{{ $redisPass }}@{{ $redisHost }}:{{ $redisPort }}/{{ $redisDb }}"
-    {{- else if not ($redisPass) }}
+    {{- end }}
+    {{- else }}
     redis: "{{ $redisProto }}://{{ $redisHost }}:{{ $redisPort }}/{{ $redisDb }}"
     {{- end }}
     topics:

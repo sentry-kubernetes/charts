@@ -291,7 +291,6 @@ Set redis password
 {{- else if .Values.externalRedis.password -}}
 {{ .Values.externalRedis.password }}
 {{- else }}
-""
 {{- end -}}
 {{- end -}}
 
