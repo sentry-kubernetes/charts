@@ -1,5 +1,13 @@
 # Changelog
 
+## [25.10.1](https://github.com/sentry-kubernetes/charts/compare/sentry-v25.10.0...sentry-v25.10.1) (2024-09-30)
+
+
+### Bug Fixes
+
+* add topic partition counts in snuba config for correct ([#1489](https://github.com/sentry-kubernetes/charts/issues/1489)) ([2b44fb2](https://github.com/sentry-kubernetes/charts/commit/2b44fb2a449410a64aa4628e06fdd4e1cb1ae6aa))
+* configuring kafka to use zookeeper uses only brokers, and service name in db-check is wrong ([#1494](https://github.com/sentry-kubernetes/charts/issues/1494)) ([34d4975](https://github.com/sentry-kubernetes/charts/commit/34d49752a9869372a69ce6add1011be1155ec254))
+
 ## [25.10.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v25.9.0...sentry-v25.10.0) (2024-09-25)
 
 
