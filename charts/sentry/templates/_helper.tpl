@@ -619,7 +619,6 @@ Common Sentry environment variables
     secretKeyRef:
       name: {{ .Values.filestore.s3.existingSecret }}
       key: {{ default "s3-secret-access-key" .Values.filestore.s3.secretAccessKeyRef }}
-      key: {{ default "postgresql-password" .Values.externalPostgresql.existingSecretKey }}
 {{- end }}
 {{- if .Values.redis.enabled }}
 {{- if .Values.redis.password }}
