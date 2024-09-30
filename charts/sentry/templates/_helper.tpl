@@ -286,12 +286,36 @@ Set redis port
 Set redis password
 */}}
 {{- define "sentry.redis.password" -}}
-{{- if .Values.redis.enabled -}}
-{{ .Values.redis.password }}
-{{- else -}}
+{{- if and (.Values.redis.enabled) (.Values.redis.auth.enabled) -}}
+{{ .Values.redis.auth.password }}
+{{- else if .Values.externalRedis.password -}}
 {{ .Values.externalRedis.password }}
+{{- else }}
 {{- end -}}
 {{- end -}}
+
+{{/*
+Set redis db
+*/}}
+{{- define "sentry.redis.db" -}}
+{{- if .Values.redis.enabled -}}
+{{ default 0 .Values.redis.db }}
+{{- else -}}
+{{ default 0 .Values.externalRedis.db }}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Set redis ssl
+*/}}
+{{- define "sentry.redis.ssl" -}}
+{{- if .Values.redis.enabled -}}
+{{ default false .Values.redis.ssl }}
+{{- else -}}
+{{ default false .Values.externalRedis.ssl }}
+{{- end -}}
+{{- end -}}
+
 
 {{/*
 Create the name of the service account to use
@@ -454,6 +478,27 @@ Common Snuba environment variables
   value: /etc/snuba/settings.py
 - name: DEFAULT_BROKERS
   value: {{ include "sentry.kafka.bootstrap_servers_string" . | quote }}
+{{- if and (.Values.redis.enabled) (.Values.redis.auth.enabled) }}
+{{- if .Values.redis.auth.password }}
+- name: REDIS_PASSWORD
+  value: {{ .Values.redis.auth.password | quote }}
+{{- else if .Values.redis.auth.existingSecret }}
+- name: REDIS_PASSWORD
+  valueFrom:
+    secretKeyRef:
+      name: {{ default (include "sentry.redis.fullname" .) .Values.redis.auth.existingSecret }}
+      key: {{ default "redis-password" .Values.redis.auth.existingSecretPasswordKey }}
+{{- end }}
+{{- else if .Values.externalRedis.password }}
+- name: REDIS_PASSWORD
+  value: {{ .Values.externalRedis.password | quote }}
+{{- else if .Values.externalRedis.existingSecret }}
+- name: REDIS_PASSWORD
+  valueFrom:
+    secretKeyRef:
+      name: {{ .Values.externalRedis.existingSecret }}
+      key: {{ default "redis-password" .Values.externalRedis.existingSecretKey }}
+{{- end }}
 {{- if .Values.externalClickhouse.existingSecret }}
 - name: CLICKHOUSE_PASSWORD
   valueFrom:
@@ -467,6 +512,8 @@ Common Snuba environment variables
 - name: UWSGI_HTTP_SOCKET
   value: "[::]:1218"
 {{- end }}
+- name: REDIS_PORT
+  value:  {{ default "6379" (include "sentry.redis.port" . | quote ) -}}
 {{- end -}}
 
 {{- define "vroom.env" -}}
@@ -484,6 +531,10 @@ Common Snuba environment variables
 Common Sentry environment variables
 */}}
 {{- define "sentry.env" -}}
+{{- $redisHost := include "sentry.redis.host" . -}}
+{{- $redisPort := include "sentry.redis.port" . -}}
+{{- $redisDb     := include "sentry.redis.db" . -}}
+{{- $redisProto  := ternary "rediss" "redis" (eq (include "sentry.redis.ssl" .) "true")  -}}
 - name: SNUBA
   value: http://{{ template "sentry.fullname" . }}-snuba:{{ template "snuba.port" . }}
 - name: VROOM
@@ -568,6 +619,45 @@ Common Sentry environment variables
     secretKeyRef:
       name: {{ .Values.filestore.s3.existingSecret }}
       key: {{ default "s3-secret-access-key" .Values.filestore.s3.secretAccessKeyRef }}
+      key: {{ default "postgresql-password" .Values.externalPostgresql.existingSecretKey }}
+{{- end }}
+{{- if .Values.redis.enabled }}
+{{- if .Values.redis.password }}
+- name: REDIS_PASSWORD
+  value: {{ .Values.redis.password | quote }}
+{{- else if .Values.redis.existingSecret }}
+- name: REDIS_PASSWORD
+  valueFrom:
+    secretKeyRef:
+      name: {{ default (include "sentry.redis.fullname" .) .Values.redis.existingSecret }}
+      key: {{ default "redis-password" .Values.redis.existingSecretKey }}
+{{- end }}
+{{- else if .Values.externalRedis.password }}
+- name: REDIS_PASSWORD
+  value: {{ .Values.externalRedis.password | quote }}
+{{- else if .Values.externalRedis.existingSecret }}
+- name: REDIS_PASSWORD
+  valueFrom:
+    secretKeyRef:
+      name: {{ .Values.externalRedis.existingSecret }}
+      key: {{ default "redis-password" .Values.externalRedis.existingSecretKey }}
+{{- end }}
+{{- if and (.Values.redis.enabled) (.Values.redis.auth.existingSecret) }}
+- name: HELM_CHARTS_SENTRY_REDIS_PASSWORD_CONTROLLED
+  valueFrom:
+    secretKeyRef:
+      name: {{ .Values.redis.auth.existingSecret }}
+      key: {{ default "redis-password" .Values.redis.auth.existingSecretPasswordKey }}
+- name: BROKER_URL
+  value: "{{ $redisProto }}://:$(HELM_CHARTS_SENTRY_REDIS_PASSWORD_CONTROLLED)@{{ $redisHost }}:{{ $redisPort }}/{{ $redisDb }}"
+{{- else if (.Values.externalRedis.existingSecret) }}
+- name: HELM_CHARTS_SENTRY_REDIS_PASSWORD_CONTROLLED
+  valueFrom:
+    secretKeyRef:
+      name: {{ .Values.externalRedis.existingSecret }}
+      key: {{ default "redis-password" .Values.externalRedis.existingSecretKey }}
+- name: BROKER_URL
+  value: "{{ $redisProto }}://:$(HELM_CHARTS_SENTRY_REDIS_PASSWORD_CONTROLLED)@{{ $redisHost }}:{{ $redisPort }}/{{ $redisDb }}"
 {{- end }}
 {{- if and (eq .Values.filestore.backend "gcs") .Values.filestore.gcs.secretName }}
 - name: GOOGLE_APPLICATION_CREDENTIALS
@@ -620,7 +710,7 @@ Common Sentry environment variables
   valueFrom:
     secretKeyRef:
       name: {{ .Values.discord.existingSecret }}
-      key: {{ default "bot-token" .Values.discord.existingSecretBotToken }}      
+      key: {{ default "bot-token" .Values.discord.existingSecretBotToken }}
 {{- end }}
 {{- if and .Values.github.existingSecret }}
 - name: GITHUB_APP_PRIVATE_KEY
