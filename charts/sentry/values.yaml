@@ -1925,11 +1925,16 @@ kafka:
     # Topic list is based on files below.
     # - https://github.com/getsentry/snuba/blob/master/snuba/utils/streams/topics.py
     # - https://github.com/getsentry/self-hosted/blob/master/install/create-kafka-topics.sh#L6
+    ## Default number of partitions for topics when unspecified
+    ##
+    # numPartitions: 1
     # Note that snuba component might fail if you set `hooks.snubaInit.kafka.enabled` to `false` and remove the topics from this default topic list.
     topics:
       - name: events
         config:
           "message.timestamp.type": LogAppendTime
+        ## Number of partitions for this topic
+        # partitions: 1
       - name: event-replacements
       - name: snuba-commit-log
         config:

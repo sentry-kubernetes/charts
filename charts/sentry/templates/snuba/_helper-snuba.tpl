@@ -9,6 +9,19 @@ settings.py: |
 
   DEBUG = env("DEBUG", "0").lower() in ("1", "true")
 
+{{- if .Values.kafka.enabled -}}
+  {{ if .Values.kafka.provisioning.enabled }}
+
+  # Set partition counts for provisioning topics from kafka chart.
+  TOPIC_PARTITION_COUNTS = {
+    {{- $numPartitions := .Values.kafka.provisioning.numPartitions -}}
+    {{- range .Values.kafka.provisioning.topics }}
+    {{ .name | quote }}: {{ default $numPartitions .partitions }},
+    {{- end }}
+  }
+  {{- end -}}
+{{- end }}
+
   # Clickhouse Options
   CLUSTERS = [
     {
