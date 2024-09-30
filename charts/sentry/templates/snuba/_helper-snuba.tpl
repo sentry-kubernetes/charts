@@ -1,6 +1,5 @@
 {{- define "sentry.snuba.config" -}}
 {{- $redisPass := include "sentry.redis.password" . -}}
-{{- $redisDb   := include "sentry.redis.db" . -}}
 {{- $redisSsl  := include "sentry.redis.ssl" . -}}
 settings.py: |
   import os
@@ -65,13 +64,15 @@ settings.py: |
   REDIS_HOST = {{ include "sentry.redis.host" . | quote }}
   REDIS_PORT = {{ include "sentry.redis.port" . }}
   {{- if or (not (eq $redisPass "")) (.Values.externalRedis.existingSecret) }}
-  REDIS_PASSWORD = env("REDIS_PASSWORD")
+  REDIS_PASSWORD = env("REDIS_PASSWORD", "")
   {{- end }}
-  {{- if not (eq $redisDb "") }}
-  REDIS_DB = {{ $redisDb }}
+
+  {{- if .Values.redis.enabled }}
+  REDIS_DB = int(env("REDIS_DB", {{ default 1 .Values.redis.db }}))
   {{- else }}
-  REDIS_DB = int(env("REDIS_DB", 1))
+  REDIS_DB = int(env("REDIS_DB", {{ default 1 .Values.externalRedis.db }}))
   {{- end }}
+
   {{- if $redisSsl  }}
   REDIS_SSL = {{ $redisSsl | quote }}
   {{- end }}
