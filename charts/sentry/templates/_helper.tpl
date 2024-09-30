@@ -286,7 +286,7 @@ Set redis port
 Set redis password
 */}}
 {{- define "sentry.redis.password" -}}
-{{- if .Values.redis.enabled -}}
+{{- if and (.Values.redis.enabled) (.Values.redis.auth.enabled) -}}
 {{ .Values.redis.auth.password }}
 {{- else -}}
 {{ .Values.externalRedis.password }}

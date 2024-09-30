@@ -67,7 +67,7 @@ settings.py: |
   {{- if or (not (eq $redisPass "")) (.Values.externalRedis.existingSecret) }}
   REDIS_PASSWORD = env("REDIS_PASSWORD")
   {{- end }}
-  {{- if $redisDb }}
+  {{- if not (eq $redisDb "") }}
   REDIS_DB = {{ $redisDb }}
   {{- else }}
   REDIS_DB = int(env("REDIS_DB", 1))
