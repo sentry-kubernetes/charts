@@ -199,7 +199,7 @@ sentry.conf.py: |-
   BROKER_URL = os.environ.get("BROKER_URL", "amqp://{{ .Values.rabbitmq.auth.username }}:{{ .Values.rabbitmq.auth.password }}@{{ template "sentry.rabbitmq.host" . }}:5672/{{ .Values.rabbitmq.vhost }}")
   {{- else if $redisPass }}
   BROKER_URL = os.environ.get("BROKER_URL", "{{ $redisProto }}://:{{ $redisPass }}@{{ $redisHost }}:{{ $redisPort }}/{{ $redisDb }}")
-  {{- else }}
+  {{- else if and (not .Values.externalRedis.existingSecret) (not .Values.redis.auth.existingSecret)}}
   BROKER_URL = os.environ.get("BROKER_URL", "{{ $redisProto }}://{{ $redisHost }}:{{ $redisPort }}/{{ $redisDb }}")
   {{- end }}
 

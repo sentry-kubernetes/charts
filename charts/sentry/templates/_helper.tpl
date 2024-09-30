@@ -527,6 +527,11 @@ Common Snuba environment variables
   value: http://{{ template "sentry.fullname" . }}-snuba:{{ template "snuba.port" . }}
 {{- end -}}
 
+{{- $redisHost := include "sentry.redis.host" . -}}
+{{- $redisPort := include "sentry.redis.port" . -}}
+{{- $redisDb     := include "sentry.redis.db" . -}}
+{{- $redisProto  := ternary "rediss" "redis" (eq (include "sentry.redis.ssl" .) "true")  -}}
+
 {{/*
 Common Sentry environment variables
 */}}
@@ -637,6 +642,23 @@ Common Sentry environment variables
     secretKeyRef:
       name: {{ .Values.externalRedis.existingSecret }}
       key: {{ default "redis-password" .Values.externalRedis.existingSecretKey }}
+{{- end }}
+{{- if and (.Values.redis.enabled) (.Values.redis.auth.existingSecret) }}
+- name: HELM_CHARTS_SENTRY_REDIS_PASSWORD_CONTROLLED
+  valueFrom:
+    secretKeyRef:
+      name: {{ .Values.redis.auth.existingSecret }}
+      key: {{ default "redis-password" .Values.redis.auth.existingSecretPasswordKey }}
+- name: BROKER_URL
+  value: "{{ $redisProto }}://:$(HELM_CHARTS_SENTRY_REDIS_PASSWORD_CONTROLLED)@{{ $redisHost }}:{{ $redisPort }}/{{ $redisDb }}"
+{{- else if (.Values.externalRedis.existingSecret) }}
+- name: HELM_CHARTS_SENTRY_REDIS_PASSWORD_CONTROLLED
+  valueFrom:
+    secretKeyRef:
+      name: {{ .Values.externalRedis.existingSecret }}
+      key: {{ default "redis-password" .Values.externalRedis.existingSecretKey }}
+- name: BROKER_URL
+  value: "{{ $redisProto }}://:$(HELM_CHARTS_SENTRY_REDIS_PASSWORD_CONTROLLED)@{{ $redisHost }}:{{ $redisPort }}/{{ $redisDb }}"
 {{- end }}
 {{- if and (.Values.externalRedis.brokerUrl) (.Values.externalRedis.brokerUrl.existingSecret) }}
 - name: BROKER_URL
