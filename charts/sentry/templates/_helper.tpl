@@ -660,13 +660,6 @@ Common Sentry environment variables
 - name: BROKER_URL
   value: "{{ $redisProto }}://:$(HELM_CHARTS_SENTRY_REDIS_PASSWORD_CONTROLLED)@{{ $redisHost }}:{{ $redisPort }}/{{ $redisDb }}"
 {{- end }}
-{{- if and (.Values.externalRedis.brokerUrl) (.Values.externalRedis.brokerUrl.existingSecret) }}
-- name: BROKER_URL
-  valueFrom:
-    secretKeyRef:
-      name: {{ .Values.externalRedis.brokerUrl.existingSecret }}
-      key: {{ default "broker_url" .Values.externalRedis.brokerUrl.existingSecretKey }}
-{{- end }}
 {{- if and (eq .Values.filestore.backend "gcs") .Values.filestore.gcs.secretName }}
 - name: GOOGLE_APPLICATION_CREDENTIALS
   value: /var/run/secrets/google/{{ .Values.filestore.gcs.credentialsFile }}
