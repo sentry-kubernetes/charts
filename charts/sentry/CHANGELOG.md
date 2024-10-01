@@ -1,5 +1,12 @@
 # Changelog
 
+## [25.11.1](https://github.com/sentry-kubernetes/charts/compare/sentry-v25.11.0...sentry-v25.11.1) (2024-10-01)
+
+
+### Bug Fixes
+
+* reintroduced "Extend Redis functionality" ([#1492](https://github.com/sentry-kubernetes/charts/issues/1492)) broke S3 existing secret (from commit 0b7a7b4c) ([#1499](https://github.com/sentry-kubernetes/charts/issues/1499)) ([3eb75ef](https://github.com/sentry-kubernetes/charts/commit/3eb75ef861c68279975d2baa846bdf9b678474f3))
+
 ## [25.11.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v25.10.1...sentry-v25.11.0) (2024-09-30)
 
 
