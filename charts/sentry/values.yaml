@@ -1922,7 +1922,7 @@ kafka:
   enabled: true
   provisioning:
     ## Increasing the replicationFactor enhances data reliability during Kafka pod failures by replicating data across multiple brokers.
-    # replicationFactor: 3
+    # replicationFactor: 1
     enabled: true
     # Topic list is based on files below.
     # - https://github.com/getsentry/snuba/blob/master/snuba/utils/streams/topics.py
