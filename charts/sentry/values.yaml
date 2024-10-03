@@ -1921,6 +1921,8 @@ zookeeper:
 kafka:
   enabled: true
   provisioning:
+    ## Increasing the replicationFactor enhances data reliability during Kafka pod failures by replicating data across multiple brokers.
+    # replicationFactor: 3
     enabled: true
     # Topic list is based on files below.
     # - https://github.com/getsentry/snuba/blob/master/snuba/utils/streams/topics.py
@@ -2047,6 +2049,9 @@ kafka:
     replicaCount: 3
     ## if the load on the kafka controller increases, resourcesPreset must be increased
     # resourcesPreset: small # small, medium, large, xlarge, 2xlarge
+    ## if the load on the kafka controller increases, persistence.size must be increased
+    # persistence:
+    #   size: 8Gi
   ## Use this to enable an extra service account
   # serviceAccount:
   #   create: false
