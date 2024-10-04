@@ -254,8 +254,10 @@ sentry:
 
   # allows to dedicate some workers to specific queues
   workerEvents:
+    ## If the number of exceptions increases, it is recommended to enable workerEvents
     enabled: false
     queues: "events.save_event,post_process_errors"
+    ## When increasing the number of exceptions and enabling workerEvents, it is recommended to increase the number of their replicas
     replicas: 1
     # concurrency: 4
     env: []
@@ -1933,10 +1935,10 @@ kafka:
     # Note that snuba component might fail if you set `hooks.snubaInit.kafka.enabled` to `false` and remove the topics from this default topic list.
     topics:
       - name: events
-        config:
-          "message.timestamp.type": LogAppendTime
         ## Number of partitions for this topic
         # partitions: 1
+        config:
+          "message.timestamp.type": LogAppendTime
       - name: event-replacements
       - name: snuba-commit-log
         config:
@@ -2023,6 +2025,8 @@ kafka:
       - name: ingest-attachments
       - name: ingest-transactions
       - name: ingest-events
+        ## If the number of exceptions increases, it is recommended to increase the number of partitions for ingest-events
+        # partitions: 1
       - name: ingest-replay-recordings
       - name: ingest-metrics
       - name: ingest-performance-metrics
