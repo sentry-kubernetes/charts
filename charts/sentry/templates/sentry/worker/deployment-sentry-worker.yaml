@@ -97,6 +97,11 @@ spec:
 {{- if .Values.sentry.worker.env }}
 {{ toYaml .Values.sentry.worker.env | indent 8 }}
 {{- end }}
+{{- if .Values.sentry.worker.existingSecretEnv }}
+        envFrom:
+        - secretRef:
+          name: "{{.Values.sentry.worker.existingSecretEnv}}"
+{{- end }}
         volumeMounts:
         - mountPath: /etc/sentry
           name: config
