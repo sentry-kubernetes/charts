@@ -1753,7 +1753,7 @@ ingress:
   # if you are using AWS ALB Ingress controller, switch this to 'aws-alb'
   # if you are using GKE Ingress controller, switch this to 'gke'
   regexPathStyle: nginx
-  ingressClassName: nginx # traefik, istio, haproxy and other
+  ingressClassName: nginx  # traefik, istio, haproxy and other
   # If you are using AWS ALB Ingress controller, switch to true if you want activate the http to https redirection.
   alb:
     httpRedirect: false
