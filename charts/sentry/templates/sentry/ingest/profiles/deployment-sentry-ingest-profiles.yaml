@@ -52,9 +52,9 @@ spec:
       nodeSelector:
 {{ toYaml .Values.sentry.ingestProfiles.nodeSelector | indent 8 }}
       {{- end }}
-      {{- if .Values.sentry.ingestProfiles.tolerations }}
+      {{- if $tolerations := (default .Values.global.tolerations .Values.sentry.ingestProfiles.tolerations) }}
       tolerations:
-{{ toYaml .Values.sentry.ingestProfiles.tolerations | indent 8 }}
+{{ toYaml $tolerations | indent 8 }}
       {{- end }}
       {{- if .Values.sentry.ingestProfiles.topologySpreadConstraints }}
       topologySpreadConstraints:

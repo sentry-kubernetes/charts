@@ -41,9 +41,9 @@ spec:
       nodeSelector:
 {{ toYaml .Values.sentry.cron.nodeSelector | indent 8 }}
       {{- end }}
-      {{- if .Values.sentry.cron.tolerations }}
+      {{- if $tolerations := (default .Values.global.tolerations .Values.sentry.cron.tolerations) }}
       tolerations:
-{{ toYaml .Values.sentry.cron.tolerations | indent 8 }}
+{{ toYaml $tolerations | indent 8 }}
       {{- end }}
       {{- if .Values.sentry.cron.topologySpreadConstraints }}
       topologySpreadConstraints:

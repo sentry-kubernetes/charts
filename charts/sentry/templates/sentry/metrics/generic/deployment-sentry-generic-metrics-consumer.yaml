@@ -50,9 +50,9 @@ spec:
       nodeSelector:
 {{ toYaml .Values.sentry.genericMetricsConsumer.nodeSelector | indent 8 }}
       {{- end }}
-      {{- if .Values.sentry.genericMetricsConsumer.tolerations }}
+      {{- if $tolerations := (default .Values.global.tolerations .Values.sentry.genericMetricsConsumer.tolerations) }}
       tolerations:
-{{ toYaml .Values.sentry.genericMetricsConsumer.tolerations | indent 8 }}
+{{ toYaml $tolerations | indent 8 }}
       {{- end }}
       {{- if .Values.sentry.genericMetricsConsumer.topologySpreadConstraints }}
       topologySpreadConstraints:

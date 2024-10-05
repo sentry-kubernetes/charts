@@ -52,9 +52,9 @@ spec:
       nodeSelector:
 {{ toYaml .Values.sentry.ingestConsumerTransactions.nodeSelector | indent 8 }}
       {{- end }}
-      {{- if .Values.sentry.ingestConsumerTransactions.tolerations }}
+      {{- if $tolerations := (default .Values.global.tolerations .Values.sentry.ingestConsumerTransactions.tolerations) }}
       tolerations:
-{{ toYaml .Values.sentry.ingestConsumerTransactions.tolerations | indent 8 }}
+{{ toYaml $tolerations | indent 8 }}
       {{- end }}
       {{- if .Values.sentry.ingestConsumerTransactions.topologySpreadConstraints }}
       topologySpreadConstraints:

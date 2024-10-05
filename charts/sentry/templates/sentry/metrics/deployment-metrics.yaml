@@ -41,9 +41,9 @@ spec:
       nodeSelector:
 {{ toYaml .Values.metrics.nodeSelector | indent 8 }}
       {{- end }}
-      {{- if .Values.metrics.tolerations }}
+      {{- if $tolerations := (default .Values.global.tolerations .Values.metrics.tolerations) }}
       tolerations:
-{{ toYaml .Values.metrics.tolerations | indent 8 }}
+{{ toYaml $tolerations | indent 8 }}
       {{- end }}
       {{- if .Values.metrics.schedulerName }}
       schedulerName: "{{ .Values.metrics.schedulerName }}"

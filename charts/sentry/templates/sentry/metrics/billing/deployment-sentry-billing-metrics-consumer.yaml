@@ -52,9 +52,9 @@ spec:
       nodeSelector:
 {{ toYaml .Values.sentry.billingMetricsConsumer.nodeSelector | indent 8 }}
       {{- end }}
-      {{- if .Values.sentry.billingMetricsConsumer.tolerations }}
+      {{- if $tolerations := (default .Values.global.tolerations .Values.sentry.billingMetricsConsumer.tolerations) }}
       tolerations:
-{{ toYaml .Values.sentry.billingMetricsConsumer.tolerations | indent 8 }}
+{{ toYaml $tolerations | indent 8 }}
       {{- end }}
       {{- if .Values.sentry.billingMetricsConsumer.topologySpreadConstraints }}
       topologySpreadConstraints:

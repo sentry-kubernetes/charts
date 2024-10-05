@@ -47,9 +47,9 @@ spec:
       nodeSelector:
 {{ toYaml .Values.hooks.dbInit.nodeSelector | indent 8 }}
       {{- end }}
-      {{- if .Values.hooks.dbInit.tolerations }}
+      {{- if $tolerations := (default .Values.global.tolerations .Values.hooks.dbInit.tolerations) }}
       tolerations:
-{{ toYaml .Values.hooks.dbInit.tolerations | indent 8 }}
+{{ toYaml $tolerations | indent 8 }}
       {{- end }}
       restartPolicy: Never
       {{- if .Values.images.sentry.imagePullSecrets }}

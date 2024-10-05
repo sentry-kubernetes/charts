@@ -50,9 +50,9 @@ spec:
       nodeSelector:
 {{ toYaml .Values.sentry.postProcessForwardErrors.nodeSelector | indent 8 }}
       {{- end }}
-      {{- if .Values.sentry.postProcessForwardErrors.tolerations }}
+      {{- if $tolerations := (default .Values.global.tolerations .Values.sentry.postProcessForwardErrors.tolerations) }}
       tolerations:
-{{ toYaml .Values.sentry.postProcessForwardErrors.tolerations | indent 8 }}
+{{ toYaml $tolerations | indent 8 }}
       {{- end }}
       {{- if .Values.sentry.postProcessForwardErrors.topologySpreadConstraints }}
       topologySpreadConstraints:

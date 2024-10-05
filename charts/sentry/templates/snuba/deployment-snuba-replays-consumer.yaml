@@ -49,9 +49,9 @@ spec:
       nodeSelector:
 {{ toYaml .Values.snuba.replaysConsumer.nodeSelector | indent 8 }}
       {{- end }}
-      {{- if .Values.snuba.replaysConsumer.tolerations }}
+      {{- if $tolerations := (default .Values.global.tolerations .Values.snuba.replaysConsumer.tolerations) }}
       tolerations:
-{{ toYaml .Values.snuba.replaysConsumer.tolerations | indent 8 }}
+{{ toYaml $tolerations | indent 8 }}
       {{- end }}
       {{- if .Values.snuba.replaysConsumer.topologySpreadConstraints }}
       topologySpreadConstraints:

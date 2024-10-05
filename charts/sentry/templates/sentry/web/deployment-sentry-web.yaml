@@ -45,9 +45,9 @@ spec:
       nodeSelector:
 {{ toYaml .Values.sentry.web.nodeSelector | indent 8 }}
       {{- end }}
-      {{- if .Values.sentry.web.tolerations }}
+      {{- if $tolerations := (default .Values.global.tolerations .Values.sentry.web.tolerations) }}
       tolerations:
-{{ toYaml .Values.sentry.web.tolerations | indent 8 }}
+{{ toYaml $tolerations | indent 8 }}
       {{- end }}
       {{- if .Values.sentry.web.topologySpreadConstraints }}
       topologySpreadConstraints:

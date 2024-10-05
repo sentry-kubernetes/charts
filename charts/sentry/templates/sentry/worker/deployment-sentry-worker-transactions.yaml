@@ -43,9 +43,9 @@ spec:
       nodeSelector:
 {{ toYaml .Values.sentry.workerTransactions.nodeSelector | indent 8 }}
       {{- end }}
-      {{- if .Values.sentry.workerTransactions.tolerations }}
+      {{- if $tolerations := (default .Values.global.tolerations .Values.sentry.workerTransactions.tolerations) }}
       tolerations:
-{{ toYaml .Values.sentry.workerTransactions.tolerations | indent 8 }}
+{{ toYaml $tolerations | indent 8 }}
       {{- end }}
       {{- if .Values.sentry.workerTransactions.topologySpreadConstraints }}
       topologySpreadConstraints:

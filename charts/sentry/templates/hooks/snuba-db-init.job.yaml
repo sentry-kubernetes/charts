@@ -49,9 +49,9 @@ spec:
       nodeSelector:
 {{ toYaml .Values.hooks.snubaInit.nodeSelector | indent 8 }}
       {{- end }}
-      {{- if .Values.hooks.snubaInit.tolerations }}
+      {{- if $tolerations := (default .Values.global.tolerations .Values.hooks.snubaInit.tolerations) }}
       tolerations:
-{{ toYaml .Values.hooks.snubaInit.tolerations | indent 8 }}
+{{ toYaml $tolerations | indent 8 }}
       {{- end }}
       restartPolicy: Never
       {{- if .Values.images.snuba.imagePullSecrets }}
