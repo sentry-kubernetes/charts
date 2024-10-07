@@ -1,5 +1,18 @@
 # Changelog
 
+## [25.12.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v25.11.1...sentry-v25.12.0) (2024-10-07)
+
+
+### Features
+
+* add existingSecretEnv support for web and worker deployments ([#1509](https://github.com/sentry-kubernetes/charts/issues/1509)) ([b170ac3](https://github.com/sentry-kubernetes/charts/commit/b170ac33a64e41a36bfeb416e05801ec9ae1365d))
+* allow customization of kafka configuration ([#1514](https://github.com/sentry-kubernetes/charts/issues/1514)) ([5f4009b](https://github.com/sentry-kubernetes/charts/commit/5f4009b97898bea66749436b792e4a9815df4be8))
+
+
+### Bug Fixes
+
+* user-create-job hook does not create user ([5f4009b](https://github.com/sentry-kubernetes/charts/commit/5f4009b97898bea66749436b792e4a9815df4be8))
+
 ## [25.11.1](https://github.com/sentry-kubernetes/charts/compare/sentry-v25.11.0...sentry-v25.11.1) (2024-10-01)
 
 
