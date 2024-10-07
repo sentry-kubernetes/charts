@@ -151,6 +151,10 @@ relay:
     #  deliveryTimeoutMs:
     #  apiVersionRequestTimeoutMs:
 
+    # additionalKafkaConfig:
+    #  - name: security.protocol
+    #    value: "SSL"
+
 geodata:
   path: ""
   volumeName: ""
