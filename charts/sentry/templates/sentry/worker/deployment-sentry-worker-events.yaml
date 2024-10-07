@@ -150,6 +150,11 @@ spec:
         secret:
           secretName: {{ .Values.filestore.gcs.secretName }}
       {{ end }}
+      {{- if and .Values.geodata.volumeName .Values.geodata.accountID }}
+      - name: {{ .Values.geodata.volumeName }}
+        persistentVolumeClaim:
+          claimName: data-sentry-geoip
+      {{- end }}
       {{- if .Values.sentry.workerEvents.priorityClassName }}
       priorityClassName: "{{ .Values.sentry.workerEvents.priorityClassName }}"
       {{- end }}

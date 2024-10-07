@@ -1,0 +1,22 @@
+{{- if .Values.geodata.accountID }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: data-sentry-geoip
+  labels:
+    app: sentry
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
+    release: "{{ .Release.Name }}"
+    heritage: "{{ .Release.Service }}"
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: {{ .Values.geodata.persistence.size }}
+{{- end -}}
+{{- if (eq "-" .Values.geodata.persistence.storageClass) }}
+  storageClassName: ""
+{{- else }}
+  storageClassName: "{{ .Values.geodata.persistence.storageClass }}"
+{{- end }}
