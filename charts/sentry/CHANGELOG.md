@@ -1,5 +1,12 @@
 # Changelog
 
+## [25.13.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v25.12.0...sentry-v25.13.0) (2024-10-07)
+
+
+### Features
+
+* add geoip support to sentry deployment ([#1516](https://github.com/sentry-kubernetes/charts/issues/1516)) ([4f2429b](https://github.com/sentry-kubernetes/charts/commit/4f2429b746fe13002c21abf233338a293acff1a0))
+
 ## [25.12.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v25.11.1...sentry-v25.12.0) (2024-10-07)
 
 
