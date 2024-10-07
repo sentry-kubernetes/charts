@@ -63,6 +63,9 @@ config.yml: |-
       - name: "api.version.request.timeout.ms"
         value: {{ int64 .Values.relay.processing.kafkaConfig.apiVersionRequestTimeoutMs | quote }}
       {{- end }}
+  {{- if .Values.relay.processing.additionalKafkaConfig }}
+  {{ toYaml .Values.relay.processing.additionalKafkaConfig | nindent 6 }}
+  {{- end }}
 
     {{- if $redisPass }}
     {{- if and (not .Values.externalRedis.existingSecret) (not .Values.redis.auth.existingSecret)}}
