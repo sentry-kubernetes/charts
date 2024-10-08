@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sentry-benchmark
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sentry-benchmark
+  template:
+    metadata:
+      labels:
+        app: sentry-benchmark
+    spec:
+      containers:
+        - name: sentry-golang-benchmark
+          image: your-dockerhub-username/sentry-golang-benchmark:1
+          imagePullPolicy: Always
+          env:
+            - name: SENTRY_DSN
+              valueFrom:
+                secretKeyRef:
+                  name: sentry-dsn
+                  key: dsn
+          ports:
+            - containerPort: 8080

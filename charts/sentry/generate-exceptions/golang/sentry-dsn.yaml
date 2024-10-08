@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: sentry-dsn
+type: Opaque
+data:
+  dsn: xxxxxxxxxxxxxxxxxxxxxxxxxxxx
