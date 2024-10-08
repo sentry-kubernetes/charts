@@ -1939,6 +1939,9 @@ zookeeper:
   enabled: true
   nameOverride: zookeeper-clickhouse
   replicaCount: 1
+  ## When increasing the number of exceptions, you need to increase persistence.size
+  # persistence:
+  #   size: 8Gi
 
 # Settings for Kafka.
 # See https://github.com/bitnami/charts/tree/master/bitnami/kafka
@@ -2159,6 +2162,10 @@ postgresql:
   # primary:
   #   extendedConfiguration: |
   #     max_connections=100
+  ## When increasing the number of exceptions, you need to increase persistence.size
+  # primary:
+  #   persistence:
+  #     size: 8Gi
 
 ## This value is only used when postgresql.enabled is set to false
 ## Set either externalPostgresql.password or externalPostgresql.existingSecret to configure password
