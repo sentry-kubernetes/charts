@@ -14,9 +14,7 @@ spec:
   resources:
     requests:
       storage: {{ .Values.geodata.persistence.size }}
-{{- if (eq "-" .Values.geodata.persistence.storageClass) }}
-  storageClassName: ""
-{{- else }}
-  storageClassName: "{{ .Values.geodata.persistence.storageClass }}"
-  {{- end }}
+{{- if .Values.geodata.persistence.storageClass }}
+  storageClassName: {{ .Values.geodata.persistence.storageClass | quote }}
+{{- end }}
 {{- end }}
