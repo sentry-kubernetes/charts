@@ -1,5 +1,12 @@
 # Changelog
 
+## [25.13.1](https://github.com/sentry-kubernetes/charts/compare/sentry-v25.13.0...sentry-v25.13.1) (2024-10-08)
+
+
+### Bug Fixes
+
+* correct argument order of consumers ([#1522](https://github.com/sentry-kubernetes/charts/issues/1522)) ([6236a74](https://github.com/sentry-kubernetes/charts/commit/6236a74e70a78525a6030ade5cd3fc29b424fe59))
+
 ## [25.13.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v25.12.0...sentry-v25.13.0) (2024-10-07)
 
 
