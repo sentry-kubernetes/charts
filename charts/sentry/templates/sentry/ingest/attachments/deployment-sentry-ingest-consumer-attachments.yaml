@@ -93,10 +93,6 @@ spec:
           - "--healthcheck-file-path"
           - "/tmp/health.txt"
           {{- end }}
-          {{- if .Values.sentry.ingestConsumerAttachments.maxBatchSize }}
-          - "--max-batch-size"
-          - "{{ .Values.sentry.ingestConsumerAttachments.maxBatchSize }}"
-          {{- end }}
           {{- if .Values.sentry.ingestConsumerAttachments.logLevel }}
           - "--log-level"
           - "{{ .Values.sentry.ingestConsumerAttachments.logLevel }}"
@@ -105,6 +101,10 @@ spec:
           {{- if .Values.sentry.ingestConsumerAttachments.concurrency }}
           - "--processes"
           - "{{ .Values.sentry.ingestConsumerAttachments.concurrency }}"
+          {{- end }}
+          {{- if .Values.sentry.ingestConsumerAttachments.maxBatchSize }}
+          - "--max-batch-size"
+          - "{{ .Values.sentry.ingestConsumerAttachments.maxBatchSize }}"
           {{- end }}
         {{- if .Values.sentry.ingestConsumerAttachments.livenessProbe.enabled }}
         livenessProbe:
