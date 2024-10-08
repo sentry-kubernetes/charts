@@ -1207,14 +1207,11 @@ geodata:
   licenseKey: "example"
   editionIDs: "example"
   persistence:
-    ## database data Persistent Volume Storage Class
     ## If defined, storageClassName: <storageClass>
-    ## If set to "-", storageClassName: "", which disables dynamic provisioning
     ## If undefined (the default) or set to null, no storageClassName spec is
     ##   set, choosing the default provisioner.  (gp2 on AWS, standard on
     ##   GKE, AWS & OpenStack)
-    ##
-    # storageClass: "-"
+    # storageClass: ""
     size: 1Gi
   volumeName: "data-sentry-geoip"
   # mountPath of the volume containing the database
