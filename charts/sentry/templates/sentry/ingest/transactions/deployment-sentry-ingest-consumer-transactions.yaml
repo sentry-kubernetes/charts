@@ -93,13 +93,14 @@ spec:
           - "--healthcheck-file-path"
           - "/tmp/health.txt"
           {{- end }}
-          {{- if .Values.sentry.ingestConsumerTransactions.maxBatchSize }}
-          - "--max-batch-size"
-          - "{{ .Values.sentry.ingestConsumerTransactions.maxBatchSize }}"
-          {{- end }}
           {{- if .Values.sentry.ingestConsumerTransactions.logLevel }}
           - "--log-level"
           - "{{ .Values.sentry.ingestConsumerTransactions.logLevel }}"
+          {{- end }}
+          - "--"
+          {{- if .Values.sentry.ingestConsumerTransactions.maxBatchSize }}
+          - "--max-batch-size"
+          - "{{ .Values.sentry.ingestConsumerTransactions.maxBatchSize }}"
           {{- end }}
           {{- if .Values.sentry.ingestConsumerTransactions.inputBlockSize }}
           - "--input-block-size"
@@ -109,7 +110,6 @@ spec:
           - "--max-batch-time-ms"
           - "{{ .Values.sentry.ingestConsumerTransactions.maxBatchTimeMs }}"
           {{- end }}
-          - "--"
           {{- if .Values.sentry.ingestConsumerTransactions.concurrency }}
           - "--processes"
           - "{{ .Values.sentry.ingestConsumerTransactions.concurrency }}"

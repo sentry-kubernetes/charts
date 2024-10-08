@@ -88,11 +88,11 @@ spec:
           - "--healthcheck-file-path"
           - "/tmp/health.txt"
           {{- end }}
+          - "--"
           {{- if .Values.sentry.subscriptionConsumerGenericMetrics.maxBatchSize }}
           - "--max-batch-size"
           - "{{ .Values.sentry.subscriptionConsumerGenericMetrics.maxBatchSize }}"
           {{- end }}
-          - "--"
           {{- if .Values.sentry.subscriptionConsumerGenericMetrics.concurrency }}
           - "--processes"
           - "{{ .Values.sentry.subscriptionConsumerGenericMetrics.concurrency }}"
