@@ -167,11 +167,11 @@ geodata:
     ##   GKE, AWS & OpenStack)
     # storageClass: "" # for example: csi-s3
     size: 1Gi
-  volumeName: "" # for example: data-sentry-geoip
+  volumeName: ""  # for example: data-sentry-geoip
   # mountPath of the volume containing the database
-  mountPath: "" # for example: /usr/share/GeoIP
+  mountPath: ""  # for example: /usr/share/GeoIP
   # path to the geoip database inside the volumemount
-  path: "" # for example: /usr/share/GeoIP/GeoLite2-City.mmdb
+  path: ""  # for example: /usr/share/GeoIP/GeoLite2-City.mmdb
 
 sentry:
   # to not generate a sentry-secret, use these 2 values to reference an existing secret
