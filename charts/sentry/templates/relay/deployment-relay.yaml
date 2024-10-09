@@ -156,6 +156,7 @@ spec:
           {{- if .Values.geodata.volumeName }}
           - name: {{ .Values.geodata.volumeName }}
             mountPath: {{ .Values.geodata.mountPath }}
+            readOnly: true
           {{- end }}
 {{- if .Values.relay.volumeMounts }}
 {{ toYaml .Values.relay.volumeMounts | indent 10 }}
@@ -203,6 +204,7 @@ spec:
       - name: {{ .Values.geodata.volumeName }}
         persistentVolumeClaim:
           claimName: data-sentry-geoip
+          readOnly: true
       {{- end }}
 {{- if .Values.relay.volumes }}
 {{ toYaml .Values.relay.volumes | indent 6 }}
