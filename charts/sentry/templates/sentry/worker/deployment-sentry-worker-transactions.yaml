@@ -161,4 +161,9 @@ spec:
 {{- if .Values.sentry.workerTransactions.volumes }}
 {{ toYaml .Values.sentry.workerTransactions.volumes | indent 6 }}
 {{- end }}
+      {{- if .Values.geodata.volumeName }}
+      - name: {{ .Values.geodata.volumeName }}
+        persistentVolumeClaim:
+          claimName: {{ .Values.geodata.volumeName }}
+      {{- end }}
 {{- end }}

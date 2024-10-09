@@ -165,13 +165,13 @@ geodata:
     ## If undefined (the default) or set to null, no storageClassName spec is
     ##   set, choosing the default provisioner.  (gp2 on AWS, standard on
     ##   GKE, AWS & OpenStack)
-    # storageClass: "-"
+    # storageClass: "" # for example: csi-s3
     size: 1Gi
-  volumeName: ""
+  volumeName: "" # for example: data-sentry-geoip
   # mountPath of the volume containing the database
-  mountPath: ""
+  mountPath: "" # for example: /usr/share/GeoIP
   # path to the geoip database inside the volumemount
-  path: ""
+  path: "" # for example: /usr/share/GeoIP/GeoLite2-City.mmdb
 
 sentry:
   # to not generate a sentry-secret, use these 2 values to reference an existing secret

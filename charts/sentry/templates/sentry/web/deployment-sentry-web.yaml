@@ -194,4 +194,9 @@ spec:
 {{- if .Values.sentry.web.volumes }}
 {{ toYaml .Values.sentry.web.volumes | indent 6 }}
 {{- end }}
+      {{- if .Values.geodata.volumeName }}
+      - name: {{ .Values.geodata.volumeName }}
+        persistentVolumeClaim:
+          claimName: {{ .Values.geodata.volumeName }}
+      {{- end }}
 {{- end }}
