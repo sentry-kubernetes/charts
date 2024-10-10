@@ -10,6 +10,12 @@ spec:
   template:
     spec:
       initContainers:
+        - name: init-create-geoip-dir
+          image: busybox
+          command: ['sh', '-c', 'mkdir -p /usr/share/GeoIP']
+          volumeMounts:
+            - name: {{ .Values.geodata.volumeName }}
+              mountPath: {{ .Values.geodata.mountPath }}
         - name: init-geoip-conf
           image: busybox
           command: ['sh', '-c', 'echo -e "AccountID $(echo $GEOIPUPDATE_ACCOUNT_ID)\nLicenseKey $(echo $GEOIPUPDATE_LICENSE_KEY)\nEditionIDs $(echo $GEOIPUPDATE_EDITION_IDS)" > /usr/share/GeoIP/GeoIP.conf']
