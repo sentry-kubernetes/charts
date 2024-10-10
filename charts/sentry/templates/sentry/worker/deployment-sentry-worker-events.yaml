@@ -153,7 +153,7 @@ spec:
       {{- if and .Values.geodata.volumeName .Values.geodata.accountID }}
       - name: {{ .Values.geodata.volumeName }}
         persistentVolumeClaim:
-          claimName: data-sentry-geoip
+          claimName: {{ .Values.geodata.volumeName }}
       {{- end }}
       {{- if .Values.sentry.workerEvents.priorityClassName }}
       priorityClassName: "{{ .Values.sentry.workerEvents.priorityClassName }}"
@@ -161,9 +161,4 @@ spec:
 {{- if .Values.sentry.workerEvents.volumes }}
 {{ toYaml .Values.sentry.workerEvents.volumes | indent 6 }}
 {{- end }}
-      {{- if .Values.geodata.volumeName }}
-      - name: {{ .Values.geodata.volumeName }}
-        persistentVolumeClaim:
-          claimName: {{ .Values.geodata.volumeName }}
-      {{- end }}
 {{- end }}
