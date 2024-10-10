@@ -108,7 +108,7 @@ spec:
           readOnly: true
         - mountPath: {{ .Values.filestore.filesystem.path }}
           name: sentry-data
-        {{- if .Values.geodata.volumeName }}
+        {{- if and .Values.geodata.volumeName .Values.geodata.accountID }}
         - name: {{ .Values.geodata.volumeName }}
           mountPath: {{ .Values.geodata.mountPath }}
         {{- end }}
@@ -171,7 +171,7 @@ spec:
 {{- if .Values.sentry.worker.volumes }}
 {{ toYaml .Values.sentry.worker.volumes | indent 6 }}
 {{- end }}
-      {{- if .Values.geodata.volumeName }}
+      {{- if and .Values.geodata.volumeName .Values.geodata.accountID }}
       - name: {{ .Values.geodata.volumeName }}
         persistentVolumeClaim:
           claimName: {{ .Values.geodata.volumeName }}

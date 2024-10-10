@@ -93,7 +93,7 @@ spec:
           readOnly: true
         - mountPath: {{ .Values.filestore.filesystem.path }}
           name: sentry-data
-        {{- if .Values.geodata.volumeName }}
+        {{- if and .Values.geodata.volumeName .Values.geodata.accountID }}
         - name: {{ .Values.geodata.volumeName }}
           mountPath: {{ .Values.geodata.mountPath }}
         {{- end }}
