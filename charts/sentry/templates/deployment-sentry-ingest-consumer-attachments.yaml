@@ -84,6 +84,9 @@ spec:
           - "run"
           - "consumer"
           - "ingest-attachments"
+          {{- if .Values.sentry.ingestConsumerAttachments.noStrictOffsetReset }}
+          - "--no-strict-offset-reset"
+          {{- end }}
           - "--consumer-group"
           - "ingest-consumer"
           {{- if .Values.sentry.ingestConsumerAttachments.livenessProbe.enabled }}

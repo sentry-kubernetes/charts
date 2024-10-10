@@ -1,16 +1,16 @@
 dependencies:
 - name: memcached
   repository: oci://registry-1.docker.io/bitnamicharts
-  version: 7.4.8
+  version: 7.4.16
 - name: redis
   repository: oci://registry-1.docker.io/bitnamicharts
   version: 17.11.3
 - name: kafka
   repository: oci://registry-1.docker.io/bitnamicharts
-  version: 29.3.2
+  version: 29.3.8
 - name: clickhouse
   repository: https://sentry-kubernetes.github.io/charts
-  version: 3.10.0
+  version: 3.11.0
 - name: zookeeper
   repository: oci://registry-1.docker.io/bitnamicharts
   version: 11.4.11
@@ -22,6 +22,6 @@ dependencies:
   version: 12.5.1
 - name: nginx
   repository: oci://registry-1.docker.io/bitnamicharts
-  version: 18.1.2
-digest: sha256:8b41e6d8df5de45fe2a0d644a59d8df2c7ce85b72fa83509c8fe6a8ae1efc619
-generated: "2024-07-14T20:17:15.21481654+02:00"
+  version: 18.1.14
+digest: sha256:34956efd50bb882bf8e027dbb5eb5930ed6d6068a302d185923c694894da4567
+generated: "2024-09-24T19:17:23.327601889+06:00"

@@ -24,6 +24,7 @@ settings.py: |
           "discover",
           "events",
           "events_ro",
+          "events_analytics_platform",
           "metrics",
           "metrics_summaries",
           "migrations",
