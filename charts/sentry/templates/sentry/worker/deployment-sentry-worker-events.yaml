@@ -93,7 +93,7 @@ spec:
           readOnly: true
         - mountPath: {{ .Values.filestore.filesystem.path }}
           name: sentry-data
-        {{- if .Values.geodata.volumeName }}
+        {{- if and .Values.geodata.volumeName .Values.geodata.accountID }}
         - name: {{ .Values.geodata.volumeName }}
           mountPath: {{ .Values.geodata.mountPath }}
         {{- end }}
@@ -153,7 +153,7 @@ spec:
       {{- if and .Values.geodata.volumeName .Values.geodata.accountID }}
       - name: {{ .Values.geodata.volumeName }}
         persistentVolumeClaim:
-          claimName: data-sentry-geoip
+          claimName: {{ .Values.geodata.volumeName }}
       {{- end }}
       {{- if .Values.sentry.workerEvents.priorityClassName }}
       priorityClassName: "{{ .Values.sentry.workerEvents.priorityClassName }}"
