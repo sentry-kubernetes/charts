@@ -1,5 +1,12 @@
 # Changelog
 
+## [25.13.3](https://github.com/sentry-kubernetes/charts/compare/sentry-v25.13.2...sentry-v25.13.3) (2024-10-12)
+
+
+### Bug Fixes
+
+* update geoip job hooks and volume handling ([#1529](https://github.com/sentry-kubernetes/charts/issues/1529)) ([886eb5f](https://github.com/sentry-kubernetes/charts/commit/886eb5fe8110bfb1a973740ca3a1a2e3e776c003))
+
 ## [25.13.2](https://github.com/sentry-kubernetes/charts/compare/sentry-v25.13.1...sentry-v25.13.2) (2024-10-08)
 
 
