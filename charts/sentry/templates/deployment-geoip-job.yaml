@@ -4,12 +4,18 @@ kind: Job
 metadata:
   name: geoip-install-job
   annotations:
-    "helm.sh/hook": "pre-install"
-    "helm.sh/hook-weight": "3"
+    "helm.sh/hook": "post-install,post-upgrade"
+    "helm.sh/hook-weight": "9"
 spec:
   template:
     spec:
       initContainers:
+        - name: init-create-geoip-dir
+          image: busybox
+          command: ['sh', '-c', 'mkdir -p /usr/share/GeoIP']
+          volumeMounts:
+            - name: {{ .Values.geodata.volumeName }}
+              mountPath: {{ .Values.geodata.mountPath }}
         - name: init-geoip-conf
           image: busybox
           command: ['sh', '-c', 'echo -e "AccountID $(echo $GEOIPUPDATE_ACCOUNT_ID)\nLicenseKey $(echo $GEOIPUPDATE_LICENSE_KEY)\nEditionIDs $(echo $GEOIPUPDATE_EDITION_IDS)" > /usr/share/GeoIP/GeoIP.conf']
