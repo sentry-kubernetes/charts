@@ -366,6 +366,7 @@ sentry:
     # volumeMounts:
     #   - mountPath: /dev/shm
     #     name: dshm
+    autoOffsetReset: "earliest"
     # noStrictOffsetReset: false
 
   ingestConsumerEvents:
@@ -405,6 +406,7 @@ sentry:
     # volumeMounts:
     #   - mountPath: /dev/shm
     #     name: dshm
+    autoOffsetReset: "earliest"
     # noStrictOffsetReset: false
 
   ingestConsumerTransactions:
@@ -444,6 +446,7 @@ sentry:
     # volumeMounts:
     #   - mountPath: /dev/shm
     #     name: dshm
+    autoOffsetReset: "earliest"
     # noStrictOffsetReset: false
 
   ingestReplayRecordings:
@@ -477,6 +480,8 @@ sentry:
     # volumeMounts:
     #   - mountPath: /dev/shm
     #     name: dshm
+    autoOffsetReset: "earliest"
+    # noStrictOffsetReset: false
 
   ingestProfiles:
     replicas: 1
@@ -505,6 +510,8 @@ sentry:
     # volumeMounts:
     #   - mountPath: /dev/shm
     #     name: dshm
+    autoOffsetReset: "earliest"
+    # noStrictOffsetReset: false
 
   ingestOccurrences:
     enabled: true
@@ -537,6 +544,8 @@ sentry:
     # volumeMounts:
     #   - mountPath: /dev/shm
     #     name: dshm
+    autoOffsetReset: "earliest"
+    # noStrictOffsetReset: false
 
   ingestMonitors:
     enabled: true
@@ -569,6 +578,8 @@ sentry:
     # volumeMounts:
     #   - mountPath: /dev/shm
     #     name: dshm
+    autoOffsetReset: "earliest"
+    # noStrictOffsetReset: false
 
   billingMetricsConsumer:
     enabled: true
@@ -601,6 +612,8 @@ sentry:
     # volumeMounts:
     #   - mountPath: /dev/shm
     #     name: dshm
+    autoOffsetReset: "earliest"
+    # noStrictOffsetReset: false
 
   genericMetricsConsumer:
     enabled: true
@@ -636,6 +649,8 @@ sentry:
     # volumeMounts:
     #   - mountPath: /dev/shm
     #     name: dshm
+    autoOffsetReset: "earliest"
+    # noStrictOffsetReset: false
 
   metricsConsumer:
     enabled: true
@@ -671,6 +686,8 @@ sentry:
     # volumeMounts:
     #   - mountPath: /dev/shm
     #     name: dshm
+    autoOffsetReset: "earliest"
+    # noStrictOffsetReset: false
 
   cron:
     enabled: true
@@ -774,6 +791,8 @@ sentry:
       enabled: true
       initialDelaySeconds: 5
       periodSeconds: 320
+    autoOffsetReset: "earliest"
+    # noStrictOffsetReset: false
 
   postProcessForwardTransactions:
     enabled: true
@@ -798,6 +817,7 @@ sentry:
       initialDelaySeconds: 5
       periodSeconds: 320
     # volumeMounts: []
+    autoOffsetReset: "earliest"
     # noStrictOffsetReset: false
 
   postProcessForwardIssuePlatform:
@@ -822,6 +842,8 @@ sentry:
       enabled: true
       initialDelaySeconds: 5
       periodSeconds: 320
+    autoOffsetReset: "earliest"
+    # noStrictOffsetReset: false
 
   subscriptionConsumerGenericMetrics:
     enabled: true
@@ -846,6 +868,8 @@ sentry:
       enabled: true
       initialDelaySeconds: 5
       periodSeconds: 320
+    autoOffsetReset: "earliest"
+    # noStrictOffsetReset: false
 
   subscriptionConsumerMetrics:
     enabled: true
@@ -870,6 +894,8 @@ sentry:
       enabled: true
       initialDelaySeconds: 5
       periodSeconds: 320
+    autoOffsetReset: "earliest"
+    # noStrictOffsetReset: false
 
   cleanup:
     successfulJobsHistoryLimit: 5
@@ -1085,13 +1111,14 @@ snuba:
     containerSecurityContext: {}
     # tolerations: []
     # podLabels: {}
-    autoOffsetReset: "earliest"
     livenessProbe:
       enabled: true
       initialDelaySeconds: 5
       periodSeconds: 320
     # volumes: []
     # volumeMounts: []
+    autoOffsetReset: "earliest"
+    # noStrictOffsetReset: false
 
   genericMetricsCountersConsumer:
     enabled: true
@@ -1215,13 +1242,14 @@ snuba:
     containerSecurityContext: {}
     # tolerations: []
     # podLabels: {}
-    autoOffsetReset: "earliest"
     # volumes: []
     # volumeMounts: []
     livenessProbe:
       enabled: true
       initialDelaySeconds: 5
       periodSeconds: 320
+    autoOffsetReset: "earliest"
+    # noStrictOffsetReset: false
 
   subscriptionConsumerSessions:
     replicas: 1

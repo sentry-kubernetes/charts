@@ -87,6 +87,8 @@ spec:
           - "--synchronize-commit-log-topic=snuba-transactions-commit-log"
           - "--synchronize-commit-group"
           - "transactions_group"
+          - "--auto-offset-reset"
+          - "{{ .Values.sentry.postProcessForwardTransactions.autoOffsetReset }}"
           {{- if .Values.sentry.postProcessForwardTransactions.noStrictOffsetReset }}
           - "--no-strict-offset-reset"
           {{- end }}

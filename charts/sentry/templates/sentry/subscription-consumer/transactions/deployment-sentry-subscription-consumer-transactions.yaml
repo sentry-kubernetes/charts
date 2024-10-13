@@ -77,6 +77,11 @@ spec:
           - "transactions-subscription-results"
           - "--consumer-group"
           - "query-subscription-consumer"
+          - "--auto-offset-reset"
+          - "{{ .Values.sentry.subscriptionConsumerTransactions.autoOffsetReset }}"
+          {{- if .Values.sentry.subscriptionConsumerTransactions.noStrictOffsetReset }}
+          - "--no-strict-offset-reset"
+          {{- end }}
           {{- if .Values.sentry.subscriptionConsumerTransactions.livenessProbe.enabled }}
           - "--healthcheck-file-path"
           - "/tmp/health.txt"

@@ -87,6 +87,8 @@ spec:
           - "--synchronize-commit-log-topic=snuba-generic-events-commit-log"
           - "--synchronize-commit-group"
           - "generic_events_group"
+          - "--auto-offset-reset"
+          - "{{ .Values.sentry.postProcessForwardIssuePlatform.autoOffsetReset }}"
           {{- if .Values.sentry.postProcessForwardIssuePlatform.noStrictOffsetReset }}
           - "--no-strict-offset-reset"
           {{- end }}
