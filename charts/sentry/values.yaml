@@ -726,6 +726,7 @@ sentry:
       enabled: true
       initialDelaySeconds: 5
       periodSeconds: 320
+    autoOffsetReset: "earliest"
     # noStrictOffsetReset: false
     # volumeMounts: []
 
@@ -742,6 +743,7 @@ sentry:
     sidecars: []
     topologySpreadConstraints: []
     volumes: []
+    autoOffsetReset: "earliest"
     # noStrictOffsetReset: false
     # volumeMounts: []
 
@@ -766,6 +768,7 @@ sentry:
       enabled: true
       initialDelaySeconds: 5
       periodSeconds: 320
+    autoOffsetReset: "earliest"
     # noStrictOffsetReset: false
     # volumeMounts: []
 
