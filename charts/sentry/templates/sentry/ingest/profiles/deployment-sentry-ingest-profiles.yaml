@@ -86,8 +86,10 @@ spec:
           - "ingest-profiles"
           - "--consumer-group"
           - "ingest-profiles"
+          {{- if .Values.sentry.ingestProfiles.autoOffsetReset }}
           - "--auto-offset-reset"
           - "{{ .Values.sentry.ingestProfiles.autoOffsetReset }}"
+          {{- end }}
           {{- if .Values.sentry.ingestProfiles.noStrictOffsetReset }}
           - "--no-strict-offset-reset"
           {{- end }}

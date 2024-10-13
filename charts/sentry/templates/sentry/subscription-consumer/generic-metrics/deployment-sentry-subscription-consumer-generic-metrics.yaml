@@ -84,8 +84,10 @@ spec:
           - "generic-metrics-subscription-results"
           - "--consumer-group"
           - "query-subscription-consumer"
+          {{- if .Values.sentry.subscriptionConsumerGenericMetrics.autoOffsetReset }}
           - "--auto-offset-reset"
           - "{{ .Values.sentry.subscriptionConsumerGenericMetrics.autoOffsetReset }}"
+          {{- end }}
           {{- if .Values.sentry.subscriptionConsumerGenericMetrics.noStrictOffsetReset }}
           - "--no-strict-offset-reset"
           {{- end }}

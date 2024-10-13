@@ -86,8 +86,10 @@ spec:
           - "ingest-events"
           - "--consumer-group"
           - "ingest-consumer"
+          {{- if .Values.sentry.ingestConsumerEvents.autoOffsetReset }}
           - "--auto-offset-reset"
           - "{{ .Values.sentry.ingestConsumerEvents.autoOffsetReset }}"
+          {{- end }}
           {{- if .Values.sentry.ingestConsumerEvents.noStrictOffsetReset }}
           - "--no-strict-offset-reset"
           {{- end }}

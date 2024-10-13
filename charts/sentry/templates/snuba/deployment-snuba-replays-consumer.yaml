@@ -83,8 +83,10 @@ spec:
           - "replays"
           - "--consumer-group"
           - "replays_group"
+          {{- if .Values.snuba.replaysConsumer.autoOffsetReset }}
           - "--auto-offset-reset"
           - "{{ .Values.snuba.replaysConsumer.autoOffsetReset }}"
+          {{- end }}
           {{- if .Values.snuba.replaysConsumer.maxBatchSize }}
           - "--max-batch-size"
           - "{{ .Values.snuba.replaysConsumer.maxBatchSize }}"

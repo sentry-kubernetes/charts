@@ -86,8 +86,10 @@ spec:
           - "ingest-monitors"
           - "--consumer-group"
           - "ingest-monitors"
+          {{- if .Values.sentry.ingestMonitors.autoOffsetReset }}
           - "--auto-offset-reset"
           - "{{ .Values.sentry.ingestMonitors.autoOffsetReset }}"
+          {{- end }}
           {{- if .Values.sentry.ingestMonitors.noStrictOffsetReset }}
           - "--no-strict-offset-reset"
           {{- end }}

@@ -83,8 +83,10 @@ spec:
           - "search_issues"
           - "--consumer-group"
           - "generic_events_group"
+          {{- if .Values.snuba.issueOccurrenceConsumer.autoOffsetReset }}
           - "--auto-offset-reset"
           - "{{ .Values.snuba.issueOccurrenceConsumer.autoOffsetReset }}"
+          {{- end }}
           {{- if .Values.snuba.issueOccurrenceConsumer.maxBatchSize }}
           - "--max-batch-size"
           - "{{ .Values.snuba.issueOccurrenceConsumer.maxBatchSize }}"

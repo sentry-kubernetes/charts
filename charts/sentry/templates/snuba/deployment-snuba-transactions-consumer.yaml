@@ -83,8 +83,10 @@ spec:
           - "transactions"
           - "--consumer-group"
           - "transactions_group"
+          {{- if .Values.snuba.transactionsConsumer.autoOffsetReset }}
           - "--auto-offset-reset"
           - "{{ .Values.snuba.transactionsConsumer.autoOffsetReset }}"
+          {{- end }}
           {{- if .Values.snuba.transactionsConsumer.maxBatchSize }}
           - "--max-batch-size"
           - "{{ .Values.snuba.transactionsConsumer.maxBatchSize }}"

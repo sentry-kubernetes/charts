@@ -86,8 +86,10 @@ spec:
           - "ingest-transactions"
           - "--consumer-group"
           - "ingest-consumer"
+          {{- if .Values.sentry.ingestConsumerTransactions.autoOffsetReset }}
           - "--auto-offset-reset"
           - "{{ .Values.sentry.ingestConsumerTransactions.autoOffsetReset }}"
+          {{- end }}
           {{- if .Values.sentry.ingestConsumerTransactions.noStrictOffsetReset }}
           - "--no-strict-offset-reset"
           {{- end }}
