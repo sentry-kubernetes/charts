@@ -75,6 +75,13 @@ spec:
           - "run"
           - "consumer"
           - "events-subscription-results"
+          {{- if .Values.sentry.subscriptionConsumerEvents.autoOffsetReset }}
+          - "--auto-offset-reset"
+          - "{{ .Values.sentry.subscriptionConsumerEvents.autoOffsetReset }}"
+          {{- end }}
+          {{- if .Values.sentry.subscriptionConsumerEvents.noStrictOffsetReset }}
+          - "--no-strict-offset-reset"
+          {{- end }}
           - "--consumer-group"
           - "query-subscription-consumer"
           {{- if .Values.sentry.subscriptionConsumerEvents.livenessProbe.enabled }}

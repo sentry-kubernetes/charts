@@ -86,6 +86,13 @@ spec:
           - "billing-metrics-consumer"
           - "--consumer-group"
           - "billing-metrics-consumer"
+          {{- if .Values.sentry.billingMetricsConsumer.autoOffsetReset }}
+          - "--auto-offset-reset"
+          - "{{ .Values.sentry.billingMetricsConsumer.autoOffsetReset }}"
+          {{- end }}
+          {{- if .Values.sentry.billingMetricsConsumer.noStrictOffsetReset }}
+          - "--no-strict-offset-reset"
+          {{- end }}
           {{- if .Values.sentry.billingMetricsConsumer.livenessProbe.enabled }}
           - "--healthcheck-file-path"
           - "/tmp/health.txt"

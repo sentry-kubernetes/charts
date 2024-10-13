@@ -83,8 +83,10 @@ spec:
           - "errors"
           - "--consumer-group"
           - "snuba-consumers"
+          {{- if .Values.snuba.consumer.autoOffsetReset }}
           - "--auto-offset-reset"
           - "{{ .Values.snuba.consumer.autoOffsetReset }}"
+          {{- end }}
           {{- if .Values.snuba.consumer.maxBatchSize }}
           - "--max-batch-size"
           - "{{ .Values.snuba.consumer.maxBatchSize }}"

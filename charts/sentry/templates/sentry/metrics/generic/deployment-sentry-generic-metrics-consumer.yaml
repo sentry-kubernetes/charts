@@ -82,6 +82,10 @@ spec:
           - "run"
           - "consumer"
           - "ingest-generic-metrics"
+          {{- if .Values.sentry.genericMetricsConsumer.autoOffsetReset }}
+          - "--auto-offset-reset"
+          - "{{ .Values.sentry.genericMetricsConsumer.autoOffsetReset }}"
+          {{- end }}
           {{- if .Values.sentry.genericMetricsConsumer.noStrictOffsetReset }}
           - "--no-strict-offset-reset"
           {{- end }}

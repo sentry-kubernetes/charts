@@ -83,8 +83,10 @@ spec:
           - "outcomes_raw"
           - "--consumer-group"
           - "snuba-consumers"
+          {{- if .Values.snuba.outcomesBillingConsumer.autoOffsetReset }}
           - "--auto-offset-reset"
           - "{{ .Values.snuba.outcomesBillingConsumer.autoOffsetReset }}"
+          {{- end }}
           - "--raw-events-topic"
           - "outcomes-billing"
           {{- if .Values.snuba.outcomesBillingConsumer.maxBatchSize }}

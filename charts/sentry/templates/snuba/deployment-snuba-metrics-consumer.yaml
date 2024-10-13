@@ -83,8 +83,10 @@ spec:
           - "metrics_raw"
           - "--consumer-group"
           - "snuba-metrics-consumers"
+          {{- if .Values.snuba.metricsConsumer.autoOffsetReset }}
           - "--auto-offset-reset"
           - "{{ .Values.snuba.metricsConsumer.autoOffsetReset }}"
+          {{- end }}
           {{- if .Values.snuba.metricsConsumer.maxBatchSize }}
           - "--max-batch-size"
           - "{{ .Values.snuba.metricsConsumer.maxBatchSize }}"

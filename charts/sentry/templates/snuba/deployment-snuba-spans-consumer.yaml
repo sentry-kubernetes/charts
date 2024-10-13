@@ -83,8 +83,10 @@ spec:
           - "spans"
           - "--consumer-group"
           - "snuba-spans-group"
+          {{- if .Values.snuba.spansConsumer.autoOffsetReset }}
           - "--auto-offset-reset"
           - "{{ .Values.snuba.spansConsumer.autoOffsetReset }}"
+          {{- end }}
           {{- if .Values.snuba.spansConsumer.maxBatchSize }}
           - "--max-batch-size"
           - "{{ .Values.snuba.spansConsumer.maxBatchSize }}"

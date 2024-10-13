@@ -86,7 +86,11 @@ spec:
           - "post-process-forwarder"
           - "--synchronize-commit-log-topic=snuba-commit-log"
           - "--synchronize-commit-group=snuba-consumers"
-          {{- if .Values.sentry.postProcessForwardTransactions.noStrictOffsetReset }}
+          {{- if .Values.sentry.postProcessForwardErrors.autoOffsetReset }}
+          - "--auto-offset-reset"
+          - "{{ .Values.sentry.postProcessForwardErrors.autoOffsetReset }}"
+          {{- end }}
+          {{- if .Values.sentry.postProcessForwardErrors.noStrictOffsetReset }}
           - "--no-strict-offset-reset"
           {{- end }}
           {{- if .Values.sentry.postProcessForwardErrors.livenessProbe.enabled }}

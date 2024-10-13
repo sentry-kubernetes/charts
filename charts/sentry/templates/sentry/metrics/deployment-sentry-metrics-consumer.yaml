@@ -84,6 +84,13 @@ spec:
           - "ingest-metrics"
           - "--consumer-group"
           - "metrics-consumer"
+          {{- if .Values.sentry.metricsConsumer.autoOffsetReset }}
+          - "--auto-offset-reset"
+          - "{{ .Values.sentry.metricsConsumer.autoOffsetReset }}"
+          {{- end }}
+          {{- if .Values.sentry.metricsConsumer.noStrictOffsetReset }}
+          - "--no-strict-offset-reset"
+          {{- end }}
           {{- if .Values.sentry.metricsConsumer.livenessProbe.enabled }}
           - "--healthcheck-file-path"
           - "/tmp/health.txt"

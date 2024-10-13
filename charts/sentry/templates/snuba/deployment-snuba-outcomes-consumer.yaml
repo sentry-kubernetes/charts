@@ -83,8 +83,10 @@ spec:
           - "outcomes_raw"
           - "--consumer-group"
           - "snuba-consumers"
+          {{- if .Values.snuba.outcomesConsumer.autoOffsetReset }}
           - "--auto-offset-reset"
           - "{{ .Values.snuba.outcomesConsumer.autoOffsetReset }}"
+          {{- end }}
           - "--max-batch-size"
           - "{{ default "3" .Values.snuba.outcomesConsumer.maxBatchSize }}"
           {{- if .Values.snuba.outcomesConsumer.processes }}
