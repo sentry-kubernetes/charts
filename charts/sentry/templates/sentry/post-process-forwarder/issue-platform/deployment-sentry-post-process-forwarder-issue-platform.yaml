@@ -87,6 +87,9 @@ spec:
           - "--synchronize-commit-log-topic=snuba-generic-events-commit-log"
           - "--synchronize-commit-group"
           - "generic_events_group"
+          {{- if .Values.sentry.postProcessForwardIssuePlatform.noStrictOffsetReset }}
+          - "--no-strict-offset-reset"
+          {{- end }}
           {{- if .Values.sentry.postProcessForwardIssuePlatform.livenessProbe.enabled }}
           - "--healthcheck-file-path"
           - "/tmp/health.txt"
