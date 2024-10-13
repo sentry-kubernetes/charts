@@ -1,5 +1,12 @@
 # Changelog
 
+## [25.13.4](https://github.com/sentry-kubernetes/charts/compare/sentry-v25.13.3...sentry-v25.13.4) (2024-10-13)
+
+
+### Bug Fixes
+
+* symbolicator storage class ([#1530](https://github.com/sentry-kubernetes/charts/issues/1530)) ([26cbaab](https://github.com/sentry-kubernetes/charts/commit/26cbaab28dcb0c95ac10723ed62b453c678b9787))
+
 ## [25.13.3](https://github.com/sentry-kubernetes/charts/compare/sentry-v25.13.2...sentry-v25.13.3) (2024-10-12)
 
 
