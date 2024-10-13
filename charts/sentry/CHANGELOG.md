@@ -1,5 +1,12 @@
 # Changelog
 
+## [25.14.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v25.13.4...sentry-v25.14.0) (2024-10-13)
+
+
+### Features
+
+* offset-reset in ds ([#1533](https://github.com/sentry-kubernetes/charts/issues/1533)) ([0e3ef2d](https://github.com/sentry-kubernetes/charts/commit/0e3ef2db47c552fc80d07442263764a33c11c0d3))
+
 ## [25.13.4](https://github.com/sentry-kubernetes/charts/compare/sentry-v25.13.3...sentry-v25.13.4) (2024-10-13)
 
 
