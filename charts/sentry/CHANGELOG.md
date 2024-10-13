@@ -1,5 +1,12 @@
 # Changelog
 
+## [25.15.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v25.14.0...sentry-v25.15.0) (2024-10-13)
+
+
+### Features
+
+* **sentry:** Add missing --no-strict-offset-reset and --auto-offset-reset for consumers ([#1535](https://github.com/sentry-kubernetes/charts/issues/1535)) ([8e0eea0](https://github.com/sentry-kubernetes/charts/commit/8e0eea0e5a3805c93d19ea93240d634953461cea))
+
 ## [25.14.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v25.13.4...sentry-v25.14.0) (2024-10-13)
 
 
