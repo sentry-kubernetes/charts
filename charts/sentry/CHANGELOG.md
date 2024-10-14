@@ -1,5 +1,12 @@
 # Changelog
 
+## [25.15.1](https://github.com/sentry-kubernetes/charts/compare/sentry-v25.15.0...sentry-v25.15.1) (2024-10-14)
+
+
+### Bug Fixes
+
+* conditionally set auto-offset-reset for snuba subscription consumers ([#1538](https://github.com/sentry-kubernetes/charts/issues/1538)) ([db26b85](https://github.com/sentry-kubernetes/charts/commit/db26b853246e8f213d25f8c5041893e54a556630))
+
 ## [25.15.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v25.14.0...sentry-v25.15.0) (2024-10-13)
 
 
