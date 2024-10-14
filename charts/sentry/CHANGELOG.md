@@ -1,5 +1,12 @@
 # Changelog
 
+## [25.16.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v25.15.1...sentry-v25.16.0) (2024-10-14)
+
+
+### Features
+
+* **snuba:** add events_analytics_platform to settings ([#1540](https://github.com/sentry-kubernetes/charts/issues/1540)) ([b035b10](https://github.com/sentry-kubernetes/charts/commit/b035b10fb96d7081abcab8cf03a5f63e814a4871))
+
 ## [25.15.1](https://github.com/sentry-kubernetes/charts/compare/sentry-v25.15.0...sentry-v25.15.1) (2024-10-14)
 
 
