@@ -1,5 +1,12 @@
 # Changelog
 
+## [25.17.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v25.16.0...sentry-v25.17.0) (2024-10-14)
+
+
+### Features
+
+* add logLevel and logFormat options for worker events and transactions ([#1542](https://github.com/sentry-kubernetes/charts/issues/1542)) ([bfbdd4d](https://github.com/sentry-kubernetes/charts/commit/bfbdd4d95bf15b18a72ed3d5af2baa363e98d6b6))
+
 ## [25.16.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v25.15.1...sentry-v25.16.0) (2024-10-14)
 
 
