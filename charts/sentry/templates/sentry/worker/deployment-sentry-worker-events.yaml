@@ -80,6 +80,14 @@ spec:
           - "-c"
           - "{{ .Values.sentry.workerEvents.concurrency }}"
           {{- end }}
+          {{- if .Values.sentry.workerEvents.logLevel }}
+          - "--loglevel"
+          - "{{ .Values.sentry.workerEvents.logLevel }}"
+          {{- end }}
+          {{- if .Values.sentry.workerEvents.logFormat }}
+          - "--logformat"
+          - "{{ .Values.sentry.workerEvents.logFormat }}"
+          {{- end }}
         env:
         - name: C_FORCE_ROOT
           value: "true"

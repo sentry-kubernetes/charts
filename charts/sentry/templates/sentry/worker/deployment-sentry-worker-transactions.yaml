@@ -80,6 +80,14 @@ spec:
           - "-c"
           - "{{ .Values.sentry.workerTransactions.concurrency }}"
           {{- end }}
+          {{- if .Values.sentry.workerTransactions.logLevel }}
+          - "--loglevel"
+          - "{{ .Values.sentry.workerTransactions.logLevel }}"
+          {{- end }}
+          {{- if .Values.sentry.workerTransactions.logFormat }}
+          - "--logformat"
+          - "{{ .Values.sentry.workerTransactions.logFormat }}"
+          {{- end }}
         env:
         - name: C_FORCE_ROOT
           value: "true"

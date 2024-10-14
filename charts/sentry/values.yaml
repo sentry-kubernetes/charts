@@ -285,7 +285,8 @@ sentry:
     nodeSelector: {}
     # tolerations: []
     # podLabels: {}
-
+    # logLevel: "WARNING" # DEBUG|INFO|WARNING|ERROR|CRITICAL|FATAL
+    # logFormat: "machine" # human|machine
     # it's better to use prometheus adapter and scale based on
     # the size of the rabbitmq queue
     autoscaling:
@@ -315,6 +316,8 @@ sentry:
     nodeSelector: {}
     # tolerations: []
     # podLabels: {}
+    # logLevel: "WARNING" # DEBUG|INFO|WARNING|ERROR|CRITICAL|FATAL
+    # logFormat: "machine" # human|machine
     # it's better to use prometheus adapter and scale based on
     # the size of the rabbitmq queue
     autoscaling:
