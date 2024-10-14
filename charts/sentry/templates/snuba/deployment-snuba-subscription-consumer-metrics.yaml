@@ -72,7 +72,10 @@ spec:
         command:
           - "snuba"
           - "subscriptions-scheduler-executor"
-          - "--auto-offset-reset={{ .Values.snuba.subscriptionConsumerMetrics.autoOffsetReset }}"
+          {{- if .Values.snuba.subscriptionConsumerMetrics.autoOffsetReset }}
+          - "--auto-offset-reset"
+          - "{{ .Values.snuba.subscriptionConsumerMetrics.autoOffsetReset }}"
+          {{- end }}
           - "--dataset=metrics"
           - "--entity=metrics_sets"
           - "--entity=metrics_counters"
