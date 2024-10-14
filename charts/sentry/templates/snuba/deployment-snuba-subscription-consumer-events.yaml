@@ -72,7 +72,10 @@ spec:
         command:
           - "snuba"
           - "subscriptions-scheduler-executor"
-          - "--auto-offset-reset={{ .Values.snuba.subscriptionConsumerEvents.autoOffsetReset }}"
+          {{- if .Values.snuba.subscriptionConsumerEvents.autoOffsetReset }}
+          - "--auto-offset-reset"
+          - "{{ .Values.snuba.subscriptionConsumerEvents.autoOffsetReset }}"
+          {{- end }}
           - "--dataset=events"
           - "--entity=events"
           {{- if .Values.snuba.subscriptionConsumerEvents.noStrictOffsetReset }}
