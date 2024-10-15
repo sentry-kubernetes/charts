@@ -49,8 +49,16 @@ jobs:
         if: steps.list-changed.outputs.changed == 'true'
         run: ct install --target-branch ${{ github.event.repository.default_branch }} --helm-extra-args "--timeout 1000s"
 
-      - name: Wait for pods to be Running or Completed
+      - name: Sleep for 2 minutes
+        run: sleep 120
+
+      - name: Check Pod Status
         if: steps.list-changed.outputs.changed == 'true'
         run: |
-          kubectl wait --for=condition=Ready pod --all --timeout=10m
-          kubectl get pods --all-namespaces
+          if kubectl get pods --all-namespaces | grep -v Running; then
+            echo "Some pods are not in Running state"
+            exit 1
+          else
+            echo "All pods are in Running state"
+            kubectl get pods --all-namespaces
+          fi
