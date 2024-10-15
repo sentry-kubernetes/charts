@@ -4,7 +4,6 @@
 {{- $redisPass := include "sentry.redis.password" . -}}
 {{- $redisDb     := include "sentry.redis.db" . -}}
 {{- $redisProto  := ternary "rediss" "redis" (eq (include "sentry.redis.ssl" .) "true")  -}}
-{{- $kafkaTopicPrefix := include "sentry.kafka.topic-overrides.prefix" . -}}
 config.yml: |-
   relay:
     {{- if .Values.relay.mode }}
@@ -75,21 +74,27 @@ config.yml: |-
     {{- else }}
     redis: "{{ $redisProto }}://{{ $redisHost }}:{{ $redisPort }}/{{ $redisDb }}"
     {{- end }}
+
+    {{- if .Values.kafkaTopicOverrides.prefix }}
     topics:
-      metrics_sessions: "{{ $kafkaTopicPrefix }}ingest-metrics"
-      events: "{{ $kafkaTopicPrefix }}ingest-attachments"
-      transactions: "{{ $kafkaTopicPrefix }}ingest-transactions"
-      outcomes: "{{ $kafkaTopicPrefix }}ingest-outcomes"
-      outcomes_billing: "{{ $kafkaTopicPrefix }}ingest-outcomes"
-      metrics_generic: "{{ $kafkaTopicPrefix }}ingest-performance-metrics"
-      profiles: "{{ $kafkaTopicPrefix }}profiles"
-      replay_events: "{{ $kafkaTopicPrefix }}ingest-replay-events"
-      replay_recordings: "{{ $kafkaTopicPrefix }}ingest-replay-recordings"
-      monitors: "{{ $kafkaTopicPrefix }}ingest-monitors"
-      spans: "{{ $kafkaTopicPrefix }}snuba-spans"
-      metrics_summaries: "{{ $kafkaTopicPrefix }}snuba-metrics-summaries"
-      cogs: "{{ $kafkaTopicPrefix }}shared-resources-usage"
-      feedback: "{{ $kafkaTopicPrefix }}ingest-feedback-events"
+      metrics_sessions: "{{ .Values.kafkaTopicOverrides.prefix }}ingest-metrics"
+      events: "{{ .Values.kafkaTopicOverrides.prefix }}ingest-attachments"
+      transactions: "{{ .Values.kafkaTopicOverrides.prefix }}ingest-transactions"
+      outcomes: "{{ .Values.kafkaTopicOverrides.prefix }}ingest-outcomes"
+      outcomes_billing: "{{ .Values.kafkaTopicOverrides.prefix }}ingest-outcomes"
+      metrics_generic: "{{ .Values.kafkaTopicOverrides.prefix }}ingest-performance-metrics"
+      profiles: "{{ .Values.kafkaTopicOverrides.prefix }}profiles"
+      replay_events: "{{ .Values.kafkaTopicOverrides.prefix }}ingest-replay-events"
+      replay_recordings: "{{ .Values.kafkaTopicOverrides.prefix }}ingest-replay-recordings"
+      monitors: "{{ .Values.kafkaTopicOverrides.prefix }}ingest-monitors"
+      spans: "{{ .Values.kafkaTopicOverrides.prefix }}snuba-spans"
+      metrics_summaries: "{{ .Values.kafkaTopicOverrides.prefix }}snuba-metrics-summaries"
+      cogs: "{{ .Values.kafkaTopicOverrides.prefix }}shared-resources-usage"
+      feedback: "{{ .Values.kafkaTopicOverrides.prefix }}ingest-feedback-events"
+    {{- else }}
+    topics:
+      metrics_sessions: "ingest-metrics"
+    {{- end }}
 
   {{ .Values.config.relay | nindent 2 }}
 {{- end -}}

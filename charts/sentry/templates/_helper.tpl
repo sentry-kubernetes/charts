@@ -459,11 +459,7 @@ Set Kafka bootstrap servers string
 {{- end -}}
 
 {{- define "sentry.kafka.topic-overrides.prefix" }}
-{{- if and .Values.kafkaTopicOverrides (hasKey .Values.kafkaTopicOverrides "prefix") }}
-{{ .Values.kafkaTopicOverrides.prefix }}
-{{- else }}
-""
-{{- end }}
+{{ default "" .Values.kafkaTopicOverrides.prefix }}
 {{- end }}
 
 {{/*
