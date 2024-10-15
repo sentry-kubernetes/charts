@@ -48,3 +48,9 @@ jobs:
       - name: Run chart-testing (install)
         if: steps.list-changed.outputs.changed == 'true'
         run: ct install --target-branch ${{ github.event.repository.default_branch }} --helm-extra-args "--timeout 1000s"
+
+      - name: Wait for pods to be Running or Completed
+        if: steps.list-changed.outputs.changed == 'true'
+        run: |
+          kubectl wait --for=condition=Ready pod --all --timeout=10m
+          kubectl get pods --all-namespaces
