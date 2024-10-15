@@ -56,11 +56,12 @@ jobs:
       - name: Check Pod Status
         if: steps.list-changed.outputs.changed == 'true'
         run: |
-          if output=$(kubectl get pods --all-namespaces | grep -v Running); then
-            echo "Some pods are not in Running state"
-            echo "$output"
+          NON_READY_PODS=$(kubectl get pods -A -o json | jq -r '.items[] | select(.status.containerStatuses[].ready == false) | "\(.metadata.namespace) \(.metadata.name)"' | sort -u | column -t)
+          if [ -n "$NON_READY_PODS" ]; then
+            echo "The following pods are not ready:"
+            echo "$NON_READY_PODS"
             exit 1
           else
-            echo "All pods are in Running state"
+            echo "All pods are ready."
             kubectl get pods --all-namespaces
           fi
