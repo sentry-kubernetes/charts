@@ -56,8 +56,9 @@ jobs:
       - name: Check Pod Status
         if: steps.list-changed.outputs.changed == 'true'
         run: |
-          if kubectl get pods --all-namespaces | grep -v Running; then
+          if output=$(kubectl get pods --all-namespaces | grep -v Running); then
             echo "Some pods are not in Running state"
+            echo "$output"
             exit 1
           else
             echo "All pods are in Running state"
