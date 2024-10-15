@@ -83,8 +83,10 @@ spec:
           - "generic_metrics_distributions_raw"
           - "--consumer-group"
           - "snuba-gen-metrics-distributions-consumers"
+          {{- if .Values.snuba.genericMetricsDistributionConsumer.autoOffsetReset }}
           - "--auto-offset-reset"
           - "{{ .Values.snuba.genericMetricsDistributionConsumer.autoOffsetReset }}"
+          {{- end }}
           {{- if .Values.snuba.genericMetricsDistributionConsumer.maxBatchSize }}
           - "--max-batch-size"
           - "{{ .Values.snuba.genericMetricsDistributionConsumer.maxBatchSize }}"

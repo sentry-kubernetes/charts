@@ -80,6 +80,14 @@ spec:
           - "-c"
           - "{{ .Values.sentry.workerEvents.concurrency }}"
           {{- end }}
+          {{- if .Values.sentry.workerEvents.logLevel }}
+          - "--loglevel"
+          - "{{ .Values.sentry.workerEvents.logLevel }}"
+          {{- end }}
+          {{- if .Values.sentry.workerEvents.logFormat }}
+          - "--logformat"
+          - "{{ .Values.sentry.workerEvents.logFormat }}"
+          {{- end }}
         env:
         - name: C_FORCE_ROOT
           value: "true"
@@ -93,7 +101,7 @@ spec:
           readOnly: true
         - mountPath: {{ .Values.filestore.filesystem.path }}
           name: sentry-data
-        {{- if .Values.geodata.volumeName }}
+        {{- if and .Values.geodata.volumeName .Values.geodata.accountID }}
         - name: {{ .Values.geodata.volumeName }}
           mountPath: {{ .Values.geodata.mountPath }}
         {{- end }}
@@ -150,6 +158,11 @@ spec:
         secret:
           secretName: {{ .Values.filestore.gcs.secretName }}
       {{ end }}
+      {{- if and .Values.geodata.volumeName .Values.geodata.accountID }}
+      - name: {{ .Values.geodata.volumeName }}
+        persistentVolumeClaim:
+          claimName: {{ .Values.geodata.volumeName }}
+      {{- end }}
       {{- if .Values.sentry.workerEvents.priorityClassName }}
       priorityClassName: "{{ .Values.sentry.workerEvents.priorityClassName }}"
       {{- end }}

@@ -97,13 +97,18 @@ spec:
 {{- if .Values.sentry.worker.env }}
 {{ toYaml .Values.sentry.worker.env | indent 8 }}
 {{- end }}
+{{- if .Values.sentry.worker.existingSecretEnv }}
+        envFrom:
+        - secretRef:
+          name: "{{.Values.sentry.worker.existingSecretEnv}}"
+{{- end }}
         volumeMounts:
         - mountPath: /etc/sentry
           name: config
           readOnly: true
         - mountPath: {{ .Values.filestore.filesystem.path }}
           name: sentry-data
-        {{- if .Values.geodata.volumeName }}
+        {{- if and .Values.geodata.volumeName .Values.geodata.accountID }}
         - name: {{ .Values.geodata.volumeName }}
           mountPath: {{ .Values.geodata.mountPath }}
         {{- end }}
@@ -166,4 +171,9 @@ spec:
 {{- if .Values.sentry.worker.volumes }}
 {{ toYaml .Values.sentry.worker.volumes | indent 6 }}
 {{- end }}
+      {{- if and .Values.geodata.volumeName .Values.geodata.accountID }}
+      - name: {{ .Values.geodata.volumeName }}
+        persistentVolumeClaim:
+          claimName: {{ .Values.geodata.volumeName }}
+      {{- end }}
 {{- end }}

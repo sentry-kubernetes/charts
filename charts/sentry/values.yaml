@@ -155,10 +155,23 @@ relay:
     #  - name: security.protocol
     #    value: "SSL"
 
+# enable and reference the volume
 geodata:
-  path: ""
-  volumeName: ""
-  mountPath: ""
+  accountID: ""
+  licenseKey: ""
+  editionIDs: ""
+  persistence:
+    ## If defined, storageClassName: <storageClass>
+    ## If undefined (the default) or set to null, no storageClassName spec is
+    ##   set, choosing the default provisioner.  (gp2 on AWS, standard on
+    ##   GKE, AWS & OpenStack)
+    # storageClass: "" # for example: csi-s3
+    size: 1Gi
+  volumeName: ""  # for example: data-sentry-geoip
+  # mountPath of the volume containing the database
+  mountPath: ""  # for example: /usr/share/GeoIP
+  # path to the geoip database inside the volumemount
+  path: ""  # for example: /usr/share/GeoIP/GeoLite2-City.mmdb
 
 sentry:
   # to not generate a sentry-secret, use these 2 values to reference an existing secret
@@ -171,6 +184,7 @@ sentry:
     strategyType: RollingUpdate
     replicas: 1
     env: []
+    existingSecretEnv: []
     probeFailureThreshold: 5
     probeInitialDelaySeconds: 10
     probePeriodSeconds: 10
@@ -228,6 +242,7 @@ sentry:
     replicas: 1
     # concurrency: 4
     env: []
+    existingSecretEnv: []
     resources: {}
     #  requests:
     #    cpu: 1000m
@@ -270,7 +285,8 @@ sentry:
     nodeSelector: {}
     # tolerations: []
     # podLabels: {}
-
+    # logLevel: "WARNING" # DEBUG|INFO|WARNING|ERROR|CRITICAL|FATAL
+    # logFormat: "machine" # human|machine
     # it's better to use prometheus adapter and scale based on
     # the size of the rabbitmq queue
     autoscaling:
@@ -300,6 +316,8 @@ sentry:
     nodeSelector: {}
     # tolerations: []
     # podLabels: {}
+    # logLevel: "WARNING" # DEBUG|INFO|WARNING|ERROR|CRITICAL|FATAL
+    # logFormat: "machine" # human|machine
     # it's better to use prometheus adapter and scale based on
     # the size of the rabbitmq queue
     autoscaling:
@@ -351,6 +369,7 @@ sentry:
     # volumeMounts:
     #   - mountPath: /dev/shm
     #     name: dshm
+    # autoOffsetReset: "earliest"
     # noStrictOffsetReset: false
 
   ingestConsumerEvents:
@@ -390,6 +409,7 @@ sentry:
     # volumeMounts:
     #   - mountPath: /dev/shm
     #     name: dshm
+    # autoOffsetReset: "earliest"
     # noStrictOffsetReset: false
 
   ingestConsumerTransactions:
@@ -429,6 +449,7 @@ sentry:
     # volumeMounts:
     #   - mountPath: /dev/shm
     #     name: dshm
+    # autoOffsetReset: "earliest"
     # noStrictOffsetReset: false
 
   ingestReplayRecordings:
@@ -462,6 +483,8 @@ sentry:
     # volumeMounts:
     #   - mountPath: /dev/shm
     #     name: dshm
+    # autoOffsetReset: "earliest"
+    # noStrictOffsetReset: false
 
   ingestProfiles:
     replicas: 1
@@ -490,6 +513,8 @@ sentry:
     # volumeMounts:
     #   - mountPath: /dev/shm
     #     name: dshm
+    # autoOffsetReset: "earliest"
+    # noStrictOffsetReset: false
 
   ingestOccurrences:
     enabled: true
@@ -522,6 +547,8 @@ sentry:
     # volumeMounts:
     #   - mountPath: /dev/shm
     #     name: dshm
+    # autoOffsetReset: "earliest"
+    # noStrictOffsetReset: false
 
   ingestMonitors:
     enabled: true
@@ -554,6 +581,8 @@ sentry:
     # volumeMounts:
     #   - mountPath: /dev/shm
     #     name: dshm
+    # autoOffsetReset: "earliest"
+    # noStrictOffsetReset: false
 
   billingMetricsConsumer:
     enabled: true
@@ -586,6 +615,8 @@ sentry:
     # volumeMounts:
     #   - mountPath: /dev/shm
     #     name: dshm
+    # autoOffsetReset: "earliest"
+    # noStrictOffsetReset: false
 
   genericMetricsConsumer:
     enabled: true
@@ -621,6 +652,8 @@ sentry:
     # volumeMounts:
     #   - mountPath: /dev/shm
     #     name: dshm
+    # autoOffsetReset: "earliest"
+    # noStrictOffsetReset: false
 
   metricsConsumer:
     enabled: true
@@ -656,6 +689,8 @@ sentry:
     # volumeMounts:
     #   - mountPath: /dev/shm
     #     name: dshm
+    # autoOffsetReset: "earliest"
+    # noStrictOffsetReset: false
 
   cron:
     enabled: true
@@ -694,6 +729,7 @@ sentry:
       enabled: true
       initialDelaySeconds: 5
       periodSeconds: 320
+    # autoOffsetReset: "earliest"
     # noStrictOffsetReset: false
     # volumeMounts: []
 
@@ -710,6 +746,7 @@ sentry:
     sidecars: []
     topologySpreadConstraints: []
     volumes: []
+    # autoOffsetReset: "earliest"
     # noStrictOffsetReset: false
     # volumeMounts: []
 
@@ -734,6 +771,7 @@ sentry:
       enabled: true
       initialDelaySeconds: 5
       periodSeconds: 320
+    # autoOffsetReset: "earliest"
     # noStrictOffsetReset: false
     # volumeMounts: []
 
@@ -759,6 +797,8 @@ sentry:
       enabled: true
       initialDelaySeconds: 5
       periodSeconds: 320
+    # autoOffsetReset: "earliest"
+    # noStrictOffsetReset: false
 
   postProcessForwardTransactions:
     enabled: true
@@ -783,6 +823,7 @@ sentry:
       initialDelaySeconds: 5
       periodSeconds: 320
     # volumeMounts: []
+    # autoOffsetReset: "earliest"
     # noStrictOffsetReset: false
 
   postProcessForwardIssuePlatform:
@@ -807,6 +848,8 @@ sentry:
       enabled: true
       initialDelaySeconds: 5
       periodSeconds: 320
+    # autoOffsetReset: "earliest"
+    # noStrictOffsetReset: false
 
   subscriptionConsumerGenericMetrics:
     enabled: true
@@ -831,6 +874,8 @@ sentry:
       enabled: true
       initialDelaySeconds: 5
       periodSeconds: 320
+    # autoOffsetReset: "earliest"
+    # noStrictOffsetReset: false
 
   subscriptionConsumerMetrics:
     enabled: true
@@ -855,6 +900,8 @@ sentry:
       enabled: true
       initialDelaySeconds: 5
       periodSeconds: 320
+    # autoOffsetReset: "earliest"
+    # noStrictOffsetReset: false
 
   cleanup:
     successfulJobsHistoryLimit: 5
@@ -924,7 +971,7 @@ snuba:
     containerSecurityContext: {}
     # tolerations: []
     # podLabels: {}
-    autoOffsetReset: "earliest"
+    # autoOffsetReset: "earliest"
     livenessProbe:
       enabled: true
       initialDelaySeconds: 5
@@ -957,7 +1004,7 @@ snuba:
     containerSecurityContext: {}
     # tolerations: []
     # podLabels: {}
-    autoOffsetReset: "earliest"
+    # autoOffsetReset: "earliest"
     # noStrictOffsetReset: false
     maxBatchSize: "3"
     livenessProbe:
@@ -990,7 +1037,7 @@ snuba:
     containerSecurityContext: {}
     # tolerations: []
     # podLabels: {}
-    autoOffsetReset: "earliest"
+    # autoOffsetReset: "earliest"
     # noStrictOffsetReset: false
     maxBatchSize: "3"
     livenessProbe:
@@ -1023,7 +1070,7 @@ snuba:
     containerSecurityContext: {}
     # tolerations: []
     # podLabels: {}
-    autoOffsetReset: "earliest"
+    # autoOffsetReset: "earliest"
     # maxBatchTimeMs: ""
     # queuedMaxMessagesKbytes: ""
     # queuedMinMessages: ""
@@ -1042,7 +1089,7 @@ snuba:
     containerSecurityContext: {}
     # tolerations: []
     # podLabels: {}
-    autoOffsetReset: "earliest"
+    # autoOffsetReset: "earliest"
     livenessProbe:
       enabled: true
       initialDelaySeconds: 5
@@ -1070,13 +1117,14 @@ snuba:
     containerSecurityContext: {}
     # tolerations: []
     # podLabels: {}
-    autoOffsetReset: "earliest"
     livenessProbe:
       enabled: true
       initialDelaySeconds: 5
       periodSeconds: 320
     # volumes: []
     # volumeMounts: []
+    # autoOffsetReset: "earliest"
+    # noStrictOffsetReset: false
 
   genericMetricsCountersConsumer:
     enabled: true
@@ -1090,7 +1138,7 @@ snuba:
     containerSecurityContext: {}
     # tolerations: []
     # podLabels: {}
-    autoOffsetReset: "earliest"
+    # autoOffsetReset: "earliest"
     livenessProbe:
       enabled: true
       initialDelaySeconds: 5
@@ -1118,7 +1166,7 @@ snuba:
     containerSecurityContext: {}
     # tolerations: []
     # podLabels: {}
-    autoOffsetReset: "earliest"
+    # autoOffsetReset: "earliest"
     livenessProbe:
       enabled: true
       initialDelaySeconds: 5
@@ -1146,7 +1194,7 @@ snuba:
     containerSecurityContext: {}
     # tolerations: []
     # podLabels: {}
-    autoOffsetReset: "earliest"
+    # autoOffsetReset: "earliest"
     livenessProbe:
       enabled: true
       initialDelaySeconds: 5
@@ -1177,7 +1225,7 @@ snuba:
     containerSecurityContext: {}
     # tolerations: []
     # podLabels: {}
-    autoOffsetReset: "earliest"
+    # autoOffsetReset: "earliest"
     livenessProbe:
       enabled: true
       initialDelaySeconds: 5
@@ -1200,13 +1248,14 @@ snuba:
     containerSecurityContext: {}
     # tolerations: []
     # podLabels: {}
-    autoOffsetReset: "earliest"
     # volumes: []
     # volumeMounts: []
     livenessProbe:
       enabled: true
       initialDelaySeconds: 5
       periodSeconds: 320
+    # autoOffsetReset: "earliest"
+    # noStrictOffsetReset: false
 
   subscriptionConsumerSessions:
     replicas: 1
@@ -1220,7 +1269,7 @@ snuba:
     # tolerations: []
     # podLabels: {}
     # commitBatchSize: 1
-    autoOffsetReset: "earliest"
+    # autoOffsetReset: "earliest"
     sidecars: []
     volumes: []
     # noStrictOffsetReset: false
@@ -1238,7 +1287,7 @@ snuba:
     containerSecurityContext: {}
     # tolerations: []
     # podLabels: {}
-    autoOffsetReset: "earliest"
+    # autoOffsetReset: "earliest"
     livenessProbe:
       enabled: true
       initialDelaySeconds: 5
@@ -1270,7 +1319,7 @@ snuba:
     containerSecurityContext: {}
     # tolerations: []
     # podLabels: {}
-    autoOffsetReset: "earliest"
+    # autoOffsetReset: "earliest"
     # noStrictOffsetReset: false
     # maxBatchSize: ""
     # processes: ""
@@ -1299,7 +1348,7 @@ snuba:
     containerSecurityContext: {}
     # tolerations: []
     # podLabels: {}
-    autoOffsetReset: "earliest"
+    # autoOffsetReset: "earliest"
     livenessProbe:
       enabled: true
       initialDelaySeconds: 5
@@ -1331,7 +1380,7 @@ snuba:
     containerSecurityContext: {}
     # tolerations: []
     # podLabels: {}
-    autoOffsetReset: "earliest"
+    # autoOffsetReset: "earliest"
     livenessProbe:
       enabled: true
       initialDelaySeconds: 5
@@ -1364,7 +1413,7 @@ snuba:
     containerSecurityContext: {}
     # tolerations: []
     # podLabels: {}
-    autoOffsetReset: "earliest"
+    # autoOffsetReset: "earliest"
     livenessProbe:
       enabled: true
       initialDelaySeconds: 5
@@ -1397,7 +1446,7 @@ snuba:
     containerSecurityContext: {}
     # tolerations: []
     # podLabels: {}
-    autoOffsetReset: "earliest"
+    # autoOffsetReset: "earliest"
     livenessProbe:
       enabled: true
       initialDelaySeconds: 5
@@ -1430,7 +1479,7 @@ snuba:
     containerSecurityContext: {}
     # tolerations: []
     # podLabels: {}
-    autoOffsetReset: "earliest"
+    # autoOffsetReset: "earliest"
     livenessProbe:
       enabled: true
       initialDelaySeconds: 5
@@ -1463,7 +1512,7 @@ snuba:
     containerSecurityContext: {}
     # tolerations: []
     # podLabels: {}
-    autoOffsetReset: "earliest"
+    # autoOffsetReset: "earliest"
     livenessProbe:
       enabled: true
       initialDelaySeconds: 5
@@ -1921,6 +1970,9 @@ zookeeper:
   enabled: true
   nameOverride: zookeeper-clickhouse
   replicaCount: 1
+  ## When increasing the number of exceptions, you need to increase persistence.size
+  # persistence:
+  #   size: 8Gi
 
 # Settings for Kafka.
 # See https://github.com/bitnami/charts/tree/master/bitnami/kafka
@@ -2141,6 +2193,10 @@ postgresql:
   # primary:
   #   extendedConfiguration: |
   #     max_connections=100
+  ## When increasing the number of exceptions, you need to increase persistence.size
+  # primary:
+  #   persistence:
+  #     size: 8Gi
 
 ## This value is only used when postgresql.enabled is set to false
 ## Set either externalPostgresql.password or externalPostgresql.existingSecret to configure password

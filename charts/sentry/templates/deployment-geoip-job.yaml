@@ -1,0 +1,42 @@
+{{- if .Values.geodata.accountID }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: geoip-install-job
+  annotations:
+    "helm.sh/hook": "post-install,post-upgrade"
+    "helm.sh/hook-weight": "9"
+spec:
+  template:
+    spec:
+      initContainers:
+        - name: init-create-geoip-dir
+          image: busybox
+          command: ['sh', '-c', 'mkdir -p /usr/share/GeoIP']
+          volumeMounts:
+            - name: {{ .Values.geodata.volumeName }}
+              mountPath: {{ .Values.geodata.mountPath }}
+        - name: init-geoip-conf
+          image: busybox
+          command: ['sh', '-c', 'echo -e "AccountID $(echo $GEOIPUPDATE_ACCOUNT_ID)\nLicenseKey $(echo $GEOIPUPDATE_LICENSE_KEY)\nEditionIDs $(echo $GEOIPUPDATE_EDITION_IDS)" > /usr/share/GeoIP/GeoIP.conf']
+          envFrom:
+            - secretRef:
+                name: {{ template "sentry.fullname" . }}-geoip-env
+          volumeMounts:
+            - name: {{ .Values.geodata.volumeName }}
+              mountPath: {{ .Values.geodata.mountPath }}
+      containers:
+        - name: geoipupdate
+          image: ghcr.io/maxmind/geoipupdate:v7.0.1
+          envFrom:
+            - secretRef:
+                name: {{ template "sentry.fullname" . }}-geoip-env
+          volumeMounts:
+            - name: {{ .Values.geodata.volumeName }}
+              mountPath: {{ .Values.geodata.mountPath }}
+      volumes:
+      - name: {{ .Values.geodata.volumeName }}
+        persistentVolumeClaim:
+          claimName: data-sentry-geoip
+      restartPolicy: OnFailure
+{{- end }}

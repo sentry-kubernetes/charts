@@ -81,8 +81,10 @@ spec:
           - "replacer"
           - "--storage"
           - "errors"
+          {{- if .Values.snuba.replacer.autoOffsetReset }}
           - "--auto-offset-reset"
           - "{{ .Values.snuba.replacer.autoOffsetReset }}"
+          {{- end }}
           {{- if .Values.snuba.replacer.maxBatchTimeMs }}
           - "--max-batch-time-ms"
           - "{{ .Values.snuba.replacer.maxBatchTimeMs }}"

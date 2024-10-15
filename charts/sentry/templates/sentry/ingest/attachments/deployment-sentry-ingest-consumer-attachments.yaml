@@ -86,16 +86,16 @@ spec:
           - "ingest-attachments"
           - "--consumer-group"
           - "ingest-consumer"
+          {{- if .Values.sentry.ingestConsumerAttachments.autoOffsetReset }}
+          - "--auto-offset-reset"
+          - "{{ .Values.sentry.ingestConsumerAttachments.autoOffsetReset }}"
+          {{- end }}
           {{- if .Values.sentry.ingestConsumerAttachments.noStrictOffsetReset }}
           - "--no-strict-offset-reset"
           {{- end }}
           {{- if .Values.sentry.ingestConsumerAttachments.livenessProbe.enabled }}
           - "--healthcheck-file-path"
           - "/tmp/health.txt"
-          {{- end }}
-          {{- if .Values.sentry.ingestConsumerAttachments.maxBatchSize }}
-          - "--max-batch-size"
-          - "{{ .Values.sentry.ingestConsumerAttachments.maxBatchSize }}"
           {{- end }}
           {{- if .Values.sentry.ingestConsumerAttachments.logLevel }}
           - "--log-level"
@@ -105,6 +105,10 @@ spec:
           {{- if .Values.sentry.ingestConsumerAttachments.concurrency }}
           - "--processes"
           - "{{ .Values.sentry.ingestConsumerAttachments.concurrency }}"
+          {{- end }}
+          {{- if .Values.sentry.ingestConsumerAttachments.maxBatchSize }}
+          - "--max-batch-size"
+          - "{{ .Values.sentry.ingestConsumerAttachments.maxBatchSize }}"
           {{- end }}
         {{- if .Values.sentry.ingestConsumerAttachments.livenessProbe.enabled }}
         livenessProbe:

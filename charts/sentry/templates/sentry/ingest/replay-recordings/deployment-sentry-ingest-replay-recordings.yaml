@@ -86,6 +86,13 @@ spec:
           - "ingest-replay-recordings"
           - "--consumer-group"
           - "ingest-replay-recordings"
+          {{- if .Values.sentry.ingestReplayRecordings.autoOffsetReset }}
+          - "--auto-offset-reset"
+          - "{{ .Values.sentry.ingestReplayRecordings.autoOffsetReset }}"
+          {{- end }}
+          {{- if .Values.sentry.ingestReplayRecordings.noStrictOffsetReset }}
+          - "--no-strict-offset-reset"
+          {{- end }}
           {{- if .Values.sentry.ingestReplayRecordings.livenessProbe.enabled }}
           - "--healthcheck-file-path"
           - "/tmp/health.txt"

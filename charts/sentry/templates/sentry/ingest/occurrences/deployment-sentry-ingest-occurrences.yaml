@@ -86,6 +86,13 @@ spec:
           - "ingest-occurrences"
           - "--consumer-group"
           - "ingest-occurrences"
+          {{- if .Values.sentry.ingestOccurrences.autoOffsetReset }}
+          - "--auto-offset-reset"
+          - "{{ .Values.sentry.ingestOccurrences.autoOffsetReset }}"
+          {{- end }}
+          {{- if .Values.sentry.ingestOccurrences.noStrictOffsetReset }}
+          - "--no-strict-offset-reset"
+          {{- end }}
           {{- if .Values.sentry.ingestOccurrences.livenessProbe.enabled }}
           - "--healthcheck-file-path"
           - "/tmp/health.txt"

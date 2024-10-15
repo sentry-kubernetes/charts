@@ -1,5 +1,81 @@
 # Changelog
 
+## [25.16.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v25.15.1...sentry-v25.16.0) (2024-10-14)
+
+
+### Features
+
+* **snuba:** add events_analytics_platform to settings ([#1540](https://github.com/sentry-kubernetes/charts/issues/1540)) ([b035b10](https://github.com/sentry-kubernetes/charts/commit/b035b10fb96d7081abcab8cf03a5f63e814a4871))
+
+## [25.15.1](https://github.com/sentry-kubernetes/charts/compare/sentry-v25.15.0...sentry-v25.15.1) (2024-10-14)
+
+
+### Bug Fixes
+
+* conditionally set auto-offset-reset for snuba subscription consumers ([#1538](https://github.com/sentry-kubernetes/charts/issues/1538)) ([db26b85](https://github.com/sentry-kubernetes/charts/commit/db26b853246e8f213d25f8c5041893e54a556630))
+
+## [25.15.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v25.14.0...sentry-v25.15.0) (2024-10-13)
+
+
+### Features
+
+* **sentry:** Add missing --no-strict-offset-reset and --auto-offset-reset for consumers ([#1535](https://github.com/sentry-kubernetes/charts/issues/1535)) ([8e0eea0](https://github.com/sentry-kubernetes/charts/commit/8e0eea0e5a3805c93d19ea93240d634953461cea))
+
+## [25.14.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v25.13.4...sentry-v25.14.0) (2024-10-13)
+
+
+### Features
+
+* offset-reset in ds ([#1533](https://github.com/sentry-kubernetes/charts/issues/1533)) ([0e3ef2d](https://github.com/sentry-kubernetes/charts/commit/0e3ef2db47c552fc80d07442263764a33c11c0d3))
+
+## [25.13.4](https://github.com/sentry-kubernetes/charts/compare/sentry-v25.13.3...sentry-v25.13.4) (2024-10-13)
+
+
+### Bug Fixes
+
+* symbolicator storage class ([#1530](https://github.com/sentry-kubernetes/charts/issues/1530)) ([26cbaab](https://github.com/sentry-kubernetes/charts/commit/26cbaab28dcb0c95ac10723ed62b453c678b9787))
+
+## [25.13.3](https://github.com/sentry-kubernetes/charts/compare/sentry-v25.13.2...sentry-v25.13.3) (2024-10-12)
+
+
+### Bug Fixes
+
+* update geoip job hooks and volume handling ([#1529](https://github.com/sentry-kubernetes/charts/issues/1529)) ([886eb5f](https://github.com/sentry-kubernetes/charts/commit/886eb5fe8110bfb1a973740ca3a1a2e3e776c003))
+
+## [25.13.2](https://github.com/sentry-kubernetes/charts/compare/sentry-v25.13.1...sentry-v25.13.2) (2024-10-08)
+
+
+### Bug Fixes
+
+* correct storageClass handling for geodata persistence ([#1524](https://github.com/sentry-kubernetes/charts/issues/1524)) ([b2f568d](https://github.com/sentry-kubernetes/charts/commit/b2f568d926771208256d47f03a2f39806ca94fe3))
+
+## [25.13.1](https://github.com/sentry-kubernetes/charts/compare/sentry-v25.13.0...sentry-v25.13.1) (2024-10-08)
+
+
+### Bug Fixes
+
+* correct argument order of consumers ([#1522](https://github.com/sentry-kubernetes/charts/issues/1522)) ([6236a74](https://github.com/sentry-kubernetes/charts/commit/6236a74e70a78525a6030ade5cd3fc29b424fe59))
+
+## [25.13.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v25.12.0...sentry-v25.13.0) (2024-10-07)
+
+
+### Features
+
+* add geoip support to sentry deployment ([#1516](https://github.com/sentry-kubernetes/charts/issues/1516)) ([4f2429b](https://github.com/sentry-kubernetes/charts/commit/4f2429b746fe13002c21abf233338a293acff1a0))
+
+## [25.12.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v25.11.1...sentry-v25.12.0) (2024-10-07)
+
+
+### Features
+
+* add existingSecretEnv support for web and worker deployments ([#1509](https://github.com/sentry-kubernetes/charts/issues/1509)) ([b170ac3](https://github.com/sentry-kubernetes/charts/commit/b170ac33a64e41a36bfeb416e05801ec9ae1365d))
+* allow customization of kafka configuration ([#1514](https://github.com/sentry-kubernetes/charts/issues/1514)) ([5f4009b](https://github.com/sentry-kubernetes/charts/commit/5f4009b97898bea66749436b792e4a9815df4be8))
+
+
+### Bug Fixes
+
+* user-create-job hook does not create user ([5f4009b](https://github.com/sentry-kubernetes/charts/commit/5f4009b97898bea66749436b792e4a9815df4be8))
+
 ## [25.11.1](https://github.com/sentry-kubernetes/charts/compare/sentry-v25.11.0...sentry-v25.11.1) (2024-10-01)
 
 

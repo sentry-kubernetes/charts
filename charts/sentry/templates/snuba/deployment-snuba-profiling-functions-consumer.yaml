@@ -83,8 +83,10 @@ spec:
           - "functions_raw"
           - "--consumer-group"
           - "functions_raw_group"
+          {{- if .Values.snuba.profilingFunctionsConsumer.autoOffsetReset }}
           - "--auto-offset-reset"
           - "{{ .Values.snuba.profilingFunctionsConsumer.autoOffsetReset }}"
+          {{- end }}
           {{- if .Values.snuba.profilingFunctionsConsumer.maxBatchSize }}
           - "--max-batch-size"
           - "{{ .Values.snuba.profilingFunctionsConsumer.maxBatchSize }}"
