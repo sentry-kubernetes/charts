@@ -157,8 +157,8 @@ relay:
 
 # Override custom Kafka topic names
 # WARNING: If you update this and you are also using the Kafka subchart, you need to update the provisioned Topic names in this values as well!
-kafkaTopicOverrides:
-  prefix: ""
+# kafkaTopicOverrides:
+#  prefix: ""
 
 # enable and reference the volume
 geodata:
