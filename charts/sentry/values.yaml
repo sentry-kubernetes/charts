@@ -158,7 +158,7 @@ relay:
 # Override custom Kafka topic names
 # WARNING: If you update this and you are also using the Kafka subchart, you need to update the provisioned Topic names in this values as well!
 kafkaTopicOverrides:
-  prefix: "sentry.dev."
+  prefix: ""
 
 # enable and reference the volume
 geodata:
@@ -1995,108 +1995,108 @@ kafka:
     # numPartitions: 1
     # Note that snuba component might fail if you set `hooks.snubaInit.kafka.enabled` to `false` and remove the topics from this default topic list.
     topics:
-      - name: sentry.dev.events
+      - name: events
         ## Number of partitions for this topic
         # partitions: 1
         config:
           "message.timestamp.type": LogAppendTime
-      - name: sentry.dev.event-replacements
-      - name: sentry.dev.snuba-commit-log
+      - name: event-replacements
+      - name: snuba-commit-log
         config:
           "cleanup.policy": "compact,delete"
           "min.compaction.lag.ms": "3600000"
-      - name: sentry.dev.cdc
-      - name: sentry.dev.transactions
+      - name: cdc
+      - name: transactions
         config:
           "message.timestamp.type": LogAppendTime
-      - name: sentry.dev.snuba-transactions-commit-log
+      - name: snuba-transactions-commit-log
         config:
           "cleanup.policy": "compact,delete"
           "min.compaction.lag.ms": "3600000"
-      - name: sentry.dev.snuba-metrics
+      - name: snuba-metrics
         config:
           "message.timestamp.type": LogAppendTime
-      - name: sentry.dev.outcomes
-      - name: sentry.dev.outcomes-billing
-      - name: sentry.dev.ingest-sessions
-      - name: sentry.dev.snuba-sessions-commit-log
+      - name: outcomes
+      - name: outcomes-billing
+      - name: ingest-sessions
+      - name: snuba-sessions-commit-log
         config:
           "cleanup.policy": "compact,delete"
           "min.compaction.lag.ms": "3600000"
-      - name: sentry.dev.snuba-metrics-commit-log
+      - name: snuba-metrics-commit-log
         config:
           "cleanup.policy": "compact,delete"
           "min.compaction.lag.ms": "3600000"
-      - name: sentry.dev.scheduled-subscriptions-events
-      - name: sentry.dev.scheduled-subscriptions-transactions
-      - name: sentry.dev.scheduled-subscriptions-sessions
-      - name: sentry.dev.scheduled-subscriptions-metrics
-      - name: sentry.dev.scheduled-subscriptions-generic-metrics-sets
-      - name: sentry.dev.scheduled-subscriptions-generic-metrics-distributions
-      - name: sentry.dev.scheduled-subscriptions-generic-metrics-counters
-      - name: sentry.dev.events-subscription-results
-      - name: sentry.dev.transactions-subscription-results
-      - name: sentry.dev.sessions-subscription-results
-      - name: sentry.dev.metrics-subscription-results
-      - name: sentry.dev.generic-metrics-subscription-results
-      - name: sentry.dev.snuba-queries
+      - name: scheduled-subscriptions-events
+      - name: scheduled-subscriptions-transactions
+      - name: scheduled-subscriptions-sessions
+      - name: scheduled-subscriptions-metrics
+      - name: scheduled-subscriptions-generic-metrics-sets
+      - name: scheduled-subscriptions-generic-metrics-distributions
+      - name: scheduled-subscriptions-generic-metrics-counters
+      - name: events-subscription-results
+      - name: transactions-subscription-results
+      - name: sessions-subscription-results
+      - name: metrics-subscription-results
+      - name: generic-metrics-subscription-results
+      - name: snuba-queries
         config:
           "message.timestamp.type": LogAppendTime
-      - name: sentry.dev.processed-profiles
+      - name: processed-profiles
         config:
           "message.timestamp.type": LogAppendTime
-      - name: sentry.dev.profiles-call-tree
-      - name: sentry.dev.ingest-replay-events
+      - name: profiles-call-tree
+      - name: ingest-replay-events
         config:
           "message.timestamp.type": LogAppendTime
           "max.message.bytes": "15000000"
-      - name: sentry.dev.snuba-generic-metrics
+      - name: snuba-generic-metrics
         config:
           "message.timestamp.type": LogAppendTime
-      - name: sentry.dev.snuba-generic-metrics-sets-commit-log
+      - name: snuba-generic-metrics-sets-commit-log
         config:
           "cleanup.policy": "compact,delete"
           "min.compaction.lag.ms": "3600000"
-      - name: sentry.dev.snuba-generic-metrics-distributions-commit-log
+      - name: snuba-generic-metrics-distributions-commit-log
         config:
           "cleanup.policy": "compact,delete"
           "min.compaction.lag.ms": "3600000"
-      - name: sentry.dev.snuba-generic-metrics-counters-commit-log
+      - name: snuba-generic-metrics-counters-commit-log
         config:
           "cleanup.policy": "compact,delete"
           "min.compaction.lag.ms": "3600000"
-      - name: sentry.dev.generic-events
+      - name: generic-events
         config:
           "message.timestamp.type": LogAppendTime
-      - name: sentry.dev.snuba-generic-events-commit-log
+      - name: snuba-generic-events-commit-log
         config:
           "cleanup.policy": "compact,delete"
           "min.compaction.lag.ms": "3600000"
-      - name: sentry.dev.group-attributes
+      - name: group-attributes
         config:
           "message.timestamp.type": LogAppendTime
-      - name: sentry.dev.snuba-attribution
-      - name: sentry.dev.snuba-dead-letter-metrics
-      - name: sentry.dev.snuba-dead-letter-sessions
-      - name: sentry.dev.snuba-dead-letter-generic-metrics
-      - name: sentry.dev.snuba-dead-letter-replays
-      - name: sentry.dev.snuba-dead-letter-generic-events
-      - name: sentry.dev.snuba-dead-letter-querylog
-      - name: sentry.dev.snuba-dead-letter-group-attributes
-      - name: sentry.dev.ingest-attachments
-      - name: sentry.dev.ingest-transactions
-      - name: sentry.dev.ingest-events
+      - name: snuba-attribution
+      - name: snuba-dead-letter-metrics
+      - name: snuba-dead-letter-sessions
+      - name: snuba-dead-letter-generic-metrics
+      - name: snuba-dead-letter-replays
+      - name: snuba-dead-letter-generic-events
+      - name: snuba-dead-letter-querylog
+      - name: snuba-dead-letter-group-attributes
+      - name: ingest-attachments
+      - name: ingest-transactions
+      - name: ingest-events
         ## If the number of exceptions increases, it is recommended to increase the number of partitions for ingest-events
         # partitions: 1
-      - name: sentry.dev.ingest-replay-recordings
-      - name: sentry.dev.ingest-metrics
-      - name: sentry.dev.ingest-performance-metrics
-      - name: sentry.dev.ingest-monitors
-      - name: sentry.dev.profiles
-      - name: sentry.dev.ingest-occurrences
-      - name: sentry.dev.snuba-spans
-      - name: sentry.dev.shared-resources-usage
-      - name: sentry.dev.snuba-metrics-summaries
+      - name: ingest-replay-recordings
+      - name: ingest-metrics
+      - name: ingest-performance-metrics
+      - name: ingest-monitors
+      - name: profiles
+      - name: ingest-occurrences
+      - name: snuba-spans
+      - name: shared-resources-usage
+      - name: snuba-metrics-summaries
   listeners:
     client:
       protocol: "PLAINTEXT"
