@@ -1,5 +1,12 @@
 # Changelog
 
+## [25.17.1](https://github.com/sentry-kubernetes/charts/compare/sentry-v25.17.0...sentry-v25.17.1) (2024-10-15)
+
+
+### Bug Fixes
+
+* external redis functionality for relay ([#1548](https://github.com/sentry-kubernetes/charts/issues/1548)) ([6e71fc1](https://github.com/sentry-kubernetes/charts/commit/6e71fc169622c2e7e4934bfefd613f613a6c77d2))
+
 ## [25.17.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v25.16.0...sentry-v25.17.0) (2024-10-14)
 
 
