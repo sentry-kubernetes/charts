@@ -155,6 +155,10 @@ relay:
     #  - name: security.protocol
     #    value: "SSL"
 
+# Override custom Kafka topic names
+kafkaTopicOverrides:
+  prefix: ""
+
 # enable and reference the volume
 geodata:
   accountID: ""

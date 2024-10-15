@@ -84,7 +84,7 @@ spec:
           - "post-process-forwarder-issue-platform"
           - "--consumer-group"
           - "post-process-forwarder"
-          - "--synchronize-commit-log-topic=snuba-generic-events-commit-log"
+          - "--synchronize-commit-log-topic={{ template "sentry.kafka.topic-overrides.prefix" . }}snuba-generic-events-commit-log"
           - "--synchronize-commit-group"
           - "generic_events_group"
           {{- if .Values.sentry.postProcessForwardIssuePlatform.autoOffsetReset }}

@@ -458,6 +458,13 @@ Set Kafka bootstrap servers string
 {{- end -}}
 {{- end -}}
 
+{{- define "sentry.kafka.topic-overrides.prefix" }}
+{{- if and .Values.kafkaTopicOverrides (hasKey .Values.kafkaTopicOverrides "prefix") }}
+{{ .Values.kafkaTopicOverrides.prefix }}
+{{- else }}
+""
+{{- end }}
+{{- end }}
 
 {{/*
 Set RabbitMQ host
