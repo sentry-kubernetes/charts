@@ -99,7 +99,7 @@ spec:
                   name: {{ .Values.externalRedis.existingSecret }}
                   key: {{ default "redis-password" .Values.externalRedis.existingSecretKey }}
             - name: RELAY_REDIS_URL
-              value: {{ $redisProto }}://$(HELM_CHARTS_RELAY_REDIS_PASSWORD_CONTROLLED)@{{ $redisHost }}:{{ $redisPort }}/{{ $redisDb }}
+              value: {{ $redisProto }}://:$(HELM_CHARTS_RELAY_REDIS_PASSWORD_CONTROLLED)@{{ $redisHost }}:{{ $redisPort }}/{{ $redisDb }}
           {{- end }}
 {{- if .Values.relay.init.env }}
 {{ toYaml .Values.relay.init.env | indent 12 }}
@@ -141,7 +141,7 @@ spec:
               name: {{ .Values.externalRedis.existingSecret }}
               key: {{ default "redis-password" .Values.externalRedis.existingSecretKey }}
         - name: RELAY_REDIS_URL
-          value: {{ $redisProto }}://$(HELM_CHARTS_RELAY_REDIS_PASSWORD_CONTROLLED)@{{ $redisHost }}:{{ $redisPort }}/{{ $redisDb }}
+          value: {{ $redisProto }}://:$(HELM_CHARTS_RELAY_REDIS_PASSWORD_CONTROLLED)@{{ $redisHost }}:{{ $redisPort }}/{{ $redisDb }}
         {{- end }}
 {{- if .Values.relay.env }}
 {{ toYaml .Values.relay.env | indent 8 }}
