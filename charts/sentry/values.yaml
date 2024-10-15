@@ -239,6 +239,7 @@ sentry:
 
   worker:
     enabled: true
+    # annotations: {}
     replicas: 1
     # concurrency: 4
     env: []
@@ -267,6 +268,9 @@ sentry:
       timeoutSeconds: 10
       failureThreshold: 3
     sidecars: []
+    # securityContext: {}
+    # containerSecurityContext: {}
+    # priorityClassName: ""
     topologySpreadConstraints: []
     volumes: []
     volumeMounts: []
@@ -275,6 +279,7 @@ sentry:
   workerEvents:
     ## If the number of exceptions increases, it is recommended to enable workerEvents
     enabled: false
+    # annotations: {}
     queues: "events.save_event,post_process_errors"
     ## When increasing the number of exceptions and enabling workerEvents, it is recommended to increase the number of their replicas
     replicas: 1
@@ -300,6 +305,9 @@ sentry:
       timeoutSeconds: 10
       failureThreshold: 3
     sidecars: []
+    # securityContext: {}
+    # containerSecurityContext: {}
+    # priorityClassName: ""
     topologySpreadConstraints: []
     volumes: []
     volumeMounts: []
@@ -307,6 +315,7 @@ sentry:
   # allows to dedicate some workers to specific queues
   workerTransactions:
     enabled: false
+    # annotations: {}
     queues: "events.save_event_transaction,post_process_transactions"
     replicas: 1
     # concurrency: 4
@@ -331,6 +340,9 @@ sentry:
       timeoutSeconds: 10
       failureThreshold: 3
     sidecars: []
+    # securityContext: {}
+    # containerSecurityContext: {}
+    # priorityClassName: ""
     topologySpreadConstraints: []
     volumes: []
     volumeMounts: []
