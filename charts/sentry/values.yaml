@@ -152,8 +152,8 @@ relay:
     #  apiVersionRequestTimeoutMs:
 
     # additionalKafkaConfig:
-    #  - name: security.protocol
-    #    value: "SSL"
+    #  - name: compression.type
+    #    value: "lz4"
 
 # enable and reference the volume
 geodata:
@@ -932,6 +932,17 @@ sentry:
     volumes: []
     # volumeMounts: []
     serviceAccount: {}
+
+  # Sentry settings of connections to Kafka
+  kafka:
+    message:
+      max:
+        bytes: 50000000
+    compression:
+      type:  # 'gzip', 'snappy', 'lz4', 'zstd'
+    socket:
+      timeout:
+        ms: 1000
 
 snuba:
   api:
@@ -2135,6 +2146,23 @@ kafka:
   #     create: false
   #     name: zookeeper
 
+  # sasl:
+  #  ## Credentials for client communications.
+  #  ## @param sasl.client.users ist of usernames for client communications when SASL is enabled
+  #  ## @param sasl.client.passwords list of passwords for client communications when SASL is enabled, must match the number of client.users
+  #  ## First user and password will be used if enabled
+  #   client:
+  #     users:
+  #       - sentry
+  #     passwords:
+  #       - password
+  #   ## @param sasl.enabledMechanisms Comma-separated list of allowed SASL mechanisms when SASL listeners are configured. Allowed types: `PLAIN`, `SCRAM-SHA-256`, `SCRAM-SHA-512`, `OAUTHBEARER`
+  #   enabledMechanisms: PLAIN,SCRAM-SHA-256,SCRAM-SHA-512
+  # listeners:
+  #   ## @param listeners.client.protocol Security protocol for the Kafka client listener. Allowed values are 'PLAINTEXT', 'SASL_PLAINTEXT', 'SASL_SSL' and 'SSL'
+  #   client:
+  #     protocol: SASL_PLAINTEXT
+
 ## This value is only used when kafka.enabled is set to false
 ##
 externalKafka:
@@ -2142,6 +2170,20 @@ externalKafka:
   ##
   # host: "kafka-confluent"
   port: 9092
+  compression:
+    type:  # 'gzip', 'snappy', 'lz4', 'zstd'
+  message:
+    max:
+      bytes: 50000000
+  sasl:
+    mechanism: None  # PLAIN,SCRAM-256,SCRAM-512
+    username: None
+    password: None
+  security:
+    protocol: plaintext  # 'PLAINTEXT', 'SASL_PLAINTEXT', 'SASL_SSL' and 'SSL'
+  socket:
+    timeout:
+      ms: 1000
 
 sourcemaps:
   enabled: false
