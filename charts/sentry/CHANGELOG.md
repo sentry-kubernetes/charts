@@ -1,5 +1,12 @@
 # Changelog
 
+## [25.18.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v25.17.1...sentry-v25.18.0) (2024-10-16)
+
+
+### Features
+
+* **clickhouse:** update ClickHouse chart to 3.12.0 ([#1556](https://github.com/sentry-kubernetes/charts/issues/1556)) ([07e73c1](https://github.com/sentry-kubernetes/charts/commit/07e73c1846c242f1babaa1ed47271588c9ec2daf))
+
 ## [25.17.1](https://github.com/sentry-kubernetes/charts/compare/sentry-v25.17.0...sentry-v25.17.1) (2024-10-15)
 
 
