@@ -27,7 +27,7 @@ dependencies:
     condition: zookeeper.enabled
   - name: rabbitmq
     repository: oci://registry-1.docker.io/bitnamicharts
-    version: 11.16.2
+    version: 15.0.3
     alias: rabbitmq
     condition: rabbitmq.enabled
   - name: postgresql
