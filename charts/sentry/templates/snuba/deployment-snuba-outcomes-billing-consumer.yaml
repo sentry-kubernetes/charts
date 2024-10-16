@@ -87,12 +87,7 @@ spec:
           - "--auto-offset-reset"
           - "{{ .Values.snuba.outcomesBillingConsumer.autoOffsetReset }}"
           {{- end }}
-          - "--raw-events-topic"
-          {{- if hasKey .Values "kafkaTopicOverrides" }}
-          - "{{ default "" .Values.kafkaTopicOverrides.prefix }}outcomes-billing"
-          {{- else }}
-          - "outcomes-billing"
-          {{- end }}
+          - "--synchronize-commit-log-topic={{ default "" ((.Values.kafkaTopicOverrides).prefix) }}outcomes-billing"
           {{- if .Values.snuba.outcomesBillingConsumer.maxBatchSize }}
           - "--max-batch-size"
           - "{{ .Values.snuba.outcomesBillingConsumer.maxBatchSize }}"

@@ -23,7 +23,7 @@ settings.py: |
   {{- end -}}
 {{- end }}
 
-  {{- if hasKey .Values "kafkaTopicOverrides" }}
+  {{- if ((.Values.kafkaTopicOverrides).prefix) }}
   SENTRY_CHARTS_KAFKA_TOPIC_PREFIX = {{ .Values.kafkaTopicOverrides.prefix | quote }}
 
   from snuba.utils.streams.topics import Topic

@@ -75,7 +75,7 @@ config.yml: |-
     redis: "{{ $redisProto }}://{{ $redisHost }}:{{ $redisPort }}/{{ $redisDb }}"
     {{- end }}
 
-    {{- if hasKey .Values "kafkaTopicOverrides" }}
+    {{- if ((.Values.kafkaTopicOverrides).prefix) }}
     topics:
       metrics_sessions: "{{ default "" .Values.kafkaTopicOverrides.prefix }}ingest-metrics"
       events: "{{ default "" .Values.kafkaTopicOverrides.prefix }}ingest-attachments"
