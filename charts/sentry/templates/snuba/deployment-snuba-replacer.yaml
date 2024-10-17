@@ -85,6 +85,9 @@ spec:
           - "--auto-offset-reset"
           - "{{ .Values.snuba.replacer.autoOffsetReset }}"
           {{- end }}
+          {{- if .Values.snuba.replacer.noStrictOffsetReset }}
+          - "--no-strict-offset-reset"
+          {{- end }}
           {{- if .Values.snuba.replacer.maxBatchTimeMs }}
           - "--max-batch-time-ms"
           - "{{ .Values.snuba.replacer.maxBatchTimeMs }}"
