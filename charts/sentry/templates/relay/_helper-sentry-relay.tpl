@@ -80,7 +80,7 @@ config.yml: |-
       metrics_sessions: "{{ default "" .Values.kafkaTopicOverrides.prefix }}ingest-metrics"
       events: "{{ default "" .Values.kafkaTopicOverrides.prefix }}ingest-attachments"
       transactions: "{{ default "" .Values.kafkaTopicOverrides.prefix }}ingest-transactions"
-      outcomes: "{{ default "" .Values.kafkaTopicOverrides.prefix }}ingest-outcomes"
+      outcomes: "{{ default "" .Values.kafkaTopicOverrides.prefix }}outcomes"
       outcomes_billing: "{{ default "" .Values.kafkaTopicOverrides.prefix }}ingest-outcomes"
       metrics_generic: "{{ default "" .Values.kafkaTopicOverrides.prefix }}ingest-performance-metrics"
       profiles: "{{ default "" .Values.kafkaTopicOverrides.prefix }}profiles"
