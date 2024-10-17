@@ -84,7 +84,7 @@ spec:
           - "post-process-forwarder-transactions"
           - "--consumer-group"
           - "post-process-forwarder"
-          - "--synchronize-commit-log-topic=snuba-transactions-commit-log"
+          - "--synchronize-commit-log-topic={{ default "" ((.Values.kafkaTopicOverrides).prefix) }}snuba-transactions-commit-log"
           - "--synchronize-commit-group"
           - "transactions_group"
           {{- if .Values.sentry.postProcessForwardTransactions.autoOffsetReset }}

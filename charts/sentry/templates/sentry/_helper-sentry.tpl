@@ -230,6 +230,14 @@ sentry.conf.py: |-
   SENTRY_EVENTSTREAM = "sentry.eventstream.kafka.KafkaEventStream"
   SENTRY_EVENTSTREAM_OPTIONS = {"producer_configuration": DEFAULT_KAFKA_OPTIONS}
 
+  {{- if ((.Values.kafkaTopicOverrides).prefix) }}
+  SENTRY_CHARTS_KAFKA_TOPIC_PREFIX = {{ .Values.kafkaTopicOverrides.prefix | quote }}
+
+  from sentry.conf.types.kafka_definition import Topic
+  for topic in Topic:
+    KAFKA_TOPIC_OVERRIDES[topic.value] = f"{SENTRY_CHARTS_KAFKA_TOPIC_PREFIX}{topic.value}"
+  {{- end }}
+
   KAFKA_CLUSTERS["default"] = DEFAULT_KAFKA_OPTIONS
 
   ###############

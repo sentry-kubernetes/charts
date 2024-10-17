@@ -74,8 +74,27 @@ config.yml: |-
     {{- else }}
     redis: "{{ $redisProto }}://{{ $redisHost }}:{{ $redisPort }}/{{ $redisDb }}"
     {{- end }}
+
+    {{- if ((.Values.kafkaTopicOverrides).prefix) }}
     topics:
-      metrics_sessions: ingest-metrics
+      metrics_sessions: "{{ default "" .Values.kafkaTopicOverrides.prefix }}ingest-metrics"
+      events: "{{ default "" .Values.kafkaTopicOverrides.prefix }}ingest-attachments"
+      transactions: "{{ default "" .Values.kafkaTopicOverrides.prefix }}ingest-transactions"
+      outcomes: "{{ default "" .Values.kafkaTopicOverrides.prefix }}outcomes"
+      outcomes_billing: "{{ default "" .Values.kafkaTopicOverrides.prefix }}ingest-outcomes"
+      metrics_generic: "{{ default "" .Values.kafkaTopicOverrides.prefix }}ingest-performance-metrics"
+      profiles: "{{ default "" .Values.kafkaTopicOverrides.prefix }}profiles"
+      replay_events: "{{ default "" .Values.kafkaTopicOverrides.prefix }}ingest-replay-events"
+      replay_recordings: "{{ default "" .Values.kafkaTopicOverrides.prefix }}ingest-replay-recordings"
+      monitors: "{{ default "" .Values.kafkaTopicOverrides.prefix }}ingest-monitors"
+      spans: "{{ default "" .Values.kafkaTopicOverrides.prefix }}snuba-spans"
+      metrics_summaries: "{{ default "" .Values.kafkaTopicOverrides.prefix }}snuba-metrics-summaries"
+      cogs: "{{ default "" .Values.kafkaTopicOverrides.prefix }}shared-resources-usage"
+      feedback: "{{ default "" .Values.kafkaTopicOverrides.prefix }}ingest-feedback-events"
+    {{- else }}
+    topics:
+      metrics_sessions: "ingest-metrics"
+    {{- end }}
 
   {{ .Values.config.relay | nindent 2 }}
 {{- end -}}

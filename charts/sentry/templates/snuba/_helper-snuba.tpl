@@ -23,6 +23,14 @@ settings.py: |
   {{- end -}}
 {{- end }}
 
+  {{- if ((.Values.kafkaTopicOverrides).prefix) }}
+  SENTRY_CHARTS_KAFKA_TOPIC_PREFIX = {{ .Values.kafkaTopicOverrides.prefix | quote }}
+
+  from snuba.utils.streams.topics import Topic
+  for topic in Topic:
+    KAFKA_TOPIC_MAP[topic.value] = f"{SENTRY_CHARTS_KAFKA_TOPIC_PREFIX}{topic.value}"
+  {{- end }}
+
   # Clickhouse Options
   CLUSTERS = [
     {

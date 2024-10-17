@@ -458,7 +458,6 @@ Set Kafka bootstrap servers string
 {{- end -}}
 {{- end -}}
 
-
 {{/*
 Set RabbitMQ host
 */}}
