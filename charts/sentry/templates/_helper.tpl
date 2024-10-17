@@ -471,6 +471,15 @@ Set RabbitMQ host
 {{- end -}}
 
 {{/*
+Set external RabbitMQ host
+*/}}
+{{- define "sentry.externalrabbitmq.host" -}}
+{{- if .Values.externalrabbitmq.host -}}
+{{- .Values.externalrabbitmq.host -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
 Common Snuba environment variables
 */}}
 {{- define "sentry.snuba.env" -}}
