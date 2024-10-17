@@ -195,8 +195,10 @@ sentry.conf.py: |-
   # information on configuring your queue broker and workers. Sentry relies
   # on a Python framework called Celery to manage queues.
 
-  {{- if or (.Values.rabbitmq.enabled) (.Values.rabbitmq.host) }}
+  {{- if .Values.rabbitmq.enabled }}
   BROKER_URL = os.environ.get("BROKER_URL", "amqp://{{ .Values.rabbitmq.auth.username }}:{{ .Values.rabbitmq.auth.password }}@{{ template "sentry.rabbitmq.host" . }}:5672/{{ .Values.rabbitmq.vhost }}")
+  {{- else if .Values.externalrabbitmq.host }}
+  BROKER_URL = os.environ.get("BROKER_URL", "amqp://{{ .Values.externalrabbitmq.auth.username }}:{{ .Values.externalrabbitmq.auth.password }}@{{ template "sentry.externalrabbitmq.host" . }}/{{ .Values.externalrabbitmq.vhost }}")
   {{- else if $redisPass }}
   BROKER_URL = os.environ.get("BROKER_URL", "{{ $redisProto }}://:{{ $redisPass }}@{{ $redisHost }}:{{ $redisPort }}/{{ $redisDb }}")
   {{- else if and (not .Values.externalRedis.existingSecret) (not .Values.redis.auth.existingSecret)}}

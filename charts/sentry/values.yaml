@@ -2233,7 +2233,7 @@ externalPostgresql:
   connMaxAge: 0
 
 rabbitmq:
-  ## If disabled, Redis will be used instead as the broker.
+  ## If disabled and no set externalrabbitmq.host, Redis will be used instead as the broker.
   enabled: true
   vhost: /
   clustering:
@@ -2301,6 +2301,14 @@ rabbitmq:
   # serviceAccount:
   #   create: false
   #   name: rabbitmq
+
+externalrabbitmq:
+  host: "xxxxhost"
+  auth:
+    username: xxxxuser
+    password: xxxxpassword
+
+  vhost: /
 
 memcached:
   memoryLimit: "2048"
