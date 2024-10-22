@@ -102,7 +102,7 @@ spec:
 {{- if .Values.sentry.web.existingSecretEnv }}
         envFrom:
           - secretRef:
-            name: "{{.Values.sentry.web.existingSecretEnv}}"
+              name: {{.Values.sentry.web.existingSecretEnv}}
 {{- end }}
         volumeMounts:
         - mountPath: /etc/sentry
