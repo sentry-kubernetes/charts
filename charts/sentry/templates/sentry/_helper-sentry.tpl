@@ -222,9 +222,31 @@ sentry.conf.py: |-
   SENTRY_CACHE = "sentry.cache.redis.RedisCache"
 
   DEFAULT_KAFKA_OPTIONS = {
-      "bootstrap.servers": {{ (include "sentry.kafka.bootstrap_servers_string" .) | quote }},
-      "message.max.bytes": 50000000,
-      "socket.timeout.ms": 1000,
+      "common": {
+          "bootstrap.servers": {{ (include "sentry.kafka.bootstrap_servers_string" .) | quote }},
+          "message.max.bytes": {{ include "sentry.kafka.message_max_bytes" . }},
+      {{- $sentryKafkaCompressionType := include "sentry.kafka.compression_type" . -}}
+      {{- if $sentryKafkaCompressionType }}
+          "compression.type": {{ $sentryKafkaCompressionType | quote }},
+      {{- end }}
+          "socket.timeout.ms": {{ include "sentry.kafka.socket_timeout_ms" . }},
+      {{- $sentryKafkaSaslMechanism := include "sentry.kafka.sasl_mechanism" . -}}
+      {{- if not (eq "None" $sentryKafkaSaslMechanism) }}
+          "sasl.mechanism": {{ $sentryKafkaSaslMechanism | quote }},
+      {{- end }}
+      {{- $sentryKafkaSaslUsername := include "sentry.kafka.sasl_username" . -}}
+      {{- if not (eq "None" $sentryKafkaSaslUsername) }}
+          "sasl.username": {{ $sentryKafkaSaslUsername | quote }},
+      {{- end }}
+      {{- $sentryKafkaSaslPassword := include "sentry.kafka.sasl_password" . -}}
+      {{- if not (eq "None" $sentryKafkaSaslPassword) }}
+          "sasl.password": {{ $sentryKafkaSaslPassword | quote }},
+      {{- end }}
+      {{- $sentryKafkaSecurityProtocol := include "sentry.kafka.security_protocol" . -}}
+      {{- if not (eq "plaintext" $sentryKafkaSecurityProtocol) }}
+          "security.protocol": {{ $sentryKafkaSecurityProtocol | quote }},
+      {{- end }}
+      }
   }
 
   SENTRY_EVENTSTREAM = "sentry.eventstream.kafka.KafkaEventStream"
