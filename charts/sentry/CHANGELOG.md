@@ -1,5 +1,19 @@
 # Changelog
 
+## [25.19.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v25.18.0...sentry-v25.19.0) (2024-10-22)
+
+
+### Features
+
+* **clickhouse:** remove explicit imageVersion, inherit from chart ([#1561](https://github.com/sentry-kubernetes/charts/issues/1561)) ([4d003fd](https://github.com/sentry-kubernetes/charts/commit/4d003fdc350f1427d413285b94bf27fd13635239))
+* **sentry:** add sasl auth for kafka and manage settings of connections ([#1557](https://github.com/sentry-kubernetes/charts/issues/1557)) ([f5a12e0](https://github.com/sentry-kubernetes/charts/commit/f5a12e04ee5ffa28f1d62bf6c7cb5c733b30c2b9))
+
+
+### Bug Fixes
+
+* **snuba:** Add missing --no-strict-offset-reset for replacer ([#1559](https://github.com/sentry-kubernetes/charts/issues/1559)) ([0c415e7](https://github.com/sentry-kubernetes/charts/commit/0c415e704fb2f2cbb984d3e0d5e3b08895834436))
+* Use correct syntax for envFrom in web and worker ([#1563](https://github.com/sentry-kubernetes/charts/issues/1563)) ([b834c0e](https://github.com/sentry-kubernetes/charts/commit/b834c0e4651633ca88e4c1839d60c0c69cf52087))
+
 ## [25.18.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v25.17.1...sentry-v25.18.0) (2024-10-16)
 
 
