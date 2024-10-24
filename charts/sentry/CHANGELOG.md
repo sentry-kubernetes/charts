@@ -1,5 +1,18 @@
 # Changelog
 
+## [26.0.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v25.20.0...sentry-v26.0.0) (2024-10-24)
+
+
+### ⚠ BREAKING CHANGES
+
+* breaking change note
+
+### Features
+
+* add maxTasksPerChild option to Sentry worker deployments ([#1572](https://github.com/sentry-kubernetes/charts/issues/1572)) ([bc32900](https://github.com/sentry-kubernetes/charts/commit/bc329004f46f4af7ecf4a99f07e74e28dbee436e))
+* breaking change note ([9e5a15e](https://github.com/sentry-kubernetes/charts/commit/9e5a15e045fffcaccd88d5dc40c835c0083ffd47))
+* update sentry appVersion to 24.9.0 ([#1571](https://github.com/sentry-kubernetes/charts/issues/1571)) ([2a3a030](https://github.com/sentry-kubernetes/charts/commit/2a3a030ba3c61c6792712c4f637fe64d42a47fe2))
+
 ## [25.20.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v25.19.0...sentry-v25.20.0) (2024-10-23)
 
 
