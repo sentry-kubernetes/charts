@@ -255,6 +255,7 @@ sentry:
     # logLevel: "WARNING" # DEBUG|INFO|WARNING|ERROR|CRITICAL|FATAL
     # logFormat: "machine" # human|machine
     # excludeQueues: ""
+    # maxTasksPerChild: 1000
     # it's better to use prometheus adapter and scale based on
     # the size of the rabbitmq queue
     autoscaling:
@@ -292,6 +293,7 @@ sentry:
     # podLabels: {}
     # logLevel: "WARNING" # DEBUG|INFO|WARNING|ERROR|CRITICAL|FATAL
     # logFormat: "machine" # human|machine
+    # maxTasksPerChild: 1000
     # it's better to use prometheus adapter and scale based on
     # the size of the rabbitmq queue
     autoscaling:
@@ -327,6 +329,7 @@ sentry:
     # podLabels: {}
     # logLevel: "WARNING" # DEBUG|INFO|WARNING|ERROR|CRITICAL|FATAL
     # logFormat: "machine" # human|machine
+    # maxTasksPerChild: 1000
     # it's better to use prometheus adapter and scale based on
     # the size of the rabbitmq queue
     autoscaling:

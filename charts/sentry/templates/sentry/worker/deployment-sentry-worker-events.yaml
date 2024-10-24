@@ -88,6 +88,10 @@ spec:
           - "--logformat"
           - "{{ .Values.sentry.workerEvents.logFormat }}"
           {{- end }}
+          {{- if .Values.sentry.workerEvents.maxTasksPerChild }}
+          - "--max-tasks-per-child"
+          - "{{ .Values.sentry.workerEvents.maxTasksPerChild }}"
+          {{- end }}
         env:
         - name: C_FORCE_ROOT
           value: "true"
