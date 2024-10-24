@@ -18,6 +18,10 @@ helm install my-sentry sentry/sentry --wait --timeout=1000s
 
 For now the full list of values is not documented but you can get inspired by the values.yaml specific to each directory.
 
+## Upgrading from 25.x.x Version of This Chart to 26.x.x.x
+
+Make sure to upgrade to chart version 25.20.0 (Seentry 24.8.0) before upgrading to 26.x.x
+
 ## Upgrading from 23.x.x Version of This Chart to 24.x.x/25.x.x
 
 Make sure to revert the changes on Clickhouse replica counts if the change doesn't suit you.
