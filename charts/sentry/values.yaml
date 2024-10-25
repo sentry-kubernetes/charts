@@ -3,6 +3,8 @@ prefix:
 # Set this to true to support IPV6 networks
 ipv6: false
 
+global:
+  nodeSelector: {}
 
 user:
   create: true
