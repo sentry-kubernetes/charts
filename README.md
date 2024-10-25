@@ -16,11 +16,11 @@ helm install my-sentry sentry/sentry --wait --timeout=1000s
 
 ## Values
 
-For now the full list of values is not documented but you can get inspired by the values.yaml specific to each directory.
+For now the full list of values is not documented, but you can get inspired by the `values.yaml` specific to each directory.
 
-## Upgrading from 25.x.x Version of This Chart to 26.x.x.x
+## Upgrading from 25.x.x Version of This Chart to 26.x.x
 
-Make sure to upgrade to chart version 25.20.0 (Seentry 24.8.0) before upgrading to 26.x.x
+Make sure to upgrade to chart version 25.20.0 (Sentry 24.8.0) before upgrading to 26.x.x.
 
 ## Upgrading from 23.x.x Version of This Chart to 24.x.x/25.x.x
 
@@ -34,14 +34,14 @@ ingestion pipeline with more granularity.
 ### Major Changes
 
 - **Ingest consumers**: Templates for Deployment and HPA manifests are now separate for ingest-consumer-events,
-  ingest-consumer-attachments and ingest-consumer-transactions.
-- **Workers**: Templates for two additional worker Deployments added, each of them with its own HPA. By default they're
+  ingest-consumer-attachments, and ingest-consumer-transactions.
+- **Workers**: Templates for two additional worker Deployments added, each of them with its own HPA. By default, they're
   configured for error- and transaction-related tasks processing, but queues to consume can be redefined for both.
 
 ### Migration Guide
 
-Since labels are immutable in k8s Deployments, `helm upgrade --force` should be used to recreate ingest-consumer Deployments.
-As an alternative, existing ingest-consumer Deployments can be removed manually with `kubectl delete` before upgrading helm release.
+Since labels are immutable in Kubernetes Deployments, `helm upgrade --force` should be used to recreate ingest-consumer Deployments.
+As an alternative, existing ingest-consumer Deployments can be removed manually with `kubectl delete` before upgrading the Helm release.
 
 ## Upgrading from 21.x.x Version of This Chart to 22.x.x
 
@@ -62,7 +62,7 @@ mode. This change requires action on your part to ensure a smooth upgrade.
     kubectl exec -it <your-zookeeper-pod> -- zkCli.sh get /cluster/id
     ```
 
-3. **Deploy at least one Kraft controller-only** in your deployment with zookeeperMigrationMode=true. The Kraft
+3. **Deploy at least one Kraft controller-only** in your deployment with `zookeeperMigrationMode=true`. The Kraft
     controllers will migrate the data from your Kafka ZkBroker to Kraft mode.
 
     To do this, add the following values to your Zookeeper deployment when upgrading:
@@ -90,7 +90,7 @@ mode. This change requires action on your part to ensure a smooth upgrade.
     Transitioning ZK migration state from PRE_MIGRATION to MIGRATION (org.apache.kafka.controller.FeatureControlManager)
     ```
 
-5. **Once all brokers have been successfully migrated,** set **'broker.zookeeperMigrationMode=false'** to fully migrate them.
+5. **Once all brokers have been successfully migrated,** set **`broker.zookeeperMigrationMode=false`** to fully migrate them.
     ```yaml
     broker:
       zookeeperMigrationMode: false
@@ -109,7 +109,7 @@ mode. This change requires action on your part to ensure a smooth upgrade.
     ```shell
     [2023-07-13 13:07:45,226] INFO [QuorumController id=1] Transitioning ZK migration state from MIGRATION to POST_MIGRATION (org.apache.kafka.controller.FeatureControlManager)
     ```
-7. **(Optional)** If you would like to switch to a non-dedicated cluster, set **'controller.controllerOnly=false'**. This will cause controller-only nodes to switch to controller+broker nodes.
+7. **(Optional)** If you would like to switch to a non-dedicated cluster, set **`controller.controllerOnly=false`**. This will cause controller-only nodes to switch to controller+broker nodes.
 
     At this point, you could manually decommission broker-only nodes by reassigning its partitions to controller-eligible nodes.
 
@@ -120,19 +120,18 @@ mode. This change requires action on your part to ensure a smooth upgrade.
 Bumped dependencies:
 - memcached > 6.5.9
 - kafka > 23.0.7 - This is a major update, but only kafka version is updated. See [bitnami charts' update note](https://github.com/bitnami/charts/tree/main/bitnami/kafka#to-2300)
-- clickhouse > 3.7.0 - Supports priorityClassName and max_suspicious_broken_parts config.
+- clickhouse > 3.7.0 - Supports `priorityClassName` and `max_suspicious_broken_parts` config.
 - zookeeper > 11.4.11 - 2 Major updates from v9 to v11. See [To v10 upgrade notes](https://github.com/bitnami/charts/tree/main/bitnami/zookeeper#to-1000) and [To v11 upgrade notes](https://github.com/bitnami/charts/tree/main/bitnami/zookeeper#to-1100)
 - rabbitmq > 11.16.2
-
 
 ## Upgrading from 19.x.x version of this Chart to 20.x.x
 
 Bumped dependencies:
-- kafka > 22.1.3 - now supports Kraft. Note that the upgrade is breaking and that you have to start a new kafka from scratch to use it.
+- kafka > 22.1.3 - now supports Kraft. Note that the upgrade is breaking and that you have to start a new Kafka from scratch to use it.
 
 Example:
 
-```
+```yaml
 kafka:
   zookeeper:
     enabled: false
@@ -140,23 +139,22 @@ kafka:
     enabled: true
 ```
 
-
 ## Upgrading from 18.x.x version of this Chart to 19.x.x
 
-Chart dependencies has been upgraded because of sentry requirements.
+Chart dependencies have been upgraded because of Sentry requirements.
 Changes:
-- The minimum required version of Postgresql is 14.5 (works with 15.x too)
+- The minimum required version of PostgreSQL is 14.5 (works with 15.x too)
 
 Bumped dependencies:
-- postgresql > 12.5.1 - latest wersion of chart with postgres 15
-
+- postgresql > 12.5.1 - latest version of chart with postgres 15
 
 ## Upgrading from 17.x.x version of this Chart to 18.x.x
 
-If Kafka is complaining about unknown or missing topic, please connect to kafka-0 and run
+If Kafka is complaining about unknown or missing topic, please connect to `kafka-0` and run
 
-`/opt/bitnami/kafka/bin/kafka-topics.sh --create --topic ingest-replay-recordings --bootstrap-server localhost:9092`
-
+```shell
+/opt/bitnami/kafka/bin/kafka-topics.sh --create --topic ingest-replay-recordings --bootstrap-server localhost:9092
+```
 
 ## Upgrading from 16.x.x version of this Chart to 17.x.x
 
@@ -166,42 +164,39 @@ Sentry version from 22.10.0 onwards should be using chart 17.x.x
 
 You can delete the deployment "sentry-post-process-forward" as it's no longer needed.
 
-`sentry-worker` may failed to start by [#774](https://github.com/sentry-kubernetes/charts/issues/774).
+`sentry-worker` may fail to start by [#774](https://github.com/sentry-kubernetes/charts/issues/774).
 If you encountered this issue, please reset `counters-0`, `triggers-0` queues.
-
 
 ## Upgrading from 15.x.x version of this Chart to 16.x.x
 
-system.secret-key is removed
+`system.secret-key` is removed
 
 See https://github.com/sentry-kubernetes/charts/tree/develop/sentry#sentry-secret-key
 
-
 ## Upgrading from 14.x.x version of this Chart to 15.x.x
 
-Chart dependencies has been upgraded because of bitnami charts removal.
+Chart dependencies have been upgraded because of bitnami charts removal.
 Changes:
 - `nginx.service.port: 80` > `nginx.service.ports.http: 80`
 - `kafka.service.port` > `kafka.service.ports.client`
 
 Bumped dependencies:
 - redis > 16.12.1 - latest version of chart
-- kafka > 16.3.2 - chart aligned with zookeeper dependency, upgraded kafka to 3.11
+- kafka > 16.3.2 - chart aligned with zookeeper dependency, upgraded Kafka to 3.11
 - rabbit > 8.32.2 - latest 3.9.* image version of chart
-- postgresql > 10.16.2 - latest wersion of chart with postgres 11
+- postgresql > 10.16.2 - latest version of chart with postgres 11
 - nginx > 12.0.4 - latest version of chart
 
 ## Upgrading from 13.x.x version of this Chart to 14.0.0
 
-ClickHouse was reconfigured with sharding and replication in-mind, If you are using external ClickHouse, you don't need to do anything.
+ClickHouse was reconfigured with sharding and replication in mind. If you are using external ClickHouse, you don't need to do anything.
 
 **WARNING**: You will lose current event data<br>
-Otherwise, you should delete the old ClickHouse volumes in-order to upgrade to this version.
-
+Otherwise, you should delete the old ClickHouse volumes in order to upgrade to this version.
 
 ## Upgrading from 12.x.x version of this Chart to 13.0.0
 
-The service annotions have been moved from the `service` section to the respective service's service sub-section. So what was:
+The service annotations have been moved from the `service` section to the respective service's service sub-section. So what was:
 
 ```yaml
 service:
@@ -227,51 +222,50 @@ relay:
       alb.ingress.kubernetes.io/healthcheck-port: traffic-port
 ```
 
-
 ## Upgrading from 10.x.x version of this Chart to 11.0.0
 
-If you were using clickhouse tabix externally, we disabled it per default.
+If you were using ClickHouse Tabix externally, we disabled it by default.
 
 ## Upgrading from 9.x.x version of this Chart to 10.0.0
 
-If you were using clickhouse ImagePullSecrets, [we unified](https://github.com/sentry-kubernetes/charts/commit/573ca29d03bf2c044004c1aa387f652a36ada23a) the way it's used.
+If you were using ClickHouse ImagePullSecrets, [we unified](https://github.com/sentry-kubernetes/charts/commit/573ca29d03bf2c044004c1aa387f652a36ada23a) the way it's used.
 
 ## Upgrading from 8.x.x version of this Chart to 9.0.0
 
-to simplify 1st time installations, backup value on clickhouse has been changed to false.
+To simplify first-time installations, the backup value on ClickHouse has been changed to false.
 
-clickhouse.clickhouse.configmap.remote_servers.replica.backup
+`clickhouse.clickhouse.configmap.remote_servers.replica.backup`
 
 ## Upgrading from 7.x.x version of this Chart to 8.0.0
 
-- the default value of features.orgSubdomains is now "false"
+- the default value of `features.orgSubdomains` is now "false"
 
 ## Upgrading from 6.x.x version of this Chart to 7.0.0
 
-- the default mode of relay is now "proxy". You can change it through the values.yaml file
-- we removed the `githubSso` variable for the oauth github configuration. It was using the old environment variable, that doesn't work with Sentry anymore. Just use the common github.xxxx configuration for both oauth & the application integration.
+- the default mode of relay is now "proxy". You can change it through the `values.yaml` file
+- we removed the `githubSso` variable for the OAuth GitHub configuration. It was using the old environment variable, that doesn't work with Sentry anymore. Just use the common `github.xxxx` configuration for both OAuth & the application integration.
 
 ## Upgrading from 5.x.x version of this Chart to 6.0.0
 
-- The sentry.configYml value is now in a real yaml format
+- The `sentry.configYml` value is now in a real YAML format
 - If you were previously using `relay.asHook`, the value is now `asHook`
 
 ## Upgrading from 4.x.x version of this Chart to 5.0.0
 
-As Relay is now part of this chart your need to make sure you enable either Nginx or the Ingress. Please read the next paragraph for more information.
+As Relay is now part of this chart, you need to make sure you enable either Nginx or the Ingress. Please read the next paragraph for more information.
 
-If you are using an ingress gateway (like istio), you have to change your inbound path from sentry-web to nginx.
+If you are using an ingress gateway (like Istio), you have to change your inbound path from `sentry-web` to `nginx`.
 
 ## NGINX and/or Ingress
 
-By default, NGINX is enabled to allow sending the incoming requests to [Sentry Relay](https://getsentry.github.io/relay/) or the Django backend depending on the path. When Sentry is meant to be exposed outside of the Kubernetes cluster, it is recommended to disable NGINX and let the Ingress do the same. It's recommended to go with the go to Ingress Controller, [NGINX Ingress](https://kubernetes.github.io/ingress-nginx/) but others should work as well.
+By default, NGINX is enabled to allow sending the incoming requests to [Sentry Relay](https://getsentry.github.io/relay/) or the Django backend depending on the path. When Sentry is meant to be exposed outside of the Kubernetes cluster, it is recommended to disable NGINX and let the Ingress do the same. It's recommended to go with the go-to Ingress Controller, [NGINX Ingress](https://kubernetes.github.io/ingress-nginx/), but others should work as well.
 
-Note: if you are using NGINX Ingress, please set this annotation on your ingress : nginx.ingress.kubernetes.io/use-regex: "true".
-If you are using `additionalHostNames` the `nginx.ingress.kubernetes.io/upstream-vhost` annotation might also come in handy.
+Note: if you are using NGINX Ingress, please set this annotation on your ingress: `nginx.ingress.kubernetes.io/use-regex: "true"`.
+If you are using `additionalHostNames`, the `nginx.ingress.kubernetes.io/upstream-vhost` annotation might also come in handy.
 It sets the `Host` header to the value you provide to avoid CSRF issues.
 
 ### Letsencrypt on NGINX Ingress Controller
-```
+```yaml
 nginx:
   ingress:
     annotations:
@@ -282,13 +276,13 @@ nginx:
     tls: true
 ```
 
-## Clickhouse warning
+## ClickHouse warning
 
-Snuba only supports a UTC timezone for Clickhouse. Please keep the initial value!
+Snuba only supports a UTC timezone for ClickHouse. Please keep the initial value!
 
 ## Upgrading from 3.1.0 version of this Chart to 4.0.0
 
-Following Helm Chart best practices the new version introduces some breaking changes, all configuration for external
+Following Helm Chart best practices, the new version introduces some breaking changes. All configuration for external
 resources moved to separate config branches: `externalClickhouse`, `externalKafka`, `externalRedis`, `externalPostgresql`.
 
 Here is a mapping table of old values and new values:
@@ -307,7 +301,7 @@ Here is a mapping table of old values and new values:
 
 ## Upgrading from deprecated 9.0 -> 10.0 Chart
 
-As this chart runs in helm 3 and also tries its best to follow on from the original Sentry chart. There are some steps that needs to be taken in order to correctly upgrade.
+As this chart runs in Helm 3 and also tries its best to follow on from the original Sentry chart. There are some steps that need to be taken in order to correctly upgrade.
 
 From the previous upgrade, make sure to get the following from your previous installation:
 
@@ -317,11 +311,11 @@ From the previous upgrade, make sure to get the following from your previous ins
 
 #### Upgrade Steps
 
-Due to an issue where transferring from Helm 2 to 3. Statefulsets that use the following: `heritage: {{ .Release.Service }}` in the metadata field will error out with a `Forbidden` error during the upgrade. The only workaround is to delete the existing statefulsets (Don't worry, PVC will be retained):
+Due to an issue where transferring from Helm 2 to 3. StatefulSets that use the following: `heritage: {{ .Release.Service }}` in the metadata field will error out with a `Forbidden` error during the upgrade. The only workaround is to delete the existing StatefulSets (Don't worry, PVC will be retained):
 
 > `kubectl delete --all sts -n <Sentry Namespace>`
 
-Once the statefulsets are deleted. Next steps is to convert the helm release from version 2 to 3 using the helm 3 plugin:
+Once the StatefulSets are deleted. Next steps is to convert the Helm release from version 2 to 3 using the Helm 3 plugin:
 
 > `helm3 2to3 convert <Sentry Release Name>`
 
