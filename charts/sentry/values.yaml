@@ -2350,9 +2350,9 @@ rabbitmq:
     enabled: false
     serviceMonitor:
       enabled: false
-      path: "/metrics/per-object" # https://www.rabbitmq.com/docs/prometheus
+      path: "/metrics/per-object"  # https://www.rabbitmq.com/docs/prometheus
       labels:
-        release: "prometheus-operator" # helm release of kube-prometheus-stack
+        release: "prometheus-operator"  # helm release of kube-prometheus-stack
 
 memcached:
   memoryLimit: "2048"
