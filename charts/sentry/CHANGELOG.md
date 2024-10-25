@@ -1,5 +1,13 @@
 # Changelog
 
+## [26.2.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v26.1.0...sentry-v26.2.0) (2024-10-25)
+
+
+### Features
+
+* allow users to specify Kafka topic name prefix in values.yaml ([#1544](https://github.com/sentry-kubernetes/charts/issues/1544)) ([5693406](https://github.com/sentry-kubernetes/charts/commit/569340626ce1587d48040a939b80ab74874fd022))
+* **rabbitmq:** updated configuration to support Prometheus ([#1578](https://github.com/sentry-kubernetes/charts/issues/1578)) ([35f779a](https://github.com/sentry-kubernetes/charts/commit/35f779a0f18b2b9108470efc86403fa3c0eefae2))
+
 ## [26.1.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v26.0.0...sentry-v26.1.0) (2024-10-25)
 
 
