@@ -2292,7 +2292,6 @@ rabbitmq:
     username: guest
     password: guest
   nameOverride: ""
-
   pdb:
     create: true
   persistence:
@@ -2302,7 +2301,6 @@ rabbitmq:
     # enabled: true
     # type: relative
     # value: 0.4
-
   extraSecrets:
     load-definition:
       load_definition.json: |
@@ -2348,6 +2346,13 @@ rabbitmq:
   # serviceAccount:
   #   create: false
   #   name: rabbitmq
+  metrics:
+    enabled: false
+    serviceMonitor:
+      enabled: false
+      path: "/metrics/per-object" # https://www.rabbitmq.com/docs/prometheus
+      labels:
+        release: "prometheus-operator" # helm release of kube-prometheus-stack
 
 memcached:
   memoryLimit: "2048"
