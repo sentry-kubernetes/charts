@@ -42,6 +42,9 @@ spec:
       {{- if .Values.sentry.worker.nodeSelector }}
       nodeSelector:
 {{ toYaml .Values.sentry.worker.nodeSelector | indent 8 }}
+      {{- else if .Values.global.nodeSelector }}
+      nodeSelector:
+{{ toYaml .Values.global.nodeSelector | indent 8 }}
       {{- end }}
       {{- if .Values.sentry.worker.tolerations }}
       tolerations:
@@ -90,6 +93,10 @@ spec:
           - "--logformat"
           - "{{ .Values.sentry.worker.logFormat }}"
           {{- end }}
+          {{- if .Values.sentry.worker.maxTasksPerChild }}
+          - "--max-tasks-per-child"
+          - "{{ .Values.sentry.worker.maxTasksPerChild }}"
+          {{- end }}
         env:
         - name: C_FORCE_ROOT
           value: "true"
@@ -100,7 +107,7 @@ spec:
 {{- if .Values.sentry.worker.existingSecretEnv }}
         envFrom:
         - secretRef:
-          name: "{{.Values.sentry.worker.existingSecretEnv}}"
+            name: {{.Values.sentry.worker.existingSecretEnv}}
 {{- end }}
         volumeMounts:
         - mountPath: /etc/sentry

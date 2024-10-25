@@ -49,6 +49,9 @@ spec:
       {{- if .Values.sentry.subscriptionConsumerEvents.nodeSelector }}
       nodeSelector:
 {{ toYaml .Values.sentry.subscriptionConsumerEvents.nodeSelector | indent 8 }}
+      {{- else if .Values.global.nodeSelector }}
+      nodeSelector:
+{{ toYaml .Values.global.nodeSelector | indent 8 }}
       {{- end }}
       {{- if .Values.sentry.subscriptionConsumerEvents.tolerations }}
       tolerations:

@@ -63,6 +63,26 @@ config.yml: |-
       - name: "api.version.request.timeout.ms"
         value: {{ int64 .Values.relay.processing.kafkaConfig.apiVersionRequestTimeoutMs | quote }}
       {{- end }}
+      {{- $sentryKafkaSaslMechanism := include "sentry.kafka.sasl_mechanism" . -}}
+      {{- if not (eq "None" $sentryKafkaSaslMechanism) }}
+      - name: "sasl.mechanism"
+        value: {{ $sentryKafkaSaslMechanism | quote }}
+      {{- end }}
+      {{- $sentryKafkaSaslUsername := include "sentry.kafka.sasl_username" . -}}
+      {{- if not (eq "None" $sentryKafkaSaslUsername) }}
+      - name: "sasl.username"
+        value: {{ $sentryKafkaSaslUsername | quote }}
+      {{- end }}
+      {{- $sentryKafkaSaslPassword := include "sentry.kafka.sasl_password" . -}}
+      {{- if not (eq "None" $sentryKafkaSaslPassword) }}
+      - name: "sasl.password"
+        value: {{ $sentryKafkaSaslPassword | quote }}
+      {{- end }}
+      {{- $sentryKafkaSecurityProtocol := include "sentry.kafka.security_protocol" . -}}
+      {{- if not (eq "plaintext" $sentryKafkaSecurityProtocol) }}
+      - name: security.protocol
+        value: {{ $sentryKafkaSecurityProtocol | quote }}
+      {{- end }}
   {{- if .Values.relay.processing.additionalKafkaConfig }}
   {{ toYaml .Values.relay.processing.additionalKafkaConfig | nindent 6 }}
   {{- end }}

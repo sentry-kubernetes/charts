@@ -44,6 +44,9 @@ spec:
       {{- if .Values.sentry.web.nodeSelector }}
       nodeSelector:
 {{ toYaml .Values.sentry.web.nodeSelector | indent 8 }}
+      {{- else if .Values.global.nodeSelector }}
+      nodeSelector:
+{{ toYaml .Values.global.nodeSelector | indent 8 }}
       {{- end }}
       {{- if .Values.sentry.web.tolerations }}
       tolerations:
@@ -102,7 +105,7 @@ spec:
 {{- if .Values.sentry.web.existingSecretEnv }}
         envFrom:
           - secretRef:
-            name: "{{.Values.sentry.web.existingSecretEnv}}"
+              name: {{.Values.sentry.web.existingSecretEnv}}
 {{- end }}
         volumeMounts:
         - mountPath: /etc/sentry

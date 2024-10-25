@@ -49,6 +49,9 @@ spec:
       {{- if .Values.sentry.postProcessForwardIssuePlatform.nodeSelector }}
       nodeSelector:
 {{ toYaml .Values.sentry.postProcessForwardIssuePlatform.nodeSelector | indent 8 }}
+      {{- else if .Values.global.nodeSelector }}
+      nodeSelector:
+{{ toYaml .Values.global.nodeSelector | indent 8 }}
       {{- end }}
       {{- if .Values.sentry.postProcessForwardIssuePlatform.tolerations }}
       tolerations:

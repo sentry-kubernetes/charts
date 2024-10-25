@@ -3,6 +3,9 @@ prefix:
 # Set this to true to support IPV6 networks
 ipv6: false
 
+global:
+  nodeSelector: {}
+
 user:
   create: true
   email: admin@sentry.local
@@ -152,8 +155,8 @@ relay:
     #  apiVersionRequestTimeoutMs:
 
     # additionalKafkaConfig:
-    #  - name: security.protocol
-    #    value: "SSL"
+    #  - name: compression.type
+    #    value: "lz4"
 
 # Override custom Kafka topic names
 # WARNING: If you update this and you are also using the Kafka subchart, you need to update the provisioned Topic names in this values as well!
@@ -189,7 +192,7 @@ sentry:
     strategyType: RollingUpdate
     replicas: 1
     env: []
-    existingSecretEnv: []
+    existingSecretEnv: ""
     probeFailureThreshold: 5
     probeInitialDelaySeconds: 10
     probePeriodSeconds: 10
@@ -244,10 +247,11 @@ sentry:
 
   worker:
     enabled: true
+    # annotations: {}
     replicas: 1
     # concurrency: 4
     env: []
-    existingSecretEnv: []
+    existingSecretEnv: ""
     resources: {}
     #  requests:
     #    cpu: 1000m
@@ -259,6 +263,7 @@ sentry:
     # logLevel: "WARNING" # DEBUG|INFO|WARNING|ERROR|CRITICAL|FATAL
     # logFormat: "machine" # human|machine
     # excludeQueues: ""
+    # maxTasksPerChild: 1000
     # it's better to use prometheus adapter and scale based on
     # the size of the rabbitmq queue
     autoscaling:
@@ -272,6 +277,9 @@ sentry:
       timeoutSeconds: 10
       failureThreshold: 3
     sidecars: []
+    # securityContext: {}
+    # containerSecurityContext: {}
+    # priorityClassName: ""
     topologySpreadConstraints: []
     volumes: []
     volumeMounts: []
@@ -280,6 +288,7 @@ sentry:
   workerEvents:
     ## If the number of exceptions increases, it is recommended to enable workerEvents
     enabled: false
+    # annotations: {}
     queues: "events.save_event,post_process_errors"
     ## When increasing the number of exceptions and enabling workerEvents, it is recommended to increase the number of their replicas
     replicas: 1
@@ -292,6 +301,7 @@ sentry:
     # podLabels: {}
     # logLevel: "WARNING" # DEBUG|INFO|WARNING|ERROR|CRITICAL|FATAL
     # logFormat: "machine" # human|machine
+    # maxTasksPerChild: 1000
     # it's better to use prometheus adapter and scale based on
     # the size of the rabbitmq queue
     autoscaling:
@@ -305,6 +315,9 @@ sentry:
       timeoutSeconds: 10
       failureThreshold: 3
     sidecars: []
+    # securityContext: {}
+    # containerSecurityContext: {}
+    # priorityClassName: ""
     topologySpreadConstraints: []
     volumes: []
     volumeMounts: []
@@ -312,6 +325,7 @@ sentry:
   # allows to dedicate some workers to specific queues
   workerTransactions:
     enabled: false
+    # annotations: {}
     queues: "events.save_event_transaction,post_process_transactions"
     replicas: 1
     # concurrency: 4
@@ -323,6 +337,7 @@ sentry:
     # podLabels: {}
     # logLevel: "WARNING" # DEBUG|INFO|WARNING|ERROR|CRITICAL|FATAL
     # logFormat: "machine" # human|machine
+    # maxTasksPerChild: 1000
     # it's better to use prometheus adapter and scale based on
     # the size of the rabbitmq queue
     autoscaling:
@@ -336,6 +351,9 @@ sentry:
       timeoutSeconds: 10
       failureThreshold: 3
     sidecars: []
+    # securityContext: {}
+    # containerSecurityContext: {}
+    # priorityClassName: ""
     topologySpreadConstraints: []
     volumes: []
     volumeMounts: []
@@ -925,6 +943,17 @@ sentry:
     volumes: []
     # volumeMounts: []
     serviceAccount: {}
+
+  # Sentry settings of connections to Kafka
+  kafka:
+    message:
+      max:
+        bytes: 50000000
+    compression:
+      type:  # 'gzip', 'snappy', 'lz4', 'zstd'
+    socket:
+      timeout:
+        ms: 1000
 
 snuba:
   api:
@@ -1908,7 +1937,6 @@ clickhouse:
   enabled: true
   clickhouse:
     replicas: "1"
-    imageVersion: "21.8.13.6"
     configmap:
       remote_servers:
         internal_replication: true
@@ -2128,6 +2156,23 @@ kafka:
   #     create: false
   #     name: zookeeper
 
+  # sasl:
+  #  ## Credentials for client communications.
+  #  ## @param sasl.client.users ist of usernames for client communications when SASL is enabled
+  #  ## @param sasl.client.passwords list of passwords for client communications when SASL is enabled, must match the number of client.users
+  #  ## First user and password will be used if enabled
+  #   client:
+  #     users:
+  #       - sentry
+  #     passwords:
+  #       - password
+  #   ## @param sasl.enabledMechanisms Comma-separated list of allowed SASL mechanisms when SASL listeners are configured. Allowed types: `PLAIN`, `SCRAM-SHA-256`, `SCRAM-SHA-512`, `OAUTHBEARER`
+  #   enabledMechanisms: PLAIN,SCRAM-SHA-256,SCRAM-SHA-512
+  # listeners:
+  #   ## @param listeners.client.protocol Security protocol for the Kafka client listener. Allowed values are 'PLAINTEXT', 'SASL_PLAINTEXT', 'SASL_SSL' and 'SSL'
+  #   client:
+  #     protocol: SASL_PLAINTEXT
+
 ## This value is only used when kafka.enabled is set to false
 ##
 externalKafka:
@@ -2135,6 +2180,20 @@ externalKafka:
   ##
   # host: "kafka-confluent"
   port: 9092
+  compression:
+    type:  # 'gzip', 'snappy', 'lz4', 'zstd'
+  message:
+    max:
+      bytes: 50000000
+  sasl:
+    mechanism: None  # PLAIN,SCRAM-256,SCRAM-512
+    username: None
+    password: None
+  security:
+    protocol: plaintext  # 'PLAINTEXT', 'SASL_PLAINTEXT', 'SASL_SSL' and 'SSL'
+  socket:
+    timeout:
+      ms: 1000
 
 sourcemaps:
   enabled: false
