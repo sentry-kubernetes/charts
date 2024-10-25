@@ -1,5 +1,12 @@
 # Changelog
 
+## [26.1.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v26.0.0...sentry-v26.1.0) (2024-10-25)
+
+
+### Features
+
+* add global nodeSelector fallback for all deployments ([#1576](https://github.com/sentry-kubernetes/charts/issues/1576)) ([d6eec42](https://github.com/sentry-kubernetes/charts/commit/d6eec42b2c31f42a473d1241721ff3d64111400f))
+
 ## [26.0.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v25.20.0...sentry-v26.0.0) (2024-10-24)
 
 
