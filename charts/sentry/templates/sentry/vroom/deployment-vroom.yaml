@@ -48,6 +48,9 @@ spec:
       {{- if .Values.vroom.nodeSelector }}
       nodeSelector:
 {{ toYaml .Values.vroom.nodeSelector | indent 8 }}
+      {{- else if .Values.global.nodeSelector }}
+      nodeSelector:
+{{ toYaml .Values.global.nodeSelector | indent 8 }}
       {{- end }}
       {{- if .Values.vroom.tolerations }}
       tolerations:

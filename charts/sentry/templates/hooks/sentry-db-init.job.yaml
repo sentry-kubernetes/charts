@@ -46,6 +46,9 @@ spec:
       {{- if .Values.hooks.dbInit.nodeSelector }}
       nodeSelector:
 {{ toYaml .Values.hooks.dbInit.nodeSelector | indent 8 }}
+      {{- else if .Values.global.nodeSelector }}
+      nodeSelector:
+{{ toYaml .Values.global.nodeSelector | indent 8 }}
       {{- end }}
       {{- if .Values.hooks.dbInit.tolerations }}
       tolerations:

@@ -48,6 +48,9 @@ spec:
       {{- if .Values.snuba.replaysConsumer.nodeSelector }}
       nodeSelector:
 {{ toYaml .Values.snuba.replaysConsumer.nodeSelector | indent 8 }}
+      {{- else if .Values.global.nodeSelector }}
+      nodeSelector:
+{{ toYaml .Values.global.nodeSelector | indent 8 }}
       {{- end }}
       {{- if .Values.snuba.replaysConsumer.tolerations }}
       tolerations:

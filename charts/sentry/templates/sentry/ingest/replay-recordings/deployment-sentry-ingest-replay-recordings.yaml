@@ -51,6 +51,9 @@ spec:
       {{- if .Values.sentry.ingestReplayRecordings.nodeSelector }}
       nodeSelector:
 {{ toYaml .Values.sentry.ingestReplayRecordings.nodeSelector | indent 8 }}
+      {{- else if .Values.global.nodeSelector }}
+      nodeSelector:
+{{ toYaml .Values.global.nodeSelector | indent 8 }}
       {{- end }}
       {{- if .Values.sentry.ingestReplayRecordings.tolerations }}
       tolerations:

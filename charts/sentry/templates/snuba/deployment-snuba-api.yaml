@@ -41,6 +41,9 @@ spec:
       {{- if .Values.snuba.api.nodeSelector }}
       nodeSelector:
 {{ toYaml .Values.snuba.api.nodeSelector | indent 8 }}
+      {{- else if .Values.global.nodeSelector }}
+      nodeSelector:
+{{ toYaml .Values.global.nodeSelector | indent 8 }}
       {{- end }}
       {{- if .Values.snuba.api.tolerations }}
       tolerations:

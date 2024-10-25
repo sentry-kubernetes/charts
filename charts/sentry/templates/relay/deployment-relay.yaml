@@ -56,6 +56,9 @@ spec:
       {{- if .Values.relay.nodeSelector }}
       nodeSelector:
 {{ toYaml .Values.relay.nodeSelector | indent 8 }}
+      {{- else if .Values.global.nodeSelector }}
+      nodeSelector:
+{{ toYaml .Values.global.nodeSelector | indent 8 }}
       {{- end }}
       {{- if .Values.relay.tolerations }}
       tolerations:

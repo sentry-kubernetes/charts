@@ -51,6 +51,9 @@ spec:
       {{- if .Values.sentry.ingestProfiles.nodeSelector }}
       nodeSelector:
 {{ toYaml .Values.sentry.ingestProfiles.nodeSelector | indent 8 }}
+      {{- else if .Values.global.nodeSelector }}
+      nodeSelector:
+{{ toYaml .Values.global.nodeSelector | indent 8 }}
       {{- end }}
       {{- if .Values.sentry.ingestProfiles.tolerations }}
       tolerations:

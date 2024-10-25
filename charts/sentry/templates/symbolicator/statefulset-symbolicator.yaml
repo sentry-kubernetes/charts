@@ -42,6 +42,9 @@ spec:
       {{- if .Values.symbolicator.api.nodeSelector }}
       nodeSelector:
 {{ toYaml .Values.symbolicator.api.nodeSelector | indent 8 }}
+      {{- else if .Values.global.nodeSelector }}
+      nodeSelector:
+{{ toYaml .Values.global.nodeSelector | indent 8 }}
       {{- end }}
       {{- if .Values.symbolicator.api.tolerations }}
       tolerations:

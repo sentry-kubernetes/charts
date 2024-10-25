@@ -49,6 +49,9 @@ spec:
       {{- if .Values.sentry.genericMetricsConsumer.nodeSelector }}
       nodeSelector:
 {{ toYaml .Values.sentry.genericMetricsConsumer.nodeSelector | indent 8 }}
+      {{- else if .Values.global.nodeSelector }}
+      nodeSelector:
+{{ toYaml .Values.global.nodeSelector | indent 8 }}
       {{- end }}
       {{- if .Values.sentry.genericMetricsConsumer.tolerations }}
       tolerations:

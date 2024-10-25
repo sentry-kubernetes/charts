@@ -42,6 +42,9 @@ spec:
       {{- if .Values.sentry.worker.nodeSelector }}
       nodeSelector:
 {{ toYaml .Values.sentry.worker.nodeSelector | indent 8 }}
+      {{- else if .Values.global.nodeSelector }}
+      nodeSelector:
+{{ toYaml .Values.global.nodeSelector | indent 8 }}
       {{- end }}
       {{- if .Values.sentry.worker.tolerations }}
       tolerations:
