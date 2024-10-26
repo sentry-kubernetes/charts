@@ -1,5 +1,12 @@
 # Changelog
 
+## [26.3.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v26.2.0...sentry-v26.3.0) (2024-10-26)
+
+
+### Features
+
+* Introduce global tolerations across all components ([#1580](https://github.com/sentry-kubernetes/charts/issues/1580)) ([7b48399](https://github.com/sentry-kubernetes/charts/commit/7b48399efe73cbb582b4df34068d0104ae3d969c))
+
 ## [26.2.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v26.1.0...sentry-v26.2.0) (2024-10-25)
 
 
