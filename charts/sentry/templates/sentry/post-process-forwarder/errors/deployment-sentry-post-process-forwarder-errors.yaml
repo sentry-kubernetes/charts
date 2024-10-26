@@ -56,6 +56,9 @@ spec:
       {{- if .Values.sentry.postProcessForwardErrors.tolerations }}
       tolerations:
 {{ toYaml .Values.sentry.postProcessForwardErrors.tolerations | indent 8 }}
+      {{- else if .Values.global.tolerations }}
+      tolerations:
+{{ toYaml .Values.global.tolerations | indent 8 }}
       {{- end }}
       {{- if .Values.sentry.postProcessForwardErrors.topologySpreadConstraints }}
       topologySpreadConstraints:

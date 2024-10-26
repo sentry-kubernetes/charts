@@ -55,6 +55,9 @@ spec:
       {{- if .Values.snuba.spansConsumer.tolerations }}
       tolerations:
 {{ toYaml .Values.snuba.spansConsumer.tolerations | indent 8 }}
+      {{- else if .Values.global.tolerations }}
+      tolerations:
+{{ toYaml .Values.global.tolerations | indent 8 }}
       {{- end }}
       {{- if .Values.snuba.spansConsumer.topologySpreadConstraints }}
       topologySpreadConstraints:

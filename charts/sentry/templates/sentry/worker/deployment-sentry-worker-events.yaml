@@ -49,6 +49,9 @@ spec:
       {{- if .Values.sentry.workerEvents.tolerations }}
       tolerations:
 {{ toYaml .Values.sentry.workerEvents.tolerations | indent 8 }}
+      {{- else if .Values.global.tolerations }}
+      tolerations:
+{{ toYaml .Values.global.tolerations | indent 8 }}
       {{- end }}
       {{- if .Values.sentry.workerEvents.topologySpreadConstraints }}
       topologySpreadConstraints:

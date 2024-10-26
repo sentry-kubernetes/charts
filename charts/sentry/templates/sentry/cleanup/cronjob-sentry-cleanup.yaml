@@ -49,6 +49,9 @@ spec:
             {{- if .Values.sentry.cleanup.tolerations }}
           tolerations:
 {{ toYaml .Values.sentry.cleanup.tolerations | indent 12 }}
+            {{- else if .Values.global.tolerations }}
+          tolerations:
+{{ toYaml .Values.global.tolerations | indent 12 }}
             {{- end }}
             {{- if .Values.dnsPolicy }}
           dnsPolicy: {{ .Values.dnsPolicy | quote }}

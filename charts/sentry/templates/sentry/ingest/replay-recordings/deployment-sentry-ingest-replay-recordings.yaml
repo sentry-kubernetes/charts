@@ -58,6 +58,9 @@ spec:
       {{- if .Values.sentry.ingestReplayRecordings.tolerations }}
       tolerations:
 {{ toYaml .Values.sentry.ingestReplayRecordings.tolerations | indent 8 }}
+      {{- else if .Values.global.tolerations }}
+      tolerations:
+{{ toYaml .Values.global.tolerations | indent 8 }}
       {{- end }}
       {{- if .Values.sentry.ingestReplayRecordings.topologySpreadConstraints }}
       topologySpreadConstraints:

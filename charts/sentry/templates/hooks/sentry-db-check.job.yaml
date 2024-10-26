@@ -57,6 +57,9 @@ spec:
       {{- if .Values.hooks.dbCheck.tolerations }}
       tolerations:
 {{ toYaml .Values.hooks.dbCheck.tolerations | indent 8 }}
+      {{- else if .Values.global.tolerations }}
+      tolerations:
+{{ toYaml .Values.global.tolerations | indent 8 }}
       {{- end }}
       restartPolicy: Never
       {{- if .Values.hooks.dbCheck.image.imagePullSecrets }}

@@ -49,6 +49,9 @@ spec:
       {{- if .Values.symbolicator.api.tolerations }}
       tolerations:
 {{ toYaml .Values.symbolicator.api.tolerations | indent 8 }}
+      {{- else if .Values.global.tolerations }}
+      tolerations:
+{{ toYaml .Values.global.tolerations | indent 8 }}
       {{- end }}
       {{- if .Values.symbolicator.api.topologySpreadConstraints }}
       topologySpreadConstraints:

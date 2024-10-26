@@ -56,6 +56,9 @@ spec:
       {{- if .Values.sentry.subscriptionConsumerGenericMetrics.tolerations }}
       tolerations:
 {{ toYaml .Values.sentry.subscriptionConsumerGenericMetrics.tolerations | indent 8 }}
+      {{- else if .Values.global.tolerations }}
+      tolerations:
+{{ toYaml .Values.global.tolerations | indent 8 }}
       {{- end }}
       {{- if .Values.sentry.subscriptionConsumerGenericMetrics.topologySpreadConstraints }}
       topologySpreadConstraints:

@@ -53,6 +53,9 @@ spec:
       {{- if .Values.hooks.dbInit.tolerations }}
       tolerations:
 {{ toYaml .Values.hooks.dbInit.tolerations | indent 8 }}
+      {{- else if .Values.global.tolerations }}
+      tolerations:
+{{ toYaml .Values.global.tolerations | indent 8 }}
       {{- end }}
       restartPolicy: Never
       {{- if .Values.images.sentry.imagePullSecrets }}

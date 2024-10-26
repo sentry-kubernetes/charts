@@ -63,6 +63,9 @@ spec:
       {{- if .Values.relay.tolerations }}
       tolerations:
 {{ toYaml .Values.relay.tolerations | indent 8 }}
+      {{- else if .Values.global.tolerations }}
+      tolerations:
+{{ toYaml .Values.global.tolerations | indent 8 }}
       {{- end }}
       {{- if .Values.relay.topologySpreadConstraints }}
       topologySpreadConstraints:

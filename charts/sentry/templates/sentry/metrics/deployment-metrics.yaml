@@ -47,6 +47,9 @@ spec:
       {{- if .Values.metrics.tolerations }}
       tolerations:
 {{ toYaml .Values.metrics.tolerations | indent 8 }}
+      {{- else if .Values.global.tolerations }}
+      tolerations:
+{{ toYaml .Values.global.tolerations | indent 8 }}
       {{- end }}
       {{- if .Values.metrics.schedulerName }}
       schedulerName: "{{ .Values.metrics.schedulerName }}"

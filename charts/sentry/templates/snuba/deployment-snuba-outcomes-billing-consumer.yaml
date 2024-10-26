@@ -55,6 +55,9 @@ spec:
       {{- if .Values.snuba.outcomesBillingConsumer.tolerations }}
       tolerations:
 {{ toYaml .Values.snuba.outcomesBillingConsumer.tolerations | indent 8 }}
+      {{- else if .Values.global.tolerations }}
+      tolerations:
+{{ toYaml .Values.global.tolerations | indent 8 }}
       {{- end }}
       {{- if .Values.snuba.outcomesBillingConsumer.topologySpreadConstraints }}
       topologySpreadConstraints:
