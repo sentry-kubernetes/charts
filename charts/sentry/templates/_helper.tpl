@@ -460,9 +460,9 @@ Set Kafka bootstrap servers string
 
 {{/*
 SASL auth setings for Kafka:
-* https://github.com/getsentry/snuba/blob/24.7.1/snuba/settings/__init__.py#L219-L229
-* https://github.com/getsentry/sentry/blob/24.7.1/src/sentry/utils/kafka_config.py#L9-L34
-* https://github.com/getsentry/sentry/blob/24.7.1/src/sentry/conf/server.py#L2827-L2836
+* https://github.com/getsentry/snuba/blob/24.9.0/snuba/settings/__init__.py#L220-L230
+* https://github.com/getsentry/sentry/blob/24.9.0/src/sentry/utils/kafka_config.py#L9-L34
+* https://github.com/getsentry/sentry/blob/24.9.0/src/sentry/conf/server.py#L2844-L2853
 */}}
 
 {{/*
