@@ -2177,10 +2177,19 @@ kafka:
 ## This value is only used when kafka.enabled is set to false
 ##
 externalKafka:
-  ## Hostname or ip address of external kafka
+  ## Multi hosts and ports of external kafka
   ##
+  # cluster:
+  #   - host: "233.5.100.28"
+  #     port: 9092
+  #   - host: "kafka-confluent-2"
+  #     port: 9093
+  #   - host: "kafka-confluent-3"
+  #     port: 9094
+  ## Or Hostname (ip address) of external kafka
   # host: "kafka-confluent"
-  port: 9092
+  ## and port of external kafka
+  # port: 9092
   compression:
     type:  # 'gzip', 'snappy', 'lz4', 'zstd'
   message:

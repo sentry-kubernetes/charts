@@ -68,6 +68,7 @@ Note: this table is incomplete, so have a look at the values.yaml in case you mi
 | externalClickhouse.singleNode | bool | `true` |  |
 | externalClickhouse.tcpPort | int | `9000` |  |
 | externalClickhouse.username | string | `"default"` |  |
+| externalKafka.cluster | list | `[]` | Multi hosts and ports of external Kafka |
 | externalKafka.host | string | `"kafka-confluent"` | Hostname or IP address of external Kafka |
 | externalKafka.port | int | `9092` | Port for external Kafka |
 | externalKafka.compression.type | string | `""` | Compression type for Kafka messages ('gzip', 'snappy', 'lz4', 'zstd') |
@@ -1249,13 +1250,14 @@ or you can feed in a cluster of Kafka instances like below:
 
 ```yaml
 externalKafka:
-  ## List of Hostnames or ip addresses of external kafka
-  - host: "233.5.100.28"
-    port: 9092
-  - host: "233.5.100.29"
-    port: 9092
-  - host: "233.5.100.30"
-    port: 9092
+  cluster:
+    ## List of Hostnames or ip addresses and ports of external kafka
+    - host: "233.5.100.28"
+      port: 9092
+    - host: "kafka-confluent-2"
+      port: 9093
+    - host: "kafka-confluent-3"
+      port: 9094
 ```
 
 ## External Postgres configuration

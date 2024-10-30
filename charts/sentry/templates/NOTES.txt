@@ -1,3 +1,9 @@
 * When running upgrades, make sure to give back the `system.secretKey` value.
 
 kubectl -n {{ .Release.Namespace }} get configmap {{ template "sentry.fullname" . }}-sentry -o json | grep -m1 -Po '(?<=system.secret-key: )[^\\]*'
+
+{{ if not (.Values.kafka.enabled) }}
+* Sentry use external kafka:
+
+{{ template "sentry.kafka.bootstrap_servers_string" . }}
+{{ end -}}

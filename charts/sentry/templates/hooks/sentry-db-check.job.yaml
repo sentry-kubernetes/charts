@@ -162,14 +162,14 @@ spec:
               done
               echo "Kraft controllers are up"
               {{- end }}
-              {{- else if (not (kindIs "slice" .Values.externalKafka)) }}
+              {{- else if (not (.Values.externalKafka.cluster)) }}
               KAFKA_HOST={{ .Values.externalKafka.host }}
               if ! nc -z "$KAFKA_HOST" {{ $kafkaPort }}; then
                 KAFKA_STATUS=0
                 echo "$KAFKA_HOST is not available yet"
               fi
               {{- else }}
-              {{- range $elem := .Values.externalKafka }}
+              {{- range $elem := .Values.externalKafka.cluster }}
               KAFKA_HOST={{ $elem.host }}
               if ! nc -z "$KAFKA_HOST" {{ $elem.port }}; then
                 KAFKA_STATUS=0

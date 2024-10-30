@@ -418,7 +418,7 @@ Set Kafka Confluent host
 {{- define "sentry.kafka.host" -}}
 {{- if .Values.kafka.enabled -}}
 {{- template "sentry.kafka.fullname" . -}}
-{{- else if and (.Values.externalKafka) (not (kindIs "slice" .Values.externalKafka)) -}}
+{{- else if and (.Values.externalKafka) (not (.Values.externalKafka.cluster)) -}}
 {{ required "A valid .Values.externalKafka.host is required" .Values.externalKafka.host }}
 {{- end -}}
 {{- end -}}
@@ -429,7 +429,7 @@ Set Kafka Confluent port
 {{- define "sentry.kafka.port" -}}
 {{- if and (.Values.kafka.enabled) (.Values.kafka.service.ports.client) -}}
 {{- .Values.kafka.service.ports.client }}
-{{- else if and (.Values.externalKafka) (not (kindIs "slice" .Values.externalKafka)) -}}
+{{- else if and (.Values.externalKafka) (not (.Values.externalKafka.cluster)) -}}
 {{ required "A valid .Values.externalKafka.port is required" .Values.externalKafka.port }}
 {{- end -}}
 {{- end -}}
@@ -440,7 +440,7 @@ Set Kafka Confluent Controller port
 {{- define "sentry.kafka.controller_port" -}}
 {{- if and (.Values.kafka.enabled) (.Values.kafka.service.ports.controller ) -}}
 {{- .Values.kafka.service.ports.controller }}
-{{- else if and (.Values.externalKafka) (not (kindIs "slice" .Values.externalKafka)) -}}
+{{- else if and (.Values.externalKafka) (not (.Values.externalKafka.cluster)) -}}
 {{ required "A valid .Values.externalKafka.port is required" .Values.externalKafka.port }}
 {{- end -}}
 {{- end -}}
@@ -449,10 +449,10 @@ Set Kafka Confluent Controller port
 Set Kafka bootstrap servers string
 */}}
 {{- define "sentry.kafka.bootstrap_servers_string" -}}
-{{- if or (.Values.kafka.enabled) (not (kindIs "slice" .Values.externalKafka)) -}}
+{{- if or (.Values.kafka.enabled) (not (.Values.externalKafka.cluster)) -}}
 {{ printf "%s:%s" (include "sentry.kafka.host" .) (include "sentry.kafka.port" .) }}
 {{- else -}}
-{{- range $index, $elem := .Values.externalKafka -}}
+{{- range $index, $elem := .Values.externalKafka.cluster -}}
 {{- if $index -}},{{- end -}}{{ printf "%s:%s" $elem.host (toString $elem.port) }}
 {{- end -}}
 {{- end -}}
