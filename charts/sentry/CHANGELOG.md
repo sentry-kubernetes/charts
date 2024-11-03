@@ -1,5 +1,12 @@
 # Changelog
 
+## [26.4.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v26.3.0...sentry-v26.4.0) (2024-11-03)
+
+
+### Features
+
+* add maxBatchTimeMs, maxPollIntervalMs for ingestConsumerAttachments ([#1591](https://github.com/sentry-kubernetes/charts/issues/1591)) ([72af218](https://github.com/sentry-kubernetes/charts/commit/72af2189d2249cc29de1442179ce2258da958e44))
+
 ## [26.3.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v26.2.0...sentry-v26.3.0) (2024-10-26)
 
 
