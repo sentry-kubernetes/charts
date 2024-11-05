@@ -1,5 +1,12 @@
 # Changelog
 
+## [26.5.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v26.4.0...sentry-v26.5.0) (2024-11-05)
+
+
+### Features
+
+* recovery support multi hosts and ports of external kafka cluster ([#1588](https://github.com/sentry-kubernetes/charts/issues/1588)) ([889bd0d](https://github.com/sentry-kubernetes/charts/commit/889bd0d47235cb1ab5a7b52439f5b8df61026a03))
+
 ## [26.4.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v26.3.0...sentry-v26.4.0) (2024-11-03)
 
 
