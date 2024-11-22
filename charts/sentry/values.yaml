@@ -1806,7 +1806,7 @@ openai: {}
 #   existingSecretKey: ""   # by default "api-token"
 
 nginx:
-  enabled: true # true, if Safari compatibility is needed
+  enabled: true  # true, if Safari compatibility is needed
   containerPort: 8080
   existingServerBlockConfigmap: '{{ template "sentry.fullname" . }}'
   resources: {}
@@ -2016,7 +2016,8 @@ kafka:
   enabled: true
   provisioning:
     ## Increasing the replicationFactor enhances data reliability during Kafka pod failures by replicating data across multiple brokers.
-    # replicationFactor: 1
+    # Note that existing topics will remain with replicationFactor: 1 when updated.
+    replicationFactor: 3
     enabled: true
     # Topic list is based on files below.
     # - https://github.com/getsentry/snuba/blob/master/snuba/utils/streams/topics.py
