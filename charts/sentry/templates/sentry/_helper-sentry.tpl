@@ -152,6 +152,8 @@ sentry.conf.py: |-
   # General #
   ###########
 
+  # Disable sends anonymous usage statistics
+  SENTRY_BEACON = False
 
   secret_key = env('SENTRY_SECRET_KEY')
   if not secret_key:
