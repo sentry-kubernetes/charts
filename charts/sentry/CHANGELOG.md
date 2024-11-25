@@ -1,5 +1,12 @@
 # Changelog
 
+## [26.6.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v26.5.0...sentry-v26.6.0) (2024-11-25)
+
+
+### Features
+
+* disable Sentry anonymous usage statistics ([#1608](https://github.com/sentry-kubernetes/charts/issues/1608)) ([b679d97](https://github.com/sentry-kubernetes/charts/commit/b679d97e21e787857a7d1dc8fd7c84ceb759e083))
+
 ## [26.5.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v26.4.0...sentry-v26.5.0) (2024-11-05)
 
 
