@@ -1884,7 +1884,7 @@ filestore:
       ##   GKE, AWS & OpenStack)
       ##
       # storageClass: "-"
-      accessMode: ReadWriteOnce
+      accessMode: ReadWriteOnce  # Set ReadWriteMany for work Replays
       size: 10Gi
 
       ## Whether to mount the persistent volume to the Sentry worker and
