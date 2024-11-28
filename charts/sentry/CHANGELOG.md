@@ -1,5 +1,12 @@
 # Changelog
 
+## [26.7.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v26.6.0...sentry-v26.7.0) (2024-11-28)
+
+
+### Features
+
+* pgbouncer for postgresql ([#1607](https://github.com/sentry-kubernetes/charts/issues/1607)) ([07157bd](https://github.com/sentry-kubernetes/charts/commit/07157bd61bff026cd80d912d16c140c9168d90d3))
+
 ## [26.6.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v26.5.0...sentry-v26.6.0) (2024-11-25)
 
 
