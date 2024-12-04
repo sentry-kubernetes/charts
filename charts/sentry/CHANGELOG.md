@@ -1,5 +1,13 @@
 # Changelog
 
+## [26.8.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v26.7.0...sentry-v26.8.0) (2024-12-04)
+
+
+### Features
+
+* add configuration for noStrictOffsetReset ([#1620](https://github.com/sentry-kubernetes/charts/issues/1620)) ([234552e](https://github.com/sentry-kubernetes/charts/commit/234552e186a5b9ed814595ce83bc744034c93821))
+* Add missing sidecar and global parameter for deployments & hooks ([#1230](https://github.com/sentry-kubernetes/charts/issues/1230)) ([ac8143f](https://github.com/sentry-kubernetes/charts/commit/ac8143fd1607c0493ea5c60940be3e649f6d613b))
+
 ## [26.7.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v26.6.0...sentry-v26.7.0) (2024-11-28)
 
 
