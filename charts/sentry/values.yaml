@@ -296,7 +296,7 @@ sentry:
   # allows to dedicate some workers to specific queues
   workerEvents:
     ## If the number of exceptions increases, it is recommended to enable workerEvents
-    enabled: true
+    enabled: false
     #  installAdditionalPackages:
     #   - django-multidb-router
     #   - sentry-nodestore-elastic
@@ -339,7 +339,7 @@ sentry:
 
   # allows to dedicate some workers to specific queues
   workerTransactions:
-    enabled: true
+    enabled: false
     #  installAdditionalPackages:
     #   - django-multidb-router
     #   - sentry-nodestore-elastic
