@@ -254,6 +254,7 @@ sentry:
     #   - django-multidb-router
     #   - sentry-nodestore-elastic
     #   - https://github.com/pavels/sentry-s3-nodestore/releases/download/v1.0.3/sentry-s3-nodestore-1.0.3.tar.gz
+    # kubectl create secret generic ca-certificates --from-file=you-certificates.crt=you-certificates.crt
     # caCertificatesSecret: ca-certificates
     # annotations: {}
     replicas: 1
@@ -300,6 +301,7 @@ sentry:
     #   - django-multidb-router
     #   - sentry-nodestore-elastic
     #   - https://github.com/pavels/sentry-s3-nodestore/releases/download/v1.0.3/sentry-s3-nodestore-1.0.3.tar.gz
+    # kubectl create secret generic ca-certificates --from-file=you-certificates.crt=you-certificates.crt
     # caCertificatesSecret: ca-certificates
     # annotations: {}
     queues: "events.save_event,post_process_errors"
@@ -342,6 +344,7 @@ sentry:
     #   - django-multidb-router
     #   - sentry-nodestore-elastic
     #   - https://github.com/pavels/sentry-s3-nodestore/releases/download/v1.0.3/sentry-s3-nodestore-1.0.3.tar.gz
+    # kubectl create secret generic ca-certificates --from-file=you-certificates.crt=you-certificates.crt
     # caCertificatesSecret: ca-certificates
     # annotations: {}
     queues: "events.save_event_transaction,post_process_transactions"
