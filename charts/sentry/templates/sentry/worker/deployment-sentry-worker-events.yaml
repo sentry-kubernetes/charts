@@ -79,8 +79,8 @@ spec:
         command: ["/bin/bash", "-c"]
         args:
           - |
-            {{- if .Values.sentry.workerEvents.installAdditionalPackages }}
-            pip install django-multidb-router sentry-nodestore-elastic https://github.com/pavels/sentry-s3-nodestore/releases/download/v1.0.3/sentry-s3-nodestore-1.0.3.tar.gz
+            {{- if .Values.sentry.worker.installAdditionalPackages }}
+            pip install {{ range .Values.sentry.worker.installAdditionalPackages }}{{ . }} {{ end }}
             {{- end }}
             # Copy certificates from secret to /usr/local/share/ca-certificates/
             mkdir -p /usr/local/share/ca-certificates/

@@ -250,8 +250,11 @@ sentry:
 
   worker:
     enabled: true
-    installAdditionalPackages: true
-    caCertificatesSecret: my-ca-certificates
+    # installAdditionalPackages:
+    #   - django-multidb-router
+    #   - sentry-nodestore-elastic
+    #   - https://github.com/pavels/sentry-s3-nodestore/releases/download/v1.0.3/sentry-s3-nodestore-1.0.3.tar.gz
+    # caCertificatesSecret: ca-certificates
     # annotations: {}
     replicas: 1
     # concurrency: 4
@@ -292,7 +295,12 @@ sentry:
   # allows to dedicate some workers to specific queues
   workerEvents:
     ## If the number of exceptions increases, it is recommended to enable workerEvents
-    enabled: false
+    enabled: true
+    #  installAdditionalPackages:
+    #   - django-multidb-router
+    #   - sentry-nodestore-elastic
+    #   - https://github.com/pavels/sentry-s3-nodestore/releases/download/v1.0.3/sentry-s3-nodestore-1.0.3.tar.gz
+    # caCertificatesSecret: ca-certificates
     # annotations: {}
     queues: "events.save_event,post_process_errors"
     ## When increasing the number of exceptions and enabling workerEvents, it is recommended to increase the number of their replicas
@@ -329,7 +337,12 @@ sentry:
 
   # allows to dedicate some workers to specific queues
   workerTransactions:
-    enabled: false
+    enabled: true
+    #  installAdditionalPackages:
+    #   - django-multidb-router
+    #   - sentry-nodestore-elastic
+    #   - https://github.com/pavels/sentry-s3-nodestore/releases/download/v1.0.3/sentry-s3-nodestore-1.0.3.tar.gz
+    # caCertificatesSecret: ca-certificates
     # annotations: {}
     queues: "events.save_event_transaction,post_process_transactions"
     replicas: 1
