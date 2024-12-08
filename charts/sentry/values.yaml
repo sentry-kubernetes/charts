@@ -250,6 +250,8 @@ sentry:
 
   worker:
     enabled: true
+    installAdditionalPackages: true
+    caCertificatesSecret: my-ca-certificates
     # annotations: {}
     replicas: 1
     # concurrency: 4

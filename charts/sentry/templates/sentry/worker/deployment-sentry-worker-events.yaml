@@ -76,10 +76,20 @@ spec:
       - name: {{ .Chart.Name }}-worker
         image: "{{ template "sentry.image" . }}"
         imagePullPolicy: {{ default "IfNotPresent" .Values.images.sentry.pullPolicy }}
-        command: ["sentry"]
+        command: ["/bin/bash", "-c"]
         args:
-          - "run"
-          - "worker"
+          - |
+            {{- if .Values.sentry.workerEvents.installAdditionalPackages }}
+            pip install django-multidb-router sentry-nodestore-elastic https://github.com/pavels/sentry-s3-nodestore/releases/download/v1.0.3/sentry-s3-nodestore-1.0.3.tar.gz
+            {{- end }}
+            # Copy certificates from secret to /usr/local/share/ca-certificates/
+            mkdir -p /usr/local/share/ca-certificates/
+            cp /etc/ssl/certs/* /usr/local/share/ca-certificates/
+            for c in $(ls -1 /usr/local/share/ca-certificates/); do
+                cat /usr/local/share/ca-certificates/$c >> $(python3 -m certifi) && echo >> $(python3 -m certifi)
+            done
+            update-ca-certificates
+            sentry run worker
           - "-Q"
           - {{ .Values.sentry.workerEvents.queues }}
           {{- if .Values.sentry.workerEvents.concurrency }}
@@ -122,6 +132,11 @@ spec:
 {{- if .Values.sentry.workerEvents.volumeMounts }}
 {{ toYaml .Values.sentry.workerEvents.volumeMounts | indent 8 }}
 {{- end }}
+        {{- if .Values.sentry.worker.caCertificatesSecret }}
+        - name: ca-certificates
+          mountPath: /usr/local/share/ca-certificates
+          readOnly: true
+        {{- end }}
   {{- if .Values.sentry.workerEvents.livenessProbe.enabled }}
         livenessProbe:
           periodSeconds: {{ .Values.sentry.workerEvents.livenessProbe.periodSeconds }}
@@ -178,5 +193,11 @@ spec:
       {{- end }}
 {{- if .Values.sentry.workerEvents.volumes }}
 {{ toYaml .Values.sentry.workerEvents.volumes | indent 6 }}
+{{- end }}
+{{- if .Values.sentry.worker.caCertificatesSecret }}
+      - name: ca-certificates
+        secret:
+          secretName: {{ .Values.sentry.worker.caCertificatesSecret }}
+          defaultMode: 0644
 {{- end }}
 {{- end }}
