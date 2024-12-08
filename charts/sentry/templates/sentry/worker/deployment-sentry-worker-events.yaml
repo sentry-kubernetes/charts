@@ -82,9 +82,7 @@ spec:
             {{- if .Values.sentry.worker.installAdditionalPackages }}
             pip install {{ range .Values.sentry.worker.installAdditionalPackages }}{{ . }} {{ end }}
             {{- end }}
-            # Copy certificates from secret to /usr/local/share/ca-certificates/
             mkdir -p /usr/local/share/ca-certificates/
-            cp /etc/ssl/certs/* /usr/local/share/ca-certificates/
             for c in $(ls -1 /usr/local/share/ca-certificates/); do
                 cat /usr/local/share/ca-certificates/$c >> $(python3 -m certifi) && echo >> $(python3 -m certifi)
             done
