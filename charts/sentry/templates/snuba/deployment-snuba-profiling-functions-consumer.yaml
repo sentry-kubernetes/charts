@@ -160,8 +160,8 @@ spec:
         securityContext:
 {{ toYaml .Values.snuba.profilingFunctionsConsumer.containerSecurityContext | indent 12 }}
 {{- end }}
-{{- if .Values.profilingFunctionsConsumer.sidecars }}
-{{ toYaml .Values.profilingFunctionsConsumer.sidecars | indent 6 }}
+{{- if .Values.snuba.profilingFunctionsConsumer.sidecars }}
+{{ toYaml .Values.snuba.profilingFunctionsConsumer.sidecars | indent 6 }}
 {{- end }}
 {{- if .Values.global.sidecars }}
 {{ toYaml .Values.global.sidecars | indent 6 }}
