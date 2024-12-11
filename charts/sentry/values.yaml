@@ -578,6 +578,40 @@ sentry:
     # autoOffsetReset: "earliest"
     # noStrictOffsetReset: false
 
+  ingestFeedback:
+    enabled: false
+    replicas: 1
+    env: []
+    resources: {}
+    #  requests:
+    #    cpu: 100m
+    #    memory: 250Mi
+    affinity: {}
+    nodeSelector: {}
+    securityContext: {}
+    containerSecurityContext: {}
+    # tolerations: []
+    # podLabels: {}
+    # it's better to use prometheus adapter and scale based on
+    # the size of the rabbitmq queue
+    autoscaling:
+      enabled: false
+      minReplicas: 1
+      maxReplicas: 3
+      targetCPUUtilizationPercentage: 50
+    sidecars: []
+    topologySpreadConstraints: []
+    volumes: []
+    livenessProbe:
+      enabled: true
+      initialDelaySeconds: 5
+      periodSeconds: 320
+    # volumeMounts:
+    #   - mountPath: /dev/shm
+    #     name: dshm
+    # autoOffsetReset: "earliest"
+    # noStrictOffsetReset: false
+
   ingestMonitors:
     enabled: true
     replicas: 1
@@ -2134,6 +2168,7 @@ kafka:
       - name: ingest-replay-recordings
       - name: ingest-metrics
       - name: ingest-performance-metrics
+      - name: ingest-feedback-events
       - name: ingest-monitors
       - name: profiles
       - name: ingest-occurrences
