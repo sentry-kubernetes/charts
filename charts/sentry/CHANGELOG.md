@@ -1,5 +1,12 @@
 # Changelog
 
+## [26.9.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v26.8.1...sentry-v26.9.0) (2024-12-16)
+
+
+### Features
+
+* add variable for SAMPLED_DEFAULT_RATE ([#1634](https://github.com/sentry-kubernetes/charts/issues/1634)) ([7910f9d](https://github.com/sentry-kubernetes/charts/commit/7910f9d0030b9c09206e01762e284003d9e61639))
+
 ## [26.8.1](https://github.com/sentry-kubernetes/charts/compare/sentry-v26.8.0...sentry-v26.8.1) (2024-12-11)
 
 
