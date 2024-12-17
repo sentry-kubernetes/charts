@@ -2072,7 +2072,7 @@ kafka:
     enabled: true
     # Topic list is based on files below.
     # - https://github.com/getsentry/snuba/blob/master/snuba/utils/streams/topics.py
-    # - https://github.com/getsentry/self-hosted/blob/master/install/create-kafka-topics.sh#L6
+    # - https://github.com/getsentry/sentry/blob/master/src/sentry/conf/types/kafka_definition.py
     ## Default number of partitions for topics when unspecified
     ##
     # numPartitions: 1
@@ -2104,17 +2104,12 @@ kafka:
       - name: outcomes-billing
       - name: outcomes-billing-dlq
       - name: ingest-sessions
-      - name: snuba-sessions-commit-log
-        config:
-          "cleanup.policy": "compact,delete"
-          "min.compaction.lag.ms": "3600000"
       - name: snuba-metrics-commit-log
         config:
           "cleanup.policy": "compact,delete"
           "min.compaction.lag.ms": "3600000"
       - name: scheduled-subscriptions-events
       - name: scheduled-subscriptions-transactions
-      - name: scheduled-subscriptions-sessions
       - name: scheduled-subscriptions-metrics
       - name: scheduled-subscriptions-generic-metrics-sets
       - name: scheduled-subscriptions-generic-metrics-distributions
@@ -2122,7 +2117,6 @@ kafka:
       - name: scheduled-subscriptions-generic-metrics-gauges
       - name: events-subscription-results
       - name: transactions-subscription-results
-      - name: sessions-subscription-results
       - name: metrics-subscription-results
       - name: generic-metrics-subscription-results
       - name: snuba-queries
@@ -2167,7 +2161,6 @@ kafka:
           "message.timestamp.type": LogAppendTime
       - name: snuba-attribution
       - name: snuba-dead-letter-metrics
-      - name: snuba-dead-letter-sessions
       - name: snuba-dead-letter-generic-metrics
       - name: snuba-dead-letter-replays
       - name: snuba-dead-letter-generic-events
@@ -2190,9 +2183,15 @@ kafka:
       - name: ingest-monitors
       - name: monitors-clock-tasks
       - name: monitors-clock-tick
+      - name: monitors-incident-occurrences
       - name: profiles
       - name: ingest-occurrences
       - name: snuba-spans
+      - name: snuba-eap-spans-commit-log
+      - name: scheduled-subscriptions-eap-spans
+      - name: eap-spans-subscription-results
+      - name: snuba-eap-mutations
+      - name: snuba-lw-deletions-generic-events
       - name: shared-resources-usage
       - name: snuba-metrics-summaries
       - name: snuba-profile-chunks
@@ -2200,6 +2199,7 @@ kafka:
       - name: buffered-segments-dlq
       - name: uptime-configs
       - name: uptime-results
+      - name: task-worker
   listeners:
     client:
       protocol: "PLAINTEXT"
