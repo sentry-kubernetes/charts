@@ -2100,7 +2100,9 @@ kafka:
         config:
           "message.timestamp.type": LogAppendTime
       - name: outcomes
+      - name: outcomes-dlq
       - name: outcomes-billing
+      - name: outcomes-billing-dlq
       - name: ingest-sessions
       - name: snuba-sessions-commit-log
         config:
@@ -2117,6 +2119,7 @@ kafka:
       - name: scheduled-subscriptions-generic-metrics-sets
       - name: scheduled-subscriptions-generic-metrics-distributions
       - name: scheduled-subscriptions-generic-metrics-counters
+      - name: scheduled-subscriptions-generic-metrics-gauges
       - name: events-subscription-results
       - name: transactions-subscription-results
       - name: sessions-subscription-results
@@ -2148,6 +2151,10 @@ kafka:
         config:
           "cleanup.policy": "compact,delete"
           "min.compaction.lag.ms": "3600000"
+      - name: snuba-generic-metrics-gauges-commit-log
+        config:
+          "cleanup.policy": "compact,delete"
+          "min.compaction.lag.ms": "3600000"
       - name: generic-events
         config:
           "message.timestamp.type": LogAppendTime
@@ -2167,20 +2174,32 @@ kafka:
       - name: snuba-dead-letter-querylog
       - name: snuba-dead-letter-group-attributes
       - name: ingest-attachments
+      - name: ingest-attachments-dlq
       - name: ingest-transactions
+      - name: ingest-transactions-dlq
+      - name: ingest-events-dlq
       - name: ingest-events
         ## If the number of exceptions increases, it is recommended to increase the number of partitions for ingest-events
         # partitions: 1
       - name: ingest-replay-recordings
       - name: ingest-metrics
+      - name: ingest-metrics-dlq
       - name: ingest-performance-metrics
       - name: ingest-feedback-events
+      - name: ingest-feedback-events-dlq
       - name: ingest-monitors
+      - name: monitors-clock-tasks
+      - name: monitors-clock-tick
       - name: profiles
       - name: ingest-occurrences
       - name: snuba-spans
       - name: shared-resources-usage
       - name: snuba-metrics-summaries
+      - name: snuba-profile-chunks
+      - name: buffered-segments
+      - name: buffered-segments-dlq
+      - name: uptime-configs
+      - name: uptime-results
   listeners:
     client:
       protocol: "PLAINTEXT"
