@@ -1,5 +1,12 @@
 # Changelog
 
+## [26.9.1](https://github.com/sentry-kubernetes/charts/compare/sentry-v26.9.0...sentry-v26.9.1) (2024-12-23)
+
+
+### Bug Fixes
+
+* add Kafka topics from upstream projects (Sentry and Snuba) for version 24.9.0 ([#1647](https://github.com/sentry-kubernetes/charts/issues/1647)) ([cac64cf](https://github.com/sentry-kubernetes/charts/commit/cac64cff98fe9b11a29c83e5f562086ad5f4e00a))
+
 ## [26.9.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v26.8.1...sentry-v26.9.0) (2024-12-16)
 
 
