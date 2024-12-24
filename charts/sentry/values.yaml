@@ -2142,10 +2142,6 @@ kafka:
         config:
           "cleanup.policy": "compact,delete"
           "min.compaction.lag.ms": "3600000"
-      - name: snuba-generic-metrics-gauges-commit-log
-        config:
-          "cleanup.policy": "compact,delete"
-          "min.compaction.lag.ms": "3600000"
       - name: snuba-generic-metrics-counters-commit-log
         config:
           "cleanup.policy": "compact,delete"
