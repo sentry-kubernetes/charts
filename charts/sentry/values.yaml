@@ -2193,6 +2193,10 @@ kafka:
       - name: profiles
       - name: ingest-occurrences
       - name: snuba-spans
+      - name: snuba-eap-spans-commit-log
+      - name: scheduled-subscriptions-eap-spans
+      - name: eap-spans-subscription-results
+      - name: snuba-eap-mutations
       - name: shared-resources-usage
       - name: snuba-metrics-summaries
       - name: snuba-profile-chunks
