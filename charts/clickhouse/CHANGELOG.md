@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.14.0](https://github.com/sentry-kubernetes/charts/compare/clickhouse-v3.13.0...clickhouse-v3.14.0) (2024-12-28)
+
+
+### Features
+
+* bump clickhouse to 23.8 ([#1649](https://github.com/sentry-kubernetes/charts/issues/1649)) ([02d0083](https://github.com/sentry-kubernetes/charts/commit/02d00839de982d61d18f9d2655f3349a4f981a6b))
+
 ## [3.13.0](https://github.com/sentry-kubernetes/charts/compare/clickhouse-v3.12.0...clickhouse-v3.13.0) (2024-10-16)
 
 

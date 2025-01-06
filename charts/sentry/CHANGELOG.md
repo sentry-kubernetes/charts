@@ -1,5 +1,12 @@
 # Changelog
 
+## [26.10.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v26.9.1...sentry-v26.10.0) (2025-01-03)
+
+
+### Features
+
+* update Sentry chart to appVersion 24.10.0 ([#1652](https://github.com/sentry-kubernetes/charts/issues/1652)) ([72f61ff](https://github.com/sentry-kubernetes/charts/commit/72f61ff7ae1a26d11865cec083861041d94e029d))
+
 ## [26.9.1](https://github.com/sentry-kubernetes/charts/compare/sentry-v26.9.0...sentry-v26.9.1) (2024-12-23)
 
 
