@@ -1,5 +1,12 @@
 # Changelog
 
+## [26.11.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v26.10.0...sentry-v26.11.0) (2025-01-13)
+
+
+### Features
+
+* Sentry 24.11.2 ([#1640](https://github.com/sentry-kubernetes/charts/issues/1640)) ([70d0710](https://github.com/sentry-kubernetes/charts/commit/70d0710d0f063d346eb0743ef2745ce40d57c764))
+
 ## [26.10.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v26.9.1...sentry-v26.10.0) (2025-01-03)
 
 
