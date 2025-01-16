@@ -44,7 +44,7 @@ spec:
 {{ toYaml .Values.sentry.cleanup.nodeSelector | indent 12 }}
             {{- else if .Values.global.nodeSelector }}
           nodeSelector:
-{{ toYaml .Values.sentry.cleanup.nodeSelector | indent 12 }}
+{{ toYaml .Values.global.nodeSelector | indent 12 }}
             {{- end }}
             {{- if .Values.sentry.cleanup.tolerations }}
           tolerations:
