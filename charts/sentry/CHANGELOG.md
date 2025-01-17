@@ -1,5 +1,13 @@
 # Changelog
 
+## [26.11.1](https://github.com/sentry-kubernetes/charts/compare/sentry-v26.11.0...sentry-v26.11.1) (2025-01-17)
+
+
+### Bug Fixes
+
+* clickhouse-chart for correct placement of internal_replication ([#1662](https://github.com/sentry-kubernetes/charts/issues/1662)) ([a3e82be](https://github.com/sentry-kubernetes/charts/commit/a3e82be0f081e4e548658d7acecdcb761a57b469))
+* global nodeSelector config option not applying to cleanup cron job ([#1654](https://github.com/sentry-kubernetes/charts/issues/1654)) ([4e764b5](https://github.com/sentry-kubernetes/charts/commit/4e764b5ab006682b609571ae0b9f06014103e194))
+
 ## [26.11.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v26.10.0...sentry-v26.11.0) (2025-01-13)
 
 
