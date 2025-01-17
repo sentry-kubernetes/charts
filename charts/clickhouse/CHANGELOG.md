@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.14.1](https://github.com/sentry-kubernetes/charts/compare/clickhouse-v3.14.0...clickhouse-v3.14.1) (2025-01-17)
+
+
+### Bug Fixes
+
+* **clickhouse-chart:** correct placement of internal_replication ([#1633](https://github.com/sentry-kubernetes/charts/issues/1633)) ([5bb3e6c](https://github.com/sentry-kubernetes/charts/commit/5bb3e6c3bd742f4d7180feeef15d1243216fda82))
+
 ## [3.14.0](https://github.com/sentry-kubernetes/charts/compare/clickhouse-v3.13.0...clickhouse-v3.14.0) (2024-12-28)
 
 
