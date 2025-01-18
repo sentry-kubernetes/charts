@@ -68,13 +68,15 @@ Note: this table is incomplete, so have a look at the values.yaml in case you mi
 | externalClickhouse.singleNode | bool | `true` |  |
 | externalClickhouse.tcpPort | int | `9000` |  |
 | externalClickhouse.username | string | `"default"` |  |
-| externalKafka.compression.type | string | `nil` |  |
-| externalKafka.message.max.bytes | int | `50000000` |  |
-| externalKafka.sasl.mechanism | string | `"None"` |  |
-| externalKafka.sasl.password | string | `"None"` |  |
-| externalKafka.sasl.username | string | `"None"` |  |
-| externalKafka.security.protocol | string | `"plaintext"` |  |
-| externalKafka.socket.timeout.ms | int | `1000` |  |
+| externalKafka.cluster | list | `[]` | Multi hosts and ports of external Kafka |
+| externalKafka.host | string | `"kafka-confluent"` | Hostname or IP address of external Kafka |
+| externalKafka.port | int | `9092` | Port for external Kafka |
+| externalKafka.compression.type | string | `""` | Compression type for Kafka messages ('gzip', 'snappy', 'lz4', 'zstd') |
+| externalKafka.message.max.bytes | int | `50000000` | Maximum message size for Kafka |
+| externalKafka.sasl.mechanism | string | `"None"` | SASL mechanism for Kafka (PLAIN, SCRAM-256, SCRAM-512) |
+| externalKafka.sasl.username | string | `"None"` | SASL username for Kafka |
+| externalKafka.sasl.password | string | `"None"` | SASL password for Kafka |
+| externalKafka.security.protocol | string | `"plaintext"` | Security protocol for Kafka (PLAINTEXT, SASL_PLAINTEXT, SASL_SSL, SSL) |
 | externalPostgresql.connMaxAge | int | `0` |  |
 | externalPostgresql.database | string | `"sentry"` |  |
 | externalPostgresql.existingSecretKeys | object | `{}` |  |
