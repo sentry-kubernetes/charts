@@ -1,5 +1,12 @@
 # Changelog
 
+## [26.11.2](https://github.com/sentry-kubernetes/charts/compare/sentry-v26.11.1...sentry-v26.11.2) (2025-01-18)
+
+
+### Bug Fixes
+
+* update readme.md with latest configuration values ([#1666](https://github.com/sentry-kubernetes/charts/issues/1666)) ([070b19f](https://github.com/sentry-kubernetes/charts/commit/070b19f11c95bd294d9c5419ca5d7d17dfa092fa))
+
 ## [26.11.1](https://github.com/sentry-kubernetes/charts/compare/sentry-v26.11.0...sentry-v26.11.1) (2025-01-17)
 
 
