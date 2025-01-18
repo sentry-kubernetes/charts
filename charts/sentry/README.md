@@ -155,7 +155,7 @@ Note: this table is incomplete, so have a look at the values.yaml in case you mi
 | kafka.controller.replicaCount | int | `3` |  |
 | kafka.enabled | bool | `true` |  |
 | kafka.kraft.enabled | bool | `true` |  |
-| kafka.listeners.client.protocol | string | `"PLAINTEXT"` |  |
+| kafka.listeners.client.protocol | string | `"PLAINTEXT"` | Security protocol for the Kafka client listener (PLAINTEXT, SASL_PLAINTEXT, SASL_SSL, SSL) |
 | kafka.listeners.controller.protocol | string | `"PLAINTEXT"` |  |
 | kafka.listeners.external.protocol | string | `"PLAINTEXT"` |  |
 | kafka.listeners.interbroker.protocol | string | `"PLAINTEXT"` |  |
@@ -260,6 +260,9 @@ Note: this table is incomplete, so have a look at the values.yaml in case you mi
 | kafka.provisioning.topics[7].name | string | `"outcomes"` |  |
 | kafka.provisioning.topics[8].name | string | `"outcomes-dlq"` |  |
 | kafka.provisioning.topics[9].name | string | `"outcomes-billing"` |  |
+| kafka.sasl.client.users | list | `[]` | List of usernames for client communications when SASL is enabled, first user will be used if enabled |
+| kafka.sasl.client.passwords | list | `[]` | List of passwords for client communications when SASL is enabled, must match the number of client.users, first password will be used if enabled |
+| kafka.sasl.enabledMechanisms | string | `"PLAIN,SCRAM-SHA-256,SCRAM-SHA-512"` | Comma-separated list of allowed SASL mechanisms when SASL listeners are configured |
 | kafka.zookeeper.enabled | bool | `false` |  |
 | mail.backend | string | `"dummy"` |  |
 | mail.from | string | `""` |  |
@@ -629,9 +632,9 @@ Note: this table is incomplete, so have a look at the values.yaml in case you mi
 | sentry.ingestReplayRecordings.sidecars | list | `[]` |  |
 | sentry.ingestReplayRecordings.topologySpreadConstraints | list | `[]` |  |
 | sentry.ingestReplayRecordings.volumes | list | `[]` |  |
-| sentry.kafka.compression.type | string | `nil` |  |
-| sentry.kafka.message.max.bytes | int | `50000000` |  |
-| sentry.kafka.socket.timeout.ms | int | `1000` |  |
+| sentry.kafka.compression.type | string | `""` | Compression type for Kafka messages |
+| sentry.kafka.message.max.bytes | int | `50000000` | Maximum message size for Kafka |
+| sentry.kafka.socket.timeout.ms | int | `1000` | Socket timeout for Kafka connections |
 | sentry.metricsConsumer.affinity | object | `{}` |  |
 | sentry.metricsConsumer.autoscaling.enabled | bool | `false` |  |
 | sentry.metricsConsumer.autoscaling.maxReplicas | int | `3` |  |
