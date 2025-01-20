@@ -36,6 +36,9 @@ settings.py: |
     {
       "host": env("CLICKHOUSE_HOST", {{ include "sentry.clickhouse.host" . | quote }}),
       "port": int({{ include "sentry.clickhouse.port" . }}),
+      "secure": env("CLICKHOUSE_SECURE", False),
+      "ca_certs": env("CLICKHOUSE_CA_CERTS", None),
+      "verify": env("CLICKHOUSE_VERIFY", False),
       "user":  env("CLICKHOUSE_USER", "default"),
       "password": env("CLICKHOUSE_PASSWORD", ""),
       "max_connections": int(os.environ.get("CLICKHOUSE_MAX_CONNECTIONS", 100)),
