@@ -1895,6 +1895,8 @@ ingress:
   # If you are using AWS ALB Ingress controller, switch to true if you want activate the http to https redirection.
   alb:
     httpRedirect: false
+  # Add custom labels for ingress resource
+  # labels:
   # annotations:
   #   If you are using nginx ingress controller, please use at least those 2 annotations
   #   kubernetes.io/ingress.class: nginx
