@@ -251,6 +251,7 @@ sentry:
   # - organizations:custom-metric
   # - organizations:custom-metrics-experimental
   # - organizations:derive-code-mappings
+  # other feature here https://github.com/getsentry/sentry/blob/24.11.2/src/sentry/features/temporary.py
 
   worker:
     enabled: true
