@@ -246,11 +246,22 @@ sentry:
     enableFeedback: false
     enableSpan: false
 
-  # example customFeature to enable Metrics(beta) https://docs.sentry.io/product/metrics/
   # customFeatures:
+  ## Metrics(beta) https://docs.sentry.io/product/metrics/:
   # - organizations:custom-metric
   # - organizations:custom-metrics-experimental
   # - organizations:derive-code-mappings
+  ## Sessions (Crash Rate Alerts) https://docs.sentry.io/product/alerts/alert-types/#sessions-crash-rate-alerts:
+  # - organizations:crash-rate-alerts
+  ## Insights https://docs.sentry.dev/product/insights/:
+  # Rename current Performance modules to "Insights"
+  # - organizations:performance-insights
+  ## Show links and upsells to Insights modules
+  # - organizations:insights-entry-points
+  ## Enable access to initial Insights modules (Queries, Requests, Vitals, App Starts, Page Loads, Resources)
+  # - organizations:insights-initial-modules
+  ## Enable access to newer Insights modules (Caches, Queues, LLMs, Mobile UI)
+  # - organizations:insights-addon-modules
 
   worker:
     enabled: true
