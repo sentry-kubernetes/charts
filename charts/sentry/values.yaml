@@ -2171,6 +2171,7 @@ kafka:
       - name: ingest-attachments-dlq
       - name: ingest-transactions
       - name: ingest-transactions-dlq
+      - name: ingest-transactions-backlog
       - name: ingest-events-dlq
       - name: ingest-events
         ## If the number of exceptions increases, it is recommended to increase the number of partitions for ingest-events
@@ -2199,6 +2200,7 @@ kafka:
       - name: buffered-segments-dlq
       - name: uptime-configs
       - name: uptime-results
+      - name: snuba-uptime-results
       - name: task-worker
   listeners:
     client:
