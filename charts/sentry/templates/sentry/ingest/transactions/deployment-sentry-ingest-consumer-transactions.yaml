@@ -189,6 +189,9 @@ spec:
 {{- if .Values.sentry.ingestConsumerTransactions.volumes }}
 {{ toYaml .Values.sentry.ingestConsumerTransactions.volumes | indent 6 }}
 {{- end }}
+{{- if .Values.global.volumes }}
+{{ toYaml .Values.global.volumes | indent 6 }}
+{{- end }}
       {{- if .Values.sentry.ingestConsumerTransactions.priorityClassName }}
       priorityClassName: "{{ .Values.sentry.ingestConsumerTransactions.priorityClassName }}"
       {{- end }}
