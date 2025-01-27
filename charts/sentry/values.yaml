@@ -1855,6 +1855,7 @@ openai: {}
 nginx:
   enabled: true  # true, if Safari compatibility is needed
   containerPort: 8080
+  nameOverride: sentry-nginx
   existingServerBlockConfigmap: '{{ template "sentry.fullname" . }}'
   resources: {}
   replicaCount: 1
