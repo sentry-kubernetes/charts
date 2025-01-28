@@ -18,6 +18,10 @@ helm install my-sentry sentry/sentry --wait --timeout=1000s
 
 For now the full list of values is not documented, but you can get inspired by the `values.yaml` specific to each directory.
 
+## Upgrading from 26.11.2 Version of This Chart to 26.12.0
+
+Symbolicator docker image tag 24.12.2 not found
+
 ## Upgrading from 25.x.x Version of This Chart to 26.x.x
 
 Make sure to upgrade to chart version 25.20.0 (Sentry 24.8.0) before upgrading to 26.x.x.
