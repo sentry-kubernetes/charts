@@ -1,5 +1,12 @@
 # Changelog
 
+## [26.12.1](https://github.com/sentry-kubernetes/charts/compare/sentry-v26.12.0...sentry-v26.12.1) (2025-01-28)
+
+
+### Bug Fixes
+
+* rollback to 24.12.1 ([aa6cad8](https://github.com/sentry-kubernetes/charts/commit/aa6cad88fe0f2e0594aff7325d33f3ed643f250a))
+
 ## [26.12.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v26.11.2...sentry-v26.12.0) (2025-01-26)
 
 
