@@ -1,0 +1,179 @@
+{{- if .Values.sentry.monitorsClockTasks.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "sentry.fullname" . }}-monitors-clock-tasks
+  labels:
+    app: {{ template "sentry.fullname" . }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
+    release: "{{ .Release.Name }}"
+    heritage: "{{ .Release.Service }}"
+    app.kubernetes.io/managed-by: "Helm"
+  {{- if .Values.asHook }}
+  annotations:
+    meta.helm.sh/release-name: "{{ .Release.Name }}"
+    meta.helm.sh/release-namespace: "{{ .Release.Namespace }}"
+    "helm.sh/hook": "post-install,post-upgrade"
+    "helm.sh/hook-weight": "10"
+  {{- end }}
+spec:
+  revisionHistoryLimit: {{ .Values.revisionHistoryLimit }}
+  selector:
+    matchLabels:
+      app: {{ template "sentry.fullname" . }}
+      release: "{{ .Release.Name }}"
+      role: monitors-clock-tasks
+{{- if not .Values.sentry.monitorsClockTasks.autoscaling.enabled }}
+  replicas: {{ .Values.sentry.monitorsClockTasks.replicas }}
+{{- end }}
+  template:
+    metadata:
+      annotations:
+        checksum/configYml: {{ .Values.config.configYml | toYaml | toString | sha256sum }}
+        checksum/sentryConfPy: {{ .Values.config.sentryConfPy | sha256sum }}
+        checksum/config.yaml: {{ include "sentry.config" . | sha256sum }}
+        {{- if .Values.sentry.monitorsClockTasks.annotations }}
+{{ toYaml .Values.sentry.monitorsClockTasks.annotations | indent 8 }}
+        {{- end }}
+      labels:
+        app: {{ template "sentry.fullname" . }}
+        release: "{{ .Release.Name }}"
+        role: monitors-clock-tasks
+        {{- if .Values.sentry.monitorsClockTasks.podLabels }}
+{{ toYaml .Values.sentry.monitorsClockTasks.podLabels | indent 8 }}
+        {{- end }}
+    spec:
+      affinity:
+      {{- if .Values.sentry.monitorsClockTasks.affinity }}
+{{ toYaml .Values.sentry.monitorsClockTasks.affinity | indent 8 }}
+      {{- end }}
+      {{- if .Values.sentry.monitorsClockTasks.nodeSelector }}
+      nodeSelector:
+{{ toYaml .Values.sentry.monitorsClockTasks.nodeSelector | indent 8 }}
+      {{- else if .Values.global.nodeSelector }}
+      nodeSelector:
+{{ toYaml .Values.global.nodeSelector | indent 8 }}
+      {{- end }}
+      {{- if .Values.sentry.monitorsClockTasks.tolerations }}
+      tolerations:
+{{ toYaml .Values.sentry.monitorsClockTasks.tolerations | indent 8 }}
+      {{- else if .Values.global.tolerations }}
+      tolerations:
+{{ toYaml .Values.global.tolerations | indent 8 }}
+      {{- end }}
+      {{- if .Values.sentry.monitorsClockTasks.topologySpreadConstraints }}
+      topologySpreadConstraints:
+{{ toYaml .Values.sentry.monitorsClockTasks.topologySpreadConstraints | indent 8 }}
+      {{- end }}
+      {{- if .Values.images.sentry.imagePullSecrets }}
+      imagePullSecrets:
+{{ toYaml .Values.images.sentry.imagePullSecrets | indent 8 }}
+      {{- end }}
+      {{- if .Values.dnsPolicy }}
+      dnsPolicy: {{ .Values.dnsPolicy | quote }}
+      {{- end }}
+      {{- if .Values.dnsConfig }}
+      dnsConfig:
+{{ toYaml .Values.dnsConfig | indent 8 }}
+      {{- end }}
+      {{- if .Values.sentry.monitorsClockTasks.securityContext }}
+      securityContext:
+{{ toYaml .Values.sentry.monitorsClockTasks.securityContext | indent 8 }}
+      {{- end }}
+      containers:
+      - name: {{ .Chart.Name }}-monitors-clock-tasks
+        image: "{{ template "sentry.image" . }}"
+        imagePullPolicy: {{ default "IfNotPresent" .Values.images.sentry.pullPolicy }}
+        command: ["sentry"]
+        args:
+          - "run"
+          - "consumer"
+          - "monitors-clock-tasks"
+          - "--consumer-group"
+          - "monitors-clock-tasks"
+          {{- if .Values.sentry.monitorsClockTasks.autoOffsetReset }}
+          - "--auto-offset-reset"
+          - "{{ .Values.sentry.monitorsClockTasks.autoOffsetReset }}"
+          {{- end }}
+          {{- if .Values.sentry.monitorsClockTasks.noStrictOffsetReset }}
+          - "--no-strict-offset-reset"
+          {{- end }}
+          {{- if .Values.sentry.monitorsClockTasks.livenessProbe.enabled }}
+          - "--healthcheck-file-path"
+          - "/tmp/health.txt"
+          {{- end }}
+        {{- if .Values.sentry.monitorsClockTasks.livenessProbe.enabled }}
+        livenessProbe:
+          exec:
+            command:
+              - rm
+              - /tmp/health.txt
+          initialDelaySeconds: {{ .Values.sentry.monitorsClockTasks.livenessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.sentry.monitorsClockTasks.livenessProbe.periodSeconds }}
+        {{- end }}
+        env:
+        - name: C_FORCE_ROOT
+          value: "true"
+{{ include "sentry.env" . | indent 8 }}
+{{- if .Values.sentry.monitorsClockTasks.env }}
+{{ toYaml .Values.sentry.monitorsClockTasks.env | indent 8 }}
+{{- end }}
+        volumeMounts:
+        - mountPath: /etc/sentry
+          name: config
+          readOnly: true
+        - mountPath: {{ .Values.filestore.filesystem.path }}
+          name: sentry-data
+        {{- if and (eq .Values.filestore.backend "gcs") .Values.filestore.gcs.secretName }}
+        - name: sentry-google-cloud-key
+          mountPath: /var/run/secrets/google
+        {{ end }}
+{{- if .Values.sentry.monitorsClockTasks.volumeMounts }}
+{{ toYaml .Values.sentry.monitorsClockTasks.volumeMounts | indent 8 }}
+{{- end }}
+        resources:
+{{ toYaml .Values.sentry.monitorsClockTasks.resources | indent 12 }}
+{{- if .Values.sentry.monitorsClockTasks.containerSecurityContext }}
+        securityContext:
+{{ toYaml .Values.sentry.monitorsClockTasks.containerSecurityContext | indent 12 }}
+{{- end }}
+{{- if .Values.sentry.monitorsClockTasks.sidecars }}
+{{ toYaml .Values.sentry.monitorsClockTasks.sidecars | indent 6 }}
+{{- end }}
+{{- if .Values.global.sidecars }}
+{{ toYaml .Values.global.sidecars | indent 6 }}
+{{- end }}
+      {{- if .Values.serviceAccount.enabled }}
+      serviceAccountName: {{ .Values.serviceAccount.name }}-monitors-clock-tasks
+      {{- end }}
+      volumes:
+      - name: config
+        configMap:
+          name: {{ template "sentry.fullname" . }}-sentry
+      - name: sentry-data
+      {{- if and (eq .Values.filestore.backend "filesystem") .Values.filestore.filesystem.persistence.enabled (.Values.filestore.filesystem.persistence.persistentWorkers) }}
+      {{- if .Values.filestore.filesystem.persistence.existingClaim }}
+        persistentVolumeClaim:
+          claimName: {{ .Values.filestore.filesystem.persistence.existingClaim }}
+      {{- else }}
+        persistentVolumeClaim:
+          claimName: {{ template "sentry.fullname" . }}-data
+      {{- end }}
+      {{- else }}
+        emptyDir: {}
+      {{ end }}
+      {{- if and (eq .Values.filestore.backend "gcs") .Values.filestore.gcs.secretName }}
+      - name: sentry-google-cloud-key
+        secret:
+          secretName: {{ .Values.filestore.gcs.secretName }}
+      {{ end }}
+{{- if .Values.sentry.monitorsClockTasks.volumes }}
+{{ toYaml .Values.sentry.monitorsClockTasks.volumes | indent 6 }}
+{{- end }}
+{{- if .Values.global.volumes }}
+{{ toYaml .Values.global.volumes | indent 6 }}
+{{- end }}
+      {{- if .Values.sentry.monitorsClockTasks.priorityClassName }}
+      priorityClassName: "{{ .Values.sentry.monitorsClockTasks.priorityClassName }}"
+      {{- end }}
+{{- end }}
