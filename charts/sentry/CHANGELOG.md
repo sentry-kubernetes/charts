@@ -1,5 +1,17 @@
 # Changelog
 
+## [26.14.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v26.13.0...sentry-v26.14.0) (2025-01-31)
+
+
+### Features
+
+* Add monitorsClockTasks and monitorsClockTick ([#1690](https://github.com/sentry-kubernetes/charts/issues/1690)) ([1fe663d](https://github.com/sentry-kubernetes/charts/commit/1fe663d345c9e420c901f25dc306e0e27549d905))
+
+
+### Bug Fixes
+
+* set replication factor for kafka stability ([#1606](https://github.com/sentry-kubernetes/charts/issues/1606)) ([7ebb1f6](https://github.com/sentry-kubernetes/charts/commit/7ebb1f636984485dd646eb482978bde3a4f3da36))
+
 ## [26.13.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v26.12.1...sentry-v26.13.0) (2025-01-30)
 
 
