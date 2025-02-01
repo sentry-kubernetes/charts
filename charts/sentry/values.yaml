@@ -1827,7 +1827,7 @@ google: {}
 # google:
 #   clientId: ""
 #   clientSecret: ""
-#   existingSecret: ""
+#   existingSecret: "xxxxx"
 #   existingSecretClientIdKey: ""       # by default "client-id"
 #   existingSecretClientSecretKey: ""   # by default "client-secret"
 
@@ -1836,7 +1836,7 @@ slack: {}
 #   clientId: ""
 #   clientSecret: ""
 #   signingSecret: ""
-#   existingSecret: ""
+#   existingSecret: "xxxxx"
 #   existingSecretClientId: ""          # by default "client-id"
 #   existingSecretClientSecret: ""      # by default "client-secret"
 #   existingSecretSigningSecret: ""     # by default "signing-secret"
@@ -1849,10 +1849,10 @@ discord: {}
 #   clientSecret: ""
 #   botToken: ""
 #   existingSecret: "xxxxx"
-#   existingSecretApplicationIdKey: ""  # by default "application-id"
-#   existingSecretPublicKeyKey: ""      # by default ""
-#   existingSecretClientSecretKey: ""   # by default "client-secret"
-#   existingSecretBotTokenKey: ""       # by default "bot-token"
+#   existingSecretApplicationId: ""     # by default "application-id"
+#   existingSecretPublicKey: ""         # by default "public-key"
+#   existingSecretClientSecret: ""      # by default "client-secret"
+#   existingSecretBotToken: ""          # by default "bot-token"
 #   Reference -> https://develop.sentry.dev/integrations/discord/
 
 openai: {}
