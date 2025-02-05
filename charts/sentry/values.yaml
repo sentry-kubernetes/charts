@@ -1889,30 +1889,37 @@ google: {}
 # google:
 #   clientId: ""
 #   clientSecret: ""
-#   existingSecret: ""
-#   existingSecretClientIdKey: "" # by default "client-id"
-#   existingSecretClientSecretKey: "" # by default "client-secret"
+#   existingSecret: "xxxxx"
+#   existingSecretClientIdKey: ""       # by default "client-id"
+#   existingSecretClientSecretKey: ""   # by default "client-secret"
 
 slack: {}
 # slack:
-#   clientId:
-#   clientSecret:
-#   signingSecret:
-#   existingSecret:
+#   clientId: ""
+#   clientSecret: ""
+#   signingSecret: ""
+#   existingSecret: "xxxxx"
+#   existingSecretClientId: ""          # by default "client-id"
+#   existingSecretClientSecret: ""      # by default "client-secret"
+#   existingSecretSigningSecret: ""     # by default "signing-secret"
 #   Reference -> https://develop.sentry.dev/integrations/slack/
 
 discord: {}
 # discord:
-#   applicationId:
-#   publicKey:
-#   clientSecret:
-#   botToken:
-#   existingSecret:
+#   applicationId: ""
+#   publicKey: ""
+#   clientSecret: ""
+#   botToken: ""
+#   existingSecret: "xxxxx"
+#   existingSecretApplicationId: ""     # by default "application-id"
+#   existingSecretPublicKey: ""         # by default "public-key"
+#   existingSecretClientSecret: ""      # by default "client-secret"
+#   existingSecretBotToken: ""          # by default "bot-token"
 #   Reference -> https://develop.sentry.dev/integrations/discord/
 
 openai: {}
 #   existingSecret: "xxxxx"
-#   existingSecretKey: ""   # by default "api-token"
+#   existingSecretKey: ""               # by default "api-token"
 
 nginx:
   enabled: true  # true, if Safari compatibility is needed
