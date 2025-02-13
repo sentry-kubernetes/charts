@@ -34,6 +34,9 @@ spec:
 {{ toYaml .Values.sentry.worker.podLabels | indent 8 }}
         {{- end }}
     spec:
+      {{- if .Values.serviceAccount.enabled }}
+      serviceAccountName: {{ .Values.serviceAccount.name }}-hooks
+      {{- end }}
       {{- if .Values.hooks.dbInit.affinity }}
       affinity:
 {{ toYaml .Values.hooks.dbInit.affinity | indent 8 }}
