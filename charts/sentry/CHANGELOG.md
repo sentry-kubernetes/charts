@@ -1,5 +1,12 @@
 # Changelog
 
+## [26.14.1](https://github.com/sentry-kubernetes/charts/compare/sentry-v26.14.0...sentry-v26.14.1) (2025-02-14)
+
+
+### Bug Fixes
+
+* Add missing global sidecar to ingestConsumerTransactions deployment ([#1705](https://github.com/sentry-kubernetes/charts/issues/1705)) ([5a9f5d7](https://github.com/sentry-kubernetes/charts/commit/5a9f5d762dfa693374f598fd8eec9754cc17ad6c))
+
 ## [26.14.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v26.13.0...sentry-v26.14.0) (2025-01-31)
 
 
