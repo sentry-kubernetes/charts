@@ -19,7 +19,7 @@ spec:
   loadBalancerIP: {{ .Values.clickhouse.metrics.service.loadBalancerIP }}
   {{- end }}
   ports:
-    - port: {{ .Values.clickhouse.metrics.image.port }}
+    - port: {{ .Values.clickhouse.metrics.port }}
       targetPort: metrics
       name: metrics
   selector:

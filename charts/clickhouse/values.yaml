@@ -63,26 +63,13 @@ clickhouse:
   ## Prometheus Exporter / Metrics
   ##
   metrics:
-    enabled: false
-    image:
-      registry: docker.io
-      repository: f1yegor/clickhouse-exporter
-      tag: latest
-      pullPolicy: IfNotPresent
-      port: 9116
-
-    ## Metrics exporter resource requests and limits
-    # resources: {}
-
-    ## Additional Volumes
-    # volumes: []
-    # volumeMounts: []
+    enabled: true
+    port: 9116
 
     ## Metrics exporter pod Annotation and Labels
     podAnnotations:
       prometheus.io/scrape: "true"
       prometheus.io/port: "9116"
-    podLabels: {}
 
     ## Enable this if you're using https://github.com/coreos/prometheus-operator
     serviceMonitor:
@@ -102,7 +89,6 @@ clickhouse:
       additionalLabels: {}
       namespace: ""
       rules: []
-
 
     service:
       type: ClusterIP
