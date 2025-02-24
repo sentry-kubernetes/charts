@@ -862,23 +862,6 @@ sentry:
     # noStrictOffsetReset: false
     # volumeMounts: []
 
-  subscriptionConsumerSessions:
-    replicas: 1
-    env: []
-    resources: {}
-    affinity: {}
-    nodeSelector: {}
-    securityContext: {}
-    containerSecurityContext: {}
-    # tolerations: []
-    # podLabels: {}
-    sidecars: []
-    topologySpreadConstraints: []
-    volumes: []
-    # autoOffsetReset: "earliest"
-    # noStrictOffsetReset: false
-    # volumeMounts: []
-
   subscriptionConsumerTransactions:
     enabled: true
     replicas: 1
@@ -1398,24 +1381,6 @@ snuba:
     # autoOffsetReset: "earliest"
     # noStrictOffsetReset: false
 
-  subscriptionConsumerSessions:
-    replicas: 1
-    env: []
-    resources: {}
-    affinity: {}
-    nodeSelector: {}
-    securityContext: {}
-    topologySpreadConstraints: []
-    containerSecurityContext: {}
-    # tolerations: []
-    # podLabels: {}
-    # commitBatchSize: 1
-    # autoOffsetReset: "earliest"
-    sidecars: []
-    volumes: []
-    # noStrictOffsetReset: false
-    # volumeMounts: []
-
   replaysConsumer:
     enabled: true
     replicas: 1
@@ -1441,34 +1406,6 @@ snuba:
     # queuedMaxMessagesKbytes: ""
     # queuedMinMessages: ""
     # noStrictOffsetReset: false
-    # volumeMounts:
-    #   - mountPath: /dev/shm
-    #     name: dshm
-    # volumes:
-    #   - name: dshm
-    #     emptyDir:
-    #       medium: Memory
-
-  sessionsConsumer:
-    replicas: 1
-    env: []
-    resources: {}
-    affinity: {}
-    nodeSelector: {}
-    securityContext: {}
-    topologySpreadConstraints: []
-    containerSecurityContext: {}
-    # tolerations: []
-    # podLabels: {}
-    # autoOffsetReset: "earliest"
-    # noStrictOffsetReset: false
-    # maxBatchSize: ""
-    # processes: ""
-    # inputBlockSize: ""
-    # outputBlockSize: ""
-    # maxBatchTimeMs: ""
-    # queuedMaxMessagesKbytes: ""
-    # queuedMinMessages: ""
     # volumeMounts:
     #   - mountPath: /dev/shm
     #     name: dshm
