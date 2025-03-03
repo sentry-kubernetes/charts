@@ -41,6 +41,9 @@ spec:
 {{ toYaml .Values.hooks.snubaInit.podLabels | indent 8 }}
         {{- end }}
     spec:
+      {{- if .Values.serviceAccount.enabled }}
+      serviceAccountName: {{ .Values.serviceAccount.name }}-hooks
+      {{- end }}
       {{- if .Values.hooks.snubaInit.affinity }}
       affinity:
 {{ toYaml .Values.hooks.snubaInit.affinity | indent 8 }}
