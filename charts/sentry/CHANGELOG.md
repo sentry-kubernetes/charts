@@ -1,5 +1,13 @@
 # Changelog
 
+## [26.15.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v26.14.1...sentry-v26.15.0) (2025-03-03)
+
+
+### Features
+
+* add `imagePullSecrets` option to the metrics deployment ([#1722](https://github.com/sentry-kubernetes/charts/issues/1722)) ([3463781](https://github.com/sentry-kubernetes/charts/commit/3463781b9f1dcba2350e8d6bef9aa4dfc9e12083))
+* update appVersion to 25.2.0 ([#1713](https://github.com/sentry-kubernetes/charts/issues/1713)) ([8c5fc21](https://github.com/sentry-kubernetes/charts/commit/8c5fc210556bd6b7f604709ccfc9aa30ea1cd0b8))
+
 ## [26.14.1](https://github.com/sentry-kubernetes/charts/compare/sentry-v26.14.0...sentry-v26.14.1) (2025-02-14)
 
 
