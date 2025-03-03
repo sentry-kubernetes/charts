@@ -2531,6 +2531,7 @@ metrics:
     repository: prom/statsd-exporter
     tag: v0.17.0
     pullPolicy: IfNotPresent
+    imagePullSecrets: []
 
   # Enable this if you're using https://github.com/coreos/prometheus-operator
   serviceMonitor:
