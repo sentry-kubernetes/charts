@@ -1,5 +1,12 @@
 # Changelog
 
+## [26.15.1](https://github.com/sentry-kubernetes/charts/compare/sentry-v26.15.0...sentry-v26.15.1) (2025-03-06)
+
+
+### Bug Fixes
+
+* **nginx:** _assets should rewrite to _static/sentry/dist ([#1719](https://github.com/sentry-kubernetes/charts/issues/1719)) ([be4d8c5](https://github.com/sentry-kubernetes/charts/commit/be4d8c5619b4fe42e7c47c6f58ea8513e0cff284))
+
 ## [26.15.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v26.14.1...sentry-v26.15.0) (2025-03-03)
 
 
