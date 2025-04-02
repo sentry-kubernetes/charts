@@ -144,6 +144,7 @@ clickhouse:
 
   startupProbe:
     enabled: true
+    initialDelaySeconds: 5
     periodSeconds: 5
     timeoutSeconds: 5
     failureThreshold: 60
