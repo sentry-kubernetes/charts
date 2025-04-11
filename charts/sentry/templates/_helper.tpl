@@ -413,6 +413,33 @@ Set ClickHouse cluster name
 {{- end -}}
 
 {{/*
+Set ClickHouse secure setting
+*/}}
+{{- define "sentry.clickhouse.secure" -}}
+{{- if and (.Values.externalClickhouse.enabled) (.Values.externalClickhouse.secure) -}}
+True
+{{- end -}}
+{{- end -}}
+
+{{/*
+Set ClickHouse ca_certs setting
+*/}}
+{{- define "sentry.clickhouse.ca_certs" -}}
+{{- if and (.Values.externalClickhouse.enabled) (.Values.externalClickhouse.ca_certs) -}}
+{{ .Values.externalClickhouse.ca_certs }}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Set ClickHouse verify ca setting
+*/}}
+{{- define "sentry.clickhouse.verify" -}}
+{{- if and (.Values.externalClickhouse.enabled) (.Values.externalClickhouse.verify) -}}
+True
+{{- end -}}
+{{- end -}}
+
+{{/*
 Set Kafka Confluent host
 */}}
 {{- define "sentry.kafka.host" -}}
