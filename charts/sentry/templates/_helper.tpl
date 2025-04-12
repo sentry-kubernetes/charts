@@ -362,6 +362,17 @@ Set ClickHouse HTTP port
 {{- end -}}
 
 {{/*
+Set ClickHouse secure (To connect with secured ClickHouse DBs over ports - 9440, 8443 etc)
+*/}}
+{{- define "sentry.clickhouse.secure" -}}
+{{- if .Values.externalClickhouse.secure -}}
+{{ printf "True" }}
+{{- else -}}
+{{- printf "False" }}
+{{- end -}}
+{{- end -}}
+
+{{/*
 Set ClickHouse Database
 */}}
 {{- define "sentry.clickhouse.database" -}}
