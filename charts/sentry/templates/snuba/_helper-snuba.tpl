@@ -41,6 +41,7 @@ settings.py: |
       "max_connections": int(os.environ.get("CLICKHOUSE_MAX_CONNECTIONS", 100)),
       "database": env("CLICKHOUSE_DATABASE", "default"),
       "http_port": {{ include "sentry.clickhouse.http_port" . }},
+      "secure": {{ include "sentry.clickhouse.secure" . }},
       "storage_sets": {
           "cdc",
           "discover",
