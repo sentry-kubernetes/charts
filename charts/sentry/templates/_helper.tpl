@@ -415,17 +415,8 @@ Set ClickHouse cluster name
 {{/*
 Set ClickHouse secure setting
 */}}
-{{- define "sentry.clickhouse.cluster.secure" -}}
+{{- define "sentry.clickhouse.secure" -}}
 {{- if and (.Values.externalClickhouse.enabled) (.Values.externalClickhouse.secure) -}}
-True
-{{- end -}}
-{{- end -}}
-
-{{/*
-Set ClickHouse verify ca setting
-*/}}
-{{- define "sentry.clickhouse.cluster.verify_ca" -}}
-{{- if and (.Values.externalClickhouse.enabled) (.Values.externalClickhouse.verify_ca) -}}
 True
 {{- end -}}
 {{- end -}}
@@ -433,9 +424,18 @@ True
 {{/*
 Set ClickHouse ca_certs setting
 */}}
-{{- define "sentry.clickhouse.cluster.ca_certs" -}}
+{{- define "sentry.clickhouse.ca_certs" -}}
 {{- if and (.Values.externalClickhouse.enabled) (.Values.externalClickhouse.ca_certs) -}}
 {{ .Values.externalClickhouse.ca_certs }}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Set ClickHouse verify ca setting
+*/}}
+{{- define "sentry.clickhouse.verify" -}}
+{{- if and (.Values.externalClickhouse.enabled) (.Values.externalClickhouse.verify) -}}
+True
 {{- end -}}
 {{- end -}}
 
