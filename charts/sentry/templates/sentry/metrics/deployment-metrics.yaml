@@ -61,6 +61,10 @@ spec:
       dnsConfig:
 {{ toYaml .Values.dnsConfig | indent 8 }}
       {{- end }}
+      {{- if .Values.metrics.image.imagePullSecrets }}
+      imagePullSecrets:
+{{ toYaml .Values.metrics.image.imagePullSecrets | indent 8 }}
+      {{- end }}
       {{- if .Values.metrics.securityContext }}
       securityContext:
 {{ toYaml .Values.metrics.securityContext | indent 8 }}

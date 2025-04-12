@@ -2,9 +2,6 @@ name: Auto Label Conflicts
 on:
   push:
     branches: [develop]
-  pull_request:
-    branches: [develop]
-
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
