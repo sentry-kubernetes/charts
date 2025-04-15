@@ -1,5 +1,13 @@
 # Changelog
 
+## [26.16.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v26.15.1...sentry-v26.16.0) (2025-04-15)
+
+
+### Features
+
+* add clickhouse ssl config ([#1671](https://github.com/sentry-kubernetes/charts/issues/1671)) ([a48f91c](https://github.com/sentry-kubernetes/charts/commit/a48f91c8218cb9f9363c249a02407e776f5ced1c))
+* update appVersion to 25.3.0 ([#1740](https://github.com/sentry-kubernetes/charts/issues/1740)) ([9ed13bb](https://github.com/sentry-kubernetes/charts/commit/9ed13bbd7b604681ee8079bb53d427376552a40a))
+
 ## [26.15.1](https://github.com/sentry-kubernetes/charts/compare/sentry-v26.15.0...sentry-v26.15.1) (2025-03-06)
 
 
