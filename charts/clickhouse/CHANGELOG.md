@@ -1,5 +1,16 @@
 # Changelog
 
+## [4.0.0](https://github.com/sentry-kubernetes/charts/compare/clickhouse-v3.14.1...clickhouse-v4.0.0) (2025-05-07)
+
+
+### ⚠ BREAKING CHANGES
+
+* **clickhouse:** replace external exporter with embedded ClickHouse exporter ([#1710](https://github.com/sentry-kubernetes/charts/issues/1710))
+
+### Miscellaneous Chores
+
+* **clickhouse:** replace external exporter with embedded ClickHouse exporter ([#1710](https://github.com/sentry-kubernetes/charts/issues/1710)) ([45128a9](https://github.com/sentry-kubernetes/charts/commit/45128a9a2a4b9770f8414206a17724cbb1715928))
+
 ## [3.14.1](https://github.com/sentry-kubernetes/charts/compare/clickhouse-v3.14.0...clickhouse-v3.14.1) (2025-01-17)
 
 
