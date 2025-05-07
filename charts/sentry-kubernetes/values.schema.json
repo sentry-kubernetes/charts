@@ -1,56 +1,131 @@
 {
-    "$schema": "https://json-schema.org/draft/2020-12/schema#",
-    "type": "object",
-    "properties": {
-        "image": {
-            "type": "object",
-            "properties": {
-                "pullPolicy": {
-                    "type": "string"
-                },
-                "repository": {
-                    "type": "string"
-                },
-                "tag": {
-                    "type": "string"
-                }
-            }
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "additionalProperties": false,
+  "properties": {
+    "global": {
+      "description": "Global values are values that can be accessed from any chart or subchart by exactly the same name.",
+      "required": [],
+      "title": "global",
+      "type": "object"
+    },
+    "image": {
+      "additionalProperties": false,
+      "description": "Sentry DSN config using an existing secret:\nexistingSecret:",
+      "properties": {
+        "pullPolicy": {
+          "default": "Always",
+          "required": [],
+          "title": "pullPolicy",
+          "type": "string"
         },
-        "podAnnotations": {
-            "type": "object"
+        "repository": {
+          "default": "ghcr.io/getsentry/sentry-kubernetes",
+          "required": [],
+          "title": "repository",
+          "type": "string"
         },
-        "podLabels": {
-            "type": "object"
-        },
-        "rbac": {
-            "type": "object",
-            "properties": {
-                "create": {
-                    "type": "boolean"
-                }
-            }
-        },
-        "resources": {
-            "type": "object"
-        },
-        "sentry": {
-            "type": "object",
-            "properties": {
-                "dsn": {
-                    "type": "string"
-                }
-            }
-        },
-        "serviceAccount": {
-            "type": "object",
-            "properties": {
-                "create": {
-                    "type": "boolean"
-                },
-                "name": {
-                    "type": "null"
-                }
-            }
+        "tag": {
+          "default": "latest",
+          "description": "Tag should be set in hard in the charts when getsentry will do the job of releasing version.",
+          "required": [],
+          "title": "tag",
+          "type": "string"
         }
+      },
+      "required": [
+        "repository",
+        "tag",
+        "pullPolicy"
+      ],
+      "title": "image",
+      "type": "object"
+    },
+    "podAnnotations": {
+      "additionalProperties": false,
+      "required": [],
+      "title": "podAnnotations",
+      "type": "object"
+    },
+    "podLabels": {
+      "additionalProperties": false,
+      "description": "Set priorityCLassName in deployment\npriorityClassName: \"\"",
+      "required": [],
+      "title": "podLabels",
+      "type": "object"
+    },
+    "rbac": {
+      "additionalProperties": false,
+      "properties": {
+        "create": {
+          "default": true,
+          "description": "Specifies whether RBAC resources should be created",
+          "required": [],
+          "title": "create",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "create"
+      ],
+      "title": "rbac",
+      "type": "object"
+    },
+    "resources": {
+      "additionalProperties": false,
+      "required": [],
+      "title": "resources",
+      "type": "object"
+    },
+    "sentry": {
+      "additionalProperties": false,
+      "properties": {
+        "dsn": {
+          "default": "\u003cchange-me\u003e",
+          "required": [],
+          "title": "dsn",
+          "type": "string"
+        }
+      },
+      "required": [
+        "dsn"
+      ],
+      "title": "sentry",
+      "type": "object"
+    },
+    "serviceAccount": {
+      "additionalProperties": false,
+      "properties": {
+        "create": {
+          "default": true,
+          "description": "Specifies whether a ServiceAccount should be created",
+          "required": [],
+          "title": "create",
+          "type": "boolean"
+        },
+        "name": {
+          "default": "",
+          "description": "The name of the ServiceAccount to use.\nIf not set and create is true, a name is generated using the fullname template",
+          "required": [],
+          "title": "name",
+          "type": "null"
+        }
+      },
+      "required": [
+        "create",
+        "name"
+      ],
+      "title": "serviceAccount",
+      "type": "object"
     }
+  },
+  "required": [
+    "sentry",
+    "image",
+    "resources",
+    "serviceAccount",
+    "rbac",
+    "podLabels",
+    "podAnnotations"
+  ],
+  "type": "object"
 }
