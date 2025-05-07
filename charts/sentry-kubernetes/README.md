@@ -1,6 +1,7 @@
 # sentry-kubernetes
 
-[sentry-kubernetes](https://github.com/getsentry/sentry-kubernetes) is a utility that pushes Kubernetes events to [Sentry](https://sentry.io).
+[sentry-kubernetes](https://github.com/getsentry/sentry-kubernetes) is a utility that pushes Kubernetes events
+to [Sentry](https://sentry.io).
 
 # Installation:
 
@@ -41,11 +42,13 @@ The following table lists the configurable parameters of the sentry-kubernetes c
 
 ## Usage
 
-After installing the chart, you can configure various aspects of the sentry-kubernetes integration by modifying the `values.yaml` file or using `--set` flags during installation.
+After installing the chart, you can configure various aspects of the sentry-kubernetes integration by modifying the
+`values.yaml` file or using `--set` flags during installation.
 
 ### Example `values.yaml` Configuration
 
-Here's an example `values.yaml` that sets up sentry-kubernetes with custom configurations (remove unused values for default values):
+Here's an example `values.yaml` that sets up sentry-kubernetes with custom configurations (remove unused values for
+default values):
 
 ```yaml
 sentry:
@@ -70,21 +73,21 @@ rbac:
   create: true
   # Will replace the default rules
   custom_rules:
-   - verbs:
-       - get
-       - list
-       - watch
-     apiGroups:
-       - 'apps'
-       - 'batch'
-       - ''
-     resources:
-       - events
-       - jobs
-       - deployments
-       - replicasets
-       - cronjobs
-       - pods
+    - verbs:
+        - get
+        - list
+        - watch
+      apiGroups:
+        - 'apps'
+        - 'batch'
+        - ''
+      resources:
+        - events
+        - jobs
+        - deployments
+        - replicasets
+        - cronjobs
+        - pods
 
 resources:
   limits:
@@ -97,7 +100,24 @@ resources:
 
 ## 📑 Schema Validation
 
-This enables autocompletion and live validation of your values.yaml file in editors that support JSON Schema (YAML Language Server, VS Code, JetBrains, etc.).
+The chart includes a [JSON Schema](https://json-schema.org/) for the `values.yaml` file, automatically generated from
+`charts/sentry/values.yaml` and hosted here:
+
+[https://raw.githubusercontent.com/sentry-kubernetes/charts/develop/charts/sentry-kubernetes/values.schema.json](https://raw.githubusercontent.com/sentry-kubernetes/charts/develop/charts/sentry/values.schema.json)
+
+This schema enables autocompletion and validation of `values.yaml` in editors that support JSON Schema (VS Code,
+IntelliJ, etc.).
+
+**To regenerate the schema** (on every update to `values.yaml`):
+
+```bash
+# 1. Install the Helm plugin
+helm plugin install https://github.com/dadav/helm-schema
+
+# 2. Generate the schema
+cd charts/sentry-kubernetes
+helm schema
+```
 
 **Editor support:** To enable autocompletion and live validation, choose one:
 
@@ -118,4 +138,5 @@ This enables autocompletion and live validation of your values.yaml file in edit
       ]
     }
     ```
-  * **JetBrains IDEs**: in **Settings > Languages & Frameworks > Schemas and DTDs > JSON Schema Mappings**, add the schema URL for `values.yaml`.
+  * **JetBrains IDEs**: in **Settings > Languages & Frameworks > Schemas and DTDs > JSON Schema Mappings**, add the
+    schema URL for `values.yaml`.

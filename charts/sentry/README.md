@@ -1150,7 +1150,24 @@ Note: this table is incomplete, so have a look at the values.yaml in case you mi
 
 ## 📑 Schema Validation
 
-This enables autocompletion and live validation of your values.yaml file in editors that support JSON Schema (YAML Language Server, VS Code, JetBrains, etc.).
+The chart includes a [JSON Schema](https://json-schema.org/) for the `values.yaml` file, automatically generated from
+`charts/sentry/values.yaml` and hosted here:
+
+[https://raw.githubusercontent.com/sentry-kubernetes/charts/develop/charts/sentry/values.schema.json](https://raw.githubusercontent.com/sentry-kubernetes/charts/develop/charts/sentry/values.schema.json)
+
+This schema enables autocompletion and validation of `values.yaml` in editors that support JSON Schema (VS Code,
+IntelliJ, etc.).
+
+**To regenerate the schema** (on every update to `values.yaml`):
+
+```bash
+# 1. Install the Helm plugin
+helm plugin install https://github.com/dadav/helm-schema
+
+# 2. Generate the schema
+cd charts/sentry
+helm schema
+```
 
 **Editor support:** To enable autocompletion and live validation, choose one:
 
@@ -1171,22 +1188,29 @@ This enables autocompletion and live validation of your values.yaml file in edit
       ]
     }
     ```
-  * **JetBrains IDEs**: in **Settings > Languages & Frameworks > Schemas and DTDs > JSON Schema Mappings**, add the schema URL for `values.yaml`.
+  * **JetBrains IDEs**: in **Settings > Languages & Frameworks > Schemas and DTDs > JSON Schema Mappings**, add the
+    schema URL for `values.yaml`.
 
 ## NGINX and/or Ingress
 
-By default, NGINX is enabled to allow sending the incoming requests to [Sentry Relay](https://getsentry.github.io/relay/) or the Django backend depending on the path. When Sentry is meant to be exposed outside of the Kubernetes cluster, it is recommended to disable NGINX and let the Ingress do the same. It's recommended to go with the go to Ingress Controller, [NGINX Ingress](https://kubernetes.github.io/ingress-nginx/) but others should work as well.
+By default, NGINX is enabled to allow sending the incoming requests
+to [Sentry Relay](https://getsentry.github.io/relay/) or the Django backend depending on the path. When Sentry is meant
+to be exposed outside of the Kubernetes cluster, it is recommended to disable NGINX and let the Ingress do the same.
+It's recommended to go with the go to Ingress Controller, [NGINX Ingress](https://kubernetes.github.io/ingress-nginx/)
+but others should work as well.
 
 ## Sentry secret key
 
-If no `sentry.existingSecret` value is specified, for your security, the [`system.secret-key`](https://develop.sentry.dev/config/#general) is generated for you on the first installation and stored in a kubernetes secret.
+If no `sentry.existingSecret` value is specified, for your security, the [
+`system.secret-key`](https://develop.sentry.dev/config/#general) is generated for you on the first installation and
+stored in a kubernetes secret.
 
 If `sentry.existingSecret` / `sentry.existingSecretKey` values are provided, those secrets will be used.
 
-
 ## Symbolicator and or JavaScript source maps
 
-For getting native stacktraces and minidumps symbolicated with debug symbols (e.g. iOS/Android), you need to enable Symbolicator via
+For getting native stacktraces and minidumps symbolicated with debug symbols (e.g. iOS/Android), you need to enable
+Symbolicator via
 
 ```yaml
 symbolicator:
@@ -1206,14 +1230,19 @@ filestore:
       # storageClass: 'efs-storage' # see note below
 ```
 
-Note: If you need to run or cannot avoid running sentry-worker and sentry-web on different cluster nodes, you need to set `filestore.filesystem.persistence.accessMode: ReadWriteMany` or might get problems. HOWEVER, [not all volume drivers support it](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#access-modes), like AWS EBS or GCP disks.
-So you would want to create and use a `StorageClass` with a supported volume driver like [AWS EFS](https://github.com/kubernetes-sigs/aws-efs-csi-driver)
+Note: If you need to run or cannot avoid running sentry-worker and sentry-web on different cluster nodes, you need to
+set `filestore.filesystem.persistence.accessMode: ReadWriteMany` or might get problems.
+HOWEVER, [not all volume drivers support it](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#access-modes),
+like AWS EBS or GCP disks.
+So you would want to create and use a `StorageClass` with a supported volume driver
+like [AWS EFS](https://github.com/kubernetes-sigs/aws-efs-csi-driver)
 
 Its also important having `connect_to_reserved_ips: true` in the symbolicator config file, which this Chart defaults to.
 
 #### Source Maps
 
-To get javascript source map processing working, you need to activate sourcemaps, which in turn activates the memcached dependency:
+To get javascript source map processing working, you need to activate sourcemaps, which in turn activates the memcached
+dependency:
 
 ```yaml
 sourcemaps:
@@ -1222,10 +1251,10 @@ sourcemaps:
 
 For details on the background see this blog post: https://engblog.yext.com/post/sentry-js-source-maps
 
-
 ## Geolocation
 
-[Geolocation of IP addresses](https://develop.sentry.dev/self-hosted/geolocation/) is supported if you provide a GeoIP database:
+[Geolocation of IP addresses](https://develop.sentry.dev/self-hosted/geolocation/) is supported if you provide a GeoIP
+database:
 
 Example values.yaml:
 
@@ -1344,7 +1373,8 @@ externalPostgresql:
     host: host
 ```
 
-it is possible to define which properties should be taken from secret or `values.yaml`, example below only takes `username` and `password` values from the secret:
+it is possible to define which properties should be taken from secret or `values.yaml`, example below only takes
+`username` and `password` values from the secret:
 
 ```yaml
 externalPostgresql:
@@ -1357,7 +1387,8 @@ externalPostgresql:
   database: sentry
 ```
 
-> ⚠️ `.Values.externalPostgresql.existingSecretKey` is deprecated, `.Values.externalPostgresql.existingSecretKeys.password` should be used instead.
+> ⚠️ `.Values.externalPostgresql.existingSecretKey` is deprecated,
+`.Values.externalPostgresql.existingSecretKeys.password` should be used instead.
 
 # Usage
 
