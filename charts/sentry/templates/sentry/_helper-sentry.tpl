@@ -486,6 +486,8 @@ sentry.conf.py: |-
               "organizations:session-replay-slack-new-issue",
               "organizations:session-replay-issue-emails",
               "organizations:session-replay-event-linking",
+              "organizations:session-replay-enable-canvas",
+              "organizations:session-replay-enable-canvas-replayer",
               "organizations:session-replay-weekly-email",
               "organizations:session-replay-trace-table",
               "organizations:session-replay-rage-dead-selectors",
@@ -510,6 +512,7 @@ sentry.conf.py: |-
               {{- if .Values.sentry.features.enableFeedback }}
               "organizations:user-feedback-ui",
               "organizations:user-feedback-ingest",
+              "organizations:user-feedback-replay-clip",
               "organizations:feedback-ingest",
               "organizations:feedback-post-process-group",
               "organizations:feedback-visible",
@@ -518,23 +521,48 @@ sentry.conf.py: |-
               {{- if .Values.sentry.features.enableSpan }}
               "projects:span-metrics-extraction",
               "projects:span-metrics-extraction-addons",
-              "organizations:indexed-spans-extraction",
-              "organizations:starfish-browser-resource-module-image-view",
-              "organizations:starfish-browser-resource-module-ui",
-              "organizations:starfish-browser-webvitals",
-              "organizations:starfish-browser-webvitals-pageoverview-v2",
-              "organizations:starfish-browser-webvitals-use-backend-scores",
-              "organizations:performance-calculate-score-relay",
-              "organizations:starfish-browser-webvitals-replace-fid-with-inp",
+              # trace view
+              "organizations:trace-view-v1", # This one is required
+              "organizations:replay-trace-view-v1", # Optional
+              "organizations:trace-drawer-action", # Optional
+              "organizations:trace-spans-format", # Optional
+              # performance trace metrics
+              "organizations:performance-trace-explorer", # Required
+              "organizations:performance-trace-details", # Required
+              "organizations:performance-trace-explorer-sorting"
+              "organizations:performance-tracing-without-performance",
+              "organizations:performance-span-histogram-view", # Probably required
+              "organizations:performance-spans-new-ui", # Probably mandatory? I'm not sure
+              "organizations:issue-details-new-performance-trace-view", # Optional. So you can see performance from issue details page
+              # span-based metrics
+              "organizations:anomaly-detection-eap", # Enable anomaly detection feature for EAP spans
               "organizations:deprecate-fid-from-performance-score",
-              "organizations:performance-database-view",
-              "organizations:performance-screens-view",
-              "organizations:mobile-ttid-ttfd-contribution",
-              "organizations:starfish-mobile-appstart",
-              "organizations:standalone-span-ingestion",
+              "organizations:explore-multi-query", # Enable explore multi query page
+              "organizations:indexed-spans-extraction", # Mandatory! Starfish: extract metrics from the spans
+              "organizations:ingest-spans-in-eap", # Mandatory! Enable tagging span with whether or not we should ingest it in the EAP
+              "organizations:insights-addon-modules",
               "organizations:insights-entry-points",
               "organizations:insights-initial-modules",
-              "organizations:insights-addon-modules",
+              "organizations:insights-use-eap", # Make Insights modules use EAP instead of metrics
+              "organizations:mobile-ttid-ttfd-contribution",
+              "organizations:performance-calculate-score-relay",
+              "organizations:performance-database-view",
+              "organizations:performance-issues-spans",
+              "organizations:performance-screens-view",
+              "organizations:performance-transaction-summary-eap",
+              "organizations:standalone-span-ingestion",
+              "organizations:starfish-browser-resource-module-image-view",
+              "organizations:starfish-browser-resource-module-ui",
+              "organizations:starfish-browser-webvitals-pageoverview-v2",
+              "organizations:starfish-browser-webvitals-replace-fid-with-inp",
+              "organizations:starfish-browser-webvitals-use-backend-scores",
+              "organizations:starfish-browser-webvitals",
+              "organizations:starfish-mobile-appstart",
+              "organizations:transaction-metrics-extraction", # Extraction metrics for transactions during ingestion.
+              "organizations:visibility-explore-admin", # Enable admin features on the new explore page
+              "organizations:visibility-explore-equations", # Enable equations feature on the new explore page
+              "organizations:visibility-explore-range-high", # Enable high date range options on new explore page
+              "organizations:visibility-explore-view", # Mandatory! Enable the new explore page
               {{ end -}}
 
               "organizations:dashboards-mep",

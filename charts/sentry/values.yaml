@@ -837,6 +837,27 @@ sentry:
     # logLevel: "WARNING" # DEBUG|INFO|WARNING|ERROR|CRITICAL|FATAL
     # logFormat: "machine" # human|machine
 
+  subscriptionConsumerEapSpans:
+    enabled: true
+    replicas: 1
+    env: []
+    resources: {}
+    affinity: {}
+    nodeSelector: {}
+    securityContext: {}
+    topologySpreadConstraints: []
+    containerSecurityContext: {}
+    # tolerations: []
+    # podLabels: {}
+    livenessProbe:
+      enabled: true
+      initialDelaySeconds: 5
+      periodSeconds: 320
+    # volumes: []
+    # volumeMounts: []
+    # autoOffsetReset: "earliest"
+    # noStrictOffsetReset: false
+
   subscriptionConsumerEvents:
     enabled: true
     replicas: 1
@@ -945,6 +966,56 @@ sentry:
     resources: {}
     #  requests:
     #    cpu: 300m
+    #    memory: 500Mi
+    affinity: {}
+    nodeSelector: {}
+    securityContext: {}
+    containerSecurityContext: {}
+    # tolerations: []
+    # podLabels: {}
+    sidecars: []
+    topologySpreadConstraints: []
+    volumes: []
+    # volumeMounts: []
+    livenessProbe:
+      enabled: true
+      initialDelaySeconds: 5
+      periodSeconds: 320
+    # autoOffsetReset: "earliest"
+    # noStrictOffsetReset: false
+
+  processSegments:
+    enabled: true
+    replicas: 1
+    env: []
+    resources: {}
+    #  requests:
+    #    cpu: 150m
+    #    memory: 500Mi
+    affinity: {}
+    nodeSelector: {}
+    securityContext: {}
+    containerSecurityContext: {}
+    # tolerations: []
+    # podLabels: {}
+    sidecars: []
+    topologySpreadConstraints: []
+    volumes: []
+    # volumeMounts: []
+    livenessProbe:
+      enabled: true
+      initialDelaySeconds: 5
+      periodSeconds: 320
+    # autoOffsetReset: "earliest"
+    # noStrictOffsetReset: false
+
+  processSpans:
+    enabled: true
+    replicas: 1
+    env: []
+    resources: {}
+    #  requests:
+    #    cpu: 150m
     #    memory: 500Mi
     affinity: {}
     nodeSelector: {}
@@ -1115,6 +1186,39 @@ snuba:
     #     emptyDir:
     #       medium: Memory
 
+  eapItemsSpanConsumer:
+    enabled: true
+    replicas: 1
+    env: []
+    resources: {}
+    affinity: {}
+    nodeSelector: {}
+    securityContext: {}
+    topologySpreadConstraints: []
+    containerSecurityContext: {}
+    # tolerations: []
+    # podLabels: {}
+    # autoOffsetReset: "earliest"
+    livenessProbe:
+      enabled: true
+      initialDelaySeconds: 5
+      periodSeconds: 320
+    # maxBatchSize: ""
+    # processes: ""
+    # inputBlockSize: ""
+    # outputBlockSize: ""
+    maxBatchTimeMs: 750
+    # queuedMaxMessagesKbytes: ""
+    # queuedMinMessages: ""
+    # noStrictOffsetReset: false
+    # volumeMounts:
+    #   - mountPath: /dev/shm
+    #     name: dshm
+    # volumes:
+    #   - name: dshm
+    #     emptyDir:
+    #       medium: Memory
+
   outcomesConsumer:
     enabled: true
     replicas: 1
@@ -1227,6 +1331,27 @@ snuba:
     maxBatchTimeMs: 750
     # queuedMaxMessagesKbytes: ""
     # queuedMinMessages: ""
+    # noStrictOffsetReset: false
+
+  subscriptionConsumerEapSpans:
+    enabled: true
+    replicas: 1
+    env: []
+    resources: {}
+    affinity: {}
+    nodeSelector: {}
+    securityContext: {}
+    topologySpreadConstraints: []
+    containerSecurityContext: {}
+    # tolerations: []
+    # podLabels: {}
+    livenessProbe:
+      enabled: true
+      initialDelaySeconds: 5
+      periodSeconds: 320
+    # volumes: []
+    # volumeMounts: []
+    # autoOffsetReset: "earliest"
     # noStrictOffsetReset: false
 
   subscriptionConsumerEvents:
@@ -2113,6 +2238,7 @@ kafka:
       - name: outcomes-dlq
       - name: outcomes-billing
       - name: outcomes-billing-dlq
+      - name: ingest-spans
       - name: ingest-sessions
       - name: snuba-metrics-commit-log
         config:

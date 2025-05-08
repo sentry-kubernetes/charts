@@ -47,6 +47,7 @@ settings.py: |
       "storage_sets": {
           "cdc",
           "discover",
+          "eap_items",
           "events",
           "events_ro",
           "metrics",
