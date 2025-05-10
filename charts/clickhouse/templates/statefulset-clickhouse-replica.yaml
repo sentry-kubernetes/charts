@@ -166,6 +166,10 @@ spec:
           - key: users.xml
             path: users.xml
       {{- end }}
+      {{- if .Values.clickhouse.configmap.configOverride }}
+          - key: override.xml
+            path: override.xml
+      {{- end }}
 {{- if .Values.clickhouse.volumes }}
 {{ toYaml .Values.clickhouse.volumes | indent 6 }}
 {{- end }}
