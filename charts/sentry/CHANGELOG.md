@@ -1,5 +1,12 @@
 # Changelog
 
+## [26.17.1](https://github.com/sentry-kubernetes/charts/compare/sentry-v26.17.0...sentry-v26.17.1) (2025-05-12)
+
+
+### Bug Fixes
+
+* fix typo in value of argument '--consumer-group' for ([#1758](https://github.com/sentry-kubernetes/charts/issues/1758)) ([15d1811](https://github.com/sentry-kubernetes/charts/commit/15d1811b088b26f20215970d53622e59d4973728))
+
 ## [26.17.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v26.16.0...sentry-v26.17.0) (2025-05-09)
 
 
