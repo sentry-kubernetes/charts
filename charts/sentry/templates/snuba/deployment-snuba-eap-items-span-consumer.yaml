@@ -88,7 +88,7 @@ spec:
           - "--storage"
           - "eap_items"
           - "--consumer-group"
-          - "snuba-eap-items-span-consumers "
+          - "snuba-eap-items-span-consumers"
           {{- if .Values.snuba.eapItemsSpanConsumer.autoOffsetReset }}
           - "--auto-offset-reset"
           - "{{ .Values.snuba.eapItemsSpanConsumer.autoOffsetReset }}"
