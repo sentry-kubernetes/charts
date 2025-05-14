@@ -17,6 +17,10 @@ dependencies:
     repository: oci://registry-1.docker.io/bitnamicharts
     version: 29.3.14
     condition: kafka.enabled
+  - name: redpanda
+    repository: https://charts.redpanda.com
+    version: 5.10.2
+    condition: redpanda.enabled
   - name: clickhouse
     repository: https://sentry-kubernetes.github.io/charts
     version: 3.14.1

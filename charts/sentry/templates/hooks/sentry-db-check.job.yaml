@@ -141,7 +141,7 @@ spec:
               done
               echo "Zookeeper is up"
               {{- end }}
-              {{- if .Values.kafka.kraft.enabled }}
+              {{- if or (.Values.kafka.kraft.enabled) (.Values.kafka.redpanda.enabled) }}
               KAFKA_REPLICAS={{ .Values.kafka.controller.replicaCount | default 3 }}
               echo "Kafka Kraft is enabled, checking if Kraft controllers are up"
               KRAFT_STATUS=0
@@ -162,7 +162,7 @@ spec:
               done
               echo "Kraft controllers are up"
               {{- end }}
-              {{- else if (not (.Values.externalKafka.cluster)) }}
+              {{- else if and (not (.Values.externalKafka.cluster)) (not (.Values.redpanda.enabled)) }}
               KAFKA_HOST={{ .Values.externalKafka.host }}
               if ! nc -z "$KAFKA_HOST" {{ $kafkaPort }}; then
                 KAFKA_STATUS=0

@@ -2196,10 +2196,20 @@ zookeeper:
   # persistence:
   #   size: 8Gi
 
+redpanda:
+  enabled: true
+  statefulset:
+    replicas: 3
+  listeners:
+    kafka:
+      authenticationMethod: "none"
+  console:
+    enabled: false
+
 # Settings for Kafka.
 # See https://github.com/bitnami/charts/tree/master/bitnami/kafka
 kafka:
-  enabled: true
+  enabled: false
   provisioning:
     ## Increasing the replicationFactor enhances data reliability during Kafka pod failures by replicating data across multiple brokers.
     # Note that existing topics will remain with replicationFactor: 1 when updated.

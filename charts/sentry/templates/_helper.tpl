@@ -443,7 +443,7 @@ True
 Set Kafka Confluent host
 */}}
 {{- define "sentry.kafka.host" -}}
-{{- if .Values.kafka.enabled -}}
+{{- if or (.Values.kafka.enabled) (.Values.redpanda.enabled) -}}
 {{- template "sentry.kafka.fullname" . -}}
 {{- else if and (.Values.externalKafka) (not (.Values.externalKafka.cluster)) -}}
 {{ required "A valid .Values.externalKafka.host is required" .Values.externalKafka.host }}
@@ -454,7 +454,10 @@ Set Kafka Confluent host
 Set Kafka Confluent port
 */}}
 {{- define "sentry.kafka.port" -}}
-{{- if and (.Values.kafka.enabled) (.Values.kafka.service.ports.client) -}}
+{{- if or
+     (and .Values.kafka.enabled .Values.kafka.service.ports.client)
+     .Values.redpanda.enabled
+-}}
 {{- .Values.kafka.service.ports.client }}
 {{- else if and (.Values.externalKafka) (not (.Values.externalKafka.cluster)) -}}
 {{ required "A valid .Values.externalKafka.port is required" .Values.externalKafka.port }}

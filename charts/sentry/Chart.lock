@@ -8,6 +8,9 @@ dependencies:
 - name: kafka
   repository: oci://registry-1.docker.io/bitnamicharts
   version: 29.3.14
+- name: redpanda
+  repository: https://charts.redpanda.com
+  version: 5.10.2
 - name: clickhouse
   repository: https://sentry-kubernetes.github.io/charts
   version: 3.14.1
@@ -23,5 +26,5 @@ dependencies:
 - name: nginx
   repository: oci://registry-1.docker.io/bitnamicharts
   version: 18.2.5
-digest: sha256:2b19e9605468921ff96afb9f393ffe09d3121e5b91f32789e025851f0b66ff63
-generated: "2025-01-17T18:17:43.022337376+06:00"
+digest: sha256:4dec91142eae48683df30b2e28d775b40dbfbd2f6a5870c88ac921b59f0ac5ce
+generated: "2025-05-14T22:42:24.544964974+02:00"
