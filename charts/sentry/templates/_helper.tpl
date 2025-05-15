@@ -454,10 +454,9 @@ Set Kafka Confluent host
 Set Kafka Confluent port
 */}}
 {{- define "sentry.kafka.port" -}}
-{{- if or
-     (and .Values.kafka.enabled .Values.kafka.service.ports.client)
-     .Values.redpanda.enabled
--}}
+{{- if .Values.redpanda.enabled -}}
+{{- .Values.redpanda.kafka.port }}
+{{- else if and .Values.kafka.enabled .Values.kafka.service.ports.client -}}
 {{- .Values.kafka.service.ports.client }}
 {{- else if and (.Values.externalKafka) (not (.Values.externalKafka.cluster)) -}}
 {{ required "A valid .Values.externalKafka.port is required" .Values.externalKafka.port }}
@@ -468,7 +467,9 @@ Set Kafka Confluent port
 Set Kafka Confluent Controller port
 */}}
 {{- define "sentry.kafka.controller_port" -}}
-{{- if and (.Values.kafka.enabled) (.Values.kafka.service.ports.controller ) -}}
+{{- if .Values.redpanda.enabled -}}
+{{- .Values.redpanda.kafka.port }}
+{{- else if and (.Values.kafka.enabled) (.Values.kafka.service.ports.controller ) -}}
 {{- .Values.kafka.service.ports.controller }}
 {{- else if and (.Values.externalKafka) (not (.Values.externalKafka.cluster)) -}}
 {{ required "A valid .Values.externalKafka.port is required" .Values.externalKafka.port }}
@@ -479,7 +480,7 @@ Set Kafka Confluent Controller port
 Set Kafka bootstrap servers string
 */}}
 {{- define "sentry.kafka.bootstrap_servers_string" -}}
-{{- if or (.Values.kafka.enabled) (not (.Values.externalKafka.cluster)) -}}
+{{- if or (.Values.kafka.enabled) (.Values.redpanda.enabled) (not (.Values.externalKafka.cluster)) -}}
 {{ printf "%s:%s" (include "sentry.kafka.host" .) (include "sentry.kafka.port" .) }}
 {{- else -}}
 {{- range $index, $elem := .Values.externalKafka.cluster -}}
@@ -499,7 +500,11 @@ SASL auth setings for Kafka:
 Set Kafka security protocol
 */}}
 {{- define "sentry.kafka.security_protocol" -}}
-{{- if .Values.kafka.enabled -}}
+{{- if .Values.redpanda.enabled -}}
+{{- if and .Values.redpanda.auth.sasl.enabled -}}
+{{ default "plaintext" .Values.redpanda.listeners.kafka.authenticationMethod }}
+{{- end -}}
+{{- else if .Values.kafka.enabled -}}
 {{ default "plaintext" .Values.kafka.listeners.client.protocol }}
 {{- else -}}
 {{ default "plaintext" .Values.externalKafka.security.protocol }}
@@ -512,7 +517,9 @@ Set Kafka sasl mechanism
 {{- define "sentry.kafka.sasl_mechanism" -}}
 {{- $CheckProtocol := include "sentry.kafka.security_protocol" . -}}
 {{- if (regexMatch "^SASL_" $CheckProtocol) -}}
-{{- if .Values.kafka.enabled -}}
+{{- if .Values.redpanda.enabled -}}
+{{ default "None" .Values.redpanda.auth.sasl.mechanism }}
+{{- else if .Values.kafka.enabled -}}
 {{ default "None" (split "," .Values.kafka.sasl.enabledMechanisms)._0 }}
 {{- else -}}
 {{ default "None" .Values.externalKafka.sasl.mechanism }}
@@ -528,7 +535,9 @@ Set Kafka sasl username
 {{- define "sentry.kafka.sasl_username" -}}
 {{- $CheckProtocol := include "sentry.kafka.security_protocol" . -}}
 {{- if (regexMatch "^SASL_" $CheckProtocol) -}}
-{{- if .Values.kafka.enabled -}}
+{{- if .Values.redpanda.enabled -}}
+{{ default "None" (first (default tuple .Values.redpanda.auth.sasl.users).name)  }}
+{{- else if .Values.kafka.enabled -}}
 {{ default "None" (first (default tuple .Values.kafka.sasl.client.users)) }}
 {{- else -}}
 {{ default "None" .Values.externalKafka.sasl.username }}
@@ -544,7 +553,9 @@ Set Kafka sasl password
 {{- define "sentry.kafka.sasl_password" -}}
 {{- $CheckProtocol := include "sentry.kafka.security_protocol" . -}}
 {{- if (regexMatch "^SASL_" $CheckProtocol) -}}
-{{- if .Values.kafka.enabled -}}
+{{- if .Values.redpanda.enabled -}}
+{{ default "None" (first (default tuple .Values.redpanda.auth.sasl.users).password) }}
+{{- else if .Values.kafka.enabled -}}
 {{ default "None" (first (default tuple .Values.kafka.sasl.client.passwords)) }}
 {{- else -}}
 {{ default "None" .Values.externalKafka.sasl.password }}
@@ -558,6 +569,8 @@ Set Kafka sasl password
 Set Senty compression.type for Kafka
 */}}
 {{- define "sentry.kafka.compression_type" -}}
+{{- if .Values.redpanda.enabled -}}
+{{ default "" .Values.sentry.kafka.compression.type }}
 {{- if .Values.kafka.enabled -}}
 {{ default "" .Values.sentry.kafka.compression.type }}
 {{- else -}}
@@ -569,7 +582,9 @@ Set Senty compression.type for Kafka
 Set Senty message.max.bytes for Kafka
 */}}
 {{- define "sentry.kafka.message_max_bytes" -}}
-{{- if .Values.kafka.enabled -}}
+{{- if .Values.redpanda.enabled -}}
+{{ default 50000000 .Values.sentry.kafka.message.max.bytes | int64 }}
+{{- else if .Values.kafka.enabled -}}
 {{ default 50000000 .Values.sentry.kafka.message.max.bytes | int64 }}
 {{- else -}}
 {{ default 50000000 .Values.externalKafka.message.max.bytes | int64 }}
@@ -580,7 +595,9 @@ Set Senty message.max.bytes for Kafka
 Set Senty socket.timeout for Kafka
 */}}
 {{- define "sentry.kafka.socket_timeout_ms" -}}
-{{- if .Values.kafka.enabled -}}
+{{- if .Values.redpanda.enabled -}}
+{{ default 1000 .Values.sentry.kafka.socket.timeout.ms | int64 }}
+{{- else if .Values.kafka.enabled -}}
 {{ default 1000 .Values.sentry.kafka.socket.timeout.ms | int64 }}
 {{- else -}}
 {{ default 1000 .Values.externalKafka.socket.timeout.ms | int64 }}
