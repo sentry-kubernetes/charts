@@ -1989,6 +1989,7 @@ config:
     # No YAML relay config given
   web:
     httpKeepalive: 15
+    httpChunkedInput: true
     workers: 3
     memoryReport: false
     maxRequests: 100000

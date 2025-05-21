@@ -352,26 +352,26 @@ sentry.conf.py: |-
       "uwsgi-socket": None,
       # Keep this between 15s-75s as that's what Relay supports
       "http-keepalive": {{ .Values.config.web.httpKeepalive }},
-      "http-chunked-input": True,
+      "http-chunked-input": {{ .Values.config.web.httpChunkedInput | ternary "True" "False" }},
       # the number of web workers
       'workers': {{ .Values.config.web.workers }},
       # Turn off memory reporting
-      "memory-report": {{ .Values.config.web.memoryReport }},
+      "memory-report": {{ .Values.config.web.memoryReport | ternary "True" "False" }},
       # Some stuff so uwsgi will cycle workers sensibly
       'max-requests': {{ .Values.config.web.maxRequests }},
       'max-requests-delta': {{ .Values.config.web.maxRequestsDelta }},
       'max-worker-lifetime': {{ .Values.config.web.maxWorkerLifetime }},
       # Duplicate options from sentry default just so we don't get
       # bit by sentry changing a default value that we depend on.
-      'thunder-lock': {{ .Values.config.web.thunderLock }},
-      'log-x-forwarded-for': {{ .Values.config.web.logXForwardedFor }},
+      'thunder-lock': {{ .Values.config.web.thunderLock | ternary "True" "False" }},
+      'log-x-forwarded-for': {{ .Values.config.web.logXForwardedFor | ternary "True" "False" }},
       'buffer-size': {{ .Values.config.web.bufferSize }},
       'limit-post': {{ .Values.config.web.limitPost }},
-      'disable-logging': {{ .Values.config.web.disableLogging }},
+      'disable-logging': {{ .Values.config.web.disableLogging | ternary "True" "False" }},
       'reload-on-rss': {{ .Values.config.web.reloadOnRss }},
-      'ignore-sigpipe': {{ .Values.config.web.ignoreSignpipe }},
-      'ignore-write-errors': {{ .Values.config.web.ignoreWriteErrors }},
-      'disable-write-exception': {{ .Values.config.web.disableWriteException }},
+      'ignore-sigpipe': {{ .Values.config.web.ignoreSignpipe | ternary "True" "False" }},
+      'ignore-write-errors': {{ .Values.config.web.ignoreWriteErrors | ternary "True" "False" }},
+      'disable-write-exception': {{ .Values.config.web.disableWriteException | ternary "True" "False" }},
   }
 
   ###########
