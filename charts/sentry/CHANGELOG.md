@@ -1,5 +1,12 @@
 # Changelog
 
+## [26.18.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v26.17.1...sentry-v26.18.0) (2025-05-21)
+
+
+### Features
+
+* add more values for sentry ([#1765](https://github.com/sentry-kubernetes/charts/issues/1765)) ([cdd0905](https://github.com/sentry-kubernetes/charts/commit/cdd0905581c01309caee734e9f778add0cf3cf4c))
+
 ## [26.17.1](https://github.com/sentry-kubernetes/charts/compare/sentry-v26.17.0...sentry-v26.17.1) (2025-05-12)
 
 
