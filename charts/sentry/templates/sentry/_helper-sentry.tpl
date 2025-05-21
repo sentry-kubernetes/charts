@@ -365,10 +365,10 @@ sentry.conf.py: |-
       # bit by sentry changing a default value that we depend on.
       'thunder-lock': {{ .Values.config.web.thunderLock | ternary "True" "False" }},
       'log-x-forwarded-for': {{ .Values.config.web.logXForwardedFor | ternary "True" "False" }},
-      'buffer-size': {{ .Values.config.web.bufferSize }},
+      'buffer-size': {{ .Values.config.web.bufferSize | int }},
       'limit-post': {{ .Values.config.web.limitPost | int }},
       'disable-logging': {{ .Values.config.web.disableLogging | ternary "True" "False" }},
-      'reload-on-rss': {{ .Values.config.web.reloadOnRss }},
+      'reload-on-rss': {{ .Values.config.web.reloadOnRss | int }},
       'ignore-sigpipe': {{ .Values.config.web.ignoreSignpipe | ternary "True" "False" }},
       'ignore-write-errors': {{ .Values.config.web.ignoreWriteErrors | ternary "True" "False" }},
       'disable-write-exception': {{ .Values.config.web.disableWriteException | ternary "True" "False" }},
