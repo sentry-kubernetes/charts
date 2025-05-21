@@ -351,16 +351,16 @@ sentry.conf.py: |-
       # This is needed to prevent https://git.io/fj7Lw
       "uwsgi-socket": None,
       # Keep this between 15s-75s as that's what Relay supports
-      "http-keepalive": {{ .Values.config.web.httpKeepalive }},
+      "http-keepalive": {{ .Values.config.web.httpKeepalive | int }},
       "http-chunked-input": {{ .Values.config.web.httpChunkedInput | ternary "True" "False" }},
       # the number of web workers
-      'workers': {{ .Values.config.web.workers }},
+      'workers': {{ .Values.config.web.workers | int }},
       # Turn off memory reporting
       "memory-report": {{ .Values.config.web.memoryReport | ternary "True" "False" }},
       # Some stuff so uwsgi will cycle workers sensibly
-      'max-requests': {{ .Values.config.web.maxRequests }},
-      'max-requests-delta': {{ .Values.config.web.maxRequestsDelta }},
-      'max-worker-lifetime': {{ .Values.config.web.maxWorkerLifetime }},
+      'max-requests': {{ .Values.config.web.maxRequests | int }},
+      'max-requests-delta': {{ .Values.config.web.maxRequestsDelta | int }},
+      'max-worker-lifetime': {{ .Values.config.web.maxWorkerLifetime | int }},
       # Duplicate options from sentry default just so we don't get
       # bit by sentry changing a default value that we depend on.
       'thunder-lock': {{ .Values.config.web.thunderLock | ternary "True" "False" }},
