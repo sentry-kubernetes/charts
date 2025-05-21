@@ -354,24 +354,24 @@ sentry.conf.py: |-
       "http-keepalive": {{ .Values.config.web.httpKeepalive }},
       "http-chunked-input": True,
       # the number of web workers
-      'workers': 3,
+      'workers': {{ .Values.config.web.workers }},
       # Turn off memory reporting
-      "memory-report": False,
+      "memory-report": {{ .Values.config.web.memoryReport }},
       # Some stuff so uwsgi will cycle workers sensibly
       'max-requests': {{ .Values.config.web.maxRequests }},
       'max-requests-delta': {{ .Values.config.web.maxRequestsDelta }},
       'max-worker-lifetime': {{ .Values.config.web.maxWorkerLifetime }},
       # Duplicate options from sentry default just so we don't get
       # bit by sentry changing a default value that we depend on.
-      'thunder-lock': True,
-      'log-x-forwarded-for': False,
-      'buffer-size': 32768,
-      'limit-post': 209715200,
-      'disable-logging': True,
-      'reload-on-rss': 600,
-      'ignore-sigpipe': True,
-      'ignore-write-errors': True,
-      'disable-write-exception': True,
+      'thunder-lock': {{ .Values.config.web.thunderLock }},
+      'log-x-forwarded-for': {{ .Values.config.web.logXForwardedFor }},
+      'buffer-size': {{ .Values.config.web.bufferSize }},
+      'limit-post': {{ .Values.config.web.limitPost }},
+      'disable-logging': {{ .Values.config.web.disableLogging }},
+      'reload-on-rss': {{ .Values.config.web.reloadOnRss }},
+      'ignore-sigpipe': {{ .Values.config.web.ignoreSignpipe }},
+      'ignore-write-errors': {{ .Values.config.web.ignoreWriteErrors }},
+      'disable-write-exception': {{ .Values.config.web.disableWriteException }},
   }
 
   ###########

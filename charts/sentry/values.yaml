@@ -1989,9 +1989,20 @@ config:
     # No YAML relay config given
   web:
     httpKeepalive: 15
+    workers: 3
+    memoryReport: false
     maxRequests: 100000
     maxRequestsDelta: 500
     maxWorkerLifetime: 86400
+    thunderLock: true
+    logXForwardedFor: false
+    bufferSize: 32768
+    limitPost: 209715200
+    disableLogging: true
+    reloadOnRss: 600
+    ignoreSignpipe: true
+    ignoreWriteErrors: true
+    disableWriteException: true
 
 clickhouse:
   enabled: true
