@@ -366,7 +366,7 @@ sentry.conf.py: |-
       'thunder-lock': {{ .Values.config.web.thunderLock | ternary "True" "False" }},
       'log-x-forwarded-for': {{ .Values.config.web.logXForwardedFor | ternary "True" "False" }},
       'buffer-size': {{ .Values.config.web.bufferSize }},
-      'limit-post': {{ .Values.config.web.limitPost }},
+      'limit-post': {{ .Values.config.web.limitPost | int }},
       'disable-logging': {{ .Values.config.web.disableLogging | ternary "True" "False" }},
       'reload-on-rss': {{ .Values.config.web.reloadOnRss }},
       'ignore-sigpipe': {{ .Values.config.web.ignoreSignpipe | ternary "True" "False" }},
