@@ -1786,7 +1786,7 @@ hooks:
     podAnnotations: {}
     resources:
       limits:
-        memory: 2048Mi
+        memory: 2560Mi
       requests:
         cpu: 300m
         memory: 2048Mi
@@ -1853,7 +1853,7 @@ symbolicator:
     cleaner:
       enabled: true
       sleepInterval: 120
-    usedeployment: false  # Set true to use Deployment, false for StatefulSet
+    usedeployment: true  # Set true to use Deployment, false for StatefulSet
     persistence:
       enabled: true  # Set true for using PersistentVolumeClaim, false for emptyDir
       accessModes: ["ReadWriteOnce"]
