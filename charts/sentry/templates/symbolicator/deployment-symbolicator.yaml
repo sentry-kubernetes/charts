@@ -125,6 +125,35 @@ spec:
         securityContext:
 {{ toYaml .Values.symbolicator.api.containerSecurityContext | indent 12 }}
 {{- end }}
+{{- if .Values.symbolicator.api.cleaner.enabled }}
+      - name: {{ .Chart.Name }}-symbolicator-cleaner
+        image: "{{ template "symbolicator.image" . }}"
+        imagePullPolicy: {{ default "IfNotPresent" .Values.images.symbolicator.pullPolicy }}
+        command:
+          - /bin/sh
+          - -c
+        args:
+          - |
+            while true; do
+              symbolicator cleanup -c /etc/symbolicator/config.yml;
+              sleep {{ .Values.symbolicator.api.cleaner.sleepInterval }};
+            done
+        env:
+        {{ if and (eq .Values.filestore.backend "gcs") .Values.filestore.gcs.secretName }}
+        - name: GOOGLE_APPLICATION_CREDENTIALS
+          value: /var/run/secrets/google/{{ .Values.filestore.gcs.credentialsFile }}
+        {{ end }}
+        volumeMounts:
+        - mountPath: /etc/symbolicator
+          name: config
+          readOnly: true
+        - mountPath: /data
+          name: symbolicator-data
+        {{- if and (eq .Values.filestore.backend "gcs") .Values.filestore.gcs.secretName }}
+        - name: sentry-google-cloud-key
+          mountPath: /var/run/secrets/google
+        {{ end }}
+{{- end }}
 {{- if .Values.symbolicator.api.sidecars }}
 {{ toYaml .Values.symbolicator.api.sidecars | indent 6 }}
 {{- end }}

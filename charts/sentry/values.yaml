@@ -1848,8 +1848,11 @@ mail:
   from: ""
 
 symbolicator:
-  enabled: false
+  enabled: true
   api:
+    cleaner:
+      enabled: true
+      sleepInterval: 120
     usedeployment: true  # Set true to use Deployment, false for StatefulSet
     persistence:
       enabled: true  # Set true for using PersistentVolumeClaim, false for emptyDir
