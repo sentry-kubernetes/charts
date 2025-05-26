@@ -2198,8 +2198,9 @@ zookeeper:
 
 redpanda:
   enabled: true
+  fullnameOverride: "sentry-redpanda"
   statefulset:
-    replicas: 3
+    replicas: 1
   listeners:
     kafka:
       authenticationMethod: "none"

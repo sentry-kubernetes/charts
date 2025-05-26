@@ -178,7 +178,11 @@ We truncate at 63 chars because some Kubernetes name fields are limited to this 
 {{- end -}}
 
 {{- define "sentry.kafka.fullname" -}}
+{{- if .Values.kafka.enabled -}}
 {{- printf "%s-%s" .Release.Name "kafka" | trunc 63 | trimSuffix "-" -}}
+{{- else -}}
+{{- printf "%s-%s" .Release.Name "redpanda" | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
 {{- end -}}
 
 {{- define "sentry.zookeeper.fullname" -}}
@@ -455,7 +459,7 @@ Set Kafka Confluent port
 */}}
 {{- define "sentry.kafka.port" -}}
 {{- if .Values.redpanda.enabled -}}
-{{- .Values.redpanda.kafka.port }}
+{{- default 9092 (dig "kafka" "port" nil .Values.redpanda) }}
 {{- else if and .Values.kafka.enabled .Values.kafka.service.ports.client -}}
 {{- .Values.kafka.service.ports.client }}
 {{- else if and (.Values.externalKafka) (not (.Values.externalKafka.cluster)) -}}
@@ -468,7 +472,7 @@ Set Kafka Confluent Controller port
 */}}
 {{- define "sentry.kafka.controller_port" -}}
 {{- if .Values.redpanda.enabled -}}
-{{- .Values.redpanda.kafka.port }}
+{{- default 9092 (dig "kafka" "port" nil .Values.redpanda) }}
 {{- else if and (.Values.kafka.enabled) (.Values.kafka.service.ports.controller ) -}}
 {{- .Values.kafka.service.ports.controller }}
 {{- else if and (.Values.externalKafka) (not (.Values.externalKafka.cluster)) -}}
@@ -571,7 +575,7 @@ Set Senty compression.type for Kafka
 {{- define "sentry.kafka.compression_type" -}}
 {{- if .Values.redpanda.enabled -}}
 {{ default "" .Values.sentry.kafka.compression.type }}
-{{- if .Values.kafka.enabled -}}
+{{- else if .Values.kafka.enabled -}}
 {{ default "" .Values.sentry.kafka.compression.type }}
 {{- else -}}
 {{ default "" .Values.externalKafka.compression.type }}

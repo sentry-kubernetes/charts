@@ -19,7 +19,7 @@ dependencies:
     condition: kafka.enabled
   - name: redpanda
     repository: https://charts.redpanda.com
-    version: 5.10.2
+    version: 25.1.1-beta3
     condition: redpanda.enabled
   - name: clickhouse
     repository: https://sentry-kubernetes.github.io/charts
