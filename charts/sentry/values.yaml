@@ -2203,7 +2203,10 @@ redpanda:
     replicas: 1
   listeners:
     kafka:
-      authenticationMethod: "none"
+      port: 9092
+      tls:
+        enabled: false
+      authenticationMethod: "plaintext"
   console:
     enabled: false
 

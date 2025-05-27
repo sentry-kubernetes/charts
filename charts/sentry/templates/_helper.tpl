@@ -459,7 +459,7 @@ Set Kafka Confluent port
 */}}
 {{- define "sentry.kafka.port" -}}
 {{- if .Values.redpanda.enabled -}}
-{{- default 9092 (dig "kafka" "port" nil .Values.redpanda) }}
+{{- .Values.redpanda.listeners.kafka.port }}
 {{- else if and .Values.kafka.enabled .Values.kafka.service.ports.client -}}
 {{- .Values.kafka.service.ports.client }}
 {{- else if and (.Values.externalKafka) (not (.Values.externalKafka.cluster)) -}}
@@ -505,9 +505,7 @@ Set Kafka security protocol
 */}}
 {{- define "sentry.kafka.security_protocol" -}}
 {{- if .Values.redpanda.enabled -}}
-{{- if and .Values.redpanda.auth.sasl.enabled -}}
 {{ default "plaintext" .Values.redpanda.listeners.kafka.authenticationMethod }}
-{{- end -}}
 {{- else if .Values.kafka.enabled -}}
 {{ default "plaintext" .Values.kafka.listeners.client.protocol }}
 {{- else -}}
