@@ -1851,7 +1851,7 @@ symbolicator:
   enabled: false
   api:
     cleaner:
-      enabled: false
+      enabled: true
       sleepInterval: 3600
     usedeployment: true  # Set true to use Deployment, false for StatefulSet
     persistence:
