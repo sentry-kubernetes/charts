@@ -2199,6 +2199,9 @@ zookeeper:
 redpanda:
   enabled: true
   fullnameOverride: "sentry-redpanda"
+  config:
+    cluster:
+      auto_create_topics_enabled: true
   statefulset:
     replicas: 1
   listeners:
@@ -2209,6 +2212,9 @@ redpanda:
       authenticationMethod: "plaintext"
   console:
     enabled: false
+  auth:
+    sasl:
+      enabled: false
 
 # Settings for Kafka.
 # See https://github.com/bitnami/charts/tree/master/bitnami/kafka
