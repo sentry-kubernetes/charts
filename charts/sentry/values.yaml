@@ -2198,6 +2198,10 @@ externalClickhouse:
   ## or by executing `select * from system.clusters`
   ##
   # clusterName: test_shard_localhost
+  ## Optional: separate distributed cluster name (defaults to clusterName)
+  ## Use this when your ClickHouse distributed queries need a different cluster name
+  ##
+  # distributedClusterName: distributed_test_shard_localhost
 
 # Settings for Zookeeper.
 # See https://github.com/bitnami/charts/tree/master/bitnami/zookeeper
