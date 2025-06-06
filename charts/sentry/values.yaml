@@ -1333,7 +1333,7 @@ snuba:
     # queuedMinMessages: ""
     # noStrictOffsetReset: false
 
-  subscriptionConsumerEapSpans:
+  subscriptionConsumerEapSpans: # if you run scheduler-executor-type consumers, all topics ending with -commit-log should have 1 partition and only 1 consumer replica.
     enabled: true
     replicas: 1
     env: []
@@ -1354,7 +1354,7 @@ snuba:
     # autoOffsetReset: "earliest"
     # noStrictOffsetReset: false
 
-  subscriptionConsumerEvents:
+  subscriptionConsumerEvents: # if you run scheduler-executor-type consumers, all topics ending with -commit-log should have 1 partition and only 1 consumer replica.
     enabled: true
     replicas: 1
     env: []
@@ -1459,7 +1459,7 @@ snuba:
     # queuedMinMessages: ""
     # noStrictOffsetReset: false
 
-  subscriptionConsumerMetrics:
+  subscriptionConsumerMetrics: # if you run scheduler-executor-type consumers, all topics ending with -commit-log should have 1 partition and only 1 consumer replica.
     enabled: true
     replicas: 1
     env: []
@@ -1482,7 +1482,7 @@ snuba:
     # volumes: []
     # volumeMounts: []
 
-  subscriptionConsumerTransactions:
+  subscriptionConsumerTransactions: # if you run scheduler-executor-type consumers, all topics ending with -commit-log should have 1 partition and only 1 consumer replica.
     enabled: true
     replicas: 1
     env: []
