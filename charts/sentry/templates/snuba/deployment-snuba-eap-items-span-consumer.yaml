@@ -86,9 +86,9 @@ spec:
           - "snuba"
           - {{ if .Values.snuba.rustConsumer -}}"rust-consumer"{{- else -}}"consumer"{{- end }}
           - "--storage"
-          - "eap_items"
+          - "eap_items_span"
           - "--consumer-group"
-          - "snuba-eap-items-span-consumers"
+          - "eap_items_span_group"
           {{- if .Values.snuba.eapItemsSpanConsumer.autoOffsetReset }}
           - "--auto-offset-reset"
           - "{{ .Values.snuba.eapItemsSpanConsumer.autoOffsetReset }}"

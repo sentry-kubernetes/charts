@@ -523,6 +523,9 @@ sentry.conf.py: |-
               "projects:span-metrics-extraction-addons",
               # trace view
               "organizations:trace-view-v1", # This one is required
+              "organizations:trace-view-load-more", # Optional
+              "organizations:trace-tabs-ui", # Optional
+              "organizations:trace-view-linked-traces", # Optional
               "organizations:replay-trace-view-v1", # Optional
               "organizations:trace-drawer-action", # Optional
               "organizations:trace-spans-format", # Optional
@@ -551,6 +554,7 @@ sentry.conf.py: |-
               "organizations:performance-screens-view",
               "organizations:performance-transaction-summary-eap",
               "organizations:standalone-span-ingestion",
+              "organizations:span-stats",
               "organizations:starfish-browser-resource-module-image-view",
               "organizations:starfish-browser-resource-module-ui",
               "organizations:starfish-browser-webvitals-pageoverview-v2",
@@ -559,8 +563,13 @@ sentry.conf.py: |-
               "organizations:starfish-browser-webvitals",
               "organizations:starfish-mobile-appstart",
               "organizations:transaction-metrics-extraction", # Extraction metrics for transactions during ingestion.
+              "organizations:indexed-spans-extraction", # Starfish: extract metrics from the spans
+              "organizations:visibility-explore-view", # Enable the new explore page
               "organizations:visibility-explore-admin", # Enable admin features on the new explore page
               "organizations:visibility-explore-equations", # Enable equations feature on the new explore page
+              "organizations:visibility-explore-progressive-loading",
+              "organizations:visibility-explore-skip-preflight",
+              "organizations:visibility-explore-tabs", # Enable merging all the modes into tabs
               "organizations:visibility-explore-range-high", # Enable high date range options on new explore page
               "organizations:visibility-explore-view", # Mandatory! Enable the new explore page
               {{ end -}}
