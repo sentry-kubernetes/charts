@@ -1,0 +1,24 @@
+name: Conventional Commits Check
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, edited]
+
+jobs:
+  check-conventional-commits:
+    name: Conventional Commits
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check Commit Conventions
+        uses: webiny/action-conventional-commits@v1.3.0
+
+      - name: Check Semantic Pull Request title
+        uses: amannn/action-semantic-pull-request@v5.5.3
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
