@@ -1,5 +1,17 @@
 # Changelog
 
+## [26.19.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v26.18.0...sentry-v26.19.0) (2025-06-14)
+
+
+### Features
+
+* update sentry appVersion to v25.5.1 ([#1782](https://github.com/sentry-kubernetes/charts/issues/1782)) ([9e9a05f](https://github.com/sentry-kubernetes/charts/commit/9e9a05f1930bd3e58c4fa94eefc5dd78ca9c72e3))
+
+
+### Bug Fixes
+
+* clickhouse env. ([#1786](https://github.com/sentry-kubernetes/charts/issues/1786)) ([3f13f00](https://github.com/sentry-kubernetes/charts/commit/3f13f00882c339f65500c50a96272db41be5b365))
+
 ## [26.18.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v26.17.1...sentry-v26.18.0) (2025-05-21)
 
 
