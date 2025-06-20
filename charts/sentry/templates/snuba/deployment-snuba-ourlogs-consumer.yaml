@@ -86,7 +86,7 @@ spec:
           - "snuba"
           - {{ if .Values.snuba.rustConsumer -}}"rust-consumer"{{- else -}}"consumer"{{- end }}
           - "--storage"
-          - "ourlogs"
+          - "eap_items"
           - "--consumer-group"
           - "snuba-ourlogs-consumers"
           {{- if .Values.snuba.ourlogsConsumer.autoOffsetReset }}

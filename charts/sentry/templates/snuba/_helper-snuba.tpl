@@ -58,7 +58,6 @@ settings.py: |
           "transactions",
           "profiles",
           "functions",
-          "ourlogs",
           "replays",
           "generic_metrics_sets",
           "generic_metrics_distributions",
