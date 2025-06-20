@@ -43,7 +43,7 @@ jobs:
       - name: Build sentry-kubernetes chart
         uses: WyriHaximus/github-action-helm3@v4
         with:
-          exec: helm repo index --url https://sentry-kubernetes.github.io/charts ./gh-pages/charts
+          exec: helm repo index --url https://dionis1902.github.io/sentry-charts ./gh-pages/charts
 
       - name: Commit files
         run: |

@@ -3,7 +3,7 @@
 ## Add repo
 
 ```
-helm repo add sentry https://sentry-kubernetes.github.io/charts
+helm repo add sentry https://dionis1902.github.io/sentry-charts
 ```
 
 ## Without overrides

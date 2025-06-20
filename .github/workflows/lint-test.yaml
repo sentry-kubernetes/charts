@@ -30,7 +30,7 @@ jobs:
 
       - name: Add Helm Repositories
         run: |
-          helm repo add sentry-kubernetes https://sentry-kubernetes.github.io/charts
+          helm repo add sentry-kubernetes https://dionis1902.github.io/sentry-charts
           helm repo update
 
       - name: Run chart-testing (list-changed)

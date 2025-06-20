@@ -61,7 +61,7 @@ ingress:
 resource "helm_release" "sentry" {
   name  = "sentry"
   chart = "${path.module}/helm_sentry/"
-  repository = "https://sentry-kubernetes.github.io/charts"
+  repository = "https://dionis1902.github.io/sentry-charts"
   version    = "14.0.0"
   timeout           = 600
   wait              = false
