@@ -92,6 +92,15 @@ config.yml: |-
     bucket_name: {{ .Values.filestore.gcs.bucketName | quote }}
   {{ end }}
 
+  {{- if eq .Values.filestore.backend "s3" }}
+  filestore.options:
+    access_key: {{ .Values.filestore.s3.accessKey | quote }}
+    secret_key: {{ .Values.filestore.s3.secretKey | quote }}
+    bucket_name: {{ .Values.filestore.s3.bucketName | quote }}
+    endpoint_url: {{ .Values.filestore.s3.endpointUrl | quote }}
+    default_acl: {{ .Values.filestore.s3.defaultAcl | quote }}
+  {{ end }}
+
   {{- if .Values.config.configYml }}
   {{ .Values.config.configYml | toYaml | nindent 2 }}
   {{- end }}
@@ -99,6 +108,7 @@ config.yml: |-
   relay.ourlogs-breadcrumb-extraction.sample-rate: 1.0
   relay.ourlogs-ingestion.sample-rate: 1.0
   ourlogs.sentry-emit-rollout: 0.0
+
 sentry.conf.py: |-
   from sentry.conf.server import *  # NOQA
   from distutils.util import strtobool
