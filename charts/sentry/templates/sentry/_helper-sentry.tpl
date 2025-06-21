@@ -96,6 +96,9 @@ config.yml: |-
   {{ .Values.config.configYml | toYaml | nindent 2 }}
   {{- end }}
 
+  relay.ourlogs-breadcrumb-extraction.sample-rate: 1.0
+  relay.ourlogs-ingestion.sample-rate: 1.0
+  ourlogs.sentry-emit-rollout: 0.0
 sentry.conf.py: |-
   from sentry.conf.server import *  # NOQA
   from distutils.util import strtobool
