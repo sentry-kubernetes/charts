@@ -94,11 +94,15 @@ config.yml: |-
 
   {{- if eq .Values.filestore.backend "s3" }}
   filestore.options:
+    default_acl: {{ .Values.filestore.s3.defaultAcl | quote }}
+    bucket_acl: {{ .Values.filestore.s3.bucketAcl | quote }}
     access_key: {{ .Values.filestore.s3.accessKey | quote }}
     secret_key: {{ .Values.filestore.s3.secretKey | quote }}
     bucket_name: {{ .Values.filestore.s3.bucketName | quote }}
+    region_name: {{ .Values.filestore.s3.regionName | quote }}
     endpoint_url: {{ .Values.filestore.s3.endpointUrl | quote }}
-    default_acl: {{ .Values.filestore.s3.defaultAcl | quote }}
+    addressing_style: {{ .Values.filestore.s3.addressingStyle | quote }}
+    signature_version: {{ .Values.filestore.s3.signatureVersion | quote }}
   {{ end }}
 
   {{- if .Values.config.configYml }}
