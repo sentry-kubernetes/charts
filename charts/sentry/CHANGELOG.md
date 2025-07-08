@@ -1,5 +1,13 @@
 # Changelog
 
+## [26.20.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v26.19.0...sentry-v26.20.0) (2025-07-08)
+
+
+### Features
+
+* **snuba:** add deployment configuration for generic metrics gauges consumer ([#1800](https://github.com/sentry-kubernetes/charts/issues/1800)) ([3ae3580](https://github.com/sentry-kubernetes/charts/commit/3ae35804207f124e1d50d8271bd7f2eeabc137e7))
+* **snuba:** add deployment profile chunks ([#1799](https://github.com/sentry-kubernetes/charts/issues/1799)) ([5addbf3](https://github.com/sentry-kubernetes/charts/commit/5addbf3ab7e134ba187c6fc9a9973fc3f01e3ea0))
+
 ## [26.19.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v26.18.0...sentry-v26.19.0) (2025-06-14)
 
 
