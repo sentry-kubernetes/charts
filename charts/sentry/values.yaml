@@ -238,6 +238,9 @@ sentry:
     volumeMounts: []
     # workers: 3
 
+  # Enable feature complete see https://github.com/getsentry/self-hosted/blob/master/.env#L5
+  featureComplete: true
+
   features:
     orgSubdomains: false
     vstsLimitedScopes: true

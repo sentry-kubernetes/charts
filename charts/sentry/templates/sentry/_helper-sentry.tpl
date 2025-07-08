@@ -392,6 +392,10 @@ sentry.conf.py: |-
   # Features #
   ############
 
+  # Enable feature complete
+  {{- if .Values.sentry.featureComplete }}
+  COMPOSE_PROFILES = "feature-complete"
+  {{- end }}
 
   SENTRY_FEATURES = {
     "auth:register": {{ .Values.auth.register | ternary "True" "False" }}
