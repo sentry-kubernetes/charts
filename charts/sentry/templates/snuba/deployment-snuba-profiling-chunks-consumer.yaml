@@ -88,7 +88,7 @@ spec:
           - "--storage"
           - "profile_chunks"
           - "--consumer-group"
-          - "profile_chunks_group"
+          - "snuba-consumers"
           {{- if .Values.snuba.profilingChunksConsumer.autoOffsetReset }}
           - "--auto-offset-reset"
           - "{{ .Values.snuba.profilingChunksConsumer.autoOffsetReset }}"
