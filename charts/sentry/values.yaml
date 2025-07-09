@@ -629,6 +629,7 @@ sentry:
     nodeSelector: {}
     securityContext: {}
     containerSecurityContext: {}
+    # maxPollIntervalMs: 30000
     # tolerations: []
     # podLabels: {}
     # it's better to use prometheus adapter and scale based on
@@ -1262,6 +1263,7 @@ snuba:
     securityContext: {}
     topologySpreadConstraints: []
     containerSecurityContext: {}
+    # maxPollIntervallMs: 30000
     # tolerations: []
     # podLabels: {}
     # autoOffsetReset: "earliest"

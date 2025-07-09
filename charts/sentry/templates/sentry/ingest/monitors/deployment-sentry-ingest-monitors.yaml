@@ -103,6 +103,11 @@ spec:
           - "--healthcheck-file-path"
           - "/tmp/health.txt"
           {{- end }}
+          {{- if .Values.sentry.ingestMonitors.maxPollIntervalMs }}
+          - "--max-poll-interval-ms"
+          - "{{ .Values.sentry.ingestMonitors.maxPollIntervalMs }}"
+          {{- end }}
+          - "--"
         {{- if .Values.sentry.ingestMonitors.livenessProbe.enabled }}
         livenessProbe:
           exec:
