@@ -1,5 +1,12 @@
 # Changelog
 
+## [26.21.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v26.20.1...sentry-v26.21.0) (2025-07-09)
+
+
+### Features
+
+* add maxPollIntervalMs to consumers ([#1805](https://github.com/sentry-kubernetes/charts/issues/1805)) ([267acc7](https://github.com/sentry-kubernetes/charts/commit/267acc7e6bd0313cada0fcce40dfa54f063ca24d))
+
 ## [26.20.1](https://github.com/sentry-kubernetes/charts/compare/sentry-v26.20.0...sentry-v26.20.1) (2025-07-09)
 
 
