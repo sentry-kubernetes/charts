@@ -1,5 +1,12 @@
 # Changelog
 
+## [26.20.1](https://github.com/sentry-kubernetes/charts/compare/sentry-v26.20.0...sentry-v26.20.1) (2025-07-09)
+
+
+### Bug Fixes
+
+* **snuba:** update consumer group name for profiling chunks consumer ([#1803](https://github.com/sentry-kubernetes/charts/issues/1803)) ([d1fb89b](https://github.com/sentry-kubernetes/charts/commit/d1fb89b8a9038d9ed47ac592073dfda39c05e3b5))
+
 ## [26.20.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v26.19.0...sentry-v26.20.0) (2025-07-08)
 
 
