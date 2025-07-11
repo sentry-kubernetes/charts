@@ -1,3 +1,4 @@
+{{- if has "feature-complete" .Values.profiles }}
 {{- if .Values.sentry.ingestFeedback.enabled }}
 apiVersion: apps/v1
 kind: Deployment
@@ -177,4 +178,5 @@ spec:
       {{- if .Values.sentry.ingestFeedback.priorityClassName }}
       priorityClassName: "{{ .Values.sentry.ingestFeedback.priorityClassName }}"
       {{- end }}
+{{- end }}
 {{- end }}

@@ -13,6 +13,13 @@ global:
   sidecars: []
   volumes: []
 
+# Profiles correspond to COMPOSE_PROFILES in the original self-hosted docker-compose.yml.
+# https://github.com/getsentry/self-hosted/blob/master/docker-compose.yml
+# When set to errors-only, the chart only deploys components related to processing errors.
+# For more, read https://develop.sentry.dev/self-hosted/experimental/errors-only/.
+profiles:
+  - feature-complete
+
 user:
   create: true
   email: admin@sentry.local

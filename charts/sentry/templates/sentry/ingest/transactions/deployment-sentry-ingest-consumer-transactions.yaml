@@ -1,3 +1,4 @@
+{{- if has "feature-complete" .Values.profiles }}
 {{- if .Values.sentry.ingestConsumerTransactions.enabled }}
 apiVersion: apps/v1
 kind: Deployment
@@ -198,4 +199,5 @@ spec:
       {{- if .Values.sentry.ingestConsumerTransactions.priorityClassName }}
       priorityClassName: "{{ .Values.sentry.ingestConsumerTransactions.priorityClassName }}"
       {{- end }}
+{{- end }}
 {{- end }}

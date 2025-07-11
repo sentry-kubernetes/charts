@@ -1,3 +1,4 @@
+{{- if has "feature-complete" .Values.profiles }}
 {{- if .Values.sentry.ingestReplayRecordings.enabled }}
 apiVersion: apps/v1
 kind: Deployment
@@ -177,4 +178,5 @@ spec:
       {{- if .Values.sentry.ingestReplayRecordings.priorityClassName }}
       priorityClassName: "{{ .Values.sentry.ingestReplayRecordings.priorityClassName }}"
       {{- end }}
+{{- end }}
 {{- end }}
