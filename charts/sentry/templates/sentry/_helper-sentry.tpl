@@ -170,6 +170,10 @@ sentry.conf.py: |-
 
   SENTRY_OPTIONS["system.event-retention-days"] = int(env('SENTRY_EVENT_RETENTION_DAYS') or {{ .Values.sentry.cleanup.days | quote }})
 
+  {{- if has "errors-only" .Values.profiles }}
+  SENTRY_SELF_HOSTED_ERRORS_ONLY = True
+  {{- end }}
+
   #########
   # Redis #
   #########
