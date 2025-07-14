@@ -333,7 +333,7 @@ Set ClickHouse host
 */}}
 {{- define "sentry.clickhouse.host" -}}
 {{- if .Values.clickhouse.enabled -}}
-{{- template "sentry.clickhouse.fullname" . -}}
+{{- include "clickhouse.headlessServiceName" $.Subcharts.clickhouse -}}
 {{- else -}}
 {{ required "A valid .Values.externalClickhouse.host is required" .Values.externalClickhouse.host }}
 {{- end -}}
@@ -344,7 +344,7 @@ Set ClickHouse port
 */}}
 {{- define "sentry.clickhouse.port" -}}
 {{- if .Values.clickhouse.enabled -}}
-{{- default 9000 .Values.clickhouse.clickhouse.tcp_port }}
+{{- default 9000 .Values.clickhouse.service.ports.tcp }}
 {{- else -}}
 {{ required "A valid .Values.externalClickhouse.tcpPort is required" .Values.externalClickhouse.tcpPort }}
 {{- end -}}
@@ -355,7 +355,7 @@ Set ClickHouse HTTP port
 */}}
 {{- define "sentry.clickhouse.http_port" -}}
 {{- if .Values.clickhouse.enabled -}}
-{{- default 8123 .Values.clickhouse.clickhouse.http_port }}
+{{- default 8123 .Values.clickhouse.service.ports.http }}
 {{- else -}}
 {{ required "A valid .Values.externalClickhouse.httpPort is required" .Values.externalClickhouse.httpPort }}
 {{- end -}}
@@ -377,11 +377,7 @@ Set ClickHouse User
 */}}
 {{- define "sentry.clickhouse.username" -}}
 {{- if .Values.clickhouse.enabled -}}
-  {{- if .Values.clickhouse.clickhouse.configmap.users.enabled -}}
-{{ (index .Values.clickhouse.clickhouse.configmap.users.user 0).name }}
-  {{- else -}}
-default
-  {{- end -}}
+{{ default "default" .Values.clickhouse.auth.username }}
 {{- else -}}
 {{ required "A valid .Values.externalClickhouse.username is required" .Values.externalClickhouse.username }}
 {{- end -}}
@@ -391,14 +387,9 @@ default
 Set ClickHouse Password
 */}}
 {{- define "sentry.clickhouse.password" -}}
-{{- if .Values.clickhouse.enabled -}}
-  {{- if .Values.clickhouse.clickhouse.configmap.users.enabled -}}
-{{ (index .Values.clickhouse.clickhouse.configmap.users.user 0).config.password }}
-  {{- else -}}
-  {{- end -}}
-{{- else -}}
+{{- if not .Values.clickhouse.enabled -}}
 {{ .Values.externalClickhouse.password }}
-{{- end -}}
+{{- end -}}F
 {{- end -}}
 
 {{/*
@@ -406,20 +397,9 @@ Set ClickHouse cluster name
 */}}
 {{- define "sentry.clickhouse.cluster.name" -}}
 {{- if .Values.clickhouse.enabled -}}
-{{ .Release.Name | printf "%s-clickhouse" }}
+{{ include "clickhouse.headlessServiceName" $.Subcharts.clickhouse }}
 {{- else -}}
 {{ required "A valid .Values.externalClickhouse.clusterName is required" .Values.externalClickhouse.clusterName }}
-{{- end -}}
-{{- end -}}
-
-{{/*
-Set ClickHouse distributed cluster name
-*/}}
-{{- define "sentry.clickhouse.distributed.cluster.name" -}}
-{{- if .Values.clickhouse.enabled -}}
-{{ .Release.Name | printf "%s-clickhouse" }}
-{{- else -}}
-{{ default .Values.externalClickhouse.clusterName .Values.externalClickhouse.distributedClusterName }}
 {{- end -}}
 {{- end -}}
 
@@ -667,6 +647,15 @@ Set external Clickhouse password from existingSecret
       name: {{ .Values.externalClickhouse.existingSecret }}
       key: {{ default "clickhouse-password" .Values.externalClickhouse.existingSecretKey }}
 {{- end }}
+{{- if not .Values.externalClickhouse.existingSecret }}
+- name: CLICKHOUSE_PASSWORD
+  valueFrom:
+    secretKeyRef:
+      name: {{ include "clickhouse.secretName" $.Subcharts.clickhouse | quote }}
+      key: {{ include "clickhouse.secretKey" $.Subcharts.clickhouse | quote }}
+{{- end }}
+- name: CLICKHOUSE_HOST
+  value: {{ include "sentry.clickhouse.host" . | quote }}
 - name: CLICKHOUSE_MAX_CONNECTIONS
   value: {{ .Values.snuba.clickhouse.maxConnections | quote }}
 {{- if .Values.ipv6 }}

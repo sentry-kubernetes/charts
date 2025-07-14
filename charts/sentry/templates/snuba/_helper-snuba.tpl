@@ -31,6 +31,17 @@ settings.py: |
     KAFKA_TOPIC_MAP[topic.value] = f"{SENTRY_CHARTS_KAFKA_TOPIC_PREFIX}{topic.value}"
   {{- end }}
 
+  SENTRY_DISTRIBUTED_CLICKHOUSE_TABLES = True
+
+  # Migration settings for distributed ClickHouse
+  MIGRATIONS_LOCK_TIMEOUT = int(env("MIGRATIONS_LOCK_TIMEOUT", "600"))
+  MIGRATIONS_BATCH_SIZE = int(env("MIGRATIONS_BATCH_SIZE", "1"))
+
+  # ClickHouse distributed settings
+  CLICKHOUSE_MUTATIONS_SYNC = int(env("CLICKHOUSE_MUTATIONS_SYNC", "1"))
+  CLICKHOUSE_ALTER_SYNC = int(env("CLICKHOUSE_ALTER_SYNC", "1"))
+  CLICKHOUSE_REPLICATION_ALTER_PARTITIONS_SYNC = int(env("CLICKHOUSE_REPLICATION_ALTER_PARTITIONS_SYNC", "2"))
+
   # Clickhouse Options
   CLUSTERS = [
     {
@@ -77,11 +88,11 @@ settings.py: |
       {{- if and .Values.externalClickhouse.singleNode (not .Values.clickhouse.enabled) }}
       "single_node": True,
       {{- else }}
-      "single_node": False,
+      "single_node": True, # IDK why this is needed, but it is required for the clickhouse client to work
       {{- end }}
       {{- if or .Values.clickhouse.enabled (not .Values.externalClickhouse.singleNode) }}
-      "cluster_name": {{ include "sentry.clickhouse.cluster.name" . | quote }},
-      "distributed_cluster_name": {{ include "sentry.clickhouse.distributed.cluster.name" . | quote }},
+      "cluster_name": {{ default "default" .Values.clickhouse.clusterName | quote }},
+      "distributed_cluster_name": {{ default "default" .Values.clickhouse.clusterName | quote }},
       {{- end }}
     },
   ]
