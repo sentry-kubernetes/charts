@@ -2351,7 +2351,6 @@ kafka:
         config:
           "message.timestamp.type": LogAppendTime
       - name: profiles-call-tree
-      - name: snuba-profile-chunks
       - name: ingest-replay-events
         config:
           "message.timestamp.type": LogAppendTime
