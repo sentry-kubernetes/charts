@@ -2285,10 +2285,30 @@ zookeeper:
   # persistence:
   #   size: 8Gi
 
+redpanda:
+  enabled: true
+  fullnameOverride: "sentry-redpanda"
+  config:
+    cluster:
+      auto_create_topics_enabled: true
+  statefulset:
+    replicas: 1
+  listeners:
+    kafka:
+      port: 9092
+      tls:
+        enabled: false
+      authenticationMethod: "plaintext"
+  console:
+    enabled: false
+  auth:
+    sasl:
+      enabled: false
+
 # Settings for Kafka.
 # See https://github.com/bitnami/charts/tree/master/bitnami/kafka
 kafka:
-  enabled: true
+  enabled: false
   provisioning:
     ## Increasing the replicationFactor enhances data reliability during Kafka pod failures by replicating data across multiple brokers.
     # Note that existing topics will remain with replicationFactor: 1 when updated.
