@@ -1,5 +1,18 @@
 # Changelog
 
+## [26.22.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v26.21.0...sentry-v26.22.0) (2025-07-21)
+
+
+### Features
+
+* add distributed cluster name config ([#1780](https://github.com/sentry-kubernetes/charts/issues/1780)) ([1ce32ab](https://github.com/sentry-kubernetes/charts/commit/1ce32ab717ce022730021e629dbeb1d2dd30a5b3))
+* add errors-only mode from original self-hosted compose ([#1810](https://github.com/sentry-kubernetes/charts/issues/1810)) ([3f29825](https://github.com/sentry-kubernetes/charts/commit/3f29825126050887312bc6a5828a4d34aa2aa444))
+
+
+### Bug Fixes
+
+* **sentry:** set `SENTRY_SELF_HOSTED_ERRORS_ONLY` when neeeded ([#1812](https://github.com/sentry-kubernetes/charts/issues/1812)) ([bccb3fb](https://github.com/sentry-kubernetes/charts/commit/bccb3fba295d1f375bf5263fb62a9c65279886d3))
+
 ## [26.21.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v26.20.1...sentry-v26.21.0) (2025-07-09)
 
 
