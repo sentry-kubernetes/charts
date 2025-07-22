@@ -1363,6 +1363,27 @@ snuba:
     # autoOffsetReset: "earliest"
     # noStrictOffsetReset: false
 
+  subscriptionConsumerResultsEapItems:
+    enabled: true
+    replicas: 1
+    env: []
+    resources: {}
+    affinity: {}
+    nodeSelector: {}
+    securityContext: {}
+    topologySpreadConstraints: []
+    containerSecurityContext: {}
+    # tolerations: []
+    # podLabels: {}
+    livenessProbe:
+      enabled: true
+      initialDelaySeconds: 5
+      periodSeconds: 320
+    # volumes: []
+    # volumeMounts: []
+    # autoOffsetReset: "earliest"
+    # noStrictOffsetReset: false
+
   subscriptionConsumerEvents:  # should have 1 partition and only 1 consumer replica: https://github.com/getsentry/snuba/issues/5855
     enabled: true
     replicas: 1
