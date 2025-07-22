@@ -536,7 +536,7 @@ sentry.conf.py: |-
               # performance trace metrics
               "organizations:performance-trace-explorer", # Required
               "organizations:performance-trace-details", # Required
-              "organizations:performance-trace-explorer-sorting"
+              "organizations:performance-trace-explorer-sorting",
               "organizations:performance-tracing-without-performance",
               "organizations:performance-span-histogram-view", # Probably required
               "organizations:performance-spans-new-ui", # Probably mandatory? I'm not sure
@@ -559,21 +559,14 @@ sentry.conf.py: |-
               "organizations:performance-transaction-summary-eap",
               "organizations:standalone-span-ingestion",
               "organizations:span-stats",
-              "organizations:starfish-browser-resource-module-image-view",
-              "organizations:starfish-browser-resource-module-ui",
-              "organizations:starfish-browser-webvitals-pageoverview-v2",
-              "organizations:starfish-browser-webvitals-replace-fid-with-inp",
-              "organizations:starfish-browser-webvitals-use-backend-scores",
-              "organizations:starfish-browser-webvitals",
-              "organizations:starfish-mobile-appstart",
-              "organizations:transaction-metrics-extraction", # Extraction metrics for transactions during ingestion.
-              "organizations:indexed-spans-extraction", # Starfish: extract metrics from the spans
-              "organizations:visibility-explore-view", # Enable the new explore page
-              "organizations:visibility-explore-admin", # Enable admin features on the new explore page
-              "organizations:visibility-explore-equations", # Enable equations feature on the new explore page
+              "organizations:performance-issues-spans",
+              "organizations:transaction-metrics-extraction",
+              "organizations:visibility-explore-view",
+              "organizations:visibility-explore-admin",
+              "organizations:visibility-explore-equations",
               "organizations:visibility-explore-progressive-loading",
               "organizations:visibility-explore-skip-preflight",
-              "organizations:visibility-explore-tabs", # Enable merging all the modes into tabs
+              "organizations:visibility-explore-tabs",
               "organizations:visibility-explore-range-high", # Enable high date range options on new explore page
               "organizations:visibility-explore-view", # Mandatory! Enable the new explore page
               {{ end -}}
