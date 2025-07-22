@@ -523,68 +523,41 @@ sentry.conf.py: |-
               {{ end -}}
 
               {{- if .Values.sentry.features.enableSpan }}
-              "projects:span-metrics-extraction",
-              "projects:span-metrics-extraction-addons",
-              # trace view
-              "organizations:trace-view-v1", # This one is required
-              "organizations:trace-view-load-more", # Optional
-              "organizations:trace-tabs-ui", # Optional
-              "organizations:trace-view-linked-traces", # Optional
-              "organizations:replay-trace-view-v1", # Optional
-              "organizations:trace-drawer-action", # Optional
-              "organizations:trace-spans-format", # Optional
-              # performance trace metrics
-              "organizations:performance-new-widget-designs",
-              "organizations:performance-trace-explorer", # Required
-              "organizations:performance-trace-details", # Required
-              "organizations:performance-trace-explorer-sorting",
-              "organizations:performance-tracing-without-performance",
-              "organizations:performance-use-metrics",
-              "organizations:performance-span-histogram-view", # Probably required
-              "organizations:performance-spans-new-ui", # Probably mandatory? I'm not sure
-              "organizations:issue-details-new-performance-trace-view", # Optional. So you can see performance from issue details page
-              # span-based metrics
-              "organizations:anomaly-detection-eap", # Enable anomaly detection feature for EAP spans
-              "organizations:dashboards-eap",
-              "organizations:deprecate-fid-from-performance-score",
-              "organizations:explore-multi-query",
-              "organizations:indexed-spans-extraction", # Mandatory! Starfish: extract metrics from the spans
-              "organizations:ingest-spans-in-eap", # Mandatory! Enable tagging span with whether or not we should ingest it in the EAP
-              "organizations:insights-addon-modules",
-              "organizations:insights-entry-points",
-              "organizations:insights-initial-modules",
-              "projects:use-eap-spans-for-metrics-explore",
-              "use-eap-spans-for-metrics-explorer",
-              "insights-use-eap",
-              "organizations:insights-use-eap", # Make Insights modules use EAP instead of metrics
-              "projects:use-eap-spans-for-metrics-explorer",
-              "organizations:mobile-ttid-ttfd-contribution",
-              "organizations:performance-calculate-score-relay",
-              "organizations:performance-database-view",
-              "organizations:performance-issues-spans",
-              "organizations:performance-screens-view",
-              "organizations:performance-transaction-summary-eap",
-              "organizations:standalone-span-ingestion",
-              "organizations:span-stats",
-              "organizations:starfish-browser-resource-module-image-view",
-              "organizations:starfish-browser-resource-module-ui",
-              "organizations:starfish-browser-webvitals-pageoverview-v2",
-              "organizations:starfish-browser-webvitals-replace-fid-with-inp",
-              "organizations:starfish-browser-webvitals-use-backend-scores",
-              "organizations:starfish-browser-webvitals",
-              "organizations:starfish-mobile-appstart",
-              "organizations:performance-issues-spans",
-              "organizations:transaction-metrics-extraction",
-              "organizations:visibility-explore-admin",
-              "organizations:visibility-explore-equations",
-              "visibility-explore-dataset",
-              "organizations:visibility-explore-dataset",
-              "organizations:visibility-explore-rpc",
-              "organizations:visibility-explore-progressive-loading",
-              "organizations:visibility-explore-skip-preflight",
-              "organizations:visibility-explore-tabs",
-              "organizations:visibility-explore-range-high", # Enable high date range options on new explore page
-              "organizations:visibility-explore-view", # Mandatory! Enable the new explore page
+              # Trace View -- make sure this is all set
+              + (
+                "organizations:trace-view-v1", # This one is required
+                "organizations:trace-view-load-more", # Optional
+                "organizations:trace-tabs-ui", # Optional
+                "organizations:trace-view-linked-traces", # Optional
+                "organizations:replay-trace-view-v1", # Optional
+                "organizations:trace-drawer-action", # Optional
+                "organizations:trace-spans-format", # Optional
+              )
+              # Performance Trace Explorer
+              + (
+                "organizations:performance-trace-explorer", # Required
+                "organizations:performance-trace-details", # Required
+                "organizations:performance-trace-explorer-sorting",
+                "organizations:performance-tracing-without-performance",
+                "organizations:performance-use-metrics",
+              )
+              # Span-based Metrics
+              + (
+                "projects:span-metrics-extraction",
+                "projects:span-metrics-extraction-addons",
+                "organizations:span-stats",
+                "organizations:performance-issues-spans",
+                "organizations:transaction-metrics-extraction", # Extraction metrics for transactions during ingestion.
+                "organizations:indexed-spans-extraction", # Starfish: extract metrics from the spans
+                "organizations:visibility-explore-view", # Enable the new explore page
+                "organizations:visibility-explore-admin", # Enable admin features on the new explore page
+                "organizations:visibility-explore-equations", # Enable equations feature on the new explore page
+                "organizations:visibility-explore-progressive-loading",
+                "organizations:visibility-explore-skip-preflight",
+                "organizations:visibility-explore-tabs", # Enable merging all the modes into tabs
+                "organizations:visibility-explore-range-high", # Enable high date range options on new explore page
+                "organizations:explore-multi-query", # Enable explore multi query page
+              )
               {{ end -}}
 
               "organizations:dashboards-mep",
