@@ -524,7 +524,6 @@ sentry.conf.py: |-
 
               {{- if .Values.sentry.features.enableSpan }}
               # Trace View -- make sure this is all set
-              + (
                 "organizations:trace-view-v1", # This one is required
                 "organizations:trace-view-load-more", # Optional
                 "organizations:trace-tabs-ui", # Optional
@@ -532,17 +531,13 @@ sentry.conf.py: |-
                 "organizations:replay-trace-view-v1", # Optional
                 "organizations:trace-drawer-action", # Optional
                 "organizations:trace-spans-format", # Optional
-              )
               # Performance Trace Explorer
-              + (
                 "organizations:performance-trace-explorer", # Required
                 "organizations:performance-trace-details", # Required
                 "organizations:performance-trace-explorer-sorting",
                 "organizations:performance-tracing-without-performance",
                 "organizations:performance-use-metrics",
-              )
               # Span-based Metrics
-              + (
                 "projects:span-metrics-extraction",
                 "projects:span-metrics-extraction-addons",
                 "organizations:span-stats",
@@ -557,7 +552,6 @@ sentry.conf.py: |-
                 "organizations:visibility-explore-tabs", # Enable merging all the modes into tabs
                 "organizations:visibility-explore-range-high", # Enable high date range options on new explore page
                 "organizations:explore-multi-query", # Enable explore multi query page
-              )
               {{ end -}}
 
               "organizations:dashboards-mep",
