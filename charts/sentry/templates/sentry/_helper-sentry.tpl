@@ -534,23 +534,30 @@ sentry.conf.py: |-
               "organizations:trace-drawer-action", # Optional
               "organizations:trace-spans-format", # Optional
               # performance trace metrics
+              "organizations:performance-new-widget-designs",
               "organizations:performance-trace-explorer", # Required
               "organizations:performance-trace-details", # Required
               "organizations:performance-trace-explorer-sorting",
               "organizations:performance-tracing-without-performance",
+              "organizations:performance-use-metrics",
               "organizations:performance-span-histogram-view", # Probably required
               "organizations:performance-spans-new-ui", # Probably mandatory? I'm not sure
               "organizations:issue-details-new-performance-trace-view", # Optional. So you can see performance from issue details page
               # span-based metrics
               "organizations:anomaly-detection-eap", # Enable anomaly detection feature for EAP spans
+              "organizations:dashboards-eap",
               "organizations:deprecate-fid-from-performance-score",
-              "organizations:explore-multi-query", # Enable explore multi query page
+              "organizations:explore-multi-query",
               "organizations:indexed-spans-extraction", # Mandatory! Starfish: extract metrics from the spans
               "organizations:ingest-spans-in-eap", # Mandatory! Enable tagging span with whether or not we should ingest it in the EAP
               "organizations:insights-addon-modules",
               "organizations:insights-entry-points",
               "organizations:insights-initial-modules",
+              "projects:use-eap-spans-for-metrics-explore",
+              "use-eap-spans-for-metrics-explorer",
+              "insights-use-eap",
               "organizations:insights-use-eap", # Make Insights modules use EAP instead of metrics
+              "projects:use-eap-spans-for-metrics-explorer",
               "organizations:mobile-ttid-ttfd-contribution",
               "organizations:performance-calculate-score-relay",
               "organizations:performance-database-view",
@@ -568,9 +575,11 @@ sentry.conf.py: |-
               "organizations:starfish-mobile-appstart",
               "organizations:performance-issues-spans",
               "organizations:transaction-metrics-extraction",
-              "organizations:visibility-explore-view",
               "organizations:visibility-explore-admin",
               "organizations:visibility-explore-equations",
+              "visibility-explore-dataset",
+              "organizations:visibility-explore-dataset",
+              "organizations:visibility-explore-rpc",
               "organizations:visibility-explore-progressive-loading",
               "organizations:visibility-explore-skip-preflight",
               "organizations:visibility-explore-tabs",
