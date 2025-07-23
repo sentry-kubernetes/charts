@@ -1,5 +1,23 @@
 # Changelog
 
+## [27.0.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v26.22.0...sentry-v27.0.0) (2025-07-23)
+
+
+### ⚠ BREAKING CHANGES
+
+* **deps:** update helm release clickhouse to v4 ([#1775](https://github.com/sentry-kubernetes/charts/issues/1775))
+
+### Features
+
+* **deps:** update helm release clickhouse to v4 ([#1775](https://github.com/sentry-kubernetes/charts/issues/1775)) ([4e86110](https://github.com/sentry-kubernetes/charts/commit/4e8611025be55045f948f951aa1b8869971f0419))
+* **sentry:** upgrade version ([#1819](https://github.com/sentry-kubernetes/charts/issues/1819)) ([afe197c](https://github.com/sentry-kubernetes/charts/commit/afe197cc17021f5a8a38f75c0760058f3f828423))
+* **snuba:** add deployment configuration for EAP items consumer ([#1818](https://github.com/sentry-kubernetes/charts/issues/1818)) ([a4e1749](https://github.com/sentry-kubernetes/charts/commit/a4e1749e6c3dd8deca9ffa113331b3a8eafc50b9))
+
+
+### Bug Fixes
+
+* support `containerSecurityContext` for Symbolicator Cleaner container ([#1817](https://github.com/sentry-kubernetes/charts/issues/1817)) ([517e2ae](https://github.com/sentry-kubernetes/charts/commit/517e2ae4d783a0927d743596763b30f24a344bb8))
+
 ## [26.22.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v26.21.0...sentry-v26.22.0) (2025-07-21)
 
 
