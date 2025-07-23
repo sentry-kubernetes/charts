@@ -124,16 +124,12 @@ spec:
           {{- if .Values.snuba.consumer.noStrictOffsetReset }}
           - "--no-strict-offset-reset"
           {{- end }}
-          {{- if .Values.snuba.consumer.livenessProbe.enabled }}
-          - "--health-check-file"
-          - "/tmp/health.txt"
-          {{- end }}
         {{- if .Values.snuba.consumer.livenessProbe.enabled }}
         livenessProbe:
           exec:
             command:
-              - rm
-              - /tmp/health.txt
+              - snuba
+              - health
           initialDelaySeconds: {{ .Values.snuba.consumer.livenessProbe.initialDelaySeconds }}
           periodSeconds: {{ .Values.snuba.consumer.livenessProbe.periodSeconds }}
         {{- end }}

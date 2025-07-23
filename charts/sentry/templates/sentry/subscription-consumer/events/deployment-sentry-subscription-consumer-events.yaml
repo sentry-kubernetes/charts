@@ -90,16 +90,12 @@ spec:
           {{- end }}
           - "--consumer-group"
           - "query-subscription-consumer"
-          {{- if .Values.sentry.subscriptionConsumerEvents.livenessProbe.enabled }}
-          - "--healthcheck-file-path"
-          - "/tmp/health.txt"
-          {{- end }}
         {{- if .Values.sentry.subscriptionConsumerEvents.livenessProbe.enabled }}
         livenessProbe:
           exec:
             command:
-              - rm
-              - /tmp/health.txt
+              - sentry
+              - health
           initialDelaySeconds: {{ .Values.sentry.subscriptionConsumerEvents.livenessProbe.initialDelaySeconds }}
           periodSeconds: {{ .Values.sentry.subscriptionConsumerEvents.livenessProbe.periodSeconds }}
         {{- end }}

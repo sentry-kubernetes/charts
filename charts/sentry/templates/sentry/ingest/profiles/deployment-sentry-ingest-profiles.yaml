@@ -100,16 +100,12 @@ spec:
           {{- if .Values.sentry.ingestProfiles.noStrictOffsetReset }}
           - "--no-strict-offset-reset"
           {{- end }}
-          {{- if .Values.sentry.ingestProfiles.livenessProbe.enabled }}
-          - "--healthcheck-file-path"
-          - "/tmp/health.txt"
-          {{- end }}
         {{- if .Values.sentry.ingestProfiles.livenessProbe.enabled }}
         livenessProbe:
           exec:
             command:
-              - rm
-              - /tmp/health.txt
+              - sentry
+              - health
           initialDelaySeconds: {{ .Values.sentry.ingestProfiles.livenessProbe.initialDelaySeconds }}
           periodSeconds: {{ .Values.sentry.ingestProfiles.livenessProbe.periodSeconds }}
         {{- end }}

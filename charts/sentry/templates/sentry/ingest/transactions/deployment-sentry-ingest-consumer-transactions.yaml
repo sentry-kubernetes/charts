@@ -100,10 +100,6 @@ spec:
           {{- if .Values.sentry.ingestConsumerTransactions.noStrictOffsetReset }}
           - "--no-strict-offset-reset"
           {{- end }}
-          {{- if .Values.sentry.ingestConsumerTransactions.livenessProbe.enabled }}
-          - "--healthcheck-file-path"
-          - "/tmp/health.txt"
-          {{- end }}
           {{- if .Values.sentry.ingestConsumerTransactions.logLevel }}
           - "--log-level"
           - "{{ .Values.sentry.ingestConsumerTransactions.logLevel }}"
@@ -129,8 +125,8 @@ spec:
         livenessProbe:
           exec:
             command:
-              - rm
-              - /tmp/health.txt
+              - sentry
+              - health
           initialDelaySeconds: {{ .Values.sentry.ingestConsumerTransactions.livenessProbe.initialDelaySeconds }}
           periodSeconds: {{ .Values.sentry.ingestConsumerTransactions.livenessProbe.periodSeconds }}
         {{- end }}

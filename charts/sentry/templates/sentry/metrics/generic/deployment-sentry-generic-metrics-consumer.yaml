@@ -98,10 +98,6 @@ spec:
           {{- end }}
           - "--consumer-group"
           - "generic-metrics-consumer"
-          {{- if .Values.sentry.genericMetricsConsumer.livenessProbe.enabled }}
-          - "--healthcheck-file-path"
-          - "/tmp/health.txt"
-          {{- end }}
           {{- if .Values.sentry.genericMetricsConsumer.logLevel }}
           - "--log-level"
           - "{{ .Values.sentry.genericMetricsConsumer.logLevel }}"
@@ -119,8 +115,8 @@ spec:
         livenessProbe:
           exec:
             command:
-              - rm
-              - /tmp/health.txt
+              - sentry
+              - health
           initialDelaySeconds: {{ .Values.sentry.genericMetricsConsumer.livenessProbe.initialDelaySeconds }}
           periodSeconds: {{ .Values.sentry.genericMetricsConsumer.livenessProbe.periodSeconds }}
         {{- end }}

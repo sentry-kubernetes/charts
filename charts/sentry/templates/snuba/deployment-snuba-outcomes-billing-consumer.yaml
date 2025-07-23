@@ -125,10 +125,6 @@ spec:
           {{- if .Values.snuba.outcomesBillingConsumer.noStrictOffsetReset }}
           - "--no-strict-offset-reset"
           {{- end }}
-          {{- if .Values.snuba.outcomesBillingConsumer.livenessProbe.enabled }}
-          - "--health-check-file"
-          - "/tmp/health.txt"
-          {{- end }}
           {{- if .Values.snuba.outcomesBillingConsumer.maxPollIntervalMs }}
           - "--max-poll-interval-ms"
           - "{{ .Values.snuba.outcomesBillingConsumer.maxPollIntervalMs }}"
@@ -138,8 +134,8 @@ spec:
         livenessProbe:
           exec:
             command:
-              - rm
-              - /tmp/health.txt
+              - snuba
+              - health
           initialDelaySeconds: {{ .Values.snuba.outcomesBillingConsumer.livenessProbe.initialDelaySeconds }}
           periodSeconds: {{ .Values.snuba.outcomesBillingConsumer.livenessProbe.periodSeconds }}
         {{- end }}
