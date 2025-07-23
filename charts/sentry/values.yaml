@@ -866,6 +866,27 @@ sentry:
     # autoOffsetReset: "earliest"
     # noStrictOffsetReset: false
 
+  subscriptionConsumerResultsEapItems:
+    enabled: true
+    replicas: 1
+    env: []
+    resources: {}
+    affinity: {}
+    nodeSelector: {}
+    securityContext: {}
+    topologySpreadConstraints: []
+    containerSecurityContext: {}
+    # tolerations: []
+    # podLabels: {}
+    livenessProbe:
+      enabled: true
+      initialDelaySeconds: 5
+      periodSeconds: 320
+    # volumes: []
+    # volumeMounts: []
+    # autoOffsetReset: "earliest"
+    # noStrictOffsetReset: false
+
   subscriptionConsumerEvents:
     enabled: true
     replicas: 1
