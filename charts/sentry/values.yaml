@@ -13,6 +13,13 @@ global:
   sidecars: []
   volumes: []
 
+# Profiles correspond to COMPOSE_PROFILES in the original self-hosted docker-compose.yml.
+# https://github.com/getsentry/self-hosted/blob/master/docker-compose.yml
+# When set to errors-only, the chart only deploys components related to processing errors.
+# For more, read https://develop.sentry.dev/self-hosted/experimental/errors-only/.
+profiles:
+  - feature-complete
+
 user:
   create: true
   email: admin@sentry.local
@@ -90,6 +97,12 @@ vroom:
     annotations: {}
   # tolerations: []
   # podLabels: {}
+  persistence:
+    enabled: true  # Set true for using PersistentVolumeClaim, false for emptyDir
+    accessModes:
+      - ReadWriteOnce
+    # storageClassName: standard
+    size: "10Gi"
 
   autoscaling:
     enabled: false
@@ -859,6 +872,27 @@ sentry:
     # autoOffsetReset: "earliest"
     # noStrictOffsetReset: false
 
+  subscriptionConsumerResultsEapItems:
+    enabled: true
+    replicas: 1
+    env: []
+    resources: {}
+    affinity: {}
+    nodeSelector: {}
+    securityContext: {}
+    topologySpreadConstraints: []
+    containerSecurityContext: {}
+    # tolerations: []
+    # podLabels: {}
+    livenessProbe:
+      enabled: true
+      initialDelaySeconds: 5
+      periodSeconds: 320
+    # volumes: []
+    # volumeMounts: []
+    # autoOffsetReset: "earliest"
+    # noStrictOffsetReset: false
+
   subscriptionConsumerEvents:
     enabled: true
     replicas: 1
@@ -1188,6 +1222,39 @@ snuba:
     #       medium: Memory
 
   eapItemsSpanConsumer:
+    enabled: true
+    replicas: 1
+    env: []
+    resources: {}
+    affinity: {}
+    nodeSelector: {}
+    securityContext: {}
+    topologySpreadConstraints: []
+    containerSecurityContext: {}
+    # tolerations: []
+    # podLabels: {}
+    # autoOffsetReset: "earliest"
+    livenessProbe:
+      enabled: true
+      initialDelaySeconds: 5
+      periodSeconds: 320
+    # maxBatchSize: ""
+    # processes: ""
+    # inputBlockSize: ""
+    # outputBlockSize: ""
+    maxBatchTimeMs: 750
+    # queuedMaxMessagesKbytes: ""
+    # queuedMinMessages: ""
+    # noStrictOffsetReset: false
+    # volumeMounts:
+    #   - mountPath: /dev/shm
+    #     name: dshm
+    # volumes:
+    #   - name: dshm
+    #     emptyDir:
+    #       medium: Memory
+
+  eapItemsConsumer:
     enabled: true
     replicas: 1
     env: []
@@ -2261,6 +2328,10 @@ externalClickhouse:
   ## or by executing `select * from system.clusters`
   ##
   # clusterName: test_shard_localhost
+  ## Optional: separate distributed cluster name (defaults to clusterName)
+  ## Use this when your ClickHouse distributed queries need a different cluster name
+  ##
+  # distributedClusterName: distributed_test_shard_localhost
 
 # Settings for Zookeeper.
 # See https://github.com/bitnami/charts/tree/master/bitnami/zookeeper
@@ -2340,7 +2411,6 @@ kafka:
         config:
           "message.timestamp.type": LogAppendTime
       - name: profiles-call-tree
-      - name: snuba-profile-chunks
       - name: ingest-replay-events
         config:
           "message.timestamp.type": LogAppendTime

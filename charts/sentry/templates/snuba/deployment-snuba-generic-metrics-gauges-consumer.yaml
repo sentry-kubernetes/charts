@@ -1,3 +1,4 @@
+{{- if has "feature-complete" .Values.profiles }}
 {{- if .Values.snuba.genericMetricsGaugesConsumer.enabled }}
 apiVersion: apps/v1
 kind: Deployment
@@ -178,5 +179,6 @@ spec:
 {{- end }}
 {{- if .Values.global.volumes }}
 {{ toYaml .Values.global.volumes | indent 8 }}
+{{- end }}
 {{- end }}
 {{- end }}

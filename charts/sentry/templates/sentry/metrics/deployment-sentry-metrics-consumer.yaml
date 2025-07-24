@@ -1,3 +1,4 @@
+{{- if has "feature-complete" .Values.profiles }}
 {{- if .Values.sentry.metricsConsumer.enabled }}
 apiVersion: apps/v1
 kind: Deployment
@@ -188,4 +189,5 @@ spec:
       {{- if .Values.sentry.metricsConsumer.priorityClassName }}
       priorityClassName: "{{ .Values.sentry.metricsConsumer.priorityClassName }}"
       {{- end }}
+{{- end }}
 {{- end }}

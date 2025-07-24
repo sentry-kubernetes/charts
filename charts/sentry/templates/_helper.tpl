@@ -413,6 +413,17 @@ Set ClickHouse cluster name
 {{- end -}}
 
 {{/*
+Set ClickHouse distributed cluster name
+*/}}
+{{- define "sentry.clickhouse.distributed.cluster.name" -}}
+{{- if .Values.clickhouse.enabled -}}
+{{ .Release.Name | printf "%s-clickhouse" }}
+{{- else -}}
+{{ default .Values.externalClickhouse.clusterName .Values.externalClickhouse.distributedClusterName }}
+{{- end -}}
+{{- end -}}
+
+{{/*
 Set ClickHouse secure setting
 */}}
 {{- define "sentry.clickhouse.secure" -}}
@@ -672,7 +683,7 @@ Set external Clickhouse password from existingSecret
 - name: SENTRY_KAFKA_BROKERS_OCCURRENCES
   value: {{ include "sentry.kafka.bootstrap_servers_string" . | quote }}
 - name: SENTRY_BUCKET_PROFILES
-  value: file://localhost//var/lib/sentry-profiles
+  value: "file:///var/vroom/sentry-profiles"
 - name: SENTRY_SNUBA_HOST
   value: http://{{ template "sentry.fullname" . }}-snuba:{{ template "snuba.port" . }}
 {{- end -}}

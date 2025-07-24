@@ -1,20 +1,33 @@
 {
-  "extends": ["config:recommended", ":rebaseStalePrs", "docker:disable"],
+  "extends": [
+    "config:recommended",
+    ":rebaseStalePrs",
+    "docker:disable",
+    "customManagers:helmChartYamlAppVersions"
+  ],
   "enabled": true,
   "prConcurrentLimit": 30,
-  "enabledManagers": ["helmv3", "github-actions"],
+  "enabledManagers": [
+    "helmv3",
+    "github-actions"
+  ],
   "schedule": [
     "before 5am on Monday"
   ],
   "packageRules": [
     {
-      "updateTypes": ["patch", "minor"],
+      "updateTypes": [
+        "patch",
+        "minor"
+      ],
       "schedule": [
         "before 5am on Monday"
       ]
     },
     {
-      "updateTypes": ["major"],
+      "updateTypes": [
+        "major"
+      ],
       "schedule": [
         "before 5am on the first day of the month"
       ]

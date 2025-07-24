@@ -1,3 +1,4 @@
+{{- if has "feature-complete" .Values.profiles }}
 {{- if .Values.vroom.autoscaling.enabled }}
 apiVersion: {{ template "sentry.autoscaling.apiVersion" . }}
 kind: HorizontalPodAutoscaler
@@ -30,4 +31,5 @@ spec:
         type: Utilization
         averageUtilization: {{ .Values.vroom.autoscaling.targetCPUUtilizationPercentage }}
   {{- end }}
+{{- end }}
 {{- end }}

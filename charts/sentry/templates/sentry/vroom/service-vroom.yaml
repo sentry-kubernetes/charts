@@ -1,3 +1,4 @@
+{{- if has "feature-complete" .Values.profiles }}
 {{- if .Values.sentry.features.enableProfiling }}
 apiVersion: v1
 kind: Service
@@ -25,4 +26,5 @@ spec:
   selector:
     app: {{ template "sentry.fullname" . }}
     role: vroom
+{{- end }}
 {{- end }}

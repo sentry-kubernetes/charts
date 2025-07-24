@@ -81,7 +81,7 @@ settings.py: |
       {{- end }}
       {{- if or .Values.clickhouse.enabled (not .Values.externalClickhouse.singleNode) }}
       "cluster_name": {{ include "sentry.clickhouse.cluster.name" . | quote }},
-      "distributed_cluster_name": {{ include "sentry.clickhouse.cluster.name" . | quote }},
+      "distributed_cluster_name": {{ include "sentry.clickhouse.distributed.cluster.name" . | quote }},
       {{- end }}
     },
   ]

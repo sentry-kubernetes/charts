@@ -1,0 +1,28 @@
+{{- if has "feature-complete" .Values.profiles }}
+{{- if .Values.sentry.features.enableProfiling }}
+{{- if .Values.vroom.persistence.enabled }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: sentry-vroom-pvc
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: {{ template "sentry.fullname" . }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
+    release: "{{ .Release.Name }}"
+    heritage: "{{ .Release.Service }}"
+    component: vroom
+spec:
+  accessModes:
+{{- range .Values.vroom.persistence.accessModes }}
+    - {{ . | quote }}
+{{- end }}
+  resources:
+    requests:
+      storage: {{ .Values.vroom.persistence.size | quote }}
+  {{- if .Values.vroom.persistence.storageClassName }}
+  storageClassName: {{ .Values.vroom.persistence.storageClassName | quote }}
+  {{- end }}
+{{- end }}
+{{- end }}
+{{- end }}

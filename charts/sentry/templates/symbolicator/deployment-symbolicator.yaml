@@ -153,6 +153,10 @@ spec:
         - name: sentry-google-cloud-key
           mountPath: /var/run/secrets/google
         {{ end }}
+{{- if .Values.symbolicator.api.cleaner.containerSecurityContext }}
+        securityContext:
+{{ toYaml .Values.symbolicator.api.cleaner.containerSecurityContext | indent 12 }}
+{{- end }}
 {{- end }}
 {{- if .Values.symbolicator.api.sidecars }}
 {{ toYaml .Values.symbolicator.api.sidecars | indent 6 }}

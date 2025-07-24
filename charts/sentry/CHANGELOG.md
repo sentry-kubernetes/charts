@@ -1,5 +1,50 @@
 # Changelog
 
+## [27.0.1](https://github.com/sentry-kubernetes/charts/compare/sentry-v27.0.0...sentry-v27.0.1) (2025-07-24)
+
+
+### Bug Fixes
+
+* **vroom:** add persistent storage configuration ([#1822](https://github.com/sentry-kubernetes/charts/issues/1822)) ([82d2c51](https://github.com/sentry-kubernetes/charts/commit/82d2c51228ab040d17586f170b2f37e682ea670c))
+
+## [27.0.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v26.22.0...sentry-v27.0.0) (2025-07-23)
+
+
+### ⚠ BREAKING CHANGES
+
+* **deps:** update helm release clickhouse to v4 ([#1775](https://github.com/sentry-kubernetes/charts/issues/1775))
+
+### Features
+
+* **deps:** update helm release clickhouse to v4 ([#1775](https://github.com/sentry-kubernetes/charts/issues/1775)) ([4e86110](https://github.com/sentry-kubernetes/charts/commit/4e8611025be55045f948f951aa1b8869971f0419))
+* **sentry:** upgrade version ([#1819](https://github.com/sentry-kubernetes/charts/issues/1819)) ([afe197c](https://github.com/sentry-kubernetes/charts/commit/afe197cc17021f5a8a38f75c0760058f3f828423))
+* **snuba:** add deployment configuration for EAP items consumer ([#1818](https://github.com/sentry-kubernetes/charts/issues/1818)) ([a4e1749](https://github.com/sentry-kubernetes/charts/commit/a4e1749e6c3dd8deca9ffa113331b3a8eafc50b9))
+
+
+### Bug Fixes
+
+* support `containerSecurityContext` for Symbolicator Cleaner container ([#1817](https://github.com/sentry-kubernetes/charts/issues/1817)) ([517e2ae](https://github.com/sentry-kubernetes/charts/commit/517e2ae4d783a0927d743596763b30f24a344bb8))
+
+## [26.22.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v26.21.0...sentry-v26.22.0) (2025-07-21)
+
+
+### Features
+
+* add distributed cluster name config ([#1780](https://github.com/sentry-kubernetes/charts/issues/1780)) ([1ce32ab](https://github.com/sentry-kubernetes/charts/commit/1ce32ab717ce022730021e629dbeb1d2dd30a5b3))
+* add errors-only mode from original self-hosted compose ([#1810](https://github.com/sentry-kubernetes/charts/issues/1810)) ([3f29825](https://github.com/sentry-kubernetes/charts/commit/3f29825126050887312bc6a5828a4d34aa2aa444))
+
+
+### Bug Fixes
+
+* **sentry:** set `SENTRY_SELF_HOSTED_ERRORS_ONLY` when neeeded ([#1812](https://github.com/sentry-kubernetes/charts/issues/1812)) ([bccb3fb](https://github.com/sentry-kubernetes/charts/commit/bccb3fba295d1f375bf5263fb62a9c65279886d3))
+
+## [26.21.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v26.20.1...sentry-v26.21.0) (2025-07-09)
+
+
+### Features
+
+* add maxPollIntervalMs to consumers ([#1805](https://github.com/sentry-kubernetes/charts/issues/1805)) ([267acc7](https://github.com/sentry-kubernetes/charts/commit/267acc7e6bd0313cada0fcce40dfa54f063ca24d))
+
 ## [26.20.1](https://github.com/sentry-kubernetes/charts/compare/sentry-v26.20.0...sentry-v26.20.1) (2025-07-09)
 
 

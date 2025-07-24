@@ -1,3 +1,4 @@
+{{- if has "feature-complete" .Values.profiles }}
 {{- if .Values.sentry.processSpans.enabled }}
 apiVersion: apps/v1
 kind: Deployment
@@ -173,4 +174,5 @@ spec:
       {{- if .Values.sentry.processSpans.priorityClassName }}
       priorityClassName: "{{ .Values.sentry.processSpans.priorityClassName }}"
       {{- end }}
-{{- end }} 
+{{- end }}
+{{- end }}

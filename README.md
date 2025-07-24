@@ -18,6 +18,10 @@ helm install my-sentry sentry/sentry --wait --timeout=1000s
 
 For now the full list of values is not documented, but you can get inspired by the `values.yaml` specific to each directory.
 
+## Upgrading from 26.x.x Version of This Chart to 27.x.x
+
+Make sure to upgrade to chart version 26.22.0 before upgrading to 27.x.x. There is a hard stop on the Sentry version.
+
 ## Upgrading from 25.x.x Version of This Chart to 26.x.x
 
 Make sure to upgrade to chart version 25.20.0 (Sentry 24.8.0) before upgrading to 26.x.x.
@@ -58,66 +62,72 @@ mode. This change requires action on your part to ensure a smooth upgrade.
 1. **Backup Your Data**: Ensure all your data is backed up before starting the migration process.
 2. **Retrieve the Cluster ID from Zookeeper** by executing:
 
-    ```shell
-    kubectl exec -it <your-zookeeper-pod> -- zkCli.sh get /cluster/id
-    ```
+   ```shell
+   kubectl exec -it <your-zookeeper-pod> -- zkCli.sh get /cluster/id
+   ```
 
 3. **Deploy at least one Kraft controller-only** in your deployment with `zookeeperMigrationMode=true`. The Kraft
-    controllers will migrate the data from your Kafka ZkBroker to Kraft mode.
+   controllers will migrate the data from your Kafka ZkBroker to Kraft mode.
 
-    To do this, add the following values to your Zookeeper deployment when upgrading:
+   To do this, add the following values to your Zookeeper deployment when upgrading:
 
-    ```yaml
-    controller:
-        replicaCount: 1
-        controllerOnly: true
-        zookeeperMigrationMode: true
-    broker:
-        zookeeperMigrationMode: true
-    kraft:
-        enabled: true
-        clusterId: "<your_cluster_id>"
-    ```
+   ```yaml
+   controller:
+     replicaCount: 1
+     controllerOnly: true
+     zookeeperMigrationMode: true
+   broker:
+     zookeeperMigrationMode: true
+   kraft:
+     enabled: true
+     clusterId: "<your_cluster_id>"
+   ```
 
 4. **Wait until all brokers are ready.** You should see the following log in the broker logs:
 
-    ```shell
-    INFO [KafkaServer id=100] Finished catching up on KRaft metadata log, requesting that the KRaft controller unfence this broker (kafka.server.KafkaServer)
-    INFO [BrokerLifecycleManager id=100 isZkBroker=true] The broker has been unfenced. Transitioning from RECOVERY to RUNNING. (kafka.server.BrokerLifecycleManager)
-    ```
-    In the controllers, the following message should show up:
-    ```shell
-    Transitioning ZK migration state from PRE_MIGRATION to MIGRATION (org.apache.kafka.controller.FeatureControlManager)
-    ```
+   ```shell
+   INFO [KafkaServer id=100] Finished catching up on KRaft metadata log, requesting that the KRaft controller unfence this broker (kafka.server.KafkaServer)
+   INFO [BrokerLifecycleManager id=100 isZkBroker=true] The broker has been unfenced. Transitioning from RECOVERY to RUNNING. (kafka.server.BrokerLifecycleManager)
+   ```
+
+   In the controllers, the following message should show up:
+
+   ```shell
+   Transitioning ZK migration state from PRE_MIGRATION to MIGRATION (org.apache.kafka.controller.FeatureControlManager)
+   ```
 
 5. **Once all brokers have been successfully migrated,** set **`broker.zookeeperMigrationMode=false`** to fully migrate them.
-    ```yaml
-    broker:
-      zookeeperMigrationMode: false
-    ```
+
+   ```yaml
+   broker:
+     zookeeperMigrationMode: false
+   ```
 
 6. **To conclude the migration**, switch off migration mode on controllers and stop Zookeeper:
 
-    ```yaml
-    controller:
-        zookeeperMigrationMode: false
-    zookeeper:
-        enabled: false
-    ```
-    After the migration is complete, you should see the following message in your controllers:
+   ```yaml
+   controller:
+     zookeeperMigrationMode: false
+   zookeeper:
+     enabled: false
+   ```
 
-    ```shell
-    [2023-07-13 13:07:45,226] INFO [QuorumController id=1] Transitioning ZK migration state from MIGRATION to POST_MIGRATION (org.apache.kafka.controller.FeatureControlManager)
-    ```
+   After the migration is complete, you should see the following message in your controllers:
+
+   ```shell
+   [2023-07-13 13:07:45,226] INFO [QuorumController id=1] Transitioning ZK migration state from MIGRATION to POST_MIGRATION (org.apache.kafka.controller.FeatureControlManager)
+   ```
+
 7. **(Optional)** If you would like to switch to a non-dedicated cluster, set **`controller.controllerOnly=false`**. This will cause controller-only nodes to switch to controller+broker nodes.
 
-    At this point, you could manually decommission broker-only nodes by reassigning its partitions to controller-eligible nodes.
+   At this point, you could manually decommission broker-only nodes by reassigning its partitions to controller-eligible nodes.
 
-    For more information about decommissioning a Kafka broker, check the official documentation.
+   For more information about decommissioning a Kafka broker, check the official documentation.
 
 ## Upgrading from 20.x.x version of this Chart to 21.x.x
 
 Bumped dependencies:
+
 - memcached > 6.5.9
 - kafka > 23.0.7 - This is a major update, but only kafka version is updated. See [bitnami charts' update note](https://github.com/bitnami/charts/tree/main/bitnami/kafka#to-2300)
 - clickhouse > 3.7.0 - Supports `priorityClassName` and `max_suspicious_broken_parts` config.
@@ -127,6 +137,7 @@ Bumped dependencies:
 ## Upgrading from 19.x.x version of this Chart to 20.x.x
 
 Bumped dependencies:
+
 - kafka > 22.1.3 - now supports Kraft. Note that the upgrade is breaking and that you have to start a new Kafka from scratch to use it.
 
 Example:
@@ -143,9 +154,11 @@ kafka:
 
 Chart dependencies have been upgraded because of Sentry requirements.
 Changes:
+
 - The minimum required version of PostgreSQL is 14.5 (works with 15.x too)
 
 Bumped dependencies:
+
 - postgresql > 12.5.1 - latest version of chart with postgres 15
 
 ## Upgrading from 17.x.x version of this Chart to 18.x.x
@@ -177,13 +190,15 @@ See https://github.com/sentry-kubernetes/charts/tree/develop/sentry#sentry-secre
 
 Chart dependencies have been upgraded because of bitnami charts removal.
 Changes:
+
 - `nginx.service.port: 80` > `nginx.service.ports.http: 80`
 - `kafka.service.port` > `kafka.service.ports.client`
 
 Bumped dependencies:
+
 - redis > 16.12.1 - latest version of chart
 - kafka > 16.3.2 - chart aligned with zookeeper dependency, upgraded Kafka to 3.11
-- rabbit > 8.32.2 - latest 3.9.* image version of chart
+- rabbit > 8.32.2 - latest 3.9.\* image version of chart
 - postgresql > 10.16.2 - latest version of chart with postgres 11
 - nginx > 12.0.4 - latest version of chart
 
@@ -265,6 +280,7 @@ If you are using `additionalHostNames`, the `nginx.ingress.kubernetes.io/upstrea
 It sets the `Host` header to the value you provide to avoid CSRF issues.
 
 ### Letsencrypt on NGINX Ingress Controller
+
 ```yaml
 nginx:
   ingress:
