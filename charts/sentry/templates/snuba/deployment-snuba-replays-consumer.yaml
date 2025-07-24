@@ -129,6 +129,11 @@ spec:
           - "--health-check-file"
           - "/tmp/health.txt"
           {{- end }}
+          {{- if .Values.snuba.replaysConsumer.maxPollIntervalMs }}
+          - "--max-poll-interval-ms"
+          - "{{ .Values.snuba.replaysConsumer.maxPollIntervalMs }}"
+          {{- end }}
+          - "--"
         {{- if .Values.snuba.replaysConsumer.livenessProbe.enabled }}
         livenessProbe:
           exec:
