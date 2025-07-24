@@ -1,5 +1,12 @@
 # Changelog
 
+## [27.0.1](https://github.com/sentry-kubernetes/charts/compare/sentry-v27.0.0...sentry-v27.0.1) (2025-07-24)
+
+
+### Bug Fixes
+
+* **vroom:** add persistent storage configuration ([#1822](https://github.com/sentry-kubernetes/charts/issues/1822)) ([82d2c51](https://github.com/sentry-kubernetes/charts/commit/82d2c51228ab040d17586f170b2f37e682ea670c))
+
 ## [27.0.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v26.22.0...sentry-v27.0.0) (2025-07-23)
 
 
