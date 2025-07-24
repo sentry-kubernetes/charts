@@ -85,11 +85,14 @@ spec:
         env:
         - name: VROOM_PORT
           value: '{{ template "vroom.port" }}'
+{{- include "vroom.env" . | nindent 8 }}
 {{- if .Values.vroom.env }}
 {{ toYaml .Values.vroom.env | indent 8 }}
 {{- end }}
-{{- if .Values.vroom.volumeMounts }}
         volumeMounts:
+        - name: vroom-storage
+          mountPath: /var/vroom/sentry-profiles
+{{- if .Values.vroom.volumeMounts }}
 {{ toYaml .Values.vroom.volumeMounts | indent 10 }}
 {{- end }}
         livenessProbe:
@@ -127,14 +130,20 @@ spec:
       {{- if .Values.serviceAccount.enabled }}
       serviceAccountName: {{ .Values.serviceAccount.name }}-vroom
       {{- end }}
-{{- if or .Values.vroom.volumes .Values.global.volumes }}
       volumes:
+      {{- if .Values.vroom.persistence.enabled }}
+      - name: vroom-storage
+        persistentVolumeClaim:
+          claimName: sentry-vroom-pvc
+      {{- else }}
+      - name: vroom-storage
+        emptyDir: {}
+      {{- end }}
 {{- if .Values.vroom.volumes }}
 {{ toYaml .Values.vroom.volumes | indent 6 }}
 {{- end }}
 {{- if .Values.global.volumes }}
 {{ toYaml .Values.global.volumes | indent 6 }}
-{{- end }}
 {{- end }}
       {{- if .Values.vroom.priorityClassName }}
       priorityClassName: "{{ .Values.vroom.priorityClassName }}"

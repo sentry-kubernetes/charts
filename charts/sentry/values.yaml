@@ -97,6 +97,12 @@ vroom:
     annotations: {}
   # tolerations: []
   # podLabels: {}
+  persistence:
+    enabled: true  # Set true for using PersistentVolumeClaim, false for emptyDir
+    accessModes:
+      - ReadWriteOnce
+    # storageClassName: standard
+    size: "10Gi"
 
   autoscaling:
     enabled: false
