@@ -530,8 +530,11 @@ sentry.conf.py: |-
           + ("organizations:integrations-vsts-limited-scopes",)
           {{- end }}
 
+          {{- if not .Values.sentry.singleOrganization }}
+          +("organizations:create",)
+          {{ end -}}
+
           + (
-          "organizations:create",
           "relocation:enabled",
           )
 
