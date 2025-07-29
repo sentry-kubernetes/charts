@@ -405,181 +405,494 @@ sentry.conf.py: |-
       {
           feature: True
           for feature in (
-              {{- if not .Values.sentry.singleOrganization }}
-              "organizations:create",
-              {{ end -}}
+            "organizations:advanced-search",
+            "organizations:anomaly-detection-alerts",
+            "organizations:app-store-connect-multiple",
+            "organizations:change-alerts",
+            "organizations:codecov-integration",
+            "organizations:crash-rate-alerts",
+            "organizations:custom-symbol-sources",
+            "organizations:dashboards-basic",
+            "organizations:dashboards-edit",
+            "organizations:data-forwarding",
+            "organizations:discover-basic",
+            "organizations:discover-query",
+            "organizations:dynamic-sampling",
+            "organizations:event-attachments",
+            "organizations:incidents",
+            "organizations:integrations-alert-rule",
+            "organizations:integrations-chat-unfurl",
+            "organizations:integrations-codeowners",
+            "organizations:integrations-event-hooks",
+            "organizations:integrations-enterprise-alert-rule",
+            "organizations:integrations-enterprise-incident-management",
+            "organizations:integrations-incident-management",
+            "organizations:integrations-issue-basic",
+            "organizations:integrations-issue-sync",
+            "organizations:integrations-stacktrace-link",
+            "organizations:integrations-ticket-rules",
+            "organizations:metric-alert-chartcuterie",
+            "organizations:performance-view",
+            "organizations:relay",
+            "organizations:remote-config",
+            "organizations:sso-basic",
+            "organizations:sso-saml2",
+            "organizations:team-insights",
+            "organizations:team-roles",
+            "organizations:uptime",
+            "organizations:on-demand-metrics-prefill",
+            "organizations:custom-metrics",
+            "organizations:sentry-pride-logo-footer",
+            "organizations:seer-based-priority",
+            "organizations:integrations-vercel",
+            "organizations:integrations-scm-multi-org",
+            "organizations:issue-views",
+            "projects:data-forwarding",
+            "projects:rate-limits",
+            "projects:custom-inbound-filters",
+            "projects:discard-groups",
+            "projects:servicehooks"
+          )
 
-              {{- if .Values.sentry.features.orgSubdomains }}
-              "organizations:org-subdomains",
-              {{ end -}}
+          {{- if .Values.sentry.features.orgSubdomains }}
+          + ("organizations:org-ingest-subdomains",)
+          {{- end }}
 
-              "organizations:advanced-search",
-              "organizations:android-mappings",
-              "organizations:api-keys",
-              "organizations:boolean-search",
-              "organizations:related-events",
-              "organizations:alert-filters",
-              "organizations:custom-symbol-sources",
-              "organizations:dashboards-basic",
-              "organizations:dashboards-edit",
-              "organizations:data-forwarding",
-              "organizations:discover",
-              "organizations:discover-basic",
-              "organizations:discover-query",
-              "organizations:discover-frontend-use-events-endpoint",
-              "organizations:enterprise-perf",
-              "organizations:event-attachments",
-              "organizations:events",
-              "organizations:global-views",
-              "organizations:incidents",
-              "organizations:metric-alert-builder-aggregate",
-              "organizations:metric-alert-gui-filters",
-              "organizations:integrations-event-hooks",
-              "organizations:integrations-issue-basic",
-              "organizations:integrations-issue-sync",
-              "organizations:integrations-alert-rule",
-              "organizations:integrations-chat-unfurl",
-              "organizations:integrations-incident-management",
-              "organizations:integrations-ticket-rules",
+          {{- if .Values.sentry.features.enableProfiling }}
+          + (
+            "organizations:profiling",
+            "organizations:profiling-view",
+            "organizations:profiling-beta",
+            "organizations:profiling-sdks",
+            "organizations:profiling-deprecate-sdks",
+            "organizations:profiling-browser",
+            "organizations:profiling-differential-flamegraph-page",
+            "organizations:profiling-flamegraph-always-use-direct-chunks",
+            "organizations:profiling-global-suspect-functions",
+            "organizations:profiling-function-trends",
+            "organizations:profiling-summary-redesign",
+            "organizations:continuous-profiling",
+            "organizations:continuous-profiling-beta",
+            "organizations:continuous-profiling-beta-ui",
+            "organizations:continuous-profiling-stats",
+            "organizations:continuous-profiling-billing",
+            "organizations:profiling-flamegraph-use-increased-chunks-query-strategy",
+            "projects:continuous-profiling-vroomrs-processing",
+            "projects:transaction-profiling-vroomrs-processing",
+            "projects:profiling-ingest-unsampled-profiles",
+          )
+          {{- end }}
 
-              {{- if .Values.sentry.features.vstsLimitedScopes }}
-              "organizations:integrations-vsts-limited-scopes",
-              {{ end -}}
+          {{- if .Values.sentry.features.enableSessionReplay }}
+          + (
+            "organizations:session-replay",
+            "organizations:replay-ai-summaries",
+            "organizations:replay-list-select",
+            "organizations:session-replay-issue-emails",
+            "organizations:session-replay-video-disabled",
+            "organizations:session-replay-recording-scrubbing",
+            "organizations:session-replay-slack-new-issue",
+            "organizations:session-replay-ui",
+            "organizations:ourlogs-replay-ui",
+          )
+          {{- end }}
 
-              "organizations:integrations-stacktrace-link",
-              "organizations:internal-catchall",
-              "organizations:invite-members",
-              "organizations:large-debug-files",
-              "organizations:monitors",
-              "organizations:onboarding",
-              "organizations:org-saved-searches",
-              "organizations:performance-view",
-              "organizations:performance-frontend-use-events-endpoint",
-              "organizations:project-detail",
-              "organizations:relay",
-              "organizations:release-performance-views",
-              "organizations:rule-page",
-              "organizations:set-grouping-config",
-              "organizations:custom-event-title",
-              "organizations:slack-migration",
-              "organizations:sso-basic",
-              "organizations:sso-rippling",
-              "organizations:sso-saml2",
-              "organizations:sso-migration",
-              "organizations:stacktrace-hover-preview",
-              "organizations:symbol-sources",
-              "organizations:transaction-comparison",
-              "organizations:usage-stats-graph",
-              "organizations:inbox",
-              "organizations:unhandled-issue-flag",
-              "organizations:invite-members-rate-limits",
-              "organizations:dashboards-v2",
-              "organizations:reprocessing-v2",
-              "organizations:metrics",
-              "organizations:metrics-extraction",
-              "organizations:transaction-metrics-extraction",
+          {{- if .Values.sentry.features.enableFeedback }}
+          + (
+            "organizations:user-feedback-ai-summaries",
+            "organizations:user-feedback-spam-ingest",
+            "organizations:user-feedback-ui",
+          )
+          {{- end }}
 
-              {{- if .Values.sentry.features.enableSessionReplay}}
-              "organizations:session-replay",
-              "organizations:session-replay-ui",
-              "organizations:session-replay-sdk",
-              "organizations:session-replay-count-query-optimize",
-              "organizations:session-replay-sdk-errors-only",
-              "organizations:session-replay-recording-scrubbing",
-              "organizations:session-replay-a11y-tab",
-              "organizations:session-replay-slack-new-issue",
-              "organizations:session-replay-issue-emails",
-              "organizations:session-replay-event-linking",
-              "organizations:session-replay-enable-canvas",
-              "organizations:session-replay-enable-canvas-replayer",
-              "organizations:session-replay-weekly-email",
-              "organizations:session-replay-trace-table",
-              "organizations:session-replay-rage-dead-selectors",
-              "organizations:session-replay-new-event-counts",
-              "organizations:session-replay-new-timeline",
-              "organizations:issue-details-replay-event",
-              {{ end -}}
+          {{- if .Values.sentry.features.enableSpan }}
+          + (
+            "organizations:spans-usage-tracking",
+            "organizations:span-stats",
+            "organizations:performance-spans-fields-stats",
+            "organizations:performance-spans-new-ui",
+            "organizations:performance-spans-suspect-attributes",
+            "organizations:standalone-span-ingestion",
+            "organizations:indexed-spans-extraction",
+            "organizations:trace-spans-format",
+            "organizations:trace-view-span-links",
+            "organizations:performance-span-histogram-view",
+            "organizations:issue-detection-sort-spans",
+            "organizations:performance-issues-spans",
+            "organizations:dynamic-sampling-spans",
+            "projects:span-metrics-extraction",
+            "projects:span-metrics-extraction-addons",
+            "projects:use-eap-spans-for-metrics-explorer",
+          )
+          {{- end }}
 
-              "organizations:issue-platform",
+          {{- if .Values.sentry.features.vstsLimitedScopes }}
+          + ("organizations:integrations-vsts-limited-scopes",)
+          {{- end }}
 
-              {{- if .Values.sentry.features.enableProfiling }}
-              "organizations:profiling",
-              "organizations:profiling-ui-frames",
-              "organizations:profiling-using-transactions",
-              "organizations:profiling-beta",
-              "organizations:profiling-stacktrace-links",
-              "organizations:profiling-cpu-chart",
-              "organizations:profiling-memory-chart",
-              "organizations:profiling-view",
-              {{ end -}}
+          + (
+          "organizations:create",
+          "relocation:enabled",
+          )
 
-              {{- if .Values.sentry.features.enableFeedback }}
-              "organizations:user-feedback-ui",
-              "organizations:user-feedback-ingest",
-              "organizations:user-feedback-replay-clip",
-              "organizations:feedback-ingest",
-              "organizations:feedback-post-process-group",
-              "organizations:feedback-visible",
-              {{ end -}}
+          # Alerting & Monitoring
+          + (
+          "organizations:alert-allow-indexed",
+          "organizations:alert-crash-free-metrics",
+          "organizations:anomaly-detection-eap",
+          "organizations:crash-rate-alerts",
+          "organizations:more-fast-alerts",
+          "organizations:more-slow-alerts",
+          "organizations:more-workflows",
+          )
 
-              {{- if .Values.sentry.features.enableSpan }}
-              # Trace View -- make sure this is all set
-                "organizations:trace-view-v1", # This one is required
-                "organizations:trace-view-load-more", # Optional
-                "organizations:trace-tabs-ui", # Optional
-                "organizations:trace-view-linked-traces", # Optional
-                "organizations:replay-trace-view-v1", # Optional
-                "organizations:trace-drawer-action", # Optional
-                "organizations:trace-spans-format", # Optional
-              # Performance Trace Explorer
-                "organizations:performance-trace-explorer", # Required
-                "organizations:performance-trace-details", # Required
-                "organizations:performance-trace-explorer-sorting",
-                "organizations:performance-tracing-without-performance",
-                "organizations:performance-use-metrics",
-              # Span-based Metrics
-                "projects:span-metrics-extraction",
-                "projects:span-metrics-extraction-addons",
-                "organizations:span-stats",
-                "organizations:performance-issues-spans",
-                "organizations:transaction-metrics-extraction", # Extraction metrics for transactions during ingestion.
-                "organizations:indexed-spans-extraction", # Starfish: extract metrics from the spans
-                "organizations:visibility-explore-view", # Enable the new explore page
-                "organizations:visibility-explore-admin", # Enable admin features on the new explore page
-                "organizations:visibility-explore-equations", # Enable equations feature on the new explore page
-                "organizations:visibility-explore-progressive-loading",
-                "organizations:visibility-explore-skip-preflight",
-                "organizations:visibility-explore-tabs", # Enable merging all the modes into tabs
-                "organizations:visibility-explore-range-high", # Enable high date range options on new explore page
-                "organizations:explore-multi-query", # Enable explore multi query page
-              {{ end -}}
+          # API & Rate Limiting
+          + (
+          "organizations:api-organization_events-rate-limit-reduced-rollout",
+          "organizations:anr-analyze-frames",
+          "organizations:increased-issue-owners-rate-limit",
+          "organizations:invite-members-rate-limits",
+          )
 
-              "organizations:dashboards-mep",
-              "organizations:mep-rollout-flag",
-              "organizations:dashboards-rh-widget",
-              "organizations:metrics-extraction",
-              "organizations:transaction-metrics-extraction",
+          # Authentication & Authorization
+          + (
+          "organizations:auth-v2-merge-users",
+          "organizations:revoke-org-auth-on-slug-rename",
+          "organizations:scoped-partner-oauth",
+          )
 
-              "projects:alert-filters",
-              "projects:custom-inbound-filters",
-              "projects:data-forwarding",
-              "projects:discard-groups",
-              "projects:issue-alerts-targeting",
-              "projects:minidump",
-              "projects:rate-limits",
-              "projects:sample-events",
-              "projects:servicehooks",
-              "projects:similarity-view",
-              "projects:similarity-indexing",
-              "projects:similarity-view-v2",
-              "projects:similarity-indexing-v2",
+          # AI & Machine Learning
+          + (
+          "organizations:detailed-data-for-seer",
+          "organizations:autofix-seer-preferences",
+          "organizations:seer-explorer",
+          "organizations:seer-based-priority",
+          "organizations:gen-ai-features",
+          "organizations:gen-ai-explore-traces",
+          "organizations:gen-ai-explore-traces-consent-ui",
+          "organizations:gen-ai-consent",
+          "organizations:trigger-autofix-on-issue-summary",
+          "organizations:unlimited-auto-triggered-autofix-runs",
+          )
 
-              "projects:plugins",
-              {{- if .Values.sentry.customFeatures }}
-              {{- range $CustomFeature := .Values.sentry.customFeatures }}
-              "{{ $CustomFeature}}",
-              {{- end }}
-              {{- end }}
+          # Code & Development Tools
+          + (
+          "organizations:auto-enable-codecov",
+          "organizations:codecov-ui",
+          "organizations:csharp-open-pr-comments",
+          "organizations:go-open-pr-comments",
+          "organizations:command-menu-v2",
+          )
+
+          # Dashboard & UI
+          + (
+          "organizations:chonk-ui",
+          "organizations:chonk-ui-feedback",
+          "organizations:daily-summary",
+          "organizations:dashboards-import",
+          "organizations:dashboards-mep",
+          "organizations:dashboards-metrics-transition",
+          "organizations:dashboards-starred-reordering",
+          "organizations:dashboards-widget-builder-redesign",
+          "organizations:dashboards-use-widget-table-visualization",
+          "organizations:navigation-sidebar-v2",
+          "organizations:new-page-filter",
+          "organizations:enforce-stacked-navigation",
+          )
+
+          # Data & Privacy
+          + (
+          "organizations:data-secrecy",
+          "organizations:data-secrecy-v2",
+          "organizations:device-class-synthesis",
+          "organizations:device-classification",
+          "organizations:view-hierarchy-scrubbing",
+          "organizations:view-hierarchies-options-dev",
+          )
+
+          # Discovery & Search
+          + (
+          "organizations:discover",
+          "organizations:discover-saved-queries-deprecation",
+          "organizations:discover-cell-actions-v2",
+          "organizations:expose-migrated-discover-queries",
+          "organizations:search-query-builder-raw-search-replacement",
+          "organizations:search-query-builder-wildcard-operators",
+          "organizations:issue-search-allow-postgres-only-search",
+          )
+
+          # Dynamic Sampling
+          + (
+          "organizations:ds-org-recalibration",
+          "organizations:dynamic-sampling-custom",
+          "organizations:dynamic-sampling-minimum-sample-rate",
+          )
+
+          # Issues & Events
+          + (
+          "organizations:escalating-issues-v2",
+          "organizations:escalating-metrics-backend",
+          "organizations:issue-details-lifetime-stats",
+          "organizations:issue-details-streamline-enforce",
+          "organizations:issue-taxonomy",
+          "organizations:issue-open-periods",
+          "organizations:issues-suspect-tags",
+          "organizations:suspect-scores-sandbox-ui",
+          "organizations:related-events",
+          "organizations:event-unique-user-frequency-condition-with-conditions",
+          )
+
+          # Integrations
+          + (
+          "organizations:integrations-deployment",
+          "organizations:integrations-feature-flag-integration",
+          )
+
+          # Invitations & Billing
+          + (
+          "organizations:invite-billing",
+          "organizations:invite-members",
+          "organizations:new-organization-member-invite",
+          )
+
+          # Metrics & Performance
+          + (
+          "organizations:metric-issue-poc",
+          "organizations:mep-rollout-flag",
+          "organizations:mep-use-default-tags",
+          "organizations:disable-clustering-setting",
+          "organizations:migrate-azure-devops-integration",
+          "organizations:minute-resolution-sessions",
+          "organizations:mobile-cpu-memory-in-transactions",
+          "organizations:mobile-vitals",
+          "organizations:use-metrics-layer",
+          )
+
+          # On-Demand Metrics
+          + (
+          "organizations:agents-insights",
+          "organizations:mcp-insights",
+          "organizations:on-demand-metrics-extraction",
+          "organizations:on-demand-metrics-extraction-experimental",
+          "organizations:on-demand-metrics-extraction-widgets",
+          "organizations:on-demand-metrics-query-spec-version-two",
+          "organizations:on-demand-metrics-ui",
+          "organizations:on-demand-metrics-ui-widgets",
+          )
+
+          # Onboarding & Projects
+          + (
+          "organizations:onboarding",
+          "organizations:ownership-size-limit-large",
+          "organizations:ownership-size-limit-xlarge",
+          "organizations:project-creation-games-tab",
+          "organizations:project-event-date-limit",
+          "organizations:project-templates",
+          )
+
+          # Performance Monitoring
+          + (
+          "organizations:performance-calculate-mobile-perf-score-relay",
+          "organizations:performance-change-explorer",
+          "organizations:performance-chart-interpolation",
+          "organizations:performance-discover-dataset-selector",
+          "organizations:deprecate-discover-widget-type",
+          "organizations:performance-discover-widget-split-override-save",
+          "organizations:performance-discover-widget-split-ui",
+          "organizations:performance-discover-get-custom-measurements-reduced-range",
+          "organizations:performance-issues-all-events-tab",
+          "organizations:performance-issues-search",
+          "organizations:performance-mep-bannerless-ui",
+          "organizations:performance-mep-reintroduce-histograms",
+          "organizations:performance-metrics-backed-transaction-summary",
+          "organizations:performance-new-trends",
+          "organizations:performance-new-widget-designs",
+          "organizations:performance-onboarding-checklist",
+          "organizations:performance-queries-mongodb-extraction",
+          "organizations:performance-remove-metrics-compatibility-fallback",
+          "organizations:performance-trace-details",
+          "organizations:performance-trace-explorer",
+          "organizations:performance-sentry-conventions-fields",
+          "organizations:performance-tracing-without-performance",
+          "organizations:performance-transaction-name-only-search",
+          "organizations:performance-transaction-name-only-search-indexed",
+          "organizations:performance-transaction-summary-cleanup",
+          "organizations:performance-transaction-summary-eap",
+          "organizations:performance-otel-friendly-ui",
+          "organizations:performance-use-metrics",
+          "organizations:performance-vitals-standalone-cls-lcp",
+          "organizations:performance-web-vitals-issues",
+          "organizations:performance-default-explore-queries",
+          "organizations:performance-transaction-deprecation-alerts",
+          )
+
+          # Release & Deployment
+          + (
+          "organizations:preprod-artifact-assemble",
+          "organizations:preprod-frontend-routes",
+          "organizations:relay-playstation-ingestion",
+          "organizations:prevent-flows-poc",
+          "organizations:release-comparison-performance",
+          "organizations:reprocessing-v2",
+          "organizations:resolve-in-upcoming-release",
+          )
+
+          # Security & Detection
+          + (
+          "organizations:sdk-crash-detection",
+          "organizations:statistical-detectors-rca-spans-only",
+          )
+
+          # Sentry Apps & Tools
+          + (
+          "organizations:init-sentry-toolbar",
+          "organizations:sentry-toolbar-ui",
+          "organizations:sentry-app-webhook-requests",
+          "organizations:symbol-sources",
+          "organizations:tempest-access",
+          )
+
+          # Feature Flags
+          + (
+          "organizations:feature-flag-cta",
+          "organizations:feature-flag-distribution-flyout",
+          "organizations:feature-flag-suspect-flags",
+          )
+
+          # Insights & Analytics
+          + (
+          "organizations:insights-session-health-tab-ui",
+          "organizations:insights-entry-points",
+          "organizations:insights-initial-modules",
+          "organizations:insights-addon-modules",
+          "organizations:insights-query-date-range-limit",
+          "organizations:insights-use-eap",
+          "organizations:insights-modules-use-eap",
+          "organizations:insights-overview-use-eap",
+          "organizations:insights-chart-actions",
+          "organizations:insights-alerts",
+          "organizations:insights-related-issues-table",
+          "organizations:insights-mobile-screens-module",
+          "organizations:insights-performance-landing-removal",
+          )
+
+          # Configuration & Settings
+          + (
+          "organizations:set-grouping-config",
+          "organizations:sso-saml2-slo",
+          "organizations:grouptombstones-hit-counter",
+          "organizations:tag-key-sample-n",
+          "organizations:team-workflow-notifications",
+          )
+
+          # Tracing & Spans
+          + (
+          "organizations:trace-view-load-more",
+          "organizations:trace-view-v1",
+          "organizations:trace-view-linked-traces",
+          "organizations:tracing-onboarding-new-ui",
+          "organizations:trace-view-quota-exceeded-banner",
+          "organizations:trace-view-admin-ui",
+          "organizations:trace-tabs-ui",
+          "organizations:traces-onboarding-guide",
+          "organizations:traces-schema-hints",
+          )
+
+          # Transactions
+          + (
+          "organizations:transaction-metrics-extraction",
+          "organizations:transaction-name-mark-scrubbed-as-sanitized",
+          "organizations:transaction-name-normalize",
+          )
+
+          # Mobile & Starfish
+          + (
+          "organizations:starfish-mobile-appstart",
+          "organizations:starfish-mobile-ui-module",
+          "organizations:starfish-view",
+          )
+
+          # Uptime Monitoring
+          + (
+          "organizations:uptime-automatic-hostname-detection",
+          "organizations:uptime-automatic-subscription-creation",
+          "organizations:uptime-create-issues",
+          "organizations:uptime-detailed-logging",
+          "organizations:uptime-detector-handler",
+          "organizations:uptime-detector-create-issues",
+          "organizations:uptime-eap-results",
+          "organizations:uptime-eap-uptime-results-query",
+          )
+
+          # Visibility & Exploration
+          + (
+          "organizations:visibility-explore-aggregate-editor",
+          "organizations:visibility-explore-equations",
+          "organizations:visibility-dashboards-equations",
+          "organizations:visibility-explore-view",
+          "organizations:visibility-explore-range-high",
+          "organizations:visibility-explore-range-medium",
+          )
+
+          # Workflow Engine
+          + (
+          "organizations:workflow-engine-process-activity",
+          "organizations:workflow-engine-issue-alert-dual-write",
+          "organizations:workflow-engine-process-metric-issue-workflows",
+          "organizations:workflow-engine-process-workflows",
+          "organizations:workflow-engine-single-process-workflows",
+          "organizations:workflow-engine-process-workflows-logs",
+          "organizations:workflow-engine-trigger-actions",
+          "organizations:workflow-engine-metric-alert-dual-processing-logs",
+          "organizations:workflow-engine-metric-alert-dual-write",
+          "organizations:workflow-engine-metric-alert-processing",
+          "organizations:ingest-through-trusted-relays-only",
+          "organizations:workflow-engine-ui",
+          "organizations:workflow-engine-ui-links",
+          "organizations:workflow-engine-rule-serializers",
+          )
+
+          # Our Logs
+          + (
+          "organizations:ourlogs-enabled",
+          "organizations:ourlogs-ingestion",
+          "organizations:ourlogs-calculated-byte-count",
+          "organizations:ourlogs-meta-attributes",
+          "organizations:ourlogs-stats",
+          "organizations:ourlogs-visualize-sidebar",
+          "organizations:ourlogs-dashboards",
+          "organizations:ourlogs-alerts",
+          "organizations:ourlogs-live-refresh",
+          "organizations:ourlogs-infinite-scroll",
+          )
+
+          # Jira Integration
+          + (
+          "organizations:jira-per-project-statuses",
+          "organizations:jira-paginated-projects",
+          )
+
+          # GitHub Integration
+          + (
+          "organizations:single-trace-summary",
+          "organizations:github-multi-org",
+          "organizations:github-multi-org-upsell-modal",
+          )
+
+          # Project Features
+          + (
+          "projects:transaction-name-clustering-disabled",
+          "projects:alert-filters",
+          "projects:discard-transaction",
+          "projects:error-upsampling",
+          "projects:first-event-severity-calculation",
+          "projects:similarity-embeddings",
+          "projects:similarity-indexing",
+          "projects:similarity-view",
+          "projects:relay-otel-endpoint",
+          "projects:num-events-issue-debugging",
+          "projects:plugins",
+          "projects:project-detail-apple-app-hang-rate",
           )
       }
   )
