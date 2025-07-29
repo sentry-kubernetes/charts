@@ -1,0 +1,112 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "sentry.fullname" . }}-taskworker
+  labels:
+    app: {{ template "sentry.fullname" . }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
+    release: "{{ .Release.Name }}"
+    heritage: "{{ .Release.Service }}"
+    app.kubernetes.io/managed-by: "Helm"
+  {{- if .Values.asHook }}
+  {{- /* Add the Helm annotations so that deployment after asHook from true to false works */}}
+  annotations:
+    meta.helm.sh/release-name: "{{ .Release.Name }}"
+    meta.helm.sh/release-namespace: "{{ .Release.Namespace }}"
+    "helm.sh/hook": "post-install,post-upgrade"
+    "helm.sh/hook-weight": "25"
+  {{- end }}
+spec:
+  selector:
+    matchLabels:
+      app: {{ template "sentry.fullname" . }}
+      release: "{{ .Release.Name }}"
+      role: taskworker
+  replicas: {{ .Values.sentry.replicas }}
+  revisionHistoryLimit: {{ .Values.revisionHistoryLimit }}
+  template:
+    metadata:
+      annotations:
+        checksum/configmap.yaml: {{ include "sentry.config" . | sha256sum }}
+        {{- if .Values.sentry.annotations }}
+{{ toYaml .Values.sentry.annotations | indent 8 }}
+        {{- end }}
+      labels:
+        app: {{ template "sentry.fullname" . }}
+        release: "{{ .Release.Name }}"
+        role: taskworker
+        {{- if .Values.sentry.podLabels }}
+{{ toYaml .Values.sentry.podLabels | indent 8 }}
+        {{- end }}
+    spec:
+      affinity:
+      {{- if .Values.sentry.affinity }}
+{{ toYaml .Values.sentry.affinity | indent 8 }}
+      {{- end }}
+      {{- if .Values.sentry.nodeSelector }}
+      nodeSelector:
+{{ toYaml .Values.sentry.nodeSelector | indent 8 }}
+      {{- else if .Values.global.nodeSelector }}
+      nodeSelector:
+{{ toYaml .Values.global.nodeSelector | indent 8 }}
+      {{- end }}
+      {{- if .Values.sentry.tolerations }}
+      tolerations:
+{{ toYaml .Values.sentry.tolerations | indent 8 }}
+      {{- else if .Values.global.tolerations }}
+      tolerations:
+{{ toYaml .Values.global.tolerations | indent 8 }}
+      {{- end }}
+      {{- if .Values.sentry.topologySpreadConstraints }}
+      topologySpreadConstraints:
+{{ toYaml .Values.sentry.topologySpreadConstraints | indent 8 }}
+      {{- end }}
+      {{- if .Values.images.sentry.imagePullSecrets }}
+      imagePullSecrets:
+{{ toYaml .Values.images.sentry.imagePullSecrets | indent 8 }}
+      {{- end }}
+      {{- if .Values.sentry.securityContext }}
+      securityContext:
+{{ toYaml .Values.sentry.securityContext | indent 8 }}
+      {{- end }}
+      containers:
+      - name: {{ .Chart.Name }}-taskworker
+{{- if .Values.sentry.args }}
+        args:
+{{ toYaml .Values.sentry.args | indent 10 }}
+{{- end }}
+        command: ["sentry"]
+        args:
+          - run
+          - taskworker
+          - --concurrency=4
+          - --rpc-host={{ include "taskbroker.host" . }}:50051
+        image: "{{ template "sentry.image" . }}"
+        imagePullPolicy: {{ default "IfNotPresent" .Values.images.sentry.pullPolicy }}
+        env:
+{{- include "sentry.env" . | nindent 8 }}
+{{- if .Values.sentry.env }}
+{{ toYaml .Values.sentry.env | indent 8 }}
+{{- end }}
+        resources:
+{{ toYaml .Values.sentry.resources | indent 12 }}
+{{- if .Values.sentry.containerSecurityContext }}
+        securityContext:
+{{ toYaml .Values.sentry.containerSecurityContext | indent 12 }}
+{{- end }}
+{{- if .Values.sentry.sidecars }}
+{{ toYaml .Values.sentry.sidecars | indent 6 }}
+{{- end }}
+{{- if .Values.global.sidecars }}
+{{ toYaml .Values.global.sidecars | indent 6 }}
+{{- end }}
+      {{- if .Values.serviceAccount.enabled }}
+      serviceAccountName: {{ .Values.serviceAccount.name }}-taskworker
+      {{- end }}
+      {{- if .Values.sentry.priorityClassName }}
+      priorityClassName: "{{ .Values.sentry.priorityClassName }}"
+      {{- end }}
+      volumes:
+      - name: config
+        configMap:
+          name: {{ template "sentry.fullname" . }}-sentry

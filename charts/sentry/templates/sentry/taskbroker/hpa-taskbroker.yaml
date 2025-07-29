@@ -1,0 +1,33 @@
+{{- if .Values.vroom.autoscaling.enabled }}
+apiVersion: {{ template "sentry.autoscaling.apiVersion" . }}
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ template "sentry.fullname" . }}-taskbroker
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ template "sentry.fullname" . }}-taskbroker
+  minReplicas: {{ .Values.taskbroker.autoscaling.minReplicas }}
+  maxReplicas: {{ .Values.taskbroker.autoscaling.maxReplicas }}
+  {{- if eq (include "sentry.autoscaling.apiVersion" .) "autoscaling/v1" }}
+  targetCPUUtilizationPercentage: {{ .Values.taskbroker.autoscaling.targetCPUUtilizationPercentage }}
+  {{- else if semverCompare ">=1.27-0" .Capabilities.KubeVersion.GitVersion }}
+  metrics:
+  - type: ContainerResource
+    containerResource:
+      container: {{ .Chart.Name }}-taskbroker
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: {{ .Values.taskbroker.autoscaling.targetCPUUtilizationPercentage }}
+  {{- else }}
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: {{ .Values.taskbroker.autoscaling.targetCPUUtilizationPercentage }}
+  {{- end }}
+{{- end }}

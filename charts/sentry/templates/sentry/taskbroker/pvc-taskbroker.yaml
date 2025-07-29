@@ -1,0 +1,24 @@
+{{- if .Values.taskbroker.persistence.enabled }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: sentry-taskbroker-pvc
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: {{ template "sentry.fullname" . }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
+    release: "{{ .Release.Name }}"
+    heritage: "{{ .Release.Service }}"
+    component: taskbroker
+spec:
+  accessModes:
+{{- range .Values.taskbroker.persistence.accessModes }}
+    - {{ . | quote }}
+{{- end }}
+  resources:
+    requests:
+      storage: {{ .Values.taskbroker.persistence.size | quote }}
+  {{- if .Values.taskbroker.persistence.storageClassName }}
+  storageClassName: {{ .Values.taskbroker.persistence.storageClassName | quote }}
+  {{- end }}
+{{- end }}

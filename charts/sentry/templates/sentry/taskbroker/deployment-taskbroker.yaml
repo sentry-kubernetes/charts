@@ -1,0 +1,124 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "sentry.fullname" . }}-taskbroker
+  labels:
+    app: {{ template "sentry.fullname" . }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
+    release: "{{ .Release.Name }}"
+    heritage: "{{ .Release.Service }}"
+    app.kubernetes.io/managed-by: "Helm"
+  {{- if .Values.asHook }}
+  {{- /* Add the Helm annotations so that deployment after asHook from true to false works */}}
+  annotations:
+    meta.helm.sh/release-name: "{{ .Release.Name }}"
+    meta.helm.sh/release-namespace: "{{ .Release.Namespace }}"
+    "helm.sh/hook": "post-install,post-upgrade"
+    "helm.sh/hook-weight": "25"
+  {{- end }}
+spec:
+  selector:
+    matchLabels:
+      app: {{ template "sentry.fullname" . }}
+      release: "{{ .Release.Name }}"
+      role: taskbroker
+{{- if not .Values.taskbroker.autoscaling.enabled }}
+  replicas: {{ .Values.taskbroker.replicas }}
+{{- end }}
+  revisionHistoryLimit: {{ .Values.revisionHistoryLimit }}
+  template:
+    metadata:
+      annotations:
+        {{- if .Values.taskbroker.annotations }}
+{{ toYaml .Values.taskbroker.annotations | indent 8 }}
+        {{- end }}
+      labels:
+        app: {{ template "sentry.fullname" . }}
+        release: "{{ .Release.Name }}"
+        role: taskbroker
+        {{- if .Values.taskbroker.podLabels }}
+{{ toYaml .Values.taskbroker.podLabels | indent 8 }}
+        {{- end }}
+    spec:
+      affinity:
+      {{- if .Values.taskbroker.affinity }}
+{{ toYaml .Values.taskbroker.affinity | indent 8 }}
+      {{- end }}
+      {{- if .Values.taskbroker.nodeSelector }}
+      nodeSelector:
+{{ toYaml .Values.taskbroker.nodeSelector | indent 8 }}
+      {{- else if .Values.global.nodeSelector }}
+      nodeSelector:
+{{ toYaml .Values.global.nodeSelector | indent 8 }}
+      {{- end }}
+      {{- if .Values.taskbroker.tolerations }}
+      tolerations:
+{{ toYaml .Values.taskbroker.tolerations | indent 8 }}
+      {{- else if .Values.global.tolerations }}
+      tolerations:
+{{ toYaml .Values.global.tolerations | indent 8 }}
+      {{- end }}
+      {{- if .Values.taskbroker.topologySpreadConstraints }}
+      topologySpreadConstraints:
+{{ toYaml .Values.taskbroker.topologySpreadConstraints | indent 8 }}
+      {{- end }}
+      {{- if .Values.images.taskbroker.imagePullSecrets }}
+      imagePullSecrets:
+{{ toYaml .Values.images.taskbroker.imagePullSecrets | indent 8 }}
+      {{- end }}
+      {{- if .Values.taskbroker.securityContext }}
+      securityContext:
+{{ toYaml .Values.taskbroker.securityContext | indent 8 }}
+      {{- end }}
+      containers:
+      - name: {{ .Chart.Name }}-taskbroker
+{{- if .Values.taskbroker.args }}
+        args:
+{{ toYaml .Values.taskbroker.args | indent 10 }}
+{{- end }}
+        image: "{{ template "taskbroker.image" . }}"
+        imagePullPolicy: {{ default "IfNotPresent" .Values.images.taskbroker.pullPolicy }}
+        env:
+{{- include "taskbroker.env" . | nindent 8 }}
+{{- if .Values.taskbroker.env }}
+{{ toYaml .Values.taskbroker.env | indent 8 }}
+{{- end }}
+        volumeMounts:
+        - name: taskbroker-storage
+          mountPath: /opt/sqlite
+{{- if .Values.taskbroker.volumeMounts }}
+{{ toYaml .Values.taskbroker.volumeMounts | indent 10 }}
+{{- end }}
+        resources:
+{{ toYaml .Values.taskbroker.resources | indent 12 }}
+{{- if .Values.taskbroker.containerSecurityContext }}
+        securityContext:
+{{ toYaml .Values.taskbroker.containerSecurityContext | indent 12 }}
+{{- end }}
+{{- if .Values.taskbroker.sidecars }}
+{{ toYaml .Values.taskbroker.sidecars | indent 6 }}
+{{- end }}
+{{- if .Values.global.sidecars }}
+{{ toYaml .Values.global.sidecars | indent 6 }}
+{{- end }}
+      {{- if .Values.serviceAccount.enabled }}
+      serviceAccountName: {{ .Values.serviceAccount.name }}-taskbroker
+      {{- end }}
+      volumes:
+      {{- if .Values.taskbroker.persistence.enabled }}
+      - name: taskbroker-storage
+        persistentVolumeClaim:
+          claimName: sentry-taskbroker-pvc
+      {{- else }}
+      - name: taskbroker-storage
+        emptyDir: {}
+      {{- end }}
+{{- if .Values.taskbroker.volumes }}
+{{ toYaml .Values.taskbroker.volumes | indent 6 }}
+{{- end }}
+{{- if .Values.global.volumes }}
+{{ toYaml .Values.global.volumes | indent 6 }}
+{{- end }}
+      {{- if .Values.taskbroker.priorityClassName }}
+      priorityClassName: "{{ .Values.taskbroker.priorityClassName }}"
+      {{- end }}

@@ -52,6 +52,13 @@
 {{- default .Chart.AppVersion .Values.images.vroom.tag -}}
 {{- end -}}
 
+
+{{- define "taskbroker.image" -}}
+{{- default "getsentry/taskbroker" .Values.images.taskbroker.repository -}}
+:
+{{- default .Chart.AppVersion .Values.images.taskbroker.tag -}}
+{{- end -}}
+
 {{/*
 Expand the name of the chart.
 */}}
@@ -688,6 +695,22 @@ Set external Clickhouse password from existingSecret
   value: http://{{ template "sentry.fullname" . }}-snuba:{{ template "snuba.port" . }}
 {{- end -}}
 
+{{- define "taskbroker.env" -}}
+- name: TASKBROKER_KAFKA_CLUSTER
+  value: {{ include "sentry.kafka.bootstrap_servers_string" . | quote }}
+- name: TASKBROKER_KAFKA_DEADLETTER_CLUSTER
+  value: {{ include "sentry.kafka.bootstrap_servers_string" . | quote }}
+- name: TASKBROKER_DB_PATH
+  value: "/opt/sqlite/taskbroker-activations.sqlite"
+{{- end -}}
+
+{{/*
+Return the taskbroker service host name
+*/}}
+{{- define "taskbroker.host" -}}
+{{- template "sentry.fullname" . }}-taskbroker
+{{- end -}}
+
 {{/*
 Common Sentry environment variables
 */}}
@@ -700,6 +723,10 @@ Common Sentry environment variables
   value: http://{{ template "sentry.fullname" . }}-snuba:{{ template "snuba.port" . }}
 - name: VROOM
   value: http://{{ template "sentry.fullname" . }}-vroom:{{ template "vroom.port" . }}
+- name: SENTRY_REDIS_HOST
+  value: {{ $redisHost | quote }}
+- name: SENTRY_REDIS_PORT
+  value: {{ $redisPort | quote }}
 {{- if .Values.sentry.existingSecret }}
 - name: SENTRY_SECRET_KEY
   valueFrom:
