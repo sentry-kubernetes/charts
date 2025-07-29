@@ -98,6 +98,10 @@ spec:
           {{- if .Values.sentry.subscriptionConsumerMetrics.noStrictOffsetReset }}
           - "--no-strict-offset-reset"
           {{- end }}
+          {{- if .Values.sentry.subscriptionConsumerMetrics.livenessProbe.enabled }}
+          - "--healthcheck-file-path"
+          - "/tmp/health.txt"
+          {{- end }}
           - "--"
           {{- if .Values.sentry.subscriptionConsumerMetrics.maxBatchSize }}
           - "--max-batch-size"
@@ -111,8 +115,8 @@ spec:
         livenessProbe:
           exec:
             command:
-              - sentry
-              - health
+              - rm
+              - /tmp/health.txt
           initialDelaySeconds: {{ .Values.sentry.subscriptionConsumerMetrics.livenessProbe.initialDelaySeconds }}
           periodSeconds: {{ .Values.sentry.subscriptionConsumerMetrics.livenessProbe.periodSeconds }}
         {{- end }}

@@ -90,12 +90,16 @@ spec:
           {{- end }}
           - "--consumer-group"
           - "eap-spans-subscription-results"
+          {{- if .Values.sentry.subscriptionConsumerEapSpans.livenessProbe.enabled }}
+          - "--healthcheck-file-path"
+          - "/tmp/health.txt"
+          {{- end }}
         {{- if .Values.sentry.subscriptionConsumerEapSpans.livenessProbe.enabled }}
         livenessProbe:
           exec:
             command:
-              - sentry
-              - health
+              - rm
+              - /tmp/health.txt
           initialDelaySeconds: {{ .Values.sentry.subscriptionConsumerEapSpans.livenessProbe.initialDelaySeconds }}
           periodSeconds: {{ .Values.sentry.subscriptionConsumerEapSpans.livenessProbe.periodSeconds }}
         {{- end }}
