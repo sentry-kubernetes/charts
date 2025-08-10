@@ -930,6 +930,17 @@ Set discord
 {{- end }}
 
 {{/*
+Set pagerduty
+*/}}
+{{- if .Values.pagerduty.existingSecret }}
+- name: PAGERDUTY_APP_ID
+  valueFrom:
+    secretKeyRef:
+      name: {{ .Values.pagerduty.existingSecret }}
+      key: {{ default "app-id" .Values.pagerduty.existingSecretAppId }}
+{{- end }}
+
+{{/*
 Set github app
 */}}
 {{- if and .Values.github.existingSecret }}
