@@ -8,6 +8,7 @@ metadata:
     chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
     release: "{{ .Release.Name }}"
     heritage: "{{ .Release.Service }}"
+    {{- include "sentry.component.labels" (dict "component" "metrics" "ctx" .) | nindent 4 }}
 spec:
   selector:
     matchLabels:
@@ -29,6 +30,7 @@ spec:
         app: {{ template "sentry.fullname" . }}-metrics
         release: "{{ .Release.Name }}"
         role: metrics
+        {{- include "sentry.component.labels" (dict "component" "metrics" "ctx" .) | nindent 8 }}
         {{- if .Values.metrics.podLabels }}
 {{ toYaml .Values.metrics.podLabels | indent 8 }}
         {{- end }}

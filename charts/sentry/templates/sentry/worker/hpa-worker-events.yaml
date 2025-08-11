@@ -3,6 +3,8 @@ apiVersion: {{ template "sentry.autoscaling.apiVersion" . }}
 kind: HorizontalPodAutoscaler
 metadata:
   name: {{ template "sentry.fullname" . }}-sentry-worker-events
+  labels:
+    {{- include "sentry.component.labels" (dict "component" "worker-events" "ctx" .) | nindent 4 }}
 spec:
   scaleTargetRef:
     apiVersion: apps/v1

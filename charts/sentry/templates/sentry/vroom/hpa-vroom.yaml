@@ -4,6 +4,8 @@ apiVersion: {{ template "sentry.autoscaling.apiVersion" . }}
 kind: HorizontalPodAutoscaler
 metadata:
   name: {{ template "sentry.fullname" . }}-vroom
+  labels:
+    {{- include "sentry.component.labels" (dict "component" "vroom" "ctx" .) | nindent 4 }}
 spec:
   scaleTargetRef:
     apiVersion: apps/v1

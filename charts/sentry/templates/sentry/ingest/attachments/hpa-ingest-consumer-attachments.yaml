@@ -3,6 +3,8 @@ apiVersion: {{ template "sentry.autoscaling.apiVersion" . }}
 kind: HorizontalPodAutoscaler
 metadata:
   name: {{ template "sentry.fullname" . }}-sentry-ingest-consumer-attachments
+  labels:
+    {{- include "sentry.component.labels" (dict "component" "ingest-consumer-attachments" "ctx" .) | nindent 4 }}
 spec:
   scaleTargetRef:
     apiVersion: apps/v1

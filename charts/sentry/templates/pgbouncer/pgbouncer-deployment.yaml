@@ -6,6 +6,7 @@ metadata:
   name: {{ template "sentry.fullname" . }}-pgbouncer
   labels:
     app: {{ template "sentry.fullname" . }}-pgbouncer
+    {{- include "sentry.component.labels" (dict "component" "pgbouncer" "ctx" .) | nindent 4 }}
 spec:
   replicas: {{ .Values.pgbouncer.replicas }}
   selector:
@@ -19,6 +20,7 @@ spec:
     metadata:
       labels:
         app: {{ template "sentry.fullname" . }}-pgbouncer
+        {{- include "sentry.component.labels" (dict "component" "pgbouncer" "ctx" .) | nindent 8 }}
     spec:
       containers:
       - name: pgbouncer

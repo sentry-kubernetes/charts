@@ -60,6 +60,13 @@ Expand the name of the chart.
 {{- end -}}
 
 {{/*
+Create chart name and version as used by the chart label.
+*/}}
+{{- define "sentry.chart" -}}
+{{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" }}
+{{- end }}
+
+{{/*
 Create a default fully qualified app name.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
 If release name contains chart name it will be used as a full name.
@@ -1053,3 +1060,45 @@ Pgbouncer environment variables
   value: {{ include "sentry.postgresql.username" . | quote }}
 {{- end }}
 {{- end -}}
+
+{{/*
+Common labels
+*/}}
+{{- define "sentry.labels" -}}
+helm.sh/chart: {{ include "sentry.chart" . }}
+{{ include "sentry.selectorLabels" . }}
+{{- if .Chart.AppVersion }}
+app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+{{- end }}
+app.kubernetes.io/managed-by: {{ .Release.Service }}
+{{- end }}
+
+{{/*
+Selector labels
+*/}}
+{{- define "sentry.selectorLabels" -}}
+app.kubernetes.io/name: {{ include "sentry.name" . }}
+app.kubernetes.io/instance: {{ .Release.Name }}
+{{- end }}
+
+{{/*
+Component labels
+*/}}
+{{- define "sentry.component.labels" -}}
+helm.sh/chart: {{ include "sentry.chart" .ctx }}
+{{ include "sentry.component.selectorLabels" (dict "component" .component "ctx" .ctx) }}
+{{- if .ctx.Chart.AppVersion }}
+app.kubernetes.io/version: {{ .ctx.Chart.AppVersion | quote }}
+{{- end }}
+app.kubernetes.io/managed-by: {{ .ctx.Release.Service }}
+{{- end }}
+
+{{/*
+Component selector labels
+Actually not used as selector but split in this case.
+*/}}
+{{- define "sentry.component.selectorLabels" -}}
+app.kubernetes.io/name: {{ include "sentry.name" .ctx }}
+app.kubernetes.io/instance: {{ .ctx.Release.Name }}
+app.kubernetes.io/component: {{ .component }}
+{{- end }}

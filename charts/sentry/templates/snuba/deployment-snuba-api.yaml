@@ -8,6 +8,7 @@ metadata:
     chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
     release: "{{ .Release.Name }}"
     heritage: "{{ .Release.Service }}"
+    {{- include "sentry.component.labels" (dict "component" "snuba-api" "ctx" .) | nindent 4 }}
 spec:
   revisionHistoryLimit: {{ .Values.revisionHistoryLimit }}
   selector:
@@ -30,6 +31,7 @@ spec:
         app: {{ template "sentry.fullname" . }}
         release: "{{ .Release.Name }}"
         role: snuba-api
+        {{- include "sentry.component.labels" (dict "component" "snuba-api" "ctx" .) | nindent 8 }}
         {{- if .Values.snuba.api.podLabels }}
 {{ toYaml .Values.snuba.api.podLabels | indent 8 }}
         {{- end }}
