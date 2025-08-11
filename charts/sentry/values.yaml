@@ -2120,6 +2120,8 @@ openai: {}
 
 nginx:
   enabled: true  # true, if Safari compatibility is needed
+  image:
+    repository: bitnamilegacy/nginx
   containerPort: 8080
   existingServerBlockConfigmap: '{{ template "sentry.fullname" . }}'
   resources: {}
@@ -2339,6 +2341,8 @@ externalClickhouse:
 # See https://github.com/bitnami/charts/tree/master/bitnami/zookeeper
 zookeeper:
   enabled: true
+  image:
+    repository: bitnamilegacy/zookeeper
   nameOverride: zookeeper-clickhouse
   replicaCount: 1
   nodeSelector: {}
@@ -2351,6 +2355,8 @@ zookeeper:
 # See https://github.com/bitnami/charts/tree/master/bitnami/kafka
 kafka:
   enabled: true
+  image:
+    repository: bitnamilegacy/kafka
   provisioning:
     ## Increasing the replicationFactor enhances data reliability during Kafka pod failures by replicating data across multiple brokers.
     # Note that existing topics will remain with replicationFactor: 1 when updated.
@@ -2602,6 +2608,8 @@ sourcemaps:
 
 redis:
   enabled: true
+  image:
+    repository: bitnamilegacy/redis
   replica:
     replicaCount: 1
     nodeSelector: {}
@@ -2644,6 +2652,8 @@ externalRedis:
 
 postgresql:
   enabled: true
+  image:
+    repository: bitnamilegacy/postgresql
   nameOverride: sentry-postgresql
   auth:
     database: sentry
@@ -2695,6 +2705,8 @@ externalPostgresql:
 rabbitmq:
   ## If disabled, Redis will be used instead as the broker.
   enabled: true
+  image:
+    repository: bitnamilegacy/rabbitmq
   vhost: /
   clustering:
     forceBoot: true
@@ -2768,6 +2780,8 @@ rabbitmq:
         release: "prometheus-operator"  # helm release of kube-prometheus-stack
 
 memcached:
+  image:
+    repository: bitnamilegacy/memcached
   memoryLimit: "2048"
   maxItemSize: "26214400"
   args:
