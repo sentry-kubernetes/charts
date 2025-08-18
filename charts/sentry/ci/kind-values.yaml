@@ -1,0 +1,28 @@
+profiles:
+  - errors-only
+
+kafka:
+  enabled: true
+  kraft:
+    enabled: true
+  provisioning:
+    replicationFactor: 1
+  controller:
+    replicaCount: 1
+  broker:
+    replicaCount: 1
+
+redis:
+  enabled: true
+  master.persistence.enabled: false
+  replica.replicaCount: 0
+
+rabbitmq:
+  enabled: false
+
+clickhouse:
+  enabled: true
+  replicaCount: 1
+  shards: 1
+  keeper:
+    replicaCount: 1
