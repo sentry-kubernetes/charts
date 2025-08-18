@@ -94,6 +94,24 @@ spec:
               serviceName: {{ template "sentry.fullname" . }}-web
               servicePort: {{ .Values.service.externalPort }}
               {{- end }}
+          - path: /api/1/*
+            {{- if $ingressSupportsPathType }}
+            pathType: {{ $ingressPathType }}
+            {{- end }}
+            backend:
+              {{- if $ingressApiIsStable }}
+              service:
+                name: {{ template "sentry.fullname" . }}-web
+                port:
+                  {{- if kindIs "float64" .Values.service.externalPort }}
+                  number: {{ .Values.service.externalPort }}
+                  {{- else }}
+                  name: {{ .Values.service.externalPort }}
+                  {{- end }}
+              {{- else }}
+              serviceName: {{ template "sentry.fullname" . }}-web
+              servicePort: {{ .Values.service.externalPort }}
+              {{- end }}
           - path: /api/*
             {{- if $ingressSupportsPathType }}
             pathType: {{ $ingressPathType }}
