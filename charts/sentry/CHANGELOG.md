@@ -1,5 +1,12 @@
 # Changelog
 
+## [27.1.1](https://github.com/sentry-kubernetes/charts/compare/sentry-v27.1.0...sentry-v27.1.1) (2025-08-21)
+
+
+### Bug Fixes
+
+* **deps:** Use bitnami images from docker.io/bitnamilegacy due to bitnami deprecating their public catalog. See https://github.com/bitnami/charts/issues/35164 ([#1840](https://github.com/sentry-kubernetes/charts/issues/1840)) ([e47d24e](https://github.com/sentry-kubernetes/charts/commit/e47d24ed1607e0632e7e433a119b9d299b69d9cc))
+
 ## [27.1.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v27.0.1...sentry-v27.1.0) (2025-07-25)
 
 
