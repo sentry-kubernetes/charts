@@ -62,9 +62,9 @@ spec:
       topologySpreadConstraints:
 {{ toYaml .Values.uptimeChecker.topologySpreadConstraints | indent 8 }}
       {{- end }}
-      {{- if .Values.images.uptime-checker.imagePullSecrets }}
+      {{- if .Values.images.uptimeChecker.imagePullSecrets }}
       imagePullSecrets:
-{{ toYaml .Values.images.uptime-checker.imagePullSecrets | indent 8 }}
+{{ toYaml .Values.images.uptimeChecker.imagePullSecrets | indent 8 }}
       {{- end }}
       {{- if .Values.uptimeChecker.securityContext }}
       securityContext:
@@ -78,7 +78,7 @@ spec:
 {{ toYaml .Values.uptimeChecker.args | indent 10 }}
 {{- end }}
         image: "{{ template "uptimeChecker.image" . }}"
-        imagePullPolicy: {{ default "IfNotPresent" .Values.images.uptime-checker.pullPolicy }}
+        imagePullPolicy: {{ default "IfNotPresent" .Values.images.uptimeChecker.pullPolicy }}
         env:
         - name: UPTIME_CHECKER_RESULTS_KAFKA_CLUSTER
           value: '{{ template "sentry.kafka.bootstrap_servers_string" }}'
