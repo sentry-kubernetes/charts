@@ -448,7 +448,6 @@ sentry.conf.py: |-
               "organizations:trace-view-load-more",
               "organizations:trace-tabs-ui",
               "organizations:trace-view-linked-traces",
-              "organizations:performance-use-metrics",
               "projects:span-metrics-extraction",
               "projects:span-metrics-extraction-addons",
           )
