@@ -1382,7 +1382,7 @@ snuba:
     # queuedMinMessages: ""
     # noStrictOffsetReset: false
 
-  subscriptionConsumerEapSpans:  # should have 1 partition and only 1 consumer replica: https://github.com/getsentry/snuba/issues/5855
+  subscriptionConsumerEapItems:  # should have 1 partition and only 1 consumer replica: https://github.com/getsentry/snuba/issues/5855
     enabled: true
     replicas: 1
     env: []
