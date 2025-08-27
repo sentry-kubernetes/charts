@@ -72,10 +72,11 @@ spec:
       {{- end }}
       containers:
       - name: {{ .Chart.Name }}-uptime-checker
-        command: ["run"]
 {{- if .Values.uptimeChecker.args }}
         args:
 {{ toYaml .Values.uptimeChecker.args | indent 10 }}
+{{- else }}
+        args: ["run"]
 {{- end }}
         image: "{{ template "uptimeChecker.image" . }}"
         imagePullPolicy: {{ default "IfNotPresent" .Values.images.uptimeChecker.pullPolicy }}

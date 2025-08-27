@@ -322,6 +322,24 @@ Set redis ssl
 {{- end -}}
 {{- end -}}
 
+{{/*
+Build full Redis URI, including creds and db when available
+*/}}
+{{- define "sentry.redis.uri" -}}
+{{- $redisHost := include "sentry.redis.host" . -}}
+{{- $redisPort := include "sentry.redis.port" . -}}
+{{- $redisDb   := include "sentry.redis.db" . -}}
+{{- $redisProto := ternary "rediss" "redis" (eq (include "sentry.redis.ssl" .) "true") -}}
+{{- $password := include "sentry.redis.password" . -}}
+{{- if or (and .Values.redis.enabled .Values.redis.auth.existingSecret) (.Values.externalRedis.existingSecret) -}}
+{{ printf "%s://:$(HELM_CHARTS_SENTRY_REDIS_PASSWORD_CONTROLLED)@%s:%s/%s" $redisProto $redisHost $redisPort $redisDb }}
+{{- else if $password -}}
+{{ printf "%s://:%s@%s:%s/%s" $redisProto $password $redisHost $redisPort $redisDb }}
+{{- else -}}
+{{ printf "%s://%s:%s/%s" $redisProto $redisHost $redisPort $redisDb }}
+{{- end -}}
+{{- end -}}
+
 
 {{/*
 Create the name of the service account to use
@@ -697,18 +715,28 @@ Set external Clickhouse password from existingSecret
 {{- define "uptimeChecker.env" -}}
 - name: UPTIME_CHECKER_RESULTS_KAFKA_CLUSTER
   value: {{ include "sentry.kafka.bootstrap_servers_string" . | quote }}
+{{- /* Expose Redis password from secret if configured to avoid rendering secrets inline */}}
+{{- if and (.Values.redis.enabled) (.Values.redis.auth.existingSecret) }}
+- name: HELM_CHARTS_SENTRY_REDIS_PASSWORD_CONTROLLED
+  valueFrom:
+    secretKeyRef:
+      name: {{ .Values.redis.auth.existingSecret }}
+      key: {{ default "redis-password" .Values.redis.auth.existingSecretPasswordKey }}
+{{- else if .Values.externalRedis.existingSecret }}
+- name: HELM_CHARTS_SENTRY_REDIS_PASSWORD_CONTROLLED
+  valueFrom:
+    secretKeyRef:
+      name: {{ .Values.externalRedis.existingSecret }}
+      key: {{ default "redis-password" .Values.externalRedis.existingSecretKey }}
+{{- end }}
 - name: UPTIME_CHECKER_REDIS_HOST
-  value: {{ include "sentry.redis.host" . | quote }}
+  value: {{ include "sentry.redis.uri" . | quote }}
 {{- end -}}
 
 {{/*
 Common Sentry environment variables
 */}}
 {{- define "sentry.env" -}}
-{{- $redisHost := include "sentry.redis.host" . -}}
-{{- $redisPort := include "sentry.redis.port" . -}}
-{{- $redisDb     := include "sentry.redis.db" . -}}
-{{- $redisProto  := ternary "rediss" "redis" (eq (include "sentry.redis.ssl" .) "true")  -}}
 - name: SNUBA
   value: http://{{ template "sentry.fullname" . }}-snuba:{{ template "snuba.port" . }}
 - name: VROOM
@@ -862,7 +890,7 @@ Set redis password
       name: {{ .Values.redis.auth.existingSecret }}
       key: {{ default "redis-password" .Values.redis.auth.existingSecretPasswordKey }}
 - name: BROKER_URL
-  value: "{{ $redisProto }}://:$(HELM_CHARTS_SENTRY_REDIS_PASSWORD_CONTROLLED)@{{ $redisHost }}:{{ $redisPort }}/{{ $redisDb }}"
+  value: {{ include "sentry.redis.uri" . | quote }}
 {{- else if (.Values.externalRedis.existingSecret) }}
 - name: HELM_CHARTS_SENTRY_REDIS_PASSWORD_CONTROLLED
   valueFrom:
@@ -870,7 +898,7 @@ Set redis password
       name: {{ .Values.externalRedis.existingSecret }}
       key: {{ default "redis-password" .Values.externalRedis.existingSecretKey }}
 - name: BROKER_URL
-  value: "{{ $redisProto }}://:$(HELM_CHARTS_SENTRY_REDIS_PASSWORD_CONTROLLED)@{{ $redisHost }}:{{ $redisPort }}/{{ $redisDb }}"
+  value: {{ include "sentry.redis.uri" . | quote }}
 {{- end }}
 
 {{/*
