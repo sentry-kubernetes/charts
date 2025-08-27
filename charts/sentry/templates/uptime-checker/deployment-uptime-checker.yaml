@@ -81,9 +81,9 @@ spec:
         imagePullPolicy: {{ default "IfNotPresent" .Values.images.uptimeChecker.pullPolicy }}
         env:
         - name: UPTIME_CHECKER_RESULTS_KAFKA_CLUSTER
-          value: '{{ template "sentry.kafka.bootstrap_servers_string" }}'
+          value: '{{ template "sentry.kafka.bootstrap_servers_string" . }}'
         - name: UPTIME_CHECKER_REDIS_HOST
-          value: '{{ template "sentry.redis.host" }}'
+          value: '{{ template "sentry.redis.host" . }}'
 {{- include "uptime-checker.env" . | nindent 8 }}
 {{- if .Values.uptimeChecker.env }}
 {{ toYaml .Values.uptimeChecker.env | indent 8 }}
