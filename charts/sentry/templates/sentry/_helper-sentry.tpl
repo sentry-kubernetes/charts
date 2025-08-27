@@ -445,17 +445,23 @@ sentry.conf.py: |-
               "organizations:insights-addon-modules",
               "organizations:standalone-span-ingestion",
               "organizations:starfish-mobile-appstart",
+              "projects:span-metrics-extraction",
+              "projects:span-metrics-extraction-addons",
+              
+              # flags added in this chart
               "organizations:trace-view-load-more",
               "organizations:trace-tabs-ui",
               "organizations:trace-view-linked-traces",
-              "projects:span-metrics-extraction",
-              "projects:span-metrics-extraction-addons",
+              "organizations:span-stats",
+              "organizations:visibility-explore-range-high",
           )
           {{- end }}
           {{- if .Values.sentry.features.enableSessionReplay}}
           + (
               # Session Replay related flags
               "organizations:session-replay",
+              
+              # flags added in this chart
               "organizations:session-replay-ui",
               "organizations:session-replay-issue-emails",
               "organizations:session-replay-recording-scrubbing",
