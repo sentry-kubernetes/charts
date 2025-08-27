@@ -19,23 +19,23 @@
 {{- define "vroom.port" -}}8085{{- end -}}
 
 {{- define "relay.image" -}}
-{{- default "getsentry/relay" .Values.images.relay.repository -}}
+{{- default "ghcr.io/getsentry/relay" .Values.images.relay.repository -}}
 :
 {{- default .Chart.AppVersion .Values.images.relay.tag -}}
 {{- end -}}
 {{- define "sentry.image" -}}
-{{- default "getsentry/sentry" .Values.images.sentry.repository -}}
+{{- default "ghcr.io/getsentry/sentry" .Values.images.sentry.repository -}}
 :
 {{- default .Chart.AppVersion .Values.images.sentry.tag -}}
 {{- end -}}
 {{- define "snuba.image" -}}
-{{- default "getsentry/snuba" .Values.images.snuba.repository -}}
+{{- default "ghcr.io/getsentry/snuba" .Values.images.snuba.repository -}}
 :
 {{- default .Chart.AppVersion .Values.images.snuba.tag -}}
 {{- end -}}
 
 {{- define "symbolicator.image" -}}
-{{- default "getsentry/symbolicator" .Values.images.symbolicator.repository -}}
+{{- default "ghcr.io/getsentry/symbolicator" .Values.images.symbolicator.repository -}}
 :
 {{- default .Chart.AppVersion .Values.images.symbolicator.tag -}}
 {{- end -}}
@@ -47,9 +47,15 @@
 {{- end -}}
 
 {{- define "vroom.image" -}}
-{{- default "getsentry/vroom" .Values.images.vroom.repository -}}
+{{- default "ghcr.io/getsentry/vroom" .Values.images.vroom.repository -}}
 :
 {{- default .Chart.AppVersion .Values.images.vroom.tag -}}
+{{- end -}}
+
+{{- define "uptimeChecker.image" -}}
+{{- default "ghcr.io/getsentry/uptime-checker" .Values.images.uptimeChecker.repository -}}
+:
+{{- default .Chart.AppVersion .Values.images.uptimeChecker.tag -}}
 {{- end -}}
 
 {{/*

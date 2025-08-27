@@ -63,6 +63,11 @@ images:
     # tag: Chart.AppVersion
     # pullPolicy: IfNotPresent
     imagePullSecrets: []
+  uptimeChecker:
+    # repository: getsentry/uptime-checker
+    # tag: Chart.AppVersion
+    # pullPolicy: IfNotPresent
+    imagePullSecrets: []
 
 serviceAccount:
   # serviceAccount.annotations -- Additional Service Account annotations.
@@ -109,6 +114,30 @@ vroom:
     minReplicas: 2
     maxReplicas: 5
     targetCPUUtilizationPercentage: 50
+  sidecars: []
+  # topologySpreadConstraints: []
+  volumes: []
+  volumeMounts: []
+
+uptimeChecker:
+  # annotations: {}
+  # args: []
+  replicas: 1
+  env: []
+  resources: {}
+  #  requests:
+  #    cpu: 100m
+  #    memory: 700Mi
+  affinity: {}
+  nodeSelector: {}
+  securityContext: {}
+  containerSecurityContext: {}
+  # priorityClassName: ""
+  service:
+    annotations: {}
+  # tolerations: []
+  # podLabels: {}
+
   sidecars: []
   # topologySpreadConstraints: []
   volumes: []
@@ -899,6 +928,31 @@ sentry:
     # volumeMounts: []
 
   subscriptionConsumerTransactions:
+    enabled: true
+    replicas: 1
+    env: []
+    resources: {}
+    #  requests:
+    #    cpu: 200m
+    #    memory: 500Mi
+    affinity: {}
+    nodeSelector: {}
+    securityContext: {}
+    containerSecurityContext: {}
+    # tolerations: []
+    # podLabels: {}
+    sidecars: []
+    topologySpreadConstraints: []
+    volumes: []
+    livenessProbe:
+      enabled: true
+      initialDelaySeconds: 5
+      periodSeconds: 320
+    # autoOffsetReset: "earliest"
+    # noStrictOffsetReset: false
+    # volumeMounts: []
+
+  uptimeResults:
     enabled: true
     replicas: 1
     env: []
