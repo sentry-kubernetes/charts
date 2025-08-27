@@ -694,6 +694,13 @@ Set external Clickhouse password from existingSecret
   value: http://{{ template "sentry.fullname" . }}-snuba:{{ template "snuba.port" . }}
 {{- end -}}
 
+{{- define "uptimeChecker.env" -}}
+- name: UPTIME_CHECKER_RESULTS_KAFKA_CLUSTER
+  value: {{ include "sentry.kafka.bootstrap_servers_string" . | quote }}
+- name: UPTIME_CHECKER_REDIS_HOST
+  value: {{ include "sentry.redis.host" . | quote }}
+{{- end -}}
+
 {{/*
 Common Sentry environment variables
 */}}
