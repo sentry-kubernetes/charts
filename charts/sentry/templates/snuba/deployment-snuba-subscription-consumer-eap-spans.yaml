@@ -83,11 +83,11 @@ spec:
           - "{{ .Values.snuba.subscriptionConsumerEapSpans.autoOffsetReset }}"
           {{- end }}
           - "--dataset=events_analytics_platform"
-          - "--entity=eap_items_span"
+          - "--entity=eap_items"
           {{- if .Values.snuba.subscriptionConsumerEapSpans.noStrictOffsetReset }}
           - "--no-strict-offset-reset"
           {{- end }}
-          - "--consumer-group=snuba-eap-spans-subscriptions-consumers"
+          - "--consumer-group=snuba-eap-items-subscriptions-consumers"
           - "--followed-consumer-group=eap_spans_group"
           - "--schedule-ttl=60"
           - "--stale-threshold-seconds=900"
