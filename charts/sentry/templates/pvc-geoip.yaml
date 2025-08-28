@@ -13,10 +13,15 @@ metadata:
     "helm.sh/hook-weight": "-1"
 spec:
   accessModes:
-    - ReadWriteMany
+{{- range .Values.geodata.persistence.accessModes }}
+    - {{ . | quote }}
+{{- end }}
   resources:
     requests:
       storage: {{ .Values.geodata.persistence.size }}
+{{- if and (.Values.geodata.persistence.lookupVolumeName) (lookup "v1" "PersistentVolumeClaim" .Release.Namespace "data-sentry-geoip") }}
+  volumeName: {{ (lookup "v1" "PersistentVolumeClaim" .Release.Namespace "data-sentry-geoip").spec.volumeName }}
+{{- end }}        
 {{- if .Values.geodata.persistence.storageClass }}
   storageClassName: {{ .Values.geodata.persistence.storageClass | quote }}
 {{- end }}

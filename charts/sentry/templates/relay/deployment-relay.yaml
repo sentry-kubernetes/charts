@@ -162,6 +162,7 @@ spec:
           {{- if and .Values.geodata.volumeName .Values.geodata.accountID }}
           - name: {{ .Values.geodata.volumeName }}
             mountPath: {{ .Values.geodata.mountPath }}
+            readOnly: true
           {{- end }}
 {{- if .Values.relay.volumeMounts }}
 {{ toYaml .Values.relay.volumeMounts | indent 10 }}
@@ -211,7 +212,7 @@ spec:
       {{- if and .Values.geodata.volumeName .Values.geodata.accountID }}
       - name: {{ .Values.geodata.volumeName }}
         persistentVolumeClaim:
-          claimName: {{ .Values.geodata.volumeName }}
+          claimName: data-sentry-geoip
       {{- end }}
 {{- if .Values.relay.volumes }}
 {{ toYaml .Values.relay.volumes | indent 6 }}

@@ -15,6 +15,9 @@ spec:
   resources:
     requests:
       storage: {{ .Values.filestore.filesystem.persistence.size | quote }}
+{{- if and (.Values.filestore.filesystem.persistence.lookupVolumeName) (lookup "v1" "PersistentVolumeClaim" .Release.Namespace (printf "%s-data" (include "sentry.fullname" .))) }}
+  volumeName: {{ (lookup "v1" "PersistentVolumeClaim" .Release.Namespace (printf "%s-data" (include "sentry.fullname" .))).spec.volumeName }}
+{{- end }}          
 {{- if .Values.filestore.filesystem.persistence.storageClass }}
 {{- if (eq "-" .Values.filestore.filesystem.persistence.storageClass) }}
   storageClassName: ""

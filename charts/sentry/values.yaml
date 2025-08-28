@@ -99,6 +99,9 @@ vroom:
   # podLabels: {}
   persistence:
     enabled: true  # Set true for using PersistentVolumeClaim, false for emptyDir
+    ## If 'lookupVolumeName' is set to true, Helm will attempt to retrieve
+    ## the current value of 'spec.volumeName' and incorporate it into the template.
+    lookupVolumeName: true
     accessModes:
       - ReadWriteOnce
     # storageClassName: standard
@@ -195,6 +198,10 @@ geodata:
     ##   GKE, AWS & OpenStack)
     # storageClass: "" # for example: csi-s3
     size: 1Gi
+    accessModes: [ "ReadWriteMany"]
+    ## If 'lookupVolumeName' is set to true, Helm will attempt to retrieve
+    ## the current value of 'spec.volumeName' and incorporate it into the template.
+    lookupVolumeName: true
   volumeName: ""  # for example: data-sentry-geoip
   # mountPath of the volume containing the database
   mountPath: ""  # for example: /usr/share/GeoIP
@@ -2075,6 +2082,9 @@ symbolicator:
       accessModes: ["ReadWriteOnce"]
       # storageClassName: standard
       size: "10Gi"
+      ## If 'lookupVolumeName' is set to true, Helm will attempt to retrieve
+      ## the current value of 'spec.volumeName' and incorporate it into the template.
+      lookupVolumeName: true
     replicas: 1
     env: []
     probeInitialDelaySeconds: 10
@@ -2301,6 +2311,10 @@ filestore:
       ## If existingClaim is specified, no PVC will be created and this claim will
       ## be used
       existingClaim: ""
+
+      ## If 'lookupVolumeName' is set to true, Helm will attempt to retrieve
+      ## the current value of 'spec.volumeName' and incorporate it into the template.
+      lookupVolumeName: true
 
   gcs: {}
     ## Point this at a pre-configured secret containing a service account. The resulting
