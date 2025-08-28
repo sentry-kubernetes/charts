@@ -1445,7 +1445,7 @@ snuba:
     # autoOffsetReset: "earliest"
     # noStrictOffsetReset: false
 
-  subscriptionConsumerGenericMetricsDistributions: # should have 1 partition and only 1 consumer replica: https://github.com/getsentry/snuba/issues/5855
+  subscriptionConsumerGenericMetricsDistributions:  # should have 1 partition and only 1 consumer replica: https://github.com/getsentry/snuba/issues/5855
     enabled: true
     replicas: 1
     env: []
@@ -1466,7 +1466,7 @@ snuba:
     # autoOffsetReset: "earliest"
     # noStrictOffsetReset: false
 
-  subscriptionConsumerGenericMetricsSets: # should have 1 partition and only 1 consumer replica: https://github.com/getsentry/snuba/issues/5855
+  subscriptionConsumerGenericMetricsSets:  # should have 1 partition and only 1 consumer replica: https://github.com/getsentry/snuba/issues/5855
     enabled: true
     replicas: 1
     env: []
@@ -1487,7 +1487,7 @@ snuba:
     # autoOffsetReset: "earliest"
     # noStrictOffsetReset: false
 
-  subscriptionConsumerGenericMetricsCounters: # should have 1 partition and only 1 consumer replica: https://github.com/getsentry/snuba/issues/5855
+  subscriptionConsumerGenericMetricsCounters:  # should have 1 partition and only 1 consumer replica: https://github.com/getsentry/snuba/issues/5855
     enabled: true
     replicas: 1
     env: []
@@ -1508,7 +1508,7 @@ snuba:
     # autoOffsetReset: "earliest"
     # noStrictOffsetReset: false
 
-  subscriptionConsumerGenericMetricsGauges: # should have 1 partition and only 1 consumer replica: https://github.com/getsentry/snuba/issues/5855
+  subscriptionConsumerGenericMetricsGauges:  # should have 1 partition and only 1 consumer replica: https://github.com/getsentry/snuba/issues/5855
     enabled: true
     replicas: 1
     env: []
