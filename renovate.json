@@ -2,7 +2,6 @@
   "extends": [
     "config:recommended",
     ":rebaseStalePrs",
-    "docker:disable",
     "customManagers:helmChartYamlAppVersions"
   ],
   "enabled": true,
