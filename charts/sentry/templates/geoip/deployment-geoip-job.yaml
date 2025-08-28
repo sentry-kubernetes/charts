@@ -8,7 +8,15 @@ metadata:
     "helm.sh/hook-weight": "9"
 spec:
   template:
+    metadata:
+      {{- if .Values.geodata.annotations }}
+      annotations:
+{{ toYaml .Values.geodata.annotations | indent 8 }}
+      {{- end }}
     spec:
+      {{- if .Values.serviceAccount.enabled }}
+      serviceAccountName: {{ .Values.serviceAccount.name }}-geoip
+      {{- end }}
       initContainers:
         - name: init-create-geoip-dir
           image: busybox
