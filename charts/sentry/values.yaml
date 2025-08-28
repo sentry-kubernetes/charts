@@ -199,7 +199,7 @@ geodata:
     ##   GKE, AWS & OpenStack)
     # storageClass: "" # for example: csi-s3
     size: 1Gi
-    accessModes: [ "ReadWriteMany"]
+    accessModes: ["ReadWriteMany"]
     ## If 'lookupVolumeName' is set to true, Helm will attempt to retrieve
     ## the current value of 'spec.volumeName' and incorporate it into the template.
     lookupVolumeName: true
