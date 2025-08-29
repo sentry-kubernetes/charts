@@ -14,20 +14,26 @@ spec:
   targetCPUUtilizationPercentage: {{ .Values.snuba.api.autoscaling.targetCPUUtilizationPercentage }}
   {{- else if semverCompare ">=1.27-0" .Capabilities.KubeVersion.GitVersion }}
   metrics:
-  - type: ContainerResource
-    containerResource:
-      container: {{ .Chart.Name }}-snuba
-      name: cpu
-      target:
-        type: Utilization
-        averageUtilization: {{ .Values.snuba.api.autoscaling.targetCPUUtilizationPercentage }}
+    - type: ContainerResource
+      containerResource:
+        container: {{ .Chart.Name }}-snuba
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: {{ .Values.snuba.api.autoscaling.targetCPUUtilizationPercentage }}
   {{- else }}
   metrics:
-  - type: Resource
-    resource:
-      name: cpu
-      target:
-        type: Utilization
-        averageUtilization: {{ .Values.snuba.api.autoscaling.targetCPUUtilizationPercentage }}
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: {{ .Values.snuba.api.autoscaling.targetCPUUtilizationPercentage }}
+  {{- end }}
+  {{- if eq (include "sentry.autoscaling.apiVersion" .) "autoscaling/v2" }}
+  {{- with .Values.snuba.api.autoscaling.behavior }}
+  behavior:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
   {{- end }}
 {{- end }}

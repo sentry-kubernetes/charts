@@ -109,6 +109,8 @@ vroom:
     minReplicas: 2
     maxReplicas: 5
     targetCPUUtilizationPercentage: 50
+    # Only available with autoscaling/v2
+    behavior: {}
   sidecars: []
   # topologySpreadConstraints: []
   volumes: []
@@ -150,6 +152,8 @@ relay:
     minReplicas: 2
     maxReplicas: 5
     targetCPUUtilizationPercentage: 50
+    # Only available with autoscaling/v2
+    behavior: {}
   sidecars: []
   topologySpreadConstraints: []
   volumes: []
@@ -245,6 +249,8 @@ sentry:
       minReplicas: 2
       maxReplicas: 5
       targetCPUUtilizationPercentage: 50
+      # Only available with autoscaling/v2
+      behavior: {}
     sidecars: []
     topologySpreadConstraints: []
     volumes: []
@@ -292,6 +298,8 @@ sentry:
       minReplicas: 2
       maxReplicas: 5
       targetCPUUtilizationPercentage: 50
+      # Only available with autoscaling/v2
+      behavior: {}
     livenessProbe:
       enabled: true
       periodSeconds: 60
@@ -330,6 +338,8 @@ sentry:
       minReplicas: 2
       maxReplicas: 5
       targetCPUUtilizationPercentage: 50
+      # Only available with autoscaling/v2
+      behavior: {}
     livenessProbe:
       enabled: false
       periodSeconds: 60
@@ -366,6 +376,8 @@ sentry:
       minReplicas: 2
       maxReplicas: 5
       targetCPUUtilizationPercentage: 50
+      # Only available with autoscaling/v2
+      behavior: {}
     livenessProbe:
       enabled: false
       periodSeconds: 60
@@ -405,6 +417,8 @@ sentry:
       minReplicas: 1
       maxReplicas: 3
       targetCPUUtilizationPercentage: 50
+      # Only available with autoscaling/v2
+      behavior: {}
     sidecars: []
     topologySpreadConstraints: []
     volumes: []
@@ -445,6 +459,8 @@ sentry:
       minReplicas: 1
       maxReplicas: 3
       targetCPUUtilizationPercentage: 50
+      # Only available with autoscaling/v2
+      behavior: {}
     sidecars: []
     topologySpreadConstraints: []
     volumes: []
@@ -485,6 +501,8 @@ sentry:
       minReplicas: 1
       maxReplicas: 3
       targetCPUUtilizationPercentage: 50
+      # Only available with autoscaling/v2
+      behavior: {}
     sidecars: []
     topologySpreadConstraints: []
     volumes: []
@@ -1184,6 +1202,8 @@ snuba:
       minReplicas: 2
       maxReplicas: 5
       targetCPUUtilizationPercentage: 50
+      # Only available with autoscaling/v2
+      behavior: {}
     sidecars: []
     topologySpreadConstraints: []
     volumes: []

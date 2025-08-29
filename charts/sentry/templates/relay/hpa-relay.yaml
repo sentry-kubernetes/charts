@@ -35,4 +35,10 @@ spec:
         type: Utilization
         averageUtilization: {{ .Values.relay.autoscaling.targetCPUUtilizationPercentage }}
   {{- end }}
+  {{- if eq (include "sentry.autoscaling.apiVersion" .) "autoscaling/v2" }}
+  {{- with .Values.relay.autoscaling.behavior }}
+  behavior:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  {{- end }}
 {{- end }}

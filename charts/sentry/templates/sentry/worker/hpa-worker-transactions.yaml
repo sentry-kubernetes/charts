@@ -14,20 +14,26 @@ spec:
   targetCPUUtilizationPercentage: {{ .Values.sentry.workerTransactions.autoscaling.targetCPUUtilizationPercentage }}
   {{- else if semverCompare ">=1.27-0" .Capabilities.KubeVersion.GitVersion }}
   metrics:
-  - type: ContainerResource
-    containerResource:
-      container: {{ .Chart.Name }}-worker
-      name: cpu
-      target:
-        type: Utilization
-        averageUtilization: {{ .Values.sentry.workerTransactions.autoscaling.targetCPUUtilizationPercentage }}
+    - type: ContainerResource
+      containerResource:
+        container: {{ .Chart.Name }}-worker
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: {{ .Values.sentry.workerTransactions.autoscaling.targetCPUUtilizationPercentage }}
   {{- else }}
   metrics:
-  - type: Resource
-    resource:
-      name: cpu
-      target:
-        type: Utilization
-        averageUtilization: {{ .Values.sentry.workerTransactions.autoscaling.targetCPUUtilizationPercentage }}
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: {{ .Values.sentry.workerTransactions.autoscaling.targetCPUUtilizationPercentage }}
+  {{- end }}
+  {{- if eq (include "sentry.autoscaling.apiVersion" .) "autoscaling/v2" }}
+  {{- with .Values.sentry.workerTransactions.autoscaling.behavior }}
+  behavior:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
   {{- end }}
 {{- end }}
