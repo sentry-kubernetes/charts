@@ -1424,6 +1424,27 @@ snuba:
     # autoOffsetReset: "earliest"
     # noStrictOffsetReset: false
 
+  subscriptionExecutorEapSpans:  # should have 1 partition and only 1 consumer replica: https://github.com/getsentry/snuba/issues/5855
+    enabled: true
+    replicas: 1
+    env: []
+    resources: {}
+    affinity: {}
+    nodeSelector: {}
+    securityContext: {}
+    topologySpreadConstraints: []
+    containerSecurityContext: {}
+    # tolerations: []
+    # podLabels: {}
+    livenessProbe:
+      enabled: true
+      initialDelaySeconds: 5
+      periodSeconds: 320
+    # volumes: []
+    # volumeMounts: []
+    # autoOffsetReset: "earliest"
+    # noStrictOffsetReset: false
+
   subscriptionConsumerEvents:  # should have 1 partition and only 1 consumer replica: https://github.com/getsentry/snuba/issues/5855
     enabled: true
     replicas: 1
@@ -1445,7 +1466,7 @@ snuba:
     # autoOffsetReset: "earliest"
     # noStrictOffsetReset: false
 
-  subscriptionConsumerGenericMetricsDistributions:  # should have 1 partition and only 1 consumer replica: https://github.com/getsentry/snuba/issues/5855
+  subscriptionExecutorEvents:  # should have 1 partition and only 1 consumer replica: https://github.com/getsentry/snuba/issues/5855
     enabled: true
     replicas: 1
     env: []
@@ -1463,71 +1484,8 @@ snuba:
       periodSeconds: 320
     # volumes: []
     # volumeMounts: []
-    # autoOffsetReset: "earliest"
-    # noStrictOffsetReset: false
-
-  subscriptionConsumerGenericMetricsSets:  # should have 1 partition and only 1 consumer replica: https://github.com/getsentry/snuba/issues/5855
-    enabled: true
-    replicas: 1
-    env: []
-    resources: {}
-    affinity: {}
-    nodeSelector: {}
-    securityContext: {}
-    topologySpreadConstraints: []
-    containerSecurityContext: {}
-    # tolerations: []
-    # podLabels: {}
-    livenessProbe:
-      enabled: true
-      initialDelaySeconds: 5
-      periodSeconds: 320
-    # volumes: []
-    # volumeMounts: []
-    # autoOffsetReset: "earliest"
-    # noStrictOffsetReset: false
-
-  subscriptionConsumerGenericMetricsCounters:  # should have 1 partition and only 1 consumer replica: https://github.com/getsentry/snuba/issues/5855
-    enabled: true
-    replicas: 1
-    env: []
-    resources: {}
-    affinity: {}
-    nodeSelector: {}
-    securityContext: {}
-    topologySpreadConstraints: []
-    containerSecurityContext: {}
-    # tolerations: []
-    # podLabels: {}
-    livenessProbe:
-      enabled: true
-      initialDelaySeconds: 5
-      periodSeconds: 320
-    # volumes: []
-    # volumeMounts: []
-    # autoOffsetReset: "earliest"
-    # noStrictOffsetReset: false
-
-  subscriptionConsumerGenericMetricsGauges:  # should have 1 partition and only 1 consumer replica: https://github.com/getsentry/snuba/issues/5855
-    enabled: true
-    replicas: 1
-    env: []
-    resources: {}
-    affinity: {}
-    nodeSelector: {}
-    securityContext: {}
-    topologySpreadConstraints: []
-    containerSecurityContext: {}
-    # tolerations: []
-    # podLabels: {}
-    livenessProbe:
-      enabled: true
-      initialDelaySeconds: 5
-      periodSeconds: 320
-    # volumes: []
-    # volumeMounts: []
-    # autoOffsetReset: "earliest"
-    # noStrictOffsetReset: false
+    # autoOffsetReset: "latest"
+    # noStrictOffsetReset: true
 
   genericMetricsGaugesConsumer:
     enabled: true
@@ -1664,6 +1622,29 @@ snuba:
     # volumes: []
     # volumeMounts: []
 
+  subscriptionExecutorMetrics:  # should have 1 partition and only 1 consumer replica: https://github.com/getsentry/snuba/issues/5855
+    enabled: true
+    replicas: 1
+    env: []
+    resources: {}
+    #  requests:
+    #    cpu: 200m
+    #    memory: 500Mi
+    affinity: {}
+    nodeSelector: {}
+    securityContext: {}
+    topologySpreadConstraints: []
+    containerSecurityContext: {}
+    # tolerations: []
+    # podLabels: {}
+    autoOffsetReset: "latest"
+    livenessProbe:
+      enabled: true
+      initialDelaySeconds: 5
+      periodSeconds: 320
+    # volumes: []
+    # volumeMounts: []
+
   subscriptionConsumerTransactions:  # should have 1 partition and only 1 consumer replica: https://github.com/getsentry/snuba/issues/5855
     enabled: true
     replicas: 1
@@ -1685,7 +1666,31 @@ snuba:
       enabled: true
       initialDelaySeconds: 5
       periodSeconds: 320
-    # autoOffsetReset: "earliest"
+    autoOffsetReset: "latest"
+    # noStrictOffsetReset: false
+
+  subscriptionExecutorTransactions:  # should have 1 partition and only 1 consumer replica: https://github.com/getsentry/snuba/issues/5855
+    enabled: true
+    replicas: 1
+    env: []
+    resources: {}
+    #  requests:
+    #    cpu: 200m
+    #    memory: 500Mi
+    affinity: {}
+    nodeSelector: {}
+    securityContext: {}
+    topologySpreadConstraints: []
+    containerSecurityContext: {}
+    # tolerations: []
+    # podLabels: {}
+    # volumes: []
+    # volumeMounts: []
+    livenessProbe:
+      enabled: true
+      initialDelaySeconds: 5
+      periodSeconds: 320
+    autoOffsetReset: "latest"
     # noStrictOffsetReset: false
 
   replaysConsumer:

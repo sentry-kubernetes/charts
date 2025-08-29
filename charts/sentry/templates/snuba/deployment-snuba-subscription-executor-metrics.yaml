@@ -1,8 +1,9 @@
-{{- if .Values.snuba.subscriptionConsumerEvents.enabled }}
+{{- if has "feature-complete" .Values.profiles }}
+{{- if .Values.snuba.subscriptionExecutorMetrics.enabled }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ template "sentry.fullname" . }}-snuba-subscription-consumer-events
+  name: {{ template "sentry.fullname" . }}-snuba-subscription-executor-metrics
   labels:
     app: {{ template "sentry.fullname" . }}
     chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
@@ -23,53 +24,53 @@ spec:
     matchLabels:
         app: {{ template "sentry.fullname" . }}
         release: "{{ .Release.Name }}"
-        role: snuba-subscription-consumer-events
-  replicas: {{ .Values.snuba.subscriptionConsumerEvents.replicas }}
+        role: snuba-subscription-executor-metrics
+  replicas: {{ .Values.snuba.subscriptionExecutorMetrics.replicas }}
   template:
     metadata:
       annotations:
         checksum/snubaSettingsPy: {{ .Values.config.snubaSettingsPy | sha256sum }}
         checksum/config.yaml: {{ include "sentry.snuba.config" . | sha256sum }}
-        {{- if .Values.snuba.subscriptionConsumerEvents.annotations }}
-{{ toYaml .Values.snuba.subscriptionConsumerEvents.annotations | indent 8 }}
+        {{- if .Values.snuba.subscriptionExecutorMetrics.annotations }}
+{{ toYaml .Values.snuba.subscriptionExecutorMetrics.annotations | indent 8 }}
         {{- end }}
       labels:
         app: {{ template "sentry.fullname" . }}
         release: "{{ .Release.Name }}"
-        role: snuba-subscription-consumer-events
-        {{- if .Values.snuba.subscriptionConsumerEvents.podLabels }}
-{{ toYaml .Values.snuba.subscriptionConsumerEvents.podLabels | indent 8 }}
+        role: snuba-subscription-executor-metrics
+        {{- if .Values.snuba.subscriptionExecutorMetrics.podLabels }}
+{{ toYaml .Values.snuba.subscriptionExecutorMetrics.podLabels | indent 8 }}
         {{- end }}
     spec:
       affinity:
-      {{- if .Values.snuba.subscriptionConsumerEvents.affinity }}
-{{ toYaml .Values.snuba.subscriptionConsumerEvents.affinity | indent 8 }}
+      {{- if .Values.snuba.subscriptionExecutorMetrics.affinity }}
+{{ toYaml .Values.snuba.subscriptionExecutorMetrics.affinity | indent 8 }}
       {{- end }}
-      {{- if .Values.snuba.subscriptionConsumerEvents.nodeSelector }}
+      {{- if .Values.snuba.subscriptionExecutorMetrics.nodeSelector }}
       nodeSelector:
-{{ toYaml .Values.snuba.subscriptionConsumerEvents.nodeSelector | indent 8 }}
+{{ toYaml .Values.snuba.subscriptionExecutorMetrics.nodeSelector | indent 8 }}
       {{- else if .Values.global.nodeSelector }}
       nodeSelector:
 {{ toYaml .Values.global.nodeSelector | indent 8 }}
       {{- end }}
-      {{- if .Values.snuba.subscriptionConsumerEvents.tolerations }}
+      {{- if .Values.snuba.subscriptionExecutorMetrics.tolerations }}
       tolerations:
-{{ toYaml .Values.snuba.subscriptionConsumerEvents.tolerations | indent 8 }}
+{{ toYaml .Values.snuba.subscriptionExecutorMetrics.tolerations | indent 8 }}
       {{- else if .Values.global.tolerations }}
       tolerations:
 {{ toYaml .Values.global.tolerations | indent 8 }}
       {{- end }}
-      {{- if .Values.snuba.subscriptionConsumerEvents.topologySpreadConstraints }}
+      {{- if .Values.snuba.subscriptionExecutorMetrics.topologySpreadConstraints }}
       topologySpreadConstraints:
-{{ toYaml .Values.snuba.subscriptionConsumerEvents.topologySpreadConstraints | indent 8 }}
+{{ toYaml .Values.snuba.subscriptionExecutorMetrics.topologySpreadConstraints | indent 8 }}
       {{- end }}
       {{- if .Values.images.snuba.imagePullSecrets }}
       imagePullSecrets:
 {{ toYaml .Values.images.snuba.imagePullSecrets | indent 8 }}
       {{- end }}
-      {{- if .Values.snuba.subscriptionConsumerEvents.securityContext }}
+      {{- if .Values.snuba.subscriptionExecutorMetrics.securityContext }}
       securityContext:
-{{ toYaml .Values.snuba.subscriptionConsumerEvents.securityContext | indent 8 }}
+{{ toYaml .Values.snuba.subscriptionExecutorMetrics.securityContext | indent 8 }}
       {{- end }}
       containers:
       - name: {{ .Chart.Name }}-snuba
@@ -77,38 +78,33 @@ spec:
         imagePullPolicy: {{ default "IfNotPresent" .Values.images.snuba.pullPolicy }}
         command:
           - "snuba"
-          - "subscriptions-scheduler"
-          {{- if .Values.snuba.subscriptionConsumerEvents.autoOffsetReset }}
+          - "subscriptions-executor"
+          {{- if .Values.snuba.subscriptionExecutorMetrics.autoOffsetReset }}
           - "--auto-offset-reset"
-          - "{{ .Values.snuba.subscriptionConsumerEvents.autoOffsetReset }}"
+          - "{{ .Values.snuba.subscriptionExecutorMetrics.autoOffsetReset }}"
           {{- end }}
-          - "--entity=events"
-          {{- if .Values.snuba.subscriptionConsumerEvents.noStrictOffsetReset }}
+          - "--dataset=metrics"
+          - "--entity=metrics_sets"
+          - "--entity=metrics_counters"
+          {{- if .Values.snuba.subscriptionExecutorMetrics.noStrictOffsetReset }}
           - "--no-strict-offset-reset"
           {{- end }}
-          - "--consumer-group=snuba-events-subscriptions-scheduler"
-          - "--followed-consumer-group=snuba-consumers"
-          - "--schedule-ttl=60"
-          - "--stale-threshold-seconds=900"
-          {{- if .Values.snuba.subscriptionConsumerEvents.livenessProbe.enabled }}
-          - "--health-check-file"
-          - "/tmp/health.txt"
-          {{- end }}
-        {{- if .Values.snuba.subscriptionConsumerEvents.livenessProbe.enabled }}
+          - "--consumer-group=snuba-metrics-subscription-executor"
+        {{- if .Values.snuba.subscriptionExecutorMetrics.livenessProbe.enabled }}
         livenessProbe:
           exec:
             command:
               - rm
               - /tmp/health.txt
-          initialDelaySeconds: {{ .Values.snuba.subscriptionConsumerEvents.livenessProbe.initialDelaySeconds }}
-          periodSeconds: {{ .Values.snuba.subscriptionConsumerEvents.livenessProbe.periodSeconds }}
+          initialDelaySeconds: {{ .Values.snuba.subscriptionExecutorMetrics.livenessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.snuba.subscriptionExecutorMetrics.livenessProbe.periodSeconds }}
         {{- end }}
         ports:
         - containerPort: {{ template "snuba.port" }}
         env:
 {{ include "sentry.snuba.env" . | indent 8 }}
-{{- if .Values.snuba.subscriptionConsumerEvents.env }}
-{{ toYaml .Values.snuba.subscriptionConsumerEvents.env | indent 8 }}
+{{- if .Values.snuba.subscriptionExecutorMetrics.env }}
+{{ toYaml .Values.snuba.subscriptionExecutorMetrics.env | indent 8 }}
 {{- end }}
         envFrom:
         - secretRef:
@@ -117,17 +113,17 @@ spec:
         - mountPath: /etc/snuba
           name: config
           readOnly: true
-{{- if .Values.snuba.subscriptionConsumerEvents.volumeMounts }}
-{{ toYaml .Values.snuba.subscriptionConsumerEvents.volumeMounts | indent 8 }}
+{{- if .Values.snuba.subscriptionExecutorMetrics.volumeMounts }}
+{{ toYaml .Values.snuba.subscriptionExecutorMetrics.volumeMounts | indent 8 }}
 {{- end }}
         resources:
-{{ toYaml .Values.snuba.subscriptionConsumerEvents.resources | indent 12 }}
-{{- if .Values.snuba.subscriptionConsumerEvents.containerSecurityContext }}
+{{ toYaml .Values.snuba.subscriptionExecutorMetrics.resources | indent 12 }}
+{{- if .Values.snuba.subscriptionExecutorMetrics.containerSecurityContext }}
         securityContext:
-{{ toYaml .Values.snuba.subscriptionConsumerEvents.containerSecurityContext | indent 12 }}
+{{ toYaml .Values.snuba.subscriptionExecutorMetrics.containerSecurityContext | indent 12 }}
 {{- end }}
-{{- if .Values.snuba.subscriptionConsumerEvents.sidecars }}
-{{ toYaml .Values.snuba.subscriptionConsumerEvents.sidecars | indent 6 }}
+{{- if .Values.snuba.subscriptionExecutorMetrics.sidecars }}
+{{ toYaml .Values.snuba.subscriptionExecutorMetrics.sidecars | indent 6 }}
 {{- end }}
 {{- if .Values.global.sidecars }}
 {{ toYaml .Values.global.sidecars | indent 6 }}
@@ -139,10 +135,11 @@ spec:
       - name: config
         configMap:
           name: {{ template "sentry.fullname" . }}-snuba
-{{- if .Values.snuba.subscriptionConsumerEvents.volumes }}
-{{ toYaml .Values.snuba.subscriptionConsumerEvents.volumes | indent 6 }}
+{{- if .Values.snuba.subscriptionExecutorMetrics.volumes }}
+{{ toYaml .Values.snuba.subscriptionExecutorMetrics.volumes | indent 6 }}
 {{- end }}
 {{- if .Values.global.volumes }}
 {{ toYaml .Values.global.volumes | indent 6 }}
+{{- end }}
 {{- end }}
 {{- end }}

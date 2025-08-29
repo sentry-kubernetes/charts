@@ -78,18 +78,17 @@ spec:
         imagePullPolicy: {{ default "IfNotPresent" .Values.images.snuba.pullPolicy }}
         command:
           - "snuba"
-          - "subscriptions-scheduler-executor"
+          - "subscriptions-scheduler"
           {{- if .Values.snuba.subscriptionConsumerMetrics.autoOffsetReset }}
           - "--auto-offset-reset"
           - "{{ .Values.snuba.subscriptionConsumerMetrics.autoOffsetReset }}"
           {{- end }}
-          - "--dataset=metrics"
           - "--entity=metrics_sets"
           - "--entity=metrics_counters"
           {{- if .Values.snuba.subscriptionConsumerMetrics.noStrictOffsetReset }}
           - "--no-strict-offset-reset"
           {{- end }}
-          - "--consumer-group=snuba-metrics-subscriptions-consumers"
+          - "--consumer-group=snuba-metrics-subscriptions-scheduler"
           - "--followed-consumer-group=snuba-metrics-consumers"
           - "--schedule-ttl=60"
           - "--stale-threshold-seconds=900"

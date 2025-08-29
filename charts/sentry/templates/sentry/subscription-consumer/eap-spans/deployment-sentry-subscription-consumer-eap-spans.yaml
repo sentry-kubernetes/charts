@@ -80,7 +80,7 @@ spec:
         args:
           - "run"
           - "consumer"
-          - "eap-spans-subscription-results"
+          - "subscription-results-eap-items"
           {{- if .Values.sentry.subscriptionConsumerEapSpans.autoOffsetReset }}
           - "--auto-offset-reset"
           - "{{ .Values.sentry.subscriptionConsumerEapSpans.autoOffsetReset }}"
@@ -89,7 +89,7 @@ spec:
           - "--no-strict-offset-reset"
           {{- end }}
           - "--consumer-group"
-          - "eap-spans-subscription-results"
+          - "subscription-results-eap-items"
           {{- if .Values.sentry.subscriptionConsumerEapSpans.livenessProbe.enabled }}
           - "--healthcheck-file-path"
           - "/tmp/health.txt"
