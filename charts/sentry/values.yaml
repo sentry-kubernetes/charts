@@ -1190,6 +1190,40 @@ sentry:
     volumes: []
     # volumeMounts: []
     serviceAccount: {}
+    
+    # Database cleanup cronjob for nodestore_node table
+    # This runs direct SQL operations on the PostgreSQL database:
+    # DELETE FROM public.nodestore_node WHERE "timestamp" < NOW() - INTERVAL 'X days';
+    # VACUUM FULL public.nodestore_node;
+    # Uses the same retention period as sentry.cleanup.days
+    dbCleanup:
+      enabled: false
+      schedule: "0 1 * * *"  # Run at 1 AM daily, after main cleanup
+      successfulJobsHistoryLimit: 5
+      failedJobsHistoryLimit: 5
+      activeDeadlineSeconds: 3600  # 1 hour timeout
+      concurrencyPolicy: Forbid  # Don't allow concurrent database operations
+      image:
+        repository: postgres
+        tag: "15-alpine"
+        pullPolicy: IfNotPresent
+      resources:
+        requests:
+          cpu: 100m
+          memory: 128Mi
+        limits:
+          cpu: 500m
+          memory: 256Mi
+      # securityContext: {}
+      # containerSecurityContext: {}
+      # affinity: {}
+      # nodeSelector: {}
+      # tolerations: []
+      # podLabels: {}
+      # annotations: {}
+      env: []
+      sidecars: []
+      volumes: []
 
   # Sentry settings of connections to Kafka
   kafka:

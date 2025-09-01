@@ -456,6 +456,19 @@ Note: this table is incomplete, so have a look at the values.yaml in case you mi
 | sentry.cleanup.sidecars | list | `[]` |  |
 | sentry.cleanup.successfulJobsHistoryLimit | int | `5` |  |
 | sentry.cleanup.volumes | list | `[]` |  |
+| sentry.cleanup.dbCleanup.enabled | bool | `false` | Enable database cleanup cronjob for nodestore_node table |
+| sentry.cleanup.dbCleanup.schedule | string | `"0 1 * * *"` | Schedule for database cleanup cronjob |
+| sentry.cleanup.dbCleanup.successfulJobsHistoryLimit | int | `5` |  |
+| sentry.cleanup.dbCleanup.failedJobsHistoryLimit | int | `5` |  |
+| sentry.cleanup.dbCleanup.activeDeadlineSeconds | int | `3600` |  |
+| sentry.cleanup.dbCleanup.concurrencyPolicy | string | `"Forbid"` |  |
+| sentry.cleanup.dbCleanup.image.repository | string | `"postgres"` | Docker image repository for database cleanup |
+| sentry.cleanup.dbCleanup.image.tag | string | `"15-alpine"` | Docker image tag for database cleanup |
+| sentry.cleanup.dbCleanup.image.pullPolicy | string | `"IfNotPresent"` |  |
+| sentry.cleanup.dbCleanup.resources | object | `{"limits":{"cpu":"500m","memory":"256Mi"},"requests":{"cpu":"100m","memory":"128Mi"}}` |  |
+| sentry.cleanup.dbCleanup.env | list | `[]` |  |
+| sentry.cleanup.dbCleanup.sidecars | list | `[]` |  |
+| sentry.cleanup.dbCleanup.volumes | list | `[]` |  |
 | sentry.cron.affinity | object | `{}` |  |
 | sentry.cron.enabled | bool | `true` |  |
 | sentry.cron.env | list | `[]` |  |
