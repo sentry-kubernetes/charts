@@ -8,7 +8,7 @@ metadata:
     chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
     release: "{{ .Release.Name }}"
     heritage: "{{ .Release.Service }}"
-    app.kubernetes.io/managed-by: "Helm"
+    {{- include "sentry.component.labels" (dict "component" "snuba-eap-items-consumer" "ctx" .) | nindent 4 }}
   {{- if .Values.asHook }}
   {{- /* Add the Helm annotations so that deployment after asHook from true to false works */}}
   annotations:
@@ -37,6 +37,7 @@ spec:
         app: {{ template "sentry.fullname" . }}
         release: "{{ .Release.Name }}"
         role: snuba-eap-items-consumer
+        {{- include "sentry.component.labels" (dict "component" "snuba-eap-items-consumer" "ctx" .) | nindent 8 }}
         {{- if .Values.snuba.eapItemsConsumer.podLabels }}
 {{ toYaml .Values.snuba.eapItemsConsumer.podLabels | indent 8 }}
         {{- end }}

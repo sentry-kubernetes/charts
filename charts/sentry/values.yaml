@@ -114,6 +114,8 @@ vroom:
     minReplicas: 2
     maxReplicas: 5
     targetCPUUtilizationPercentage: 50
+    # Only available with autoscaling/v2
+    behavior: {}
   sidecars: []
   # topologySpreadConstraints: []
   volumes: []
@@ -179,6 +181,8 @@ relay:
     minReplicas: 2
     maxReplicas: 5
     targetCPUUtilizationPercentage: 50
+    # Only available with autoscaling/v2
+    behavior: {}
   sidecars: []
   topologySpreadConstraints: []
   volumes: []
@@ -274,6 +278,8 @@ sentry:
       minReplicas: 2
       maxReplicas: 5
       targetCPUUtilizationPercentage: 50
+      # Only available with autoscaling/v2
+      behavior: {}
     sidecars: []
     topologySpreadConstraints: []
     volumes: []
@@ -321,6 +327,8 @@ sentry:
       minReplicas: 2
       maxReplicas: 5
       targetCPUUtilizationPercentage: 50
+      # Only available with autoscaling/v2
+      behavior: {}
     livenessProbe:
       enabled: true
       periodSeconds: 60
@@ -359,6 +367,8 @@ sentry:
       minReplicas: 2
       maxReplicas: 5
       targetCPUUtilizationPercentage: 50
+      # Only available with autoscaling/v2
+      behavior: {}
     livenessProbe:
       enabled: false
       periodSeconds: 60
@@ -395,6 +405,8 @@ sentry:
       minReplicas: 2
       maxReplicas: 5
       targetCPUUtilizationPercentage: 50
+      # Only available with autoscaling/v2
+      behavior: {}
     livenessProbe:
       enabled: false
       periodSeconds: 60
@@ -434,6 +446,8 @@ sentry:
       minReplicas: 1
       maxReplicas: 3
       targetCPUUtilizationPercentage: 50
+      # Only available with autoscaling/v2
+      behavior: {}
     sidecars: []
     topologySpreadConstraints: []
     volumes: []
@@ -474,6 +488,8 @@ sentry:
       minReplicas: 1
       maxReplicas: 3
       targetCPUUtilizationPercentage: 50
+      # Only available with autoscaling/v2
+      behavior: {}
     sidecars: []
     topologySpreadConstraints: []
     volumes: []
@@ -514,6 +530,8 @@ sentry:
       minReplicas: 1
       maxReplicas: 3
       targetCPUUtilizationPercentage: 50
+      # Only available with autoscaling/v2
+      behavior: {}
     sidecars: []
     topologySpreadConstraints: []
     volumes: []
@@ -1217,6 +1235,8 @@ snuba:
       minReplicas: 2
       maxReplicas: 5
       targetCPUUtilizationPercentage: 50
+      # Only available with autoscaling/v2
+      behavior: {}
     sidecars: []
     topologySpreadConstraints: []
     volumes: []
@@ -1425,6 +1445,90 @@ snuba:
     # noStrictOffsetReset: false
 
   subscriptionConsumerEvents:  # should have 1 partition and only 1 consumer replica: https://github.com/getsentry/snuba/issues/5855
+    enabled: true
+    replicas: 1
+    env: []
+    resources: {}
+    affinity: {}
+    nodeSelector: {}
+    securityContext: {}
+    topologySpreadConstraints: []
+    containerSecurityContext: {}
+    # tolerations: []
+    # podLabels: {}
+    livenessProbe:
+      enabled: true
+      initialDelaySeconds: 5
+      periodSeconds: 320
+    # volumes: []
+    # volumeMounts: []
+    # autoOffsetReset: "earliest"
+    # noStrictOffsetReset: false
+
+  subscriptionConsumerGenericMetricsDistributions:  # should have 1 partition and only 1 consumer replica: https://github.com/getsentry/snuba/issues/5855
+    enabled: true
+    replicas: 1
+    env: []
+    resources: {}
+    affinity: {}
+    nodeSelector: {}
+    securityContext: {}
+    topologySpreadConstraints: []
+    containerSecurityContext: {}
+    # tolerations: []
+    # podLabels: {}
+    livenessProbe:
+      enabled: true
+      initialDelaySeconds: 5
+      periodSeconds: 320
+    # volumes: []
+    # volumeMounts: []
+    # autoOffsetReset: "earliest"
+    # noStrictOffsetReset: false
+
+  subscriptionConsumerGenericMetricsSets:  # should have 1 partition and only 1 consumer replica: https://github.com/getsentry/snuba/issues/5855
+    enabled: true
+    replicas: 1
+    env: []
+    resources: {}
+    affinity: {}
+    nodeSelector: {}
+    securityContext: {}
+    topologySpreadConstraints: []
+    containerSecurityContext: {}
+    # tolerations: []
+    # podLabels: {}
+    livenessProbe:
+      enabled: true
+      initialDelaySeconds: 5
+      periodSeconds: 320
+    # volumes: []
+    # volumeMounts: []
+    # autoOffsetReset: "earliest"
+    # noStrictOffsetReset: false
+
+  subscriptionConsumerGenericMetricsCounters:  # should have 1 partition and only 1 consumer replica: https://github.com/getsentry/snuba/issues/5855
+    enabled: true
+    replicas: 1
+    env: []
+    resources: {}
+    affinity: {}
+    nodeSelector: {}
+    securityContext: {}
+    topologySpreadConstraints: []
+    containerSecurityContext: {}
+    # tolerations: []
+    # podLabels: {}
+    livenessProbe:
+      enabled: true
+      initialDelaySeconds: 5
+      periodSeconds: 320
+    # volumes: []
+    # volumeMounts: []
+    # autoOffsetReset: "earliest"
+    # noStrictOffsetReset: false
+
+  subscriptionConsumerGenericMetricsGauges:  # should have 1 partition and only 1 consumer replica: https://github.com/getsentry/snuba/issues/5855
     enabled: true
     replicas: 1
     env: []

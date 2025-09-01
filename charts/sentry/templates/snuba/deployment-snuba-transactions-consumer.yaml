@@ -9,7 +9,7 @@ metadata:
     chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
     release: "{{ .Release.Name }}"
     heritage: "{{ .Release.Service }}"
-    app.kubernetes.io/managed-by: "Helm"
+    {{- include "sentry.component.labels" (dict "component" "snuba-transactions-consumer" "ctx" .) | nindent 4 }}
   {{- if .Values.asHook }}
   {{- /* Add the Helm annotations so that deployment after asHook from true to false works */}}
   annotations:
@@ -22,9 +22,9 @@ spec:
   revisionHistoryLimit: {{ .Values.revisionHistoryLimit }}
   selector:
     matchLabels:
-        app: {{ template "sentry.fullname" . }}
-        release: "{{ .Release.Name }}"
-        role: snuba-transactions-consumer
+      app: {{ template "sentry.fullname" . }}
+      release: "{{ .Release.Name }}"
+      role: snuba-transactions-consumer
   replicas: {{ .Values.snuba.transactionsConsumer.replicas }}
   template:
     metadata:
@@ -38,6 +38,7 @@ spec:
         app: {{ template "sentry.fullname" . }}
         release: "{{ .Release.Name }}"
         role: snuba-transactions-consumer
+        {{- include "sentry.component.labels" (dict "component" "snuba-transactions-consumer" "ctx" .) | nindent 8 }}
         {{- if .Values.snuba.transactionsConsumer.podLabels }}
 {{ toYaml .Values.snuba.transactionsConsumer.podLabels | indent 8 }}
         {{- end }}

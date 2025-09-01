@@ -9,7 +9,7 @@ metadata:
     chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
     release: "{{ .Release.Name }}"
     heritage: "{{ .Release.Service }}"
-    app.kubernetes.io/managed-by: "Helm"
+    {{- include "sentry.component.labels" (dict "component" "sentry-process-segments" "ctx" .) | nindent 4 }}
   {{- if .Values.asHook }}
   {{- /* Add the Helm annotations so that deployment after asHook from true to false works */}}
   annotations:
@@ -39,6 +39,7 @@ spec:
         app: sentry
         release: "{{ .Release.Name }}"
         role: sentry-process-segments
+        {{- include "sentry.component.labels" (dict "component" "sentry-process-segments" "ctx" .) | nindent 8 }}
         {{- if .Values.sentry.processSegments.podLabels }}
 {{ toYaml .Values.sentry.processSegments.podLabels | indent 8 }}
         {{- end }}

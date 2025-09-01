@@ -36,6 +36,7 @@ spec:
         app: {{ template "sentry.fullname" . }}
         release: "{{ .Release.Name }}"
         role: uptime-checker
+        {{- include "sentry.component.labels" (dict "component" "uptime-checker" "ctx" .) | nindent 8 }}
         {{- if .Values.uptimeChecker.podLabels }}
 {{ toYaml .Values.uptimeChecker.podLabels | indent 8 }}
         {{- end }}
