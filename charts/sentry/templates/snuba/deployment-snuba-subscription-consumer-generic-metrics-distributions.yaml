@@ -38,7 +38,7 @@ spec:
       labels:
         app: {{ template "sentry.fullname" . }}
         release: "{{ .Release.Name }}"
-        {{- include "sentry.component.labels" (dict "component" "snuba-subscription-consumer-generic-metrics-distributions" "ctx" .) | nindent 4 }}
+        {{- include "sentry.component.labels" (dict "component" "snuba-subscription-consumer-generic-metrics-distributions" "ctx" .) | nindent 8 }}
         role: snuba-subscription-consumer-generic-metrics-distributions
         {{- if .Values.snuba.subscriptionConsumerGenericMetricsDistributions.podLabels }}
 {{ toYaml .Values.snuba.subscriptionConsumerGenericMetricsDistributions.podLabels | indent 8 }}
