@@ -1,5 +1,19 @@
 # Changelog
 
+## [27.2.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v27.1.1...sentry-v27.2.0) (2025-09-02)
+
+
+### Features
+
+* add recommended labels ([#1839](https://github.com/sentry-kubernetes/charts/issues/1839)) ([4ae9f92](https://github.com/sentry-kubernetes/charts/commit/4ae9f92e7d2da33d0860760efabd13dd00e4734e))
+* **hpa:** add behavior support for hpa v2 ([#1855](https://github.com/sentry-kubernetes/charts/issues/1855)) ([f5b8f7b](https://github.com/sentry-kubernetes/charts/commit/f5b8f7b8bfb5e34bec02e3b3be132340a270bdbb))
+* upgrade to 25.8.0 ([#1851](https://github.com/sentry-kubernetes/charts/issues/1851)) ([d3a3ed4](https://github.com/sentry-kubernetes/charts/commit/d3a3ed486c264d56f11e7fbf0023757e8914fdf4))
+
+
+### Bug Fixes
+
+* generic metric alerts ([#1850](https://github.com/sentry-kubernetes/charts/issues/1850)) ([b1ba5b3](https://github.com/sentry-kubernetes/charts/commit/b1ba5b35cadb718eb7d664ff23c39c91b19ecbc2))
+
 ## [27.1.1](https://github.com/sentry-kubernetes/charts/compare/sentry-v27.1.0...sentry-v27.1.1) (2025-08-21)
 
 
