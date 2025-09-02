@@ -5,6 +5,8 @@ apiVersion: policy/v1
 kind: PodDisruptionBudget
 metadata:
   name: {{ template "sentry.fullname" . }}-pgbouncer
+  labels:
+    {{- include "sentry.component.labels" (dict "component" "pgbouncer" "ctx" .) | nindent 4 }}
 spec:
   {{- if and .Values.pgbouncer.podDisruptionBudget.minAvailable (not (hasKey .Values.pgbouncer.podDisruptionBudget "maxUnavailable")) }}
   minAvailable: {{ .Values.pgbouncer.podDisruptionBudget.minAvailable }}

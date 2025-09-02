@@ -3,6 +3,8 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: {{ template "sentry.fullname" . }}-nginx
+  labels:
+    {{- include "sentry.component.labels" (dict "component" "nginx" "ctx" .) | nindent 4 }}
 data:
   server-block.conf: |
     {{ if .Values.relay.enabled }}

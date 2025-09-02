@@ -12,6 +12,7 @@ metadata:
     chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
     release: "{{ .Release.Name }}"
     heritage: "{{ .Release.Service }}"
+    {{- include "sentry.labels" . | nindent 4 }}
   {{- range $key, $value := .Values.ingress.labels }}
     {{ $key }}: {{ $value | quote }}
   {{- end }}

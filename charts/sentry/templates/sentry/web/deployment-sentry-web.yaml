@@ -8,6 +8,7 @@ metadata:
     chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
     release: "{{ .Release.Name }}"
     heritage: "{{ .Release.Service }}"
+    {{- include "sentry.component.labels" (dict "component" "web" "ctx" .) | nindent 4 }}
 spec:
   revisionHistoryLimit: {{ .Values.revisionHistoryLimit }}
   strategy:
@@ -33,8 +34,9 @@ spec:
         app: {{ template "sentry.fullname" . }}
         release: "{{ .Release.Name }}"
         role: web
+        {{- include "sentry.component.labels" (dict "component" "web" "ctx" .) | nindent 8 }}
         {{- if .Values.sentry.web.podLabels }}
-{{ toYaml .Values.sentry.web.podLabels | indent 8 }}
+        {{ toYaml .Values.sentry.web.podLabels | nindent 8 }}
         {{- end }}
     spec:
       affinity:

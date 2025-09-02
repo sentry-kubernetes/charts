@@ -9,6 +9,7 @@ metadata:
     chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
     release: "{{ .Release.Name }}"
     heritage: "{{ .Release.Service }}"
+    {{- include "sentry.component.labels" (dict "component" "symbolicator" "ctx" .) | nindent 4 }}
 spec:
   revisionHistoryLimit: {{ .Values.revisionHistoryLimit }}
   selector:
@@ -30,6 +31,7 @@ spec:
         app: {{ template "sentry.fullname" . }}
         release: "{{ .Release.Name }}"
         role: symbolicator-api
+        {{- include "sentry.component.labels" (dict "component" "symbolicator-api" "ctx" .) | nindent 4 }}
         {{- if .Values.symbolicator.api.podLabels }}
 {{ toYaml .Values.symbolicator.api.podLabels | indent 8 }}
         {{- end }}

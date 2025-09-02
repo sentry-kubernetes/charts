@@ -12,6 +12,7 @@ metadata:
     release: "{{ .Release.Name }}"
     heritage: "{{ .Release.Service }}"
     component: vroom
+    {{- include "sentry.component.labels" (dict "component" "vroom" "ctx" .) | nindent 4 }}
 spec:
   accessModes:
 {{- range .Values.vroom.persistence.accessModes }}

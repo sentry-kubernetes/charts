@@ -8,6 +8,7 @@ metadata:
     chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
     release: "{{ .Release.Name }}"
     heritage: "{{ .Release.Service }}"
+    {{- include "sentry.component.labels" (dict "component" "symbolicator" "ctx" .) | nindent 4 }}
 data:
   {{ include "sentry.symbolicator.config" . | nindent 2 }}
 {{- end }}
