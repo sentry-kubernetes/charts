@@ -1,5 +1,12 @@
 # Changelog
 
+## [27.2.1](https://github.com/sentry-kubernetes/charts/compare/sentry-v27.2.0...sentry-v27.2.1) (2025-09-02)
+
+
+### Bug Fixes
+
+* snuba-subscription-consumer-generic-metrics-distribution labels indent ([#1858](https://github.com/sentry-kubernetes/charts/issues/1858)) ([43f595c](https://github.com/sentry-kubernetes/charts/commit/43f595c10de214dedb0fa11922af937106c5ab37))
+
 ## [27.2.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v27.1.1...sentry-v27.2.0) (2025-09-02)
 
 
