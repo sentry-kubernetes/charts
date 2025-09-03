@@ -39,7 +39,7 @@ spec:
         app: {{ template "sentry.fullname" . }}
         release: "{{ .Release.Name }}"
         role: snuba-subscription-consumer-generic-metrics-counters
-        {{- include "sentry.component.labels" (dict "component" "snuba-subscription-consumer-generic-metrics-counters" "ctx" .) | nindent 4 }}
+        {{- include "sentry.component.labels" (dict "component" "snuba-subscription-consumer-generic-metrics-counters" "ctx" .) | nindent 8 }}
         {{- if .Values.snuba.subscriptionConsumerGenericMetricsCounters.podLabels }}
 {{ toYaml .Values.snuba.subscriptionConsumerGenericMetricsCounters.podLabels | indent 8 }}
         {{- end }}
