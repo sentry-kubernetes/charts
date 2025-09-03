@@ -5,7 +5,7 @@ kind: HorizontalPodAutoscaler
 metadata:
   name: {{ template "sentry.fullname" . }}-sentry-ingest-consumer-transactions
   labels:
-    {{- include "sentry.component.labels" (dict "component" "nginx" "ingest-consumer-transactions" .) | nindent 4 }}
+    {{- include "sentry.component.labels" (dict "component" "ingest-consumer-transactions" "ctx" .) | nindent 4 }}
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
