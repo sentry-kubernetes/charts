@@ -85,7 +85,8 @@ spec:
         imagePullPolicy: {{ default "IfNotPresent" .Values.images.snuba.pullPolicy }}
         command:
           - "snuba"
-          - {{ if .Values.snuba.rustConsumer -}}"rust-consumer"{{- else -}}"consumer"{{- end }}
+          - "rust-consumer"
+          - "--use-rust-processor"
           - "--storage"
           - "eap_items"
           - "--consumer-group"

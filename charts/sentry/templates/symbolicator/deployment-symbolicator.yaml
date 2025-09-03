@@ -31,7 +31,7 @@ spec:
         app: {{ template "sentry.fullname" . }}
         release: "{{ .Release.Name }}"
         role: symbolicator-api
-        {{- include "sentry.component.labels" (dict "component" "symbolicator-api" "ctx" .) | nindent 4 }}
+        {{- include "sentry.component.labels" (dict "component" "symbolicator-api" "ctx" .) | nindent 8 }}
         {{- if .Values.symbolicator.api.podLabels }}
 {{ toYaml .Values.symbolicator.api.podLabels | indent 8 }}
         {{- end }}
