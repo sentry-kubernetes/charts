@@ -8,11 +8,11 @@ appVersion: 25.8.0
 dependencies:
   - name: memcached
     repository: oci://registry-1.docker.io/bitnamicharts
-    version: 7.5.2
+    version: 7.9.7
     condition: sourcemaps.enabled
   - name: redis
     repository: oci://registry-1.docker.io/bitnamicharts
-    version: 17.11.3
+    version: 22.0.7
     condition: redis.enabled
   - name: kafka
     repository: oci://registry-1.docker.io/bitnamicharts
@@ -24,11 +24,11 @@ dependencies:
     condition: clickhouse.enabled
   - name: zookeeper
     repository: oci://registry-1.docker.io/bitnamicharts
-    version: 11.4.11
+    version: 13.8.7
     condition: zookeeper.enabled
   - name: rabbitmq
     repository: oci://registry-1.docker.io/bitnamicharts
-    version: 11.16.2
+    version: 16.0.14
     alias: rabbitmq
     condition: rabbitmq.enabled
   - name: postgresql
@@ -37,7 +37,7 @@ dependencies:
     condition: postgresql.enabled
   - name: nginx
     repository: oci://registry-1.docker.io/bitnamicharts
-    version: 18.2.5
+    version: 21.1.23
     condition: nginx.enabled
 maintainers:
   - name: sentry-kubernetes
