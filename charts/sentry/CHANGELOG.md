@@ -1,5 +1,19 @@
 # Changelog
 
+## [27.2.3](https://github.com/sentry-kubernetes/charts/compare/sentry-v27.2.2...sentry-v27.2.3) (2025-09-03)
+
+
+### Bug Fixes
+
+* [#1859](https://github.com/sentry-kubernetes/charts/issues/1859) & [#1863](https://github.com/sentry-kubernetes/charts/issues/1863) ([#1861](https://github.com/sentry-kubernetes/charts/issues/1861)) ([e0879f9](https://github.com/sentry-kubernetes/charts/commit/e0879f947eb3145c6a9874bc867ee872d5fbdd42))
+
+## [27.2.2](https://github.com/sentry-kubernetes/charts/compare/sentry-v27.2.1...sentry-v27.2.2) (2025-09-03)
+
+
+### Bug Fixes
+
+* **templates:** fix indentation for multiple deployments yamls ([#1862](https://github.com/sentry-kubernetes/charts/issues/1862)) ([9a10dfd](https://github.com/sentry-kubernetes/charts/commit/9a10dfdbca95aff0216b121d8c8b3f40a5b960d4))
+
 ## [27.2.1](https://github.com/sentry-kubernetes/charts/compare/sentry-v27.2.0...sentry-v27.2.1) (2025-09-02)
 
 
