@@ -208,7 +208,9 @@ sentry.conf.py: |-
   BROKER_URL = os.environ.get("BROKER_URL", "amqp://{{ .Values.rabbitmq.auth.username }}:{{ .Values.rabbitmq.auth.password }}@{{ template "sentry.rabbitmq.host" . }}:5672/{{ .Values.rabbitmq.vhost }}")
   {{- else if $redisPass }}
   BROKER_URL = os.environ.get("BROKER_URL", "{{ $redisProto }}://:{{ $redisPass }}@{{ $redisHost }}:{{ $redisPort }}/{{ $redisDb }}")
-  {{- else if and (not .Values.externalRedis.existingSecret) (not .Values.redis.auth.existingSecret)}}
+  {{- else if or (.Values.externalRedis.existingSecret) (.Values.redis.auth.existingSecret) }}
+  BROKER_URL = os.environ.get("BROKER_URL", f"{{ $redisProto }}://:{os.environ.get("REDIS_PASSWORD")}@{{ $redisHost }}:{{ $redisPort }}/{{ $redisDb }}")
+  {{- else }}
   BROKER_URL = os.environ.get("BROKER_URL", "{{ $redisProto }}://{{ $redisHost }}:{{ $redisPort }}/{{ $redisDb }}")
   {{- end }}
 
@@ -447,7 +449,7 @@ sentry.conf.py: |-
               "organizations:starfish-mobile-appstart",
               "projects:span-metrics-extraction",
               "projects:span-metrics-extraction-addons",
-              
+
               # flags added in this chart
               "organizations:trace-view-load-more",
               "organizations:trace-tabs-ui",
@@ -460,7 +462,7 @@ sentry.conf.py: |-
           + (
               # Session Replay related flags
               "organizations:session-replay",
-              
+
               # flags added in this chart
               "organizations:session-replay-ui",
               "organizations:session-replay-issue-emails",
