@@ -1,5 +1,12 @@
 # Changelog
 
+## [27.2.4](https://github.com/sentry-kubernetes/charts/compare/sentry-v27.2.3...sentry-v27.2.4) (2025-09-07)
+
+
+### Bug Fixes
+
+* Update serviceaccount-sentry-uptime-results ([#1869](https://github.com/sentry-kubernetes/charts/issues/1869)) ([dbdb24a](https://github.com/sentry-kubernetes/charts/commit/dbdb24a3077a692eee456f5f83ae73ffe9dc14be))
+
 ## [27.2.3](https://github.com/sentry-kubernetes/charts/compare/sentry-v27.2.2...sentry-v27.2.3) (2025-09-03)
 
 
