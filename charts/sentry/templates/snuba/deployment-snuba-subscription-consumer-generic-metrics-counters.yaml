@@ -9,7 +9,6 @@ metadata:
     chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
     release: "{{ .Release.Name }}"
     heritage: "{{ .Release.Service }}"
-    app.kubernetes.io/managed-by: "Helm"
     {{- include "sentry.component.labels" (dict "component" "snuba-subscription-consumer-generic-metrics-counters" "ctx" .) | nindent 4 }}
   {{- if .Values.asHook }}
   {{- /* Add the Helm annotations so that deployment after asHook from true to false works */}}

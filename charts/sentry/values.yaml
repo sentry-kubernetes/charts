@@ -2019,6 +2019,68 @@ snuba:
 
   rustConsumer: false
 
+  # ClickHouse database cleanup configuration
+  cleanup:
+    # -- Enable ClickHouse database cleanup cronjob
+    enabled: false
+    # -- Retention period in days for ClickHouse data cleanup
+    retentionDays: 30
+    # -- Cron schedule for cleanup job (daily at 2 AM by default)
+    schedule: "0 2 * * *"
+    # -- Number of successful job executions to retain
+    successfulJobsHistoryLimit: 5
+    # -- Number of failed job executions to retain
+    failedJobsHistoryLimit: 5
+    # -- Maximum time in seconds for cleanup job to run
+    activeDeadlineSeconds: 300
+    # -- Concurrency policy for cleanup job
+    concurrencyPolicy: Forbid
+    # -- Resource limits and requests for cleanup job
+    resources: {}
+    # Table discovery configuration
+    tables:
+      # -- Auto-detect tables instead of using a hardcoded list
+      autoDetect: true
+      # -- Include patterns for table names (regex patterns)
+      includePatterns:
+        - ".*_local$"
+        - ".*_raw_local$"
+      # -- Exclude patterns for table names (regex patterns)
+      excludePatterns:
+        - "^system\\."
+        - "^information_schema\\."
+        - "^INFORMATION_SCHEMA\\."
+      # -- Fallback hardcoded table list (used if autoDetect fails or is disabled)
+      fallbackList:
+        - "discover_local"
+        - "events_local"
+        - "events_ro_local"
+        - "outcomes_raw_local"
+        - "querylog_local"
+        - "sessions_raw_local"
+        - "transactions_local"
+        - "profiles_raw_local"
+        - "functions_raw_local"
+        - "replays_local"
+        - "generic_metric_sets_raw_local"
+        - "generic_metric_distributions_raw_local"
+        - "generic_metric_counters_raw_local"
+        - "spans_local"
+        - "group_attributes_raw_local"
+        - "generic_metric_gauges_raw_local"
+        - "profile_chunks_raw_local"
+    # podLabels: {}
+    # affinity: {}
+    # nodeSelector: {}
+    # tolerations: []
+    # env: []
+    # volumes: []
+    # sidecars: []
+    # containerSecurityContext: {}
+    # securityContext: {}
+    # annotations: {}
+    # volumeMounts: []
+
 hooks:
   enabled: true
   preUpgrade: false
@@ -2172,15 +2234,6 @@ symbolicator:
 
     # volumes: []
     # volumeMounts: []
-    # sidecars: []
-
-  # TODO The cleanup cronjob is not yet implemented
-  cleanup:
-    enabled: false
-    # podLabels: {}
-    # affinity: {}
-    # env: []
-    # volumes: []
     # sidecars: []
 
 auth:
