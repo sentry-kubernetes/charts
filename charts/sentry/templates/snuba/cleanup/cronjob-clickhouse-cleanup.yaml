@@ -23,7 +23,7 @@ spec:
         metadata:
           annotations:
             checksum/configYml: {{ .Values.config.configYml | toYaml | toString | sha256sum }}
-            checksum/config.yaml: {{ include "snuba.config" . | sha256sum }}
+            checksum/config.yaml: {{ include "sentry.snuba.config" . | sha256sum }}
             {{- if .Values.snuba.cleanup.annotations }}
 {{ toYaml .Values.snuba.cleanup.annotations | indent 12 }}
             {{- end }}
