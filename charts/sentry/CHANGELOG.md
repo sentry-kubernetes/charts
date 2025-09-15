@@ -1,5 +1,12 @@
 # Changelog
 
+## [27.3.1](https://github.com/sentry-kubernetes/charts/compare/sentry-v27.3.0...sentry-v27.3.1) (2025-09-15)
+
+
+### Bug Fixes
+
+* cronjob Config ([#1881](https://github.com/sentry-kubernetes/charts/issues/1881)) ([b5673ef](https://github.com/sentry-kubernetes/charts/commit/b5673efddb96533e587194896ddcdb0d0dfeb048))
+
 ## [27.3.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v27.2.4...sentry-v27.3.0) (2025-09-15)
 
 
