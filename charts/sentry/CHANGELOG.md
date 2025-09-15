@@ -1,5 +1,12 @@
 # Changelog
 
+## [27.3.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v27.2.4...sentry-v27.3.0) (2025-09-15)
+
+
+### Features
+
+* **clickhouse:** db cleanup ([#1876](https://github.com/sentry-kubernetes/charts/issues/1876)) ([e2e911d](https://github.com/sentry-kubernetes/charts/commit/e2e911d6ac5c48fe4cd138469b07f215093d341b))
+
 ## [27.2.4](https://github.com/sentry-kubernetes/charts/compare/sentry-v27.2.3...sentry-v27.2.4) (2025-09-07)
 
 
