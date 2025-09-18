@@ -173,7 +173,7 @@ spec:
                 # Compute cutoff timestamp: retentionDays-ago at 00:00:00 (use UTC)
                 echo "Computing cutoff timestamp for retention {{ .Values.snuba.cleanup.retentionDays }} days (midnight UTC)..."
                 # Try to compute via GNU date (-d), fallback to BSD date (macOS) with -v
-                CUT_DAYS={{ .Values.snuba.cleanup.retentionDays }}
+                CUT_DAYS="{{ .Values.snuba.cleanup.retentionDays }}"
                 TIMESTAMP=$(date -u -d "${CUT_DAYS} days ago" '+%Y-%m-%d 00:00:00' 2>/dev/null || date -u -v -${CUT_DAYS}d '+%Y-%m-%d 00:00:00' 2>/dev/null || true)
                 if [ -z "$TIMESTAMP" ]; then
                   echo "Warning: could not compute cutoff with local date; attempting ClickHouse calculation"
