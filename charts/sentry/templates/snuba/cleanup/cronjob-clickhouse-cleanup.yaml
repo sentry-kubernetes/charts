@@ -89,8 +89,9 @@ spec:
                 discover_tables() {
                   echo "Auto-detecting tables in ClickHouse database..."
 
-                  # Get all tables from the database
-                  ALL_TABLES=$(clickhouse-client "${CH_ARGS[@]}" --query="SHOW TABLES" 2>/dev/null || echo "")
+                  # Get all tables that have a 'timestamp' column from system.columns for current database
+                  # This returns table names only
+                  ALL_TABLES=$(clickhouse-client "${CH_ARGS[@]}" --query="SELECT DISTINCT table FROM system.columns WHERE database = '${CLICKHOUSE_DATABASE}' AND name = 'timestamp'" 2>/dev/null || echo "")
 
                   if [ -z "$ALL_TABLES" ]; then
                     echo "Warning: Could not retrieve table list, falling back to hardcoded list"
