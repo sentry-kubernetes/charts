@@ -2023,6 +2023,10 @@ snuba:
   cleanup:
     # -- Enable ClickHouse database cleanup cronjob
     enabled: false
+    image:
+      repository: clickhouse/clickhouse-server
+      tag: latest
+      pullPolicy: IfNotPresent
     # -- Retention period in days for ClickHouse data cleanup
     retentionDays: 30
     # -- Cron schedule for cleanup job (daily at 2 AM by default)
