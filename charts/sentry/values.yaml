@@ -2724,6 +2724,10 @@ kafka:
     enabled: false
   kraft:
     enabled: true
+  metrics:
+    jmx:
+      image:
+        repository: bitnamilegacy/jmx-exporter
   controller:
     replicaCount: 3
     nodeSelector: {}
