@@ -1,5 +1,12 @@
 # Changelog
 
+## [27.3.2](https://github.com/sentry-kubernetes/charts/compare/sentry-v27.3.1...sentry-v27.3.2) (2025-09-18)
+
+
+### Bug Fixes
+
+* bitnamilegacy image for kafka jmx exporter ([#1884](https://github.com/sentry-kubernetes/charts/issues/1884)) ([6514662](https://github.com/sentry-kubernetes/charts/commit/65146629decbc69d7e62f978c2c3e2e0ade8a8b1))
+
 ## [27.3.1](https://github.com/sentry-kubernetes/charts/compare/sentry-v27.3.0...sentry-v27.3.1) (2025-09-15)
 
 
