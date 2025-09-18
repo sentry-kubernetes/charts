@@ -209,14 +209,19 @@ spec:
             - name: CLICKHOUSE_PORT
               value: {{ include "sentry.clickhouse.port" . | quote }}
             - name: CLICKHOUSE_USER
-              value: "default"
+              value: {{ include "sentry.clickhouse.username" . | quote }}
             - name: CLICKHOUSE_DATABASE
-              value: "default"
+              value: {{ include "sentry.clickhouse.database" . | quote }}
             - name: CLICKHOUSE_PASSWORD
               valueFrom:
                 secretKeyRef:
+                {{- if .Values.externalClickhouse.existingSecret }}
+                  name: {{ .Values.externalClickhouse.existingSecret | quote }}
+                  key: {{ default "clickhouse-password" .Values.externalClickhouse.existingSecretKey | quote }}
+                {{- else }}
                   name: {{ template "sentry.fullname" . }}-clickhouse
                   key: clickhouse-password
+                {{- end }}
                   optional: true
 {{- if .Values.snuba.cleanup.env }}
 {{ toYaml .Values.snuba.cleanup.env | indent 12 }}
