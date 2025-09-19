@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.1.0](https://github.com/sentry-kubernetes/charts/compare/clickhouse-v4.0.1...clickhouse-v4.1.0) (2025-09-19)
+
+
+### Features
+
+* Apply tpl function to configOverride ([#1887](https://github.com/sentry-kubernetes/charts/issues/1887)) ([392c7b2](https://github.com/sentry-kubernetes/charts/commit/392c7b2617c5318dd4a4eb069ee82f015b8f0ac1))
+
 ## [4.0.1](https://github.com/sentry-kubernetes/charts/compare/clickhouse-v4.0.0...clickhouse-v4.0.1) (2025-05-11)
 
 
