@@ -183,6 +183,6 @@ data:
 {{- if .Values.clickhouse.configmap.configOverride }}
   override.xml: |-
     <?xml version="1.0"?>
-    {{- .Values.clickhouse.configmap.configOverride | nindent 4 }}
+    {{- tpl .Values.clickhouse.configmap.configOverride $ | nindent 4 }}
 {{- end }}
 {{- end }}
