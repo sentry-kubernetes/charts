@@ -1,5 +1,12 @@
 # Changelog
 
+## [27.3.3](https://github.com/sentry-kubernetes/charts/compare/sentry-v27.3.2...sentry-v27.3.3) (2025-09-19)
+
+
+### Bug Fixes
+
+* Add missing topics for snuba-subscription-consumer-eap-items ([#1888](https://github.com/sentry-kubernetes/charts/issues/1888)) ([8bf1cec](https://github.com/sentry-kubernetes/charts/commit/8bf1cec03cf5cf3b06efc3327d35424486849bb4))
+
 ## [27.3.2](https://github.com/sentry-kubernetes/charts/compare/sentry-v27.3.1...sentry-v27.3.2) (2025-09-18)
 
 
