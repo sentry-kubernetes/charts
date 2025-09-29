@@ -122,7 +122,7 @@ spec:
           - "{{ .Values.sentry.ingestConsumerAttachments.maxBatchSize }}"
           {{- end }}
           {{- if .Values.sentry.ingestConsumerAttachments.maxBatchTimeMs }}
-          - "--max-batch-size"
+          - "--max-batch-time-ms"
           - "{{ .Values.sentry.ingestConsumerAttachments.maxBatchTimeMs }}"
           {{- end }}
         {{- if .Values.sentry.ingestConsumerAttachments.livenessProbe.enabled }}
