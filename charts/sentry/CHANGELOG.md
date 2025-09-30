@@ -1,5 +1,12 @@
 # Changelog
 
+## [27.4.1](https://github.com/sentry-kubernetes/charts/compare/sentry-v27.4.0...sentry-v27.4.1) (2025-09-30)
+
+
+### Bug Fixes
+
+* **sentry-ingest-consumer-attachments:** max batch time ms cli param ([#1895](https://github.com/sentry-kubernetes/charts/issues/1895)) ([fb963b3](https://github.com/sentry-kubernetes/charts/commit/fb963b38c6eda10f5674e38a0c7644d3c5dcefcd))
+
 ## [27.4.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v27.3.3...sentry-v27.4.0) (2025-09-19)
 
 
