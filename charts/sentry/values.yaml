@@ -2810,6 +2810,9 @@ redis:
   enabled: true
   image:
     repository: bitnamilegacy/redis
+  metrics:
+    image:
+      repository: bitnamilegacy/redis-exporter
   replica:
     replicaCount: 1
     nodeSelector: {}
@@ -2982,6 +2985,9 @@ rabbitmq:
 memcached:
   image:
     repository: bitnamilegacy/memcached
+  metrics:
+    image:
+      repository: bitnamilegacy/memcached-exporter
   memoryLimit: "2048"
   maxItemSize: "26214400"
   args:
