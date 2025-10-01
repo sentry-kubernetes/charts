@@ -1,5 +1,12 @@
 # Changelog
 
+## [27.4.2](https://github.com/sentry-kubernetes/charts/compare/sentry-v27.4.1...sentry-v27.4.2) (2025-10-01)
+
+
+### Bug Fixes
+
+* use bitnamilegacy repo for metrics exporter ([#1903](https://github.com/sentry-kubernetes/charts/issues/1903)) ([bdca84a](https://github.com/sentry-kubernetes/charts/commit/bdca84a2def5a694e89f92cb414a2ab31a3af769))
+
 ## [27.4.1](https://github.com/sentry-kubernetes/charts/compare/sentry-v27.4.0...sentry-v27.4.1) (2025-09-30)
 
 
