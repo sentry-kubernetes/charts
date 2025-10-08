@@ -153,6 +153,10 @@ spec:
           items:
           - key: config.xml
             path: config.xml
+      {{- if .Values.clickhouse.configmap.configOverride }}
+          - key: override.xml
+            path: override.xml
+      {{- end }}
       - name: {{ include "clickhouse.fullname" . }}-metrica
         configMap:
           name: {{ include "clickhouse.fullname" . }}-metrica
@@ -165,10 +169,6 @@ spec:
           items:
           - key: users.xml
             path: users.xml
-      {{- end }}
-      {{- if .Values.clickhouse.configmap.configOverride }}
-          - key: override.xml
-            path: override.xml
       {{- end }}
 {{- if .Values.clickhouse.volumes }}
 {{ toYaml .Values.clickhouse.volumes | indent 6 }}
