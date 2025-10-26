@@ -1,5 +1,13 @@
 # Changelog
 
+## [27.5.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v27.4.2...sentry-v27.5.0) (2025-10-26)
+
+
+### Features
+
+* change pgbouncer repository ([#1908](https://github.com/sentry-kubernetes/charts/issues/1908)) ([8101fb9](https://github.com/sentry-kubernetes/charts/commit/8101fb9d2260e0e98f5ceb4dced88c22c714347f))
+* persistence improvements ([#1853](https://github.com/sentry-kubernetes/charts/issues/1853)) ([93e598a](https://github.com/sentry-kubernetes/charts/commit/93e598a8e1da5f4202804b260fb042dac4d96b7d))
+
 ## [27.4.2](https://github.com/sentry-kubernetes/charts/compare/sentry-v27.4.1...sentry-v27.4.2) (2025-10-01)
 
 
