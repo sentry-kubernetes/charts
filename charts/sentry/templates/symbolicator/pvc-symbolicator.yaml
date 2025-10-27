@@ -1,0 +1,30 @@
+{{- if .Values.symbolicator.enabled }}
+{{- if .Values.symbolicator.api.usedeployment }}
+{{- if .Values.symbolicator.api.persistence.enabled }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: sentry-symbolicator-pvc
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: {{ template "sentry.fullname" . }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
+    release: "{{ .Release.Name }}"
+    heritage: "{{ .Release.Service }}"
+    component: symbolicator
+spec:
+  accessModes:
+{{- range .Values.symbolicator.api.persistence.accessModes }}
+    - {{ . | quote }}
+{{- end }}
+  resources:
+    requests:
+      storage: {{ .Values.symbolicator.api.persistence.size | quote }}
+  {{- if and (.Values.symbolicator.api.persistence.lookupVolumeName) (lookup "v1" "PersistentVolumeClaim" .Release.Namespace "sentry-symbolicator-pvc") }}
+  volumeName: {{ (lookup "v1" "PersistentVolumeClaim" .Release.Namespace "sentry-symbolicator-pvc").spec.volumeName }}
+  {{- end }}
+{{- end }}
+{{- end }}
+{{- end }}
+
+

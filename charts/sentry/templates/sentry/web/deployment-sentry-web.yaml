@@ -121,6 +121,7 @@ spec:
         {{- if and .Values.geodata.volumeName .Values.geodata.accountID }}
         - name: {{ .Values.geodata.volumeName }}
           mountPath: {{ .Values.geodata.mountPath }}
+          readOnly: true
         {{- end }}
         {{- if and (eq .Values.filestore.backend "gcs") .Values.filestore.gcs.secretName }}
         - name: sentry-google-cloud-key
@@ -200,7 +201,7 @@ spec:
       {{- if and .Values.geodata.volumeName .Values.geodata.accountID }}
       - name: {{ .Values.geodata.volumeName }}
         persistentVolumeClaim:
-          claimName: {{ .Values.geodata.volumeName }}
+          claimName: data-sentry-geoip
       {{- end }}
 {{- if .Values.sentry.web.volumes }}
 {{ toYaml .Values.sentry.web.volumes | indent 6 }}

@@ -21,6 +21,9 @@ spec:
   resources:
     requests:
       storage: {{ .Values.vroom.persistence.size | quote }}
+  {{- if and (.Values.vroom.persistence.lookupVolumeName) (lookup "v1" "PersistentVolumeClaim" .Release.Namespace "sentry-vroom-pvc") }}
+  volumeName: {{ (lookup "v1" "PersistentVolumeClaim" .Release.Namespace "sentry-vroom-pvc").spec.volumeName }}
+  {{- end }}            
   {{- if .Values.vroom.persistence.storageClassName }}
   storageClassName: {{ .Values.vroom.persistence.storageClassName | quote }}
   {{- end }}

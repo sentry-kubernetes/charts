@@ -173,8 +173,14 @@ spec:
       - name: config
         configMap:
           name: {{ template "sentry.fullname" . }}-symbolicator
+      {{- if .Values.symbolicator.api.persistence.enabled }}
+      - name: symbolicator-data
+        persistentVolumeClaim:
+          claimName: sentry-symbolicator-pvc
+      {{- else }}
       - name: symbolicator-data
         emptyDir: {}
+      {{- end }}
       {{- if and (eq .Values.filestore.backend "gcs") .Values.filestore.gcs.secretName }}
       - name: sentry-google-cloud-key
         secret:
