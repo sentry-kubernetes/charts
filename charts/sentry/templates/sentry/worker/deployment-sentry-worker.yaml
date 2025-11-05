@@ -131,6 +131,7 @@ spec:
         {{ end }}
 {{- if .Values.sentry.worker.volumeMounts }}
 {{ toYaml .Values.sentry.worker.volumeMounts | indent 8 }}
+{{- end }}
 {{- if .Values.sentry.worker.livenessProbe.enabled }}
         livenessProbe:
           periodSeconds: {{ .Values.sentry.worker.livenessProbe.periodSeconds }}
