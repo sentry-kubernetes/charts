@@ -131,19 +131,30 @@ spec:
         {{ end }}
 {{- if .Values.sentry.worker.volumeMounts }}
 {{ toYaml .Values.sentry.worker.volumeMounts | indent 8 }}
-{{- end }}
-  {{- if .Values.sentry.worker.livenessProbe.enabled }}
+{{- if .Values.sentry.worker.livenessProbe.enabled }}
         livenessProbe:
           periodSeconds: {{ .Values.sentry.worker.livenessProbe.periodSeconds }}
-          initialDelaySeconds: 10
+          initialDelaySeconds: {{ .Values.sentry.worker.livenessProbe.initialDelaySeconds }}
           timeoutSeconds: {{ .Values.sentry.worker.livenessProbe.timeoutSeconds }}
           failureThreshold: {{ .Values.sentry.worker.livenessProbe.failureThreshold }}
+          exec:
+            command:
+              - rm
+              - -f
+              - /tmp/health.txt
+{{- end }}
+{{- if .Values.sentry.worker.readinessProbe.enabled }}
+        readinessProbe:
+          periodSeconds: {{ .Values.sentry.worker.readinessProbe.periodSeconds }}
+          initialDelaySeconds: {{ .Values.sentry.worker.readinessProbe.initialDelaySeconds }}
+          timeoutSeconds: {{ .Values.sentry.worker.readinessProbe.timeoutSeconds }}
+          failureThreshold: {{ .Values.sentry.worker.readinessProbe.failureThreshold }}
           exec:
             command:
               - sentry
               - exec
               - -c
-              - 'from sentry.celery import app; import os; dest="celery@{}".format(os.environ["HOSTNAME"]); print(app.control.ping(destination=[dest], timeout=5)[0][dest]["ok"])'
+              - 'from sentry.celery import app; import os; dest="celery@{}".format(os.environ["HOSTNAME"]); print(app.control.ping(destination=[dest], timeout={{ default .Values.sentry.worker.readinessProbe.celeryTimeoutSeconds }})[0][dest]["ok"])'
 {{- end }}
         resources:
 {{ toYaml .Values.sentry.worker.resources | indent 12 }}

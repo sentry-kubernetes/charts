@@ -341,8 +341,17 @@ sentry:
     livenessProbe:
       enabled: true
       periodSeconds: 60
+      initialDelaySeconds: 10
       timeoutSeconds: 10
       failureThreshold: 3
+    readinessProbe:
+      enabled: true
+      periodSeconds: 60
+      initialDelaySeconds: 10
+      timeoutSeconds: 10
+      failureThreshold: 3
+      # time to wait for celery to respond
+      celeryTimeoutSeconds: 5
     sidecars: []
     # securityContext: {}
     # containerSecurityContext: {}

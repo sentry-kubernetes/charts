@@ -788,8 +788,15 @@ Note: this table is incomplete, so have a look at the values.yaml in case you mi
 | sentry.worker.existingSecretEnv | string | `""` |  |
 | sentry.worker.livenessProbe.enabled | bool | `true` |  |
 | sentry.worker.livenessProbe.failureThreshold | int | `3` |  |
+| ssentry.worker.livenessProbe.initialDelaySeconds | int | `10` |  |
 | sentry.worker.livenessProbe.periodSeconds | int | `60` |  |
 | sentry.worker.livenessProbe.timeoutSeconds | int | `10` |  |
+| sentry.worker.readinessProbe.enabled | bool | `true` |  |
+| sentry.worker.readinessProbe.failureThreshold | int | `3` |  |
+| ssentry.worker.readinessProbe.initialDelaySeconds | int | `10` |  |
+| sentry.worker.readinessProbe.periodSeconds | int | `60` |  |
+| sentry.worker.readinessProbe.timeoutSeconds | int | `10` |  |
+| sentry.worker.readinessProbe.celeryTimeoutSeconds | int | `5` |  |
 | sentry.worker.nodeSelector | object | `{}` |  |
 | sentry.worker.replicas | int | `1` |  |
 | sentry.worker.resources | object | `{}` |  |
