@@ -98,6 +98,7 @@ vroom:
   securityContext: {}
   containerSecurityContext: {}
   # priorityClassName: ""
+  # topologySpreadConstraints: []
   service:
     annotations: {}
   # tolerations: []
@@ -906,6 +907,9 @@ sentry:
     # volumeMounts: []
     # logLevel: "WARNING" # DEBUG|INFO|WARNING|ERROR|CRITICAL|FATAL
     # logFormat: "machine" # human|machine
+    # priorityClassName: ""
+    # securityContext: {}
+    # containerSecurityContext: {}
 
   subscriptionConsumerResultsEapItems:
     enabled: true
@@ -1198,6 +1202,12 @@ sentry:
     volumes: []
     # volumeMounts: []
     serviceAccount: {}
+    # priorityClassName: ""
+    # annotations: {}
+    # podLabels: {}
+    # affinity: {}
+    # nodeSelector: {}
+    # tolerations: {}
 
   # Sentry settings of connections to Kafka
   kafka:
