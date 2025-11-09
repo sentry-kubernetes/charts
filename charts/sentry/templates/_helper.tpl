@@ -849,6 +849,78 @@ Set external Postgresql port from existingSecret
 {{- end }}
 
 {{/*
+PostgreSQL environment variables helper for database cleanup
+*/}}
+{{- define "sentry.postgresql.env" -}}
+{{- if .Values.postgresql.enabled }}
+- name: POSTGRES_PASSWORD
+  valueFrom:
+    secretKeyRef:
+      name: {{ default (include "sentry.postgresql.fullname" .) .Values.postgresql.auth.existingSecret }}
+      key: {{ default "postgres-password" .Values.postgresql.auth.secretKeys.adminPasswordKey }}
+{{- else if .Values.externalPostgresql.password }}
+- name: POSTGRES_PASSWORD
+  value: {{ .Values.externalPostgresql.password | quote }}
+{{- else if .Values.externalPostgresql.existingSecret }}
+- name: POSTGRES_PASSWORD
+  valueFrom:
+    secretKeyRef:
+      name: {{ .Values.externalPostgresql.existingSecret }}
+      key: {{ or .Values.externalPostgresql.existingSecretKeys.password .Values.externalPostgresql.existingSecretKey "postgresql-password" }}
+{{- end }}
+{{- if and .Values.externalPostgresql.existingSecret .Values.externalPostgresql.existingSecretKeys.username }}
+- name: POSTGRES_USER
+  valueFrom:
+    secretKeyRef:
+      name: {{ .Values.externalPostgresql.existingSecret }}
+      key: {{ default .Values.externalPostgresql.existingSecretKeys.username }}
+{{- else }}
+- name: POSTGRES_USER
+  value: {{ include "sentry.postgresql.username" . | quote }}
+{{- end }}
+{{- if and .Values.externalPostgresql.existingSecret .Values.externalPostgresql.existingSecretKeys.database }}
+- name: POSTGRES_NAME
+  valueFrom:
+    secretKeyRef:
+      name: {{ .Values.externalPostgresql.existingSecret }}
+      key: {{ default .Values.externalPostgresql.existingSecretKeys.database }}
+{{- else }}
+- name: POSTGRES_NAME
+  value: {{ include "sentry.postgresql.database" . | quote }}
+{{- end }}
+{{- if .Values.pgbouncer.enabled }}
+- name: POSTGRES_HOST
+  value: {{ template "sentry.fullname" . }}-pgbouncer
+{{- else }}
+{{- if and .Values.externalPostgresql.existingSecret .Values.externalPostgresql.existingSecretKeys.host }}
+- name: POSTGRES_HOST
+  valueFrom:
+    secretKeyRef:
+      name: {{ .Values.externalPostgresql.existingSecret }}
+      key: {{ default .Values.externalPostgresql.existingSecretKeys.host }}
+{{- else }}
+- name: POSTGRES_HOST
+  value: {{ include "sentry.postgresql.host" . | quote }}
+{{- end }}
+{{- end }}
+{{- if .Values.pgbouncer.enabled }}
+- name: POSTGRES_PORT
+  value: "5432"
+{{- else }}
+{{- if and .Values.externalPostgresql.existingSecret .Values.externalPostgresql.existingSecretKeys.port }}
+- name: POSTGRES_PORT
+  valueFrom:
+    secretKeyRef:
+      name: {{ .Values.externalPostgresql.existingSecret }}
+      key: {{ default .Values.externalPostgresql.existingSecretKeys.port }}
+{{- else }}
+- name: POSTGRES_PORT
+  value: {{ include "sentry.postgresql.port" . | quote }}
+{{- end }}
+{{- end }}
+{{- end -}}
+
+{{/*
 Set S3
 */}}
 {{- if and (eq .Values.filestore.backend "s3") .Values.filestore.s3.existingSecret }}

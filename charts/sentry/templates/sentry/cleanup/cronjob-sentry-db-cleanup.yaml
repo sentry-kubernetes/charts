@@ -1,0 +1,134 @@
+{{- if .Values.sentry.cleanup.dbCleanup.enabled }}
+{{- $batchApiIsStable := eq (include "sentry.batch.isStable" .) "true" -}}
+apiVersion: {{ include "sentry.batch.apiVersion" . }}
+kind: CronJob
+metadata:
+  name: {{ template "sentry.fullname" . }}-sentry-db-cleanup
+  labels:
+    app: {{ template "sentry.fullname" . }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
+    release: "{{ .Release.Name }}"
+    heritage: "{{ .Release.Service }}"
+spec:
+  schedule: "{{ .Values.sentry.cleanup.dbCleanup.schedule }}"
+  successfulJobsHistoryLimit: {{ .Values.sentry.cleanup.dbCleanup.successfulJobsHistoryLimit }}
+  failedJobsHistoryLimit: {{ .Values.sentry.cleanup.dbCleanup.failedJobsHistoryLimit }}
+  concurrencyPolicy: "{{ .Values.sentry.cleanup.dbCleanup.concurrencyPolicy }}"
+  jobTemplate:
+    spec:
+      {{- if .Values.sentry.cleanup.dbCleanup.activeDeadlineSeconds }}
+      activeDeadlineSeconds: {{ .Values.sentry.cleanup.dbCleanup.activeDeadlineSeconds }}
+      {{- end}}
+      template:
+        metadata:
+          annotations:
+            {{- if .Values.sentry.cleanup.dbCleanup.annotations }}
+{{ toYaml .Values.sentry.cleanup.dbCleanup.annotations | indent 12 }}
+            {{- end }}
+          labels:
+            app: {{ template "sentry.fullname" . }}
+            release: "{{ .Release.Name }}"
+            {{- if .Values.sentry.cleanup.dbCleanup.podLabels }}
+{{ toYaml .Values.sentry.cleanup.dbCleanup.podLabels | indent 12 }}
+            {{- end }}
+        spec:
+          {{- if .Values.sentry.cleanup.dbCleanup.affinity }}
+          affinity:
+{{ toYaml .Values.sentry.cleanup.dbCleanup.affinity | indent 12 }}
+          {{- end }}
+          {{- if .Values.sentry.cleanup.dbCleanup.nodeSelector }}
+          nodeSelector:
+{{ toYaml .Values.sentry.cleanup.dbCleanup.nodeSelector | indent 12 }}
+          {{- else if .Values.global.nodeSelector }}
+          nodeSelector:
+{{ toYaml .Values.global.nodeSelector | indent 12 }}
+          {{- end }}
+          {{- if .Values.sentry.cleanup.dbCleanup.tolerations }}
+          tolerations:
+{{ toYaml .Values.sentry.cleanup.dbCleanup.tolerations | indent 12 }}
+          {{- else if .Values.global.tolerations }}
+          tolerations:
+{{ toYaml .Values.global.tolerations | indent 12 }}
+          {{- end }}
+          {{- if .Values.dnsPolicy }}
+          dnsPolicy: {{ .Values.dnsPolicy | quote }}
+          {{- end }}
+          {{- if .Values.dnsConfig }}
+          dnsConfig:
+{{ toYaml .Values.dnsConfig | indent 12 }}
+          {{- end }}
+          {{- if .Values.sentry.cleanup.dbCleanup.securityContext }}
+          securityContext:
+{{ toYaml .Values.sentry.cleanup.dbCleanup.securityContext | indent 12 }}
+          {{- end }}
+          containers:
+          - name: {{ .Chart.Name }}-sentry-db-cleanup
+            image: "{{ .Values.sentry.cleanup.dbCleanup.image.repository }}:{{ .Values.sentry.cleanup.dbCleanup.image.tag }}"
+            imagePullPolicy: {{ .Values.sentry.cleanup.dbCleanup.image.pullPolicy }}
+            command: ["sh", "-c"]
+            args:
+              - |
+                export PGPASSWORD="${POSTGRES_PASSWORD}"
+                
+                echo "Starting database cleanup for nodestore_node table..."
+                echo "Retention days: {{ .Values.sentry.cleanup.days }}"
+                
+                # Delete old records from nodestore_node table
+                psql -h "${POSTGRES_HOST}" -p "${POSTGRES_PORT}" -U "${POSTGRES_USER}" -d "${POSTGRES_NAME}" -c "
+                  DELETE FROM public.nodestore_node 
+                  WHERE \"timestamp\" < NOW() - INTERVAL '{{ .Values.sentry.cleanup.days }} days';
+                "
+                
+                if [ $? -eq 0 ]; then
+                  echo "Successfully deleted old records from nodestore_node table"
+                  
+                  # Run VACUUM FULL to reclaim space
+                  echo "Running VACUUM FULL on nodestore_node table..."
+                  psql -h "${POSTGRES_HOST}" -p "${POSTGRES_PORT}" -U "${POSTGRES_USER}" -d "${POSTGRES_NAME}" -c "
+                    VACUUM FULL public.nodestore_node;
+                  "
+                  
+                  if [ $? -eq 0 ]; then
+                    echo "Successfully completed VACUUM FULL on nodestore_node table"
+                  else
+                    echo "Error: VACUUM FULL failed"
+                    exit 1
+                  fi
+                else
+                  echo "Error: Failed to delete old records"
+                  exit 1
+                fi
+                
+                echo "Database cleanup completed successfully"
+            env:
+{{ include "sentry.postgresql.env" . | indent 12 }}
+{{- if .Values.sentry.cleanup.dbCleanup.env }}
+{{ toYaml .Values.sentry.cleanup.dbCleanup.env | indent 12 }}
+{{- end }}
+            resources:
+{{ toYaml .Values.sentry.cleanup.dbCleanup.resources | indent 14 }}
+{{- if .Values.sentry.cleanup.dbCleanup.containerSecurityContext }}
+            securityContext:
+{{ toYaml .Values.sentry.cleanup.dbCleanup.containerSecurityContext | indent 14 }}
+{{- end }}
+{{- if .Values.sentry.cleanup.dbCleanup.sidecars }}
+{{ toYaml .Values.sentry.cleanup.dbCleanup.sidecars | indent 10 }}
+{{- end }}
+{{- if .Values.global.sidecars }}
+{{ toYaml .Values.global.sidecars | indent 10 }}
+{{- end }}
+          restartPolicy: Never
+          {{- if .Values.sentry.cleanup.dbCleanup.volumes }}
+          volumes:
+{{ toYaml .Values.sentry.cleanup.dbCleanup.volumes | indent 10 }}
+          {{- else if .Values.global.volumes }}
+          volumes:
+{{ toYaml .Values.global.volumes | indent 10 }}
+          {{- end }}
+          {{- if .Values.sentry.cleanup.dbCleanup.priorityClassName }}
+          priorityClassName: "{{ .Values.sentry.cleanup.dbCleanup.priorityClassName }}"
+          {{- end }}
+          {{- if .Values.serviceAccount.enabled }}
+          serviceAccountName: {{ .Values.serviceAccount.name }}-cleanup
+          {{- end }}
+{{- end }}
