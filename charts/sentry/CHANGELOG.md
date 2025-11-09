@@ -1,5 +1,13 @@
 # Changelog
 
+## [27.6.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v27.5.0...sentry-v27.6.0) (2025-11-09)
+
+
+### Features
+
+* add missing Kubernetes pod configuration options ([#1926](https://github.com/sentry-kubernetes/charts/issues/1926)) ([7083a0e](https://github.com/sentry-kubernetes/charts/commit/7083a0ececa5bbb2a0ac868620ce2e46061d599d))
+* bump appversion from 25.8.0 to 25.9.0 ([#1927](https://github.com/sentry-kubernetes/charts/issues/1927)) ([5a5d1a9](https://github.com/sentry-kubernetes/charts/commit/5a5d1a90a048743619e968e18ba1b5b80b601ade))
+
 ## [27.5.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v27.4.2...sentry-v27.5.0) (2025-10-26)
 
 
