@@ -1,5 +1,12 @@
 # Changelog
 
+## [27.6.1](https://github.com/sentry-kubernetes/charts/compare/sentry-v27.6.0...sentry-v27.6.1) (2025-11-11)
+
+
+### Bug Fixes
+
+* **values:** Add warnings to broken ClickHouse cleanup job ([#1933](https://github.com/sentry-kubernetes/charts/issues/1933)) ([84be55c](https://github.com/sentry-kubernetes/charts/commit/84be55c35b5eb1e0d8dc86bd64b6761eb4a811df))
+
 ## [27.6.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v27.5.0...sentry-v27.6.0) (2025-11-09)
 
 

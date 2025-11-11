@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.1.1](https://github.com/sentry-kubernetes/charts/compare/clickhouse-v4.1.0...clickhouse-v4.1.1) (2025-11-11)
+
+
+### Bug Fixes
+
+* move configOverride to correct place in ClickHouse replica StatefulSet ([#1928](https://github.com/sentry-kubernetes/charts/issues/1928)) ([bef81eb](https://github.com/sentry-kubernetes/charts/commit/bef81ebae8dc497c4f42f919dbf2ee6cd7e5d9f1))
+
 ## [4.1.0](https://github.com/sentry-kubernetes/charts/compare/clickhouse-v4.0.1...clickhouse-v4.1.0) (2025-09-19)
 
 
