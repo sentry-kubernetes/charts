@@ -2038,6 +2038,8 @@ snuba:
   rustConsumer: false
 
   # ClickHouse database cleanup configuration
+  # WARNING: NOT READY FOR PRODUCTION USE
+  # Using this job without tweaks will result in deletion of Snuba migrations status!
   cleanup:
     # -- Enable ClickHouse database cleanup cronjob
     enabled: false
@@ -2062,7 +2064,9 @@ snuba:
     # Table discovery configuration
     tables:
       # -- Auto-detect tables instead of using a hardcoded list
-      autoDetect: true
+      # WARNING: Setting this option to `true` will result in deletion of Snuba
+      # migration status! This will break upgrades without manual intervention!
+      autoDetect: false
       # -- Include patterns for table names (regex patterns)
       includePatterns:
         - ".*_local$"
