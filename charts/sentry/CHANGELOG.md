@@ -1,5 +1,13 @@
 # Changelog
 
+## [27.6.2](https://github.com/sentry-kubernetes/charts/compare/sentry-v27.6.1...sentry-v27.6.2) (2025-11-15)
+
+
+### Bug Fixes
+
+* add migrations excludePatterns for clickHouse cleanup ([#1941](https://github.com/sentry-kubernetes/charts/issues/1941)) ([a634c32](https://github.com/sentry-kubernetes/charts/commit/a634c328f0d2e4b12f4df8477fe3028499e3da1e))
+* update clickhouse to 4.1.1 ([#1940](https://github.com/sentry-kubernetes/charts/issues/1940)) ([0ab54d0](https://github.com/sentry-kubernetes/charts/commit/0ab54d08a9a4b9f8ba9f27790ac01c6836a2982d))
+
 ## [27.6.1](https://github.com/sentry-kubernetes/charts/compare/sentry-v27.6.0...sentry-v27.6.1) (2025-11-11)
 
 
