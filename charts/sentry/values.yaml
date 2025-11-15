@@ -2076,6 +2076,7 @@ snuba:
         - "^system\\."
         - "^information_schema\\."
         - "^INFORMATION_SCHEMA\\."
+        - ".*migrations.*"
       # -- Fallback hardcoded table list (used if autoDetect fails or is disabled)
       fallbackList:
         - "discover_local"
