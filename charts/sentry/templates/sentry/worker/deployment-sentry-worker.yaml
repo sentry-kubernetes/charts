@@ -210,10 +210,10 @@ spec:
 {{- if .Values.global.volumes }}
 {{ toYaml .Values.global.volumes | indent 6 }}
 {{- end }}
-{{- if .Values.sentry.web.caCertificatesSecret }}
+{{- if .Values.sentry.worker.caCertificatesSecret }}
       - name: ca-certificates
         secret:
-          secretName: {{ .Values.sentry.web.caCertificatesSecret }}
+          secretName: {{ .Values.sentry.worker.caCertificatesSecret }}
           defaultMode: 0644
 {{- end }}
 {{- end }}
