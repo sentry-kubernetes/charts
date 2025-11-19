@@ -78,10 +78,20 @@ spec:
       - name: {{ .Chart.Name }}-worker
         image: "{{ template "sentry.image" . }}"
         imagePullPolicy: {{ default "IfNotPresent" .Values.images.sentry.pullPolicy }}
-        command: ["sentry"]
+        command: ["/bin/bash", "-c"]
         args:
-          - "run"
-          - "worker"
+          - |
+            {{- if .Values.sentry.workerEvents.installAdditionalPackages }}
+            pip install {{ range .Values.sentry.workerEvents.installAdditionalPackages }}{{ . }} {{ end }}
+            {{- end }}
+            {{- if .Values.sentry.workerEvents.caCertificatesSecret }}
+            mkdir -p /usr/local/share/ca-certificates/
+            for c in $(ls -1 /usr/local/share/ca-certificates/); do
+                cat /usr/local/share/ca-certificates/$c >> $(python3 -m certifi) && echo >> $(python3 -m certifi)
+            done
+            update-ca-certificates
+            {{- end }}
+            sentry run worker
           - "-Q"
           - {{ .Values.sentry.workerEvents.queues }}
           {{- if .Values.sentry.workerEvents.concurrency }}
@@ -122,6 +132,11 @@ spec:
         - name: sentry-google-cloud-key
           mountPath: /var/run/secrets/google
         {{ end }}
+        {{- if .Values.sentry.workerEvents.caCertificatesSecret }}
+        - name: ca-certificates
+          mountPath: /usr/local/share/ca-certificates
+          readOnly: true
+        {{- end }}
 {{- if .Values.sentry.workerEvents.volumeMounts }}
 {{ toYaml .Values.sentry.workerEvents.volumeMounts | indent 8 }}
 {{- end }}
@@ -181,5 +196,11 @@ spec:
       {{- end }}
 {{- if .Values.sentry.workerEvents.volumes }}
 {{ toYaml .Values.sentry.workerEvents.volumes | indent 6 }}
+{{- end }}
+{{- if .Values.sentry.workerEvents.caCertificatesSecret }}
+      - name: ca-certificates
+        secret:
+          secretName: {{ .Values.sentry.workerEvents.caCertificatesSecret }}
+          defaultMode: 0644
 {{- end }}
 {{- end }}

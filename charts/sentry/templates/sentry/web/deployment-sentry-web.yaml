@@ -83,8 +83,8 @@ spec:
         command: ["/bin/bash", "-c"]
         args:
           - |
-            {{- if .Values.sentry.worker.installAdditionalPackages }}
-            pip install {{ range .Values.sentry.worker.installAdditionalPackages }}{{ . }} {{ end }}
+            {{- if .Values.sentry.web.installAdditionalPackages }}
+            pip install {{ range .Values.sentry.web.installAdditionalPackages }}{{ . }} {{ end }}
             {{- end }}
             {{- if .Values.sentry.web.caCertificatesSecret }}
             mkdir -p /usr/local/share/ca-certificates/
