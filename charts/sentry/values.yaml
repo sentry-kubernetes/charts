@@ -294,6 +294,11 @@ sentry:
     volumes: []
     volumeMounts: []
     # workers: 3
+    installAdditionalPackages:
+      - django-multidb-router
+      - sentry-nodestore-elastic
+      - https://github.com/pavels/sentry-s3-nodestore/releases/download/v1.0.3/sentry-s3-nodestore-1.0.3.tar.gz
+    caCertificatesSecret: ca-certificates # kubectl create secret generic ca-certificates --from-file=you-certificates.crt --namespace=test
 
   features:
     orgSubdomains: false
