@@ -29,6 +29,9 @@ spec:
         resources:
           {{ toYaml .Values.pgbouncer.resources | nindent 10 }}
         env:
+          {{- if .Values.pgbouncer.env }}
+          {{ toYaml .Values.pgbouncer.env | nindent 10 }}
+          {{- end }}
           {{ include "sentry.pgbouncer.env" . | nindent 10 }}
           - name: PGBOUNCER_PORT
             value: "5432"
