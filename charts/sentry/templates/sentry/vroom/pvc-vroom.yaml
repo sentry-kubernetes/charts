@@ -13,6 +13,13 @@ metadata:
     heritage: "{{ .Release.Service }}"
     component: vroom
     {{- include "sentry.component.labels" (dict "component" "vroom" "ctx" .) | nindent 4 }}
+  {{- if .Values.asHook }}
+  annotations:
+    meta.helm.sh/release-name: "{{ .Release.Name }}"
+    meta.helm.sh/release-namespace: "{{ .Release.Namespace }}"
+    "helm.sh/hook": "post-install,post-upgrade"
+    "helm.sh/hook-weight": "25"
+  {{- end }}
 spec:
   accessModes:
 {{- range .Values.vroom.persistence.accessModes }}
@@ -23,7 +30,7 @@ spec:
       storage: {{ .Values.vroom.persistence.size | quote }}
   {{- if and (.Values.vroom.persistence.lookupVolumeName) (lookup "v1" "PersistentVolumeClaim" .Release.Namespace "sentry-vroom-pvc") }}
   volumeName: {{ (lookup "v1" "PersistentVolumeClaim" .Release.Namespace "sentry-vroom-pvc").spec.volumeName }}
-  {{- end }}            
+  {{- end }}
   {{- if .Values.vroom.persistence.storageClassName }}
   storageClassName: {{ .Values.vroom.persistence.storageClassName | quote }}
   {{- end }}
