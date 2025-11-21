@@ -18,7 +18,7 @@ metadata:
     meta.helm.sh/release-name: "{{ .Release.Name }}"
     meta.helm.sh/release-namespace: "{{ .Release.Namespace }}"
     "helm.sh/hook": "post-install,post-upgrade"
-    "helm.sh/hook-weight": "24"
+    "helm.sh/hook-weight": "25"
   {{- end }}
 spec:
   accessModes:
