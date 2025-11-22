@@ -1,5 +1,17 @@
 # Changelog
 
+## [27.7.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v27.6.2...sentry-v27.7.0) (2025-11-22)
+
+
+### Features
+
+* **pgbouncer/deployment:** Pass (extra) env from values ([#1946](https://github.com/sentry-kubernetes/charts/issues/1946)) ([d07a58b](https://github.com/sentry-kubernetes/charts/commit/d07a58b0a428c5e3a20764ff114d146fc060fd4e))
+
+
+### Bug Fixes
+
+* add vroom PVC Helm hooks when enable profiling feature ([#1950](https://github.com/sentry-kubernetes/charts/issues/1950)) ([a10e3fe](https://github.com/sentry-kubernetes/charts/commit/a10e3fedd9060b4e276cc7b3854306d898b08437))
+
 ## [27.6.2](https://github.com/sentry-kubernetes/charts/compare/sentry-v27.6.1...sentry-v27.6.2) (2025-11-15)
 
 
