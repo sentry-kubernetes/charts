@@ -23,6 +23,9 @@ spec:
   {{- if and (.Values.symbolicator.api.persistence.lookupVolumeName) (lookup "v1" "PersistentVolumeClaim" .Release.Namespace "sentry-symbolicator-pvc") }}
   volumeName: {{ (lookup "v1" "PersistentVolumeClaim" .Release.Namespace "sentry-symbolicator-pvc").spec.volumeName }}
   {{- end }}
+  {{- if .Values.symbolicator.api.persistence.storageClassName }}
+  storageClassName: {{ .Values.symbolicator.api.persistence.storageClassName | quote }}
+  {{- end }}
 {{- end }}
 {{- end }}
 {{- end }}
