@@ -98,26 +98,17 @@ spec:
 {{- if .Values.snuba.api.volumeMounts }}
 {{ toYaml .Values.snuba.api.volumeMounts | indent 8 }}
 {{- end }}
+        {{- $port := include "snuba.port" . | atoi -}}
+        {{- $probeFixedSettings := dict "httpGet" (dict "path" "/health" "port" $port "scheme" "HTTP") -}}
+
+        {{- if .Values.snuba.api.livenessProbe.enabled }}
         livenessProbe:
-          failureThreshold: 5
-          httpGet:
-            path: /health
-            port: {{ template "snuba.port" }}
-            scheme: HTTP
-          initialDelaySeconds: {{ .Values.snuba.api.probeInitialDelaySeconds }}
-          periodSeconds: 10
-          successThreshold: 1
-          timeoutSeconds: {{ .Values.snuba.api.liveness.timeoutSeconds }}
+          {{- merge $probeFixedSettings (omit .Values.snuba.api.livenessProbe "enabled") | toYaml | nindent 12 }}
+        {{- end }}
+        {{- if .Values.snuba.api.readinessProbe.enabled }}
         readinessProbe:
-          failureThreshold: 10
-          httpGet:
-            path: /health
-            port: {{ template "snuba.port" }}
-            scheme: HTTP
-          initialDelaySeconds: {{ .Values.snuba.api.probeInitialDelaySeconds }}
-          periodSeconds: 10
-          successThreshold: 1
-          timeoutSeconds: {{ .Values.snuba.api.readiness.timeoutSeconds }}
+          {{- merge $probeFixedSettings (omit .Values.snuba.api.readinessProbe "enabled") | toYaml | nindent 12 }}
+        {{- end }}
         resources:
 {{ toYaml .Values.snuba.api.resources | indent 12 }}
 {{- if .Values.snuba.api.containerSecurityContext }}

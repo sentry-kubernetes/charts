@@ -132,18 +132,9 @@ spec:
 {{- if .Values.sentry.worker.volumeMounts }}
 {{ toYaml .Values.sentry.worker.volumeMounts | indent 8 }}
 {{- end }}
-  {{- if .Values.sentry.worker.livenessProbe.enabled }}
+{{- if .Values.sentry.worker.livenessProbe.enabled }}
         livenessProbe:
-          periodSeconds: {{ .Values.sentry.worker.livenessProbe.periodSeconds }}
-          initialDelaySeconds: 10
-          timeoutSeconds: {{ .Values.sentry.worker.livenessProbe.timeoutSeconds }}
-          failureThreshold: {{ .Values.sentry.worker.livenessProbe.failureThreshold }}
-          exec:
-            command:
-              - sentry
-              - exec
-              - -c
-              - 'from sentry.celery import app; import os; dest="celery@{}".format(os.environ["HOSTNAME"]); print(app.control.ping(destination=[dest], timeout=5)[0][dest]["ok"])'
+          {{- omit .Values.sentry.worker.livenessProbe "enabled" | toYaml | nindent 12 }}
 {{- end }}
         resources:
 {{ toYaml .Values.sentry.worker.resources | indent 12 }}

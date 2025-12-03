@@ -106,12 +106,7 @@ spec:
           {{- end }}
         {{- if .Values.sentry.postProcessForwardErrors.livenessProbe.enabled }}
         livenessProbe:
-          exec:
-            command:
-              - rm
-              - /tmp/health.txt
-          initialDelaySeconds: {{ .Values.sentry.postProcessForwardErrors.livenessProbe.initialDelaySeconds }}
-          periodSeconds: {{ .Values.sentry.postProcessForwardErrors.livenessProbe.periodSeconds }}
+          {{- omit .Values.sentry.postProcessForwardErrors.livenessProbe "enabled" | toYaml | nindent 12 }}
         {{- end }}
         env:
 {{ include "sentry.env" . | indent 8 }}

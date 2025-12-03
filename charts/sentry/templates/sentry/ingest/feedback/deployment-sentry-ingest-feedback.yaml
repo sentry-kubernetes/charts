@@ -107,12 +107,7 @@ spec:
           {{- end }}
         {{- if .Values.sentry.ingestFeedback.livenessProbe.enabled }}
         livenessProbe:
-          exec:
-            command:
-              - rm
-              - /tmp/health.txt
-          initialDelaySeconds: {{ .Values.sentry.ingestFeedback.livenessProbe.initialDelaySeconds }}
-          periodSeconds: {{ .Values.sentry.ingestFeedback.livenessProbe.periodSeconds }}
+          {{- omit .Values.sentry.ingestFeedback.livenessProbe "enabled" | toYaml | nindent 12 }}
         {{- end }}
         env:
         - name: C_FORCE_ROOT
