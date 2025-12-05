@@ -13,4 +13,8 @@ spec:
   - name: pgbouncer
     port: 5432
     targetPort: 5432
+  sessionAffinity: {{ .Values.pgbouncer.service.sessionAffinity }}
+  {{- if .Values.pgbouncer.service.sessionAffinityConfig }}
+  sessionAffinityConfig: {{ toYaml .Values.pgbouncer.service.sessionAffinityConfig | nindent 4 }}
+  {{- end }}
 {{- end }}
