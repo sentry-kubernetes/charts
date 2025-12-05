@@ -1,5 +1,17 @@
 # Changelog
 
+## [27.8.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v27.7.0...sentry-v27.8.0) (2025-12-05)
+
+
+### Features
+
+* **Symbolicator:** Map storageClassName in symbolicator PVC ([#1958](https://github.com/sentry-kubernetes/charts/issues/1958)) ([144358a](https://github.com/sentry-kubernetes/charts/commit/144358ae41c133325a1f81b63c2bd695d707e1c9))
+
+
+### Bug Fixes
+
+* **sentry/sentry/helper:** Redis URL not set when using `externalRedis.existingSecret` or `redis.auth.existingSecret` ([#1871](https://github.com/sentry-kubernetes/charts/issues/1871)) ([7c7a943](https://github.com/sentry-kubernetes/charts/commit/7c7a9437f9eb0f23fceb67e06f1df7520f2c2d5a))
+
 ## [27.7.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v27.6.2...sentry-v27.7.0) (2025-11-22)
 
 
