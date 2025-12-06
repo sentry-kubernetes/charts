@@ -3148,11 +3148,12 @@ pgbouncer:
       maxSurge: 25%
   priorityClassName: ''
   topologySpreadConstraints: []
-  # Session Affinity for Kubernetes service, can be "None" or "ClientIP"
-  # If "ClientIP", consecutive client requests will be directed to the same Pod
-  sessionAffinity: None
-  # sessionAffinityConfig Additional settings for the sessionAffinity
-  # sessionAffinityConfig:
-  #   clientIP:
-  #     timeoutSeconds: 180
-  sessionAffinityConfig: {}
+  service:
+    # Session Affinity for Kubernetes service, can be "None" or "ClientIP"
+    # If "ClientIP", consecutive client requests will be directed to the same Pod
+    sessionAffinity: None
+    # sessionAffinityConfig Additional settings for the sessionAffinity
+    # sessionAffinityConfig:
+    #   clientIP:
+    #     timeoutSeconds: 180
+    sessionAffinityConfig: {}
