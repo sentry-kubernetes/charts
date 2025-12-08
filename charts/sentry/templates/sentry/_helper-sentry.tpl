@@ -502,14 +502,14 @@ sentry.conf.py: |-
               "projects:similarity-indexing",
               "projects:similarity-view",
           )
+          {{- if .Values.sentry.customFeatures }}
           + (
               # Custom features from values
-              {{- if .Values.sentry.customFeatures }}
               {{- range $CustomFeature := .Values.sentry.customFeatures }}
               "{{ $CustomFeature}}",
               {{- end }}
-              {{- end }}
           )
+          {{- end }}
       }
   )
 
