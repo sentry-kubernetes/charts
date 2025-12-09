@@ -89,7 +89,7 @@ spec:
           - "--no-strict-offset-reset"
           {{- end }}
           - "--consumer-group=snuba-eap-items-subscriptions-consumers"
-          - "--followed-consumer-group=eap_spans_group"
+          - "--followed-consumer-group=eap_items_group"
           - "--schedule-ttl=60"
           - "--stale-threshold-seconds=900"
           {{- if .Values.snuba.subscriptionConsumerEapItems.livenessProbe.enabled }}
