@@ -1,5 +1,13 @@
 # Changelog
 
+## [27.8.1](https://github.com/sentry-kubernetes/charts/compare/sentry-v27.8.0...sentry-v27.8.1) (2025-12-09)
+
+
+### Bug Fixes
+
+* change followed consumer group from eap_spans_group to eap_items_group ([#1970](https://github.com/sentry-kubernetes/charts/issues/1970)) ([809d94a](https://github.com/sentry-kubernetes/charts/commit/809d94ad4a18369e2741f3bca38e2112fdc3f434))
+* **sentry:** correct template syntax for customFeatures conditional ([#1968](https://github.com/sentry-kubernetes/charts/issues/1968)) ([b438ba9](https://github.com/sentry-kubernetes/charts/commit/b438ba9d03c7a3ad31983a2d13b1c480599a8c51))
+
 ## [27.8.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v27.7.0...sentry-v27.8.0) (2025-12-05)
 
 
