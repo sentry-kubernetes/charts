@@ -307,6 +307,7 @@ sentry:
     volumes: []
     volumeMounts: []
     # workers: 3
+    uwsgiMaxFd: 8192
 
   features:
     orgSubdomains: false

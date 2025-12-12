@@ -101,6 +101,8 @@ spec:
         ports:
         - containerPort: {{ template "sentry.port" }}
         env:
+        - name: UWSGI_MAX_FD
+          value: {{ .Values.sentry.web.uwsgiMaxFd|quote }}
 {{ include "sentry.env" . | indent 8 }}
 {{ include "sentry.env.nodestore-s3" . | indent 8 }}
         {{ if .Values.sentry.web.customCA }}
