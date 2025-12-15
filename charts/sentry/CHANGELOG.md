@@ -1,5 +1,13 @@
 # Changelog
 
+## [27.9.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v27.8.1...sentry-v27.9.0) (2025-12-15)
+
+
+### Features
+
+* **hook:** ArgoCd Compatible Annotations for hook ([#1977](https://github.com/sentry-kubernetes/charts/issues/1977)) ([45f9ae9](https://github.com/sentry-kubernetes/charts/commit/45f9ae9f4c98fb8f86866715ec9e07916e08fa2e))
+* sessionAffinityConfig and sessionAffinity for pgbouncer service ([#1964](https://github.com/sentry-kubernetes/charts/issues/1964)) ([0af7560](https://github.com/sentry-kubernetes/charts/commit/0af7560d30e77c312674af2dae8b3605aa21e00a))
+
 ## [27.8.1](https://github.com/sentry-kubernetes/charts/compare/sentry-v27.8.0...sentry-v27.8.1) (2025-12-09)
 
 
