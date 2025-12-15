@@ -3157,3 +3157,8 @@ pgbouncer:
     #   clientIP:
     #     timeoutSeconds: 180
     sessionAffinityConfig: {}
+
+# Helm hooks are similar to Argo CD hooks, but some of them are incompatible.
+# Please refer to for details:
+# https://argo-cd.readthedocs.io/en/stable/user-guide/helm/#helm-hooks
+useArgoCdCompatibleAnnotations: false
