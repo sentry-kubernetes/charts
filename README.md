@@ -18,6 +18,25 @@ helm install my-sentry sentry/sentry --wait --timeout=1000s
 
 For now the full list of values is not documented, but you can get inspired by the `values.yaml` specific to each directory.
 
+## Upgrading to Chart 28.x.x
+
+### Storage Configuration Changes
+
+This release introduces significant changes to how Sentry handles storage for `nodestore` (raw events) and `profiling`. We strongly recommend using an external S3-compatible storage provider (e.g., AWS S3, Google Cloud Storage, MinIO) for these components to ensure performance and scalability.
+
+- **Nodestore**: You can now configure S3-based node storage via `nodestore.s3`.
+- **Profiles**: The `filestore.profiles` section now supports an S3 backend. Using the `filesystem` backend is discouraged for production environments.
+
+If you require a self-hosted S3-compatible storage solution, we recommend [SeaweedFS](https://github.com/seaweedfs/seaweedfs/tree/master/k8s/charts/seaweedfs), which can be deployed using its official Helm chart.
+
+### Clickhouse
+
+This release necessitates ClickHouse features introduced in v24.8. As this chart will henceforth require users to manage their own services, the bundled ClickHouse version is no longer compatible. You must provision your own cluster and migrate your data from the old one prior to upgrading. We recommend using the Altinity Kubernetes Operator: https://altinity.com/kubernetes-operator/
+
+### RabbitMQ Removed
+
+The RabbitMQ dependency has been removed in favor of a new task broker architecture. Please review the `taskBroker` and `taskWorker` sections in `values.yaml`.
+
 ## Upgrading from 26.x.x Version of This Chart to 27.x.x
 
 Make sure to upgrade to chart version 26.22.0 before upgrading to 27.x.x. There is a hard stop on the Sentry version.

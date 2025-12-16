@@ -93,6 +93,38 @@ Note: this table is incomplete, so have a look at the values.yaml in case you mi
 | filestore.filesystem.persistence.size | string | `"10Gi"` |  |
 | filestore.gcs | object | `{}` |  |
 | filestore.s3 | object | `{}` |  |
+| filestore.profiles.backend | string | `"s3"` | Profiles storage backend (filesystem or s3). Recommended: s3-compatible backend |
+| filestore.profiles.s3.existingSecret | string | `nil` | Existing secret containing S3 credentials |
+| filestore.profiles.s3.accessKeyIdRef | string | `nil` | Key in existingSecret for access key ID |
+| filestore.profiles.s3.secretAccessKeyRef | string | `nil` | Key in existingSecret for secret access key |
+| filestore.profiles.s3.access_key | string | `nil` | S3 access key (plain text) |
+| filestore.profiles.s3.secret_key | string | `nil` | S3 secret key (plain text) |
+| filestore.profiles.s3.bucket_name | string | `nil` | S3 bucket name for profiles |
+| filestore.profiles.s3.endpoint_url | string | `nil` | S3 endpoint URL (for S3-compatible services like MinIO, SeaweedFS) |
+| filestore.profiles.s3.signature_version | string | `nil` | S3 signature version (e.g. s3v4) |
+| filestore.profiles.s3.region_name | string | `nil` | S3 region name |
+| filestore.profiles.s3.default_acl | string | `nil` | Default ACL for S3 objects |
+| filestore.profiles.s3.bucket_acl | string | `nil` | Bucket ACL for S3 |
+| filestore.profiles.s3.addressing_style | string | `nil` | S3 addressing style (path or virtual) |
+| filestore.profiles.filesystem.path | string | `"/var/lib/sentry/files/profiles"` | Path for filesystem profiles storage |
+| filestore.profiles.filesystem.persistence.enabled | bool | `true` | Enable persistence for profiles filesystem storage |
+| filestore.profiles.filesystem.persistence.shareWithVroom | bool | `false` | Share PVC with vroom deployment (requires ReadWriteMany on vroom.persistence.accessModes). NOT recommended for production |
+| filestore.profiles.filesystem.persistence.accessModes[0] | string | `"ReadWriteOnce"` | Access mode for profiles PVC (use ReadWriteMany when shareWithVroom is true) |
+| filestore.profiles.filesystem.persistence.size | string | `"10Gi"` | Size of profiles PVC |
+| filestore.profiles.filesystem.persistence.existingClaim | string | `""` | Use existing PVC for profiles storage |
+| filestore.profiles.filesystem.persistence.lookupVolumeName | bool | `true` | Lookup and use existing volume name |
+| filestore.profiles.filesystem.persistence.storageClassName | string | `nil` | Storage class for profiles PVC |
+| nodestore.backend | string | `""` | Node storage backend. Set to "s3" to enable S3-based node storage. Requires sentry-nodestore-s3 package (automatically installed via init containers) |
+| nodestore.s3.existingSecret | string | `nil` | Existing secret containing S3 credentials for nodestore |
+| nodestore.s3.accessKeyIdRef | string | `nil` | Key in existingSecret for access key ID |
+| nodestore.s3.secretAccessKeyRef | string | `nil` | Key in existingSecret for secret access key |
+| nodestore.s3.accessKeyId | string | `nil` | S3 access key ID (plain text) |
+| nodestore.s3.secretAccessKey | string | `nil` | S3 secret access key (plain text) |
+| nodestore.s3.bucketName | string | `nil` | S3 bucket name for nodestore |
+| nodestore.s3.bucketPath | string | `nil` | S3 bucket path for nodestore |
+| nodestore.s3.endpointUrl | string | `nil` | S3 endpoint URL (for S3-compatible services like MinIO, SeaweedFS) |
+| nodestore.s3.regionName | string | `nil` | S3 region name for nodestore |
+| nodestore.s3.compression | bool | `nil` | Enable compression for nodestore |
 | geodata.accountID | string | `""` |  |
 | geodata.editionIDs | string | `""` |  |
 | geodata.licenseKey | string | `""` |  |
@@ -456,15 +488,6 @@ Note: this table is incomplete, so have a look at the values.yaml in case you mi
 | sentry.cleanup.sidecars | list | `[]` |  |
 | sentry.cleanup.successfulJobsHistoryLimit | int | `5` |  |
 | sentry.cleanup.volumes | list | `[]` |  |
-| sentry.cron.affinity | object | `{}` |  |
-| sentry.cron.enabled | bool | `true` |  |
-| sentry.cron.env | list | `[]` |  |
-| sentry.cron.nodeSelector | object | `{}` |  |
-| sentry.cron.replicas | int | `1` |  |
-| sentry.cron.resources | object | `{}` |  |
-| sentry.cron.sidecars | list | `[]` |  |
-| sentry.cron.topologySpreadConstraints | list | `[]` |  |
-| sentry.cron.volumes | list | `[]` |  |
 | sentry.features.enableFeedback | bool | `false` |  |
 | sentry.features.enableProfiling | bool | `false` |  |
 | sentry.features.enableSessionReplay | bool | `true` |  |
@@ -752,6 +775,46 @@ Note: this table is incomplete, so have a look at the values.yaml in case you mi
 | sentry.subscriptionConsumerTransactions.sidecars | list | `[]` |  |
 | sentry.subscriptionConsumerTransactions.topologySpreadConstraints | list | `[]` |  |
 | sentry.subscriptionConsumerTransactions.volumes | list | `[]` |  |
+| sentry.taskBroker.affinity | object | `{}` | |
+| sentry.taskBroker.containerSecurityContext | object | `{}` | |
+| sentry.taskBroker.enabled | bool | `true` | |
+| sentry.taskBroker.env | list | `[]` | |
+| sentry.taskBroker.nodeSelector | object | `{}` | |
+| sentry.taskBroker.persistence.accessMode | string | `"ReadWriteOnce"` | |
+| sentry.taskBroker.persistence.enabled | bool | `true` | |
+| sentry.taskBroker.persistence.size | string | `"1Gi"` | |
+| sentry.taskBroker.persistence.storageClass | string | `""` | |
+| sentry.taskBroker.priorityClassName | string | `""` | |
+| sentry.taskBroker.replicas | int | `1` | |
+| sentry.taskBroker.resources | object | `{}` | |
+| sentry.taskBroker.securityContext | object | `{}` | |
+| sentry.taskBroker.sidecars | list | `[]` | |
+| sentry.taskBroker.tolerations | list | `[]` | |
+| sentry.taskBroker.topologySpreadConstraints | list | `[]` | |
+| sentry.taskBroker.volumeMounts | list | `[]` | |
+| sentry.taskBroker.volumes | list | `[]` | |
+| sentry.taskWorker.affinity | object | `{}` | |
+| sentry.taskWorker.autoscaling.enabled | bool | `false` | |
+| sentry.taskWorker.autoscaling.maxReplicas | int | `5` | |
+| sentry.taskWorker.autoscaling.minReplicas | int | `1` | |
+| sentry.taskWorker.autoscaling.targetCPUUtilizationPercentage | int | `50` | |
+| sentry.taskWorker.concurrency | int | `4` | |
+| sentry.taskWorker.containerSecurityContext | object | `{}` | |
+| sentry.taskWorker.enabled | bool | `true` | |
+| sentry.taskWorker.env | list | `[]` | |
+| sentry.taskWorker.livenessProbe.initialDelaySeconds | int | `10` | |
+| sentry.taskWorker.livenessProbe.periodSeconds | int | `10` | |
+| sentry.taskWorker.livenessProbe.timeoutSeconds | int | `5` | |
+| sentry.taskWorker.nodeSelector | object | `{}` | |
+| sentry.taskWorker.priorityClassName | string | `""` | |
+| sentry.taskWorker.replicas | int | `1` | |
+| sentry.taskWorker.resources | object | `{}` | |
+| sentry.taskWorker.securityContext | object | `{}` | |
+| sentry.taskWorker.sidecars | list | `[]` | |
+| sentry.taskWorker.tolerations | list | `[]` | |
+| sentry.taskWorker.topologySpreadConstraints | list | `[]` | |
+| sentry.taskWorker.volumeMounts | list | `[]` | |
+| sentry.taskWorker.volumes | list | `[]` | |
 | sentry.web.affinity | object | `{}` |  |
 | sentry.web.autoscaling.enabled | bool | `false` |  |
 | sentry.web.autoscaling.maxReplicas | int | `5` |  |
@@ -778,63 +841,6 @@ Note: this table is incomplete, so have a look at the values.yaml in case you mi
 | sentry.web.topologySpreadConstraints | list | `[]` |  |
 | sentry.web.volumeMounts | list | `[]` |  |
 | sentry.web.volumes | list | `[]` |  |
-| sentry.worker.affinity | object | `{}` |  |
-| sentry.worker.autoscaling.enabled | bool | `false` |  |
-| sentry.worker.autoscaling.maxReplicas | int | `5` |  |
-| sentry.worker.autoscaling.minReplicas | int | `2` |  |
-| sentry.worker.autoscaling.targetCPUUtilizationPercentage | int | `50` |  |
-| sentry.worker.enabled | bool | `true` |  |
-| sentry.worker.env | list | `[]` |  |
-| sentry.worker.existingSecretEnv | string | `""` |  |
-| sentry.worker.livenessProbe.enabled | bool | `true` |  |
-| sentry.worker.livenessProbe.failureThreshold | int | `3` |  |
-| sentry.worker.livenessProbe.periodSeconds | int | `60` |  |
-| sentry.worker.livenessProbe.timeoutSeconds | int | `10` |  |
-| sentry.worker.nodeSelector | object | `{}` |  |
-| sentry.worker.replicas | int | `1` |  |
-| sentry.worker.resources | object | `{}` |  |
-| sentry.worker.sidecars | list | `[]` |  |
-| sentry.worker.topologySpreadConstraints | list | `[]` |  |
-| sentry.worker.volumeMounts | list | `[]` |  |
-| sentry.worker.volumes | list | `[]` |  |
-| sentry.workerEvents.affinity | object | `{}` |  |
-| sentry.workerEvents.autoscaling.enabled | bool | `false` |  |
-| sentry.workerEvents.autoscaling.maxReplicas | int | `5` |  |
-| sentry.workerEvents.autoscaling.minReplicas | int | `2` |  |
-| sentry.workerEvents.autoscaling.targetCPUUtilizationPercentage | int | `50` |  |
-| sentry.workerEvents.enabled | bool | `false` |  |
-| sentry.workerEvents.env | list | `[]` |  |
-| sentry.workerEvents.livenessProbe.enabled | bool | `false` |  |
-| sentry.workerEvents.livenessProbe.failureThreshold | int | `3` |  |
-| sentry.workerEvents.livenessProbe.periodSeconds | int | `60` |  |
-| sentry.workerEvents.livenessProbe.timeoutSeconds | int | `10` |  |
-| sentry.workerEvents.nodeSelector | object | `{}` |  |
-| sentry.workerEvents.queues | string | `"events.save_event,post_process_errors"` |  |
-| sentry.workerEvents.replicas | int | `1` |  |
-| sentry.workerEvents.resources | object | `{}` |  |
-| sentry.workerEvents.sidecars | list | `[]` |  |
-| sentry.workerEvents.topologySpreadConstraints | list | `[]` |  |
-| sentry.workerEvents.volumeMounts | list | `[]` |  |
-| sentry.workerEvents.volumes | list | `[]` |  |
-| sentry.workerTransactions.affinity | object | `{}` |  |
-| sentry.workerTransactions.autoscaling.enabled | bool | `false` |  |
-| sentry.workerTransactions.autoscaling.maxReplicas | int | `5` |  |
-| sentry.workerTransactions.autoscaling.minReplicas | int | `2` |  |
-| sentry.workerTransactions.autoscaling.targetCPUUtilizationPercentage | int | `50` |  |
-| sentry.workerTransactions.enabled | bool | `false` |  |
-| sentry.workerTransactions.env | list | `[]` |  |
-| sentry.workerTransactions.livenessProbe.enabled | bool | `false` |  |
-| sentry.workerTransactions.livenessProbe.failureThreshold | int | `3` |  |
-| sentry.workerTransactions.livenessProbe.periodSeconds | int | `60` |  |
-| sentry.workerTransactions.livenessProbe.timeoutSeconds | int | `10` |  |
-| sentry.workerTransactions.nodeSelector | object | `{}` |  |
-| sentry.workerTransactions.queues | string | `"events.save_event_transaction,post_process_transactions"` |  |
-| sentry.workerTransactions.replicas | int | `1` |  |
-| sentry.workerTransactions.resources | object | `{}` |  |
-| sentry.workerTransactions.sidecars | list | `[]` |  |
-| sentry.workerTransactions.topologySpreadConstraints | list | `[]` |  |
-| sentry.workerTransactions.volumeMounts | list | `[]` |  |
-| sentry.workerTransactions.volumes | list | `[]` |  |
 | service.annotations | object | `{}` |  |
 | service.externalPort | int | `9000` |  |
 | service.name | string | `"sentry"` |  |
@@ -1034,19 +1040,6 @@ Note: this table is incomplete, so have a look at the values.yaml in case you mi
 | snuba.replaysConsumer.securityContext | object | `{}` |  |
 | snuba.replaysConsumer.topologySpreadConstraints | list | `[]` |  |
 | snuba.rustConsumer | bool | `false` |  |
-| snuba.spansConsumer.affinity | object | `{}` |  |
-| snuba.spansConsumer.containerSecurityContext | object | `{}` |  |
-| snuba.spansConsumer.enabled | bool | `true` |  |
-| snuba.spansConsumer.env | list | `[]` |  |
-| snuba.spansConsumer.livenessProbe.enabled | bool | `true` |  |
-| snuba.spansConsumer.livenessProbe.initialDelaySeconds | int | `5` |  |
-| snuba.spansConsumer.livenessProbe.periodSeconds | int | `320` |  |
-| snuba.spansConsumer.maxBatchTimeMs | int | `750` |  |
-| snuba.spansConsumer.nodeSelector | object | `{}` |  |
-| snuba.spansConsumer.replicas | int | `1` |  |
-| snuba.spansConsumer.resources | object | `{}` |  |
-| snuba.spansConsumer.securityContext | object | `{}` |  |
-| snuba.spansConsumer.topologySpreadConstraints | list | `[]` |  |
 | snuba.subscriptionConsumerEvents.affinity | object | `{}` |  |
 | snuba.subscriptionConsumerEvents.containerSecurityContext | object | `{}` |  |
 | snuba.subscriptionConsumerEvents.enabled | bool | `true` |  |
@@ -1143,6 +1136,11 @@ Note: this table is incomplete, so have a look at the values.yaml in case you mi
 | vroom.sidecars | list | `[]` |  |
 | vroom.volumeMounts | list | `[]` |  |
 | vroom.volumes | list | `[]` |  |
+| vroom.persistence.enabled | bool | `true` | Enable persistence for vroom (uses PVC if true, emptyDir if false) |
+| vroom.persistence.lookupVolumeName | bool | `true` | Lookup and use existing volume name |
+| vroom.persistence.accessModes[0] | string | `"ReadWriteOnce"` | Access mode for vroom PVC. Use ReadWriteMany if sharing with ingest-profiles (filestore.profiles.filesystem.persistence.shareWithVroom) |
+| vroom.persistence.size | string | `"10Gi"` | Size of vroom PVC |
+| vroom.persistence.storageClassName | string | `nil` | Storage class for vroom PVC |
 | zookeeper.enabled | bool | `true` |  |
 | zookeeper.nameOverride | string | `"zookeeper-clickhouse"` |  |
 | zookeeper.nodeSelector | object | `{}` |  |

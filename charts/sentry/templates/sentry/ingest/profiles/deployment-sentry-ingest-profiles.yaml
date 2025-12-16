@@ -83,6 +83,8 @@ spec:
       securityContext:
 {{ toYaml .Values.sentry.ingestProfiles.securityContext | indent 8 }}
       {{- end }}
+      initContainers:
+{{ include "sentry.initContainer.nodestore-s3" . | indent 6 }}
       containers:
       - name: {{ .Chart.Name }}-ingest-profiles
         image: "{{ template "sentry.image" . }}"
@@ -118,6 +120,7 @@ spec:
         - name: C_FORCE_ROOT
           value: "true"
 {{ include "sentry.env" . | indent 8 }}
+{{ include "sentry.env.nodestore-s3" . | indent 8 }}
 {{- if .Values.sentry.ingestProfiles.env }}
 {{ toYaml .Values.sentry.ingestProfiles.env | indent 8 }}
 {{- end }}
@@ -127,6 +130,11 @@ spec:
           readOnly: true
         - mountPath: {{ .Values.filestore.filesystem.path }}
           name: sentry-data
+{{ include "sentry.volumeMount.nodestore-s3" . | indent 8 }}
+        {{- if eq .Values.filestore.profiles.backend "filesystem" }}
+        - mountPath: {{ .Values.filestore.profiles.filesystem.path }}
+          name: profiles-data
+        {{- end }}
         {{- if and (eq .Values.filestore.backend "gcs") .Values.filestore.gcs.secretName }}
         - name: sentry-google-cloud-key
           mountPath: /var/run/secrets/google
@@ -153,6 +161,7 @@ spec:
       - name: config
         configMap:
           name: {{ template "sentry.fullname" . }}-sentry
+{{ include "sentry.volume.nodestore-s3" . | indent 6 }}
       - name: sentry-data
       {{- if and (eq .Values.filestore.backend "filesystem") .Values.filestore.filesystem.persistence.enabled (.Values.filestore.filesystem.persistence.persistentWorkers) }}
       {{- if .Values.filestore.filesystem.persistence.existingClaim }}
@@ -165,6 +174,21 @@ spec:
       {{- else }}
         emptyDir: {}
       {{ end }}
+      {{- if eq .Values.filestore.profiles.backend "filesystem" }}
+      - name: profiles-data
+        {{- if .Values.filestore.profiles.filesystem.persistence.enabled }}
+        persistentVolumeClaim:
+          {{- if .Values.filestore.profiles.filesystem.persistence.existingClaim }}
+          claimName: {{ .Values.filestore.profiles.filesystem.persistence.existingClaim }}
+          {{- else if .Values.filestore.profiles.filesystem.persistence.shareWithVroom }}
+          claimName: sentry-vroom-pvc
+          {{- else }}
+          claimName: {{ template "sentry.fullname" . }}-profiles-data
+          {{- end }}
+        {{- else }}
+        emptyDir: {}
+        {{- end }}
+      {{- end }}
       {{- if and (eq .Values.filestore.backend "gcs") .Values.filestore.gcs.secretName }}
       - name: sentry-google-cloud-key
         secret:

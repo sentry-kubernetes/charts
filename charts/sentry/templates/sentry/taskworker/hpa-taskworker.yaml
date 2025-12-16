@@ -1,0 +1,61 @@
+{{- if .Values.sentry.taskWorker.enabled }}
+{{- $root := . }}
+{{- range $worker := .Values.sentry.taskWorker.workers }}
+{{- $workerAutoscaling := default dict $worker.autoscaling }}
+{{- $globalAutoscaling := default dict $root.Values.sentry.taskWorker.autoscaling }}
+{{- $enabled := false }}
+{{- if hasKey $workerAutoscaling "enabled" }}
+  {{- $enabled = $workerAutoscaling.enabled }}
+{{- else if hasKey $globalAutoscaling "enabled" }}
+  {{- $enabled = $globalAutoscaling.enabled }}
+{{- end }}
+
+{{- if $enabled }}
+{{- $minReplicas := default $globalAutoscaling.minReplicas $workerAutoscaling.minReplicas }}
+{{- $maxReplicas := default $globalAutoscaling.maxReplicas $workerAutoscaling.maxReplicas }}
+{{- $targetCPU := default $globalAutoscaling.targetCPUUtilizationPercentage $workerAutoscaling.targetCPUUtilizationPercentage }}
+{{- $behavior := default $globalAutoscaling.behavior $workerAutoscaling.behavior }}
+---
+apiVersion: {{ template "sentry.autoscaling.apiVersion" $root }}
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ template "sentry.fullname" $root }}-taskworker-{{ $worker.name }}
+  labels:
+    {{- include "sentry.component.labels" (dict "component" (printf "taskworker-%s" $worker.name) "ctx" $root) | nindent 4 }}
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ template "sentry.fullname" $root }}-taskworker-{{ $worker.name }}
+  minReplicas: {{ $minReplicas }}
+  maxReplicas: {{ $maxReplicas }}
+  {{- if eq (include "sentry.autoscaling.apiVersion" $root) "autoscaling/v1" }}
+  targetCPUUtilizationPercentage: {{ $targetCPU }}
+  {{- else if semverCompare ">=1.27-0" $root.Capabilities.KubeVersion.GitVersion }}
+  metrics:
+    - type: ContainerResource
+      containerResource:
+        container: taskworker
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: {{ $targetCPU }}
+  {{- else }}
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: {{ $targetCPU }}
+  {{- end }}
+  {{- if eq (include "sentry.autoscaling.apiVersion" $root) "autoscaling/v2" }}
+  {{- with $behavior }}
+  behavior:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  {{- end }}
+{{- end }}
+{{- end }}
+{{- end }}
+

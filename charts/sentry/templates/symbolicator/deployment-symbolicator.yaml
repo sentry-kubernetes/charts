@@ -131,15 +131,12 @@ spec:
       - name: {{ .Chart.Name }}-symbolicator-cleaner
         image: "{{ template "symbolicator.image" . }}"
         imagePullPolicy: {{ default "IfNotPresent" .Values.images.symbolicator.pullPolicy }}
-        command:
-          - /bin/sh
-          - -c
         args:
-          - |
-            while true; do
-              symbolicator cleanup -c /etc/symbolicator/config.yml;
-              sleep {{ .Values.symbolicator.api.cleaner.sleepInterval }};
-            done
+          - cleanup
+          - -c
+          - /etc/symbolicator/config.yml 
+          - --repeat
+          - {{ .Values.symbolicator.api.cleaner.repeat }}
         env:
         {{ if and (eq .Values.filestore.backend "gcs") .Values.filestore.gcs.secretName }}
         - name: GOOGLE_APPLICATION_CREDENTIALS

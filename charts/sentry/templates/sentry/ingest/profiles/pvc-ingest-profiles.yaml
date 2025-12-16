@@ -1,0 +1,42 @@
+{{- if has "feature-complete" .Values.profiles }}
+{{- if .Values.sentry.features.enableProfiling }}
+{{- if eq .Values.filestore.profiles.backend "filesystem" }}
+{{- if and .Values.filestore.profiles.filesystem.persistence.enabled (not .Values.filestore.profiles.filesystem.persistence.shareWithVroom) (not .Values.filestore.profiles.filesystem.persistence.existingClaim) }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ template "sentry.fullname" . }}-profiles-data
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: {{ template "sentry.fullname" . }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
+    release: "{{ .Release.Name }}"
+    heritage: "{{ .Release.Service }}"
+    component: ingest-profiles
+    {{- include "sentry.component.labels" (dict "component" "ingest-profiles" "ctx" .) | nindent 4 }}
+  {{- if .Values.asHook }}
+  annotations:
+    meta.helm.sh/release-name: "{{ .Release.Name }}"
+    meta.helm.sh/release-namespace: "{{ .Release.Namespace }}"
+    "helm.sh/hook": "post-install,post-upgrade"
+    "helm.sh/hook-weight": "10"
+  {{- end }}
+spec:
+  accessModes:
+{{- range .Values.filestore.profiles.filesystem.persistence.accessModes }}
+    - {{ . | quote }}
+{{- end }}
+  resources:
+    requests:
+      storage: {{ .Values.filestore.profiles.filesystem.persistence.size | quote }}
+  {{- if and (.Values.filestore.profiles.filesystem.persistence.lookupVolumeName) (lookup "v1" "PersistentVolumeClaim" .Release.Namespace (printf "%s-profiles-data" (include "sentry.fullname" .))) }}
+  volumeName: {{ (lookup "v1" "PersistentVolumeClaim" .Release.Namespace (printf "%s-profiles-data" (include "sentry.fullname" .))).spec.volumeName }}
+  {{- end }}
+  {{- if .Values.filestore.profiles.filesystem.persistence.storageClassName }}
+  storageClassName: {{ .Values.filestore.profiles.filesystem.persistence.storageClassName | quote }}
+  {{- end }}
+{{- end }}
+{{- end }}
+{{- end }}
+{{- end }}
+

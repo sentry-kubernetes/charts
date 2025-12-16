@@ -77,20 +77,9 @@ config.yml: |-
   #########
   # This is configured in the sentry.conf.py as that has support for environment variables.
 
-  ################
-  # File storage #
-  ################
-  # Uploaded media uses these `filestore` settings. The available
-  # backends are either `filesystem` or `s3`.
-  filestore.backend: {{ .Values.filestore.backend | quote }}
-  {{- if eq .Values.filestore.backend "filesystem" }}
-  filestore.options:
-    location: {{ .Values.filestore.filesystem.path | quote }}
-  {{ end }}
-  {{- if eq .Values.filestore.backend "gcs" }}
-  filestore.options:
-    bucket_name: {{ .Values.filestore.gcs.bucketName | quote }}
-  {{ end }}
+  {{- if .Values.config.taskbrokerRoutingYml }}
+  {{ .Values.config.taskbrokerRoutingYml | toYaml | nindent 2 }}
+  {{- end }}
 
   {{- if .Values.config.configYml }}
   {{ .Values.config.configYml | toYaml | nindent 2 }}
@@ -195,24 +184,6 @@ sentry.conf.py: |-
       }
     }
   }
-
-  #########
-  # Queue #
-  #########
-
-  # See https://docs.getsentry.com/on-premise/server/queue/ for more
-  # information on configuring your queue broker and workers. Sentry relies
-  # on a Python framework called Celery to manage queues.
-
-  {{- if or (.Values.rabbitmq.enabled) (.Values.rabbitmq.host) }}
-  BROKER_URL = os.environ.get("BROKER_URL", "amqp://{{ .Values.rabbitmq.auth.username }}:{{ .Values.rabbitmq.auth.password }}@{{ template "sentry.rabbitmq.host" . }}:5672/{{ .Values.rabbitmq.vhost }}")
-  {{- else if $redisPass }}
-  BROKER_URL = os.environ.get("BROKER_URL", "{{ $redisProto }}://:{{ $redisPass }}@{{ $redisHost }}:{{ $redisPort }}/{{ $redisDb }}")
-  {{- else if or (.Values.externalRedis.existingSecret) (.Values.redis.auth.existingSecret) }}
-  BROKER_URL = os.environ.get("BROKER_URL", f"{{ $redisProto }}://:{os.environ.get("REDIS_PASSWORD")}@{{ $redisHost }}:{{ $redisPort }}/{{ $redisDb }}")
-  {{- else }}
-  BROKER_URL = os.environ.get("BROKER_URL", "{{ $redisProto }}://{{ $redisHost }}:{{ $redisPort }}/{{ $redisDb }}")
-  {{- end }}
 
   #########
   # Cache #
@@ -525,9 +496,23 @@ sentry.conf.py: |-
   SENTRY_OPTIONS['mail.host'] = os.getenv("SENTRY_EMAIL_HOST", {{ .Values.mail.host | quote }})
   SENTRY_OPTIONS['mail.from'] = os.getenv("SENTRY_EMAIL_FROM", {{ .Values.mail.from | quote }})
 
-  #######################
-  # Filestore S3 Configuration #
-  #######################
+  ################
+  # File storage #
+  ################
+  SENTRY_OPTIONS['filestore.backend'] = {{ .Values.filestore.backend | quote }}
+
+  {{- if eq .Values.filestore.backend "filesystem" }}
+  SENTRY_OPTIONS['filestore.options'] = {
+      'location': {{ .Values.filestore.filesystem.path | quote }},
+  }
+  {{- end }}
+
+  {{- if eq .Values.filestore.backend "gcs" }}
+  SENTRY_OPTIONS['filestore.options'] = {
+      'bucket_name': {{ .Values.filestore.gcs.bucketName | quote }},
+  }
+  {{- end }}
+
   {{- if eq .Values.filestore.backend "s3" }}
   SENTRY_OPTIONS['filestore.options'] = {
       'access_key': os.getenv("S3_ACCESS_KEY_ID", {{ .Values.filestore.s3.accessKey | default "" | quote }}),
@@ -547,7 +532,7 @@ sentry.conf.py: |-
       {{- if .Values.filestore.s3.default_acl }}
       'default_acl': {{ .Values.filestore.s3.default_acl | quote }},
       {{- end }}
-      #add comfig params for s3
+      #add config params for s3
       {{- if .Values.filestore.s3.addressing_style }}
       'addressing_style': {{ .Values.filestore.s3.addressing_style | quote }},
       {{- end }}
@@ -555,6 +540,103 @@ sentry.conf.py: |-
       'location': {{ .Values.filestore.s3.location | quote }},
       {{- end }}
   }
+  {{- end }}
+
+  ###################
+  # Profiling Store #
+  ###################
+  # The profiling team has been working on vroomrs, and it's now doing the heavy lifting.
+  # The ingest-profiles container now processes profiles immediately via vroomrs and writes
+  # them directly to your bucket. This streamlines the pipeline.
+  #
+  # NOTE: It's recommended to use an S3-compatible backend for profiles storage.
+  # While filesystem backend is supported (for sharing PVC between vroom and ingest-profiles),
+  # it's not recommended for production use.
+  {{- if .Values.filestore.profiles.backend }}
+  SENTRY_OPTIONS['filestore.profiles-backend'] = {{ .Values.filestore.profiles.backend | quote }}
+
+  {{- if eq .Values.filestore.profiles.backend "s3" }}
+  {{- $profilesS3 := .Values.filestore.profiles.s3 | default dict }}
+  SENTRY_OPTIONS['filestore.profiles-options'] = {
+      'access_key': os.getenv("PROFILES_S3_ACCESS_KEY_ID", {{ $profilesS3.accessKey | default "" | quote }}),
+      'secret_key': os.getenv("PROFILES_S3_SECRET_ACCESS_KEY", {{ $profilesS3.secretKey | default "" | quote }}),
+      {{- if $profilesS3.bucketName }}
+      'bucket_name': {{ $profilesS3.bucketName | quote }},
+      {{- end }}
+      {{- if $profilesS3.endpointUrl }}
+      'endpoint_url': {{ $profilesS3.endpointUrl | quote }},
+      {{- end }}
+      {{- if $profilesS3.signature_version }}
+      'signature_version': {{ $profilesS3.signature_version | quote }},
+      {{- end }}
+      {{- if $profilesS3.region_name }}
+      'region_name': {{ $profilesS3.region_name | quote }},
+      {{- end }}
+      {{- if $profilesS3.default_acl }}
+      'default_acl': {{ $profilesS3.default_acl | quote }},
+      {{- end }}
+      {{- if $profilesS3.bucket_acl }}
+      'bucket_acl': {{ $profilesS3.bucket_acl | quote }},
+      {{- end }}
+      {{- if $profilesS3.addressing_style }}
+      'addressing_style': {{ $profilesS3.addressing_style | quote }},
+      {{- end }}
+  }
+  {{- end }}
+
+  {{- if eq .Values.filestore.profiles.backend "filesystem" }}
+  SENTRY_OPTIONS['filestore.profiles-options'] = {
+      'location': {{ .Values.filestore.profiles.filesystem.path | quote }},
+  }
+  {{- end }}
+  {{- end }}
+
+  {{- if .Values.nodestore.backend }}
+  {{- if eq .Values.nodestore.backend "s3" }}
+  ################
+  # Node Storage #
+  ################
+
+  # Sentry uses an abstraction layer called "node storage" to store raw events.
+  # Previously, it used PostgreSQL as the backend, but this didn't scale for
+  # high-throughput environments. Read more about this in the documentation:
+  # https://develop.sentry.dev/backend/application-domains/nodestore/
+  #
+  # Through this setting, you can use the provided blob storage or
+  # your own S3-compatible API from your infrastructure.
+  # Other backend implementations for node storage developed by the community
+  # are available in public GitHub repositories.
+  {{- $nodestoreS3 := .Values.nodestore.s3 | default dict }}
+  SENTRY_NODESTORE = "sentry_nodestore_s3.S3PassthroughDjangoNodeStorage"
+  SENTRY_NODESTORE_OPTIONS = {
+      {{- if $nodestoreS3.deleteThrough }}
+      "delete_through": {{ $nodestoreS3.deleteThrough }},
+      {{- end }}
+      {{- if $nodestoreS3.writeThrough }}
+      "write_through": {{ $nodestoreS3.writeThrough }},
+      {{- end }}
+      {{- if $nodestoreS3.readThrough }}
+      "read_through": {{ $nodestoreS3.readThrough }},
+      {{- end }}
+      {{- if $nodestoreS3.compression }}
+      "compression": {{ $nodestoreS3.compression }},
+      {{- end }}
+      {{- if $nodestoreS3.endpointUrl }}
+      "endpoint_url": {{ $nodestoreS3.endpointUrl | quote }},
+      {{- end }}
+      {{- if $nodestoreS3.bucketPath }}
+      "bucket_path": {{ $nodestoreS3.bucketPath | quote }},
+      {{- end }}
+      {{- if $nodestoreS3.bucketName }}
+      "bucket_name": {{ $nodestoreS3.bucketName | quote }},
+      {{- end }}
+      {{- if $nodestoreS3.regionName }}
+      "region_name": {{ $nodestoreS3.regionName | quote }},
+      {{- end }}
+      "aws_access_key_id": os.getenv("NODESTORE_S3_ACCESS_KEY_ID", {{ $nodestoreS3.accessKeyId | default "" | quote }}),
+      "aws_secret_access_key": os.getenv("NODESTORE_S3_SECRET_ACCESS_KEY", {{ $nodestoreS3.secretAccessKey | default "" | quote }}),
+  }
+  {{- end }}
   {{- end }}
 
   #########################
@@ -569,12 +651,6 @@ sentry.conf.py: |-
   #########
   SENTRY_RELAY_WHITELIST_PK = []
   SENTRY_RELAY_OPEN_REGISTRATION = True
-
-  #########
-  # Tasks #
-  #########
-  # Disable taskworker and continue using celery.
-  SENTRY_OPTIONS["taskworker.enabled"] = False
 
   #######################
   # OpenAi Suggestions #
@@ -629,4 +705,57 @@ sentry.conf.py: |-
   SENTRY_OPTIONS['github-app.client-secret'] = os.environ.get("GITHUB_APP_CLIENT_SECRET")
 {{- end }}
   {{ .Values.config.sentryConfPy | nindent 2 }}
+{{- end -}}
+
+{{/*
+Init container for installing sentry-nodestore-s3 package
+*/}}
+{{- define "sentry.initContainer.nodestore-s3" -}}
+{{- if .Values.nodestore.backend }}
+- name: install-nodestore-s3
+  image: "{{ template "sentry.image" . }}"
+  imagePullPolicy: {{ default "IfNotPresent" .Values.images.sentry.pullPolicy }}
+  command:
+    - sh
+    - -c
+    - |
+      pip install --target=/sentry-plugins https://github.com/getsentry/sentry-nodestore-s3/archive/main.zip
+  volumeMounts:
+    - name: sentry-plugins
+      mountPath: /sentry-plugins
+{{- end }}
+{{- end -}}
+
+{{/*
+Volume definition for sentry plugins
+*/}}
+{{- define "sentry.volume.nodestore-s3" -}}
+{{- if .Values.nodestore.backend }}
+- name: sentry-plugins
+  emptyDir: {}
+{{- end }}
+{{- end -}}
+
+{{/*
+Volume mount for sentry plugins
+*/}}
+{{- define "sentry.volumeMount.nodestore-s3" -}}
+{{- if .Values.nodestore.backend }}
+- name: sentry-plugins
+  mountPath: /sentry-plugins
+{{- end }}
+{{- end -}}
+
+{{/*
+Environment variable for Python path to include plugins
+*/}}
+{{- define "sentry.env.nodestore-s3" -}}
+{{- if .Values.nodestore.backend }}
+- name: PYTHONPATH
+  value: "/sentry-plugins"
+{{- if .Values.nodestore.s3.setAwsChecksumCalculationVar }}
+- name: AWS_REQUEST_CHECKSUM_CALCULATION
+  value: when_required
+{{- end }}
+{{- end }}
 {{- end -}}

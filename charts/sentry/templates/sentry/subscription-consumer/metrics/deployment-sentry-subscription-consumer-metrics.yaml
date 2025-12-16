@@ -81,6 +81,8 @@ spec:
       securityContext:
 {{ toYaml .Values.sentry.subscriptionConsumerMetrics.securityContext | indent 8 }}
       {{- end }}
+      initContainers:
+{{ include "sentry.initContainer.nodestore-s3" . | indent 6 }}
       containers:
       - name: {{ .Chart.Name }}-subscription-consumer-metrics
         image: "{{ template "sentry.image" . }}"
@@ -125,6 +127,7 @@ spec:
         - name: C_FORCE_ROOT
           value: "true"
 {{ include "sentry.env" . | indent 8 }}
+{{ include "sentry.env.nodestore-s3" . | indent 8 }}
 {{- if .Values.sentry.subscriptionConsumerMetrics.env }}
 {{ toYaml .Values.sentry.subscriptionConsumerMetrics.env | indent 8 }}
 {{- end }}
@@ -134,6 +137,7 @@ spec:
           readOnly: true
         - mountPath: {{ .Values.filestore.filesystem.path }}
           name: sentry-data
+{{ include "sentry.volumeMount.nodestore-s3" . | indent 8 }}
         {{- if and (eq .Values.filestore.backend "gcs") .Values.filestore.gcs.secretName }}
         - name: sentry-google-cloud-key
           mountPath: /var/run/secrets/google
@@ -160,6 +164,7 @@ spec:
       - name: config
         configMap:
           name: {{ template "sentry.fullname" . }}-sentry
+{{ include "sentry.volume.nodestore-s3" . | indent 6 }}
       - name: sentry-data
       {{- if and (eq .Values.filestore.backend "filesystem") .Values.filestore.filesystem.persistence.enabled (.Values.filestore.filesystem.persistence.persistentWorkers) }}
       {{- if .Values.filestore.filesystem.persistence.existingClaim }}

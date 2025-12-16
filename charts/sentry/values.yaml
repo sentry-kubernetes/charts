@@ -35,7 +35,7 @@ user:
 # recommended to set false for updating the helm chart afterwards,
 # as you will have some downtime on each update if it's a hook
 # deploys relay & snuba consumers as post hooks
-asHook: true
+asHook: false
 
 images:
   sentry:
@@ -65,6 +65,11 @@ images:
     imagePullSecrets: []
   uptimeChecker:
     # repository: getsentry/uptime-checker
+    # tag: Chart.AppVersion
+    # pullPolicy: IfNotPresent
+    imagePullSecrets: []
+  taskbroker:
+    # repository: getsentry/taskbroker
     # tag: Chart.AppVersion
     # pullPolicy: IfNotPresent
     imagePullSecrets: []
@@ -108,10 +113,18 @@ vroom:
     ## If 'lookupVolumeName' is set to true, Helm will attempt to retrieve
     ## the current value of 'spec.volumeName' and incorporate it into the template.
     lookupVolumeName: true
+    ## Access modes for the PVC
+    ## IMPORTANT: If filestore.profiles.filesystem.persistence.shareWithVroom is true,
+    ## you MUST include "ReadWriteMany" to allow both vroom and ingest-profiles pods
+    ## to mount the same volume. Example:
+    ## accessModes:
+    ##   - ReadWriteMany
     accessModes:
       - ReadWriteOnce
     # storageClassName: standard
     size: "10Gi"
+    # this will be passed to the SENTRY_BUCKET_PROFILES env var
+    bucketString: "file:///var/vroom/sentry-profiles"
 
   autoscaling:
     enabled: false
@@ -310,124 +323,108 @@ sentry:
   # - organizations:derive-code-mappings
   # other feature here https://github.com/getsentry/sentry/blob/24.11.2/src/sentry/features/temporary.py
 
-  worker:
+  taskBroker:
     enabled: true
-    annotations: {}
     replicas: 1
-    # concurrency: 4
     env: []
-    existingSecretEnv: ""
     resources: {}
-    #  requests:
-    #    cpu: 1000m
-    #    memory: 1100Mi
     affinity: {}
     nodeSelector: {}
-    # tolerations: []
-    # podLabels: {}
-    # logLevel: "WARNING" # DEBUG|INFO|WARNING|ERROR|CRITICAL|FATAL
-    # logFormat: "machine" # human|machine
-    # excludeQueues: ""
-    # maxTasksPerChild: 1000
-    # it's better to use prometheus adapter and scale based on
-    # the size of the rabbitmq queue
-    autoscaling:
-      enabled: false
-      minReplicas: 2
-      maxReplicas: 5
-      targetCPUUtilizationPercentage: 50
-      # Only available with autoscaling/v2
-      behavior: {}
-    livenessProbe:
+    securityContext: {}
+    containerSecurityContext: {}
+    topologySpreadConstraints: []
+    sidecars: []
+    volumes: []
+    volumeMounts: []
+    priorityClassName: ""
+    tolerations: []
+    persistence:
       enabled: true
-      periodSeconds: 60
-      timeoutSeconds: 10
-      failureThreshold: 3
-    sidecars: []
-    # securityContext: {}
-    # containerSecurityContext: {}
-    # priorityClassName: ""
-    topologySpreadConstraints: []
-    volumes: []
-    volumeMounts: []
+      size: 1Gi
+      storageClass: ""
+      accessMode: ReadWriteOnce
+    brokers:
+      - name: default
+        topic: taskworker
+        consumerGroup: taskworker
+        replicas: 1
+      - name: ingest
+        topic: taskworker-ingest
+        consumerGroup: taskworker-ingest
+        replicas: 1
+      - name: long
+        topic: taskworker-long
+        consumerGroup: taskworker-long
+        replicas: 1
+      - name: products
+        topic: taskworker-products
+        consumerGroup: taskworker-products
+        replicas: 1
 
-  # allows to dedicate some workers to specific queues
-  workerEvents:
-    ## If the number of exceptions increases, it is recommended to enable workerEvents
-    enabled: false
-    annotations: {}
-    queues: "events.save_event,post_process_errors"
-    ## When increasing the number of exceptions and enabling workerEvents, it is recommended to increase the number of their replicas
+  taskScheduler:
+    enabled: true
     replicas: 1
-    # concurrency: 4
     env: []
     resources: {}
     affinity: {}
     nodeSelector: {}
-    # tolerations: []
-    # podLabels: {}
-    # logLevel: "WARNING" # DEBUG|INFO|WARNING|ERROR|CRITICAL|FATAL
-    # logFormat: "machine" # human|machine
-    # maxTasksPerChild: 1000
-    # it's better to use prometheus adapter and scale based on
-    # the size of the rabbitmq queue
+    securityContext: {}
+    containerSecurityContext: {}
+    topologySpreadConstraints: []
+    sidecars: []
+    volumes: []
+    volumeMounts: []
+    priorityClassName: ""
+    tolerations: []
+
+  taskWorker:
+    enabled: true
+    replicas: 1
+    concurrency: 4
     autoscaling:
       enabled: false
-      minReplicas: 2
+      minReplicas: 1
       maxReplicas: 5
       targetCPUUtilizationPercentage: 50
       # Only available with autoscaling/v2
       behavior: {}
-    livenessProbe:
-      enabled: false
-      periodSeconds: 60
-      timeoutSeconds: 10
-      failureThreshold: 3
-    sidecars: []
-    # securityContext: {}
-    # containerSecurityContext: {}
-    # priorityClassName: ""
-    topologySpreadConstraints: []
-    volumes: []
-    volumeMounts: []
-
-  # allows to dedicate some workers to specific queues
-  workerTransactions:
-    enabled: false
-    annotations: {}
-    queues: "events.save_event_transaction,post_process_transactions"
-    replicas: 1
-    # concurrency: 4
     env: []
     resources: {}
     affinity: {}
     nodeSelector: {}
-    # tolerations: []
-    # podLabels: {}
-    # logLevel: "WARNING" # DEBUG|INFO|WARNING|ERROR|CRITICAL|FATAL
-    # logFormat: "machine" # human|machine
-    # maxTasksPerChild: 1000
-    # it's better to use prometheus adapter and scale based on
-    # the size of the rabbitmq queue
-    autoscaling:
-      enabled: false
-      minReplicas: 2
-      maxReplicas: 5
-      targetCPUUtilizationPercentage: 50
-      # Only available with autoscaling/v2
-      behavior: {}
-    livenessProbe:
-      enabled: false
-      periodSeconds: 60
-      timeoutSeconds: 10
-      failureThreshold: 3
-    sidecars: []
-    # securityContext: {}
-    # containerSecurityContext: {}
-    # priorityClassName: ""
+    securityContext: {}
+    containerSecurityContext: {}
     topologySpreadConstraints: []
+    sidecars: []
     volumes: []
     volumeMounts: []
+    priorityClassName: ""
+    tolerations: []
+    livenessProbe:
+      initialDelaySeconds: 10
+      periodSeconds: 10
+      timeoutSeconds: 5
+    workers:
+      - name: default
+        brokerName: default
+        brokerReplicas: 1
+        concurrency: 4
+        replicas: 1
+      - name: ingest
+        brokerName: ingest
+        brokerReplicas: 1
+        concurrency: 4
+        replicas: 1
+      - name: long
+        brokerName: long
+        brokerReplicas: 1
+        concurrency: 4
+        replicas: 1
+      - name: products
+        brokerName: products
+        brokerReplicas: 1
+        concurrency: 4
+        replicas: 1
 
   ingestConsumerAttachments:
     enabled: true
@@ -891,25 +888,6 @@ sentry:
     #     name: dshm
     # autoOffsetReset: "earliest"
     # noStrictOffsetReset: false
-
-  cron:
-    enabled: true
-    replicas: 1
-    env: []
-    resources: {}
-    affinity: {}
-    nodeSelector: {}
-    # tolerations: []
-    # podLabels: {}
-    sidecars: []
-    topologySpreadConstraints: []
-    volumes: []
-    # volumeMounts: []
-    # logLevel: "WARNING" # DEBUG|INFO|WARNING|ERROR|CRITICAL|FATAL
-    # logFormat: "machine" # human|machine
-    # priorityClassName: ""
-    # securityContext: {}
-    # containerSecurityContext: {}
 
   subscriptionConsumerResultsEapItems:
     enabled: true
@@ -1793,39 +1771,6 @@ snuba:
     #     emptyDir:
     #       medium: Memory
 
-  uptimeResultsConsumer:
-    enabled: true
-    replicas: 1
-    env: []
-    resources: {}
-    affinity: {}
-    nodeSelector: {}
-    securityContext: {}
-    topologySpreadConstraints: []
-    containerSecurityContext: {}
-    # tolerations: []
-    # podLabels: {}
-    # autoOffsetReset: "earliest"
-    livenessProbe:
-      enabled: true
-      initialDelaySeconds: 5
-      periodSeconds: 320
-    # maxBatchSize: ""
-    # processes: ""
-    # inputBlockSize: ""
-    # outputBlockSize: ""
-    maxBatchTimeMs: 750
-    # queuedMaxMessagesKbytes: ""
-    # queuedMinMessages: ""
-    # noStrictOffsetReset: false
-    # volumeMounts:
-    #   - mountPath: /dev/shm
-    #     name: dshm
-    # volumes:
-    #   - name: dshm
-    #     emptyDir:
-    #       medium: Memory
-
   profilingProfilesConsumer:
     replicas: 1
     env: []
@@ -1927,39 +1872,6 @@ snuba:
     #       medium: Memory
 
   issueOccurrenceConsumer:
-    enabled: true
-    replicas: 1
-    env: []
-    resources: {}
-    affinity: {}
-    nodeSelector: {}
-    securityContext: {}
-    topologySpreadConstraints: []
-    containerSecurityContext: {}
-    # tolerations: []
-    # podLabels: {}
-    # autoOffsetReset: "earliest"
-    livenessProbe:
-      enabled: true
-      initialDelaySeconds: 5
-      periodSeconds: 320
-    # maxBatchSize: ""
-    # processes: ""
-    # inputBlockSize: ""
-    # outputBlockSize: ""
-    maxBatchTimeMs: 750
-    # queuedMaxMessagesKbytes: ""
-    # queuedMinMessages: ""
-    # noStrictOffsetReset: false
-    # volumeMounts:
-    #   - mountPath: /dev/shm
-    #     name: dshm
-    # volumes:
-    #   - name: dshm
-    #     emptyDir:
-    #       medium: Memory
-
-  spansConsumer:
     enabled: true
     replicas: 1
     env: []
@@ -2210,7 +2122,7 @@ symbolicator:
   api:
     cleaner:
       enabled: true
-      sleepInterval: 3600
+      repeat: "1h"
     usedeployment: true  # Set true to use Deployment, false for StatefulSet
     persistence:
       enabled: true  # Set true for using PersistentVolumeClaim, false for emptyDir
@@ -2449,9 +2361,6 @@ filestore:
     # credentialsFile: credentials.json
   # bucketName:
 
-  ## Currently unconfigured and changing this has no impact on the template configuration.
-  ## Note that you can use a secret with default references "s3-access-key-id" and "s3-secret-access-key".
-  ## Otherwise, you can use custom secret references, or use plain text values.
   s3: {}
   #  existingSecret:
   #  accessKeyIdRef:
@@ -2464,9 +2373,111 @@ filestore:
   #  region_name:
   #  default_acl:
 
+  ## Profiles storage configuration
+  ## The profiling team has been working on vroomrs, and it's now doing the heavy lifting.
+  ## The ingest-profiles container now processes profiles immediately via vroomrs and writes
+  ## them directly to your bucket. This streamlines the pipeline.
+  ##
+  ## RECOMMENDATION: Use an S3-compatible backend for profiles storage (e.g., AWS S3, MinIO, SeaweedFS).
+  ## While filesystem backend is supported (for sharing PVC between vroom and ingest-profiles pods),
+  ## it's not recommended for production use due to performance and scalability concerns.
+  profiles:
+    # Set to one of filesystem or s3 as supported by Sentry profiling.
+    backend: filesystem
+    s3:
+    #  existingSecret:
+    #  accessKeyIdRef:
+    #  secretAccessKeyRef:
+    #  accessKey:
+    #  secretKey:
+    #  bucketName:
+    #  endpointUrl:
+    #  signature_version:
+    #  region_name:
+    #  default_acl:
+    filesystem:
+      ## Not recommended for production. Use only for development or when sharing PVC
+      ## between vroom and ingest-profiles pods.
+      path: /var/lib/sentry/files/profiles
+
+      ## Enable persistence using Persistent Volume Claims
+      ## ref: http://kubernetes.io/docs/user-guide/persistent-volumes/
+      ##
+      persistence:
+        enabled: true
+        ## Whether to share the PVC with the vroom deployment.
+        ## IMPORTANT: When enabled, you MUST set vroom.persistence.accessModes to include "ReadWriteMany"
+        ## to allow both vroom and ingest-profiles pods to mount the same volume.
+        ## This is NOT recommended for production use. Use S3-compatible backend instead.
+        shareWithVroom: false
+
+        ## If defined, storageClassName: <storageClass>
+        ## If set to "-", storageClassName: "", which disables dynamic provisioning
+        ## If undefined (the default) or set to null, no storageClassName spec is
+        ##   set, choosing the default provisioner.
+        ##
+        # storageClassName: "-"
+
+        ## Access mode - set to ReadWriteMany when shareWithVroom is true
+        accessModes:
+          - ReadWriteOnce
+
+        size: 10Gi
+
+        ## If existingClaim is specified, no PVC will be created and this claim will
+        ## be used (shareWithVroom setting will be ignored)
+        existingClaim: ""
+
+        ## If 'lookupVolumeName' is set to true, Helm will attempt to retrieve
+        ## the current value of 'spec.volumeName' and incorporate it into the template.
+        lookupVolumeName: true
+
+## Node Storage configuration
+## Sentry uses an abstraction layer called "node storage" to store raw events.
+## Previously, it used PostgreSQL as the backend, but this didn't scale for
+## high-throughput environments.
+## https://develop.sentry.dev/backend/application-domains/nodestore/
+##
+## IMPORTANT: This requires the sentry-nodestore-s3 package to be installed.
+## This chart automatically installs it via init containers ONLY when nodestore.backend is configured.
+nodestore:
+  # Set to "s3" to enable S3-based node storage
+  # When backend is empty (default), nodestore-s3 is NOT installed
+  backend: ""
+  s3:
+    # deleteThrough: "False"
+    # writeThrough: "False"
+    # readThrough: "False"
+    # compression: "True"
+    # existingSecret: "nodestore-s3-credentials"
+    # accessKeyIdRef: "access-key-id"
+    # secretAccessKeyRef: "secret-access-key"
+    # accessKeyId: ""
+    # secretAccessKey: ""
+    # bucketName: "nodestore"
+    # bucketPath: "nodestore"
+    # endpointUrl: "http://seaweedfs:8333"
+    # regionName: "us-east-1"
+    # If you are using S3 provider other than AWS, and seeing SignatureDoesNotMatch errors enable this
+    # setAwsChecksumCalculationVar: false
+
 config:
   # No YAML Extension Config Given
   configYml: {}
+  taskbrokerRoutingYml:
+    taskworker.route.overrides:
+      "ingest.profiling": "taskworker-ingest"
+      "ingest.errors": "taskworker-ingest"
+      "ingest.transactions": "taskworker-ingest"
+      "ingest.attachments": "taskworker-ingest"
+      "ingest.errors.postprocess": "taskworker-ingest"
+      "deletions": "taskworker-long"
+      "deletions.control": "taskworker-long"
+      "crons": "taskworker-products"
+      "uptime": "taskworker-products"
+      "replays": "taskworker-products"
+      "profiling": "taskworker-products"
+      "releasehealth": "taskworker-products"
   sentryConfPy: |
     # No Python Extension Config Given
   snubaSettingsPy: |
@@ -2934,83 +2945,6 @@ externalPostgresql:
   ## Default connection max age is 0 (unlimited connections)
   ## Set to a higher number to close connections after a period of time in seconds
   connMaxAge: 0
-
-rabbitmq:
-  ## If disabled, Redis will be used instead as the broker.
-  enabled: true
-  image:
-    repository: bitnamilegacy/rabbitmq
-  vhost: /
-  clustering:
-    forceBoot: true
-    rebalance: true
-  replicaCount: 1
-  auth:
-    erlangCookie: pHgpy3Q6adTskzAT6bLHCFqFTF7lMxhA
-    username: guest
-    password: guest
-  nameOverride: ""
-  pdb:
-    create: true
-  persistence:
-    enabled: true
-  resources: {}
-  memoryHighWatermark: {}
-    # enabled: true
-    # type: relative
-    # value: 0.4
-  extraSecrets:
-    load-definition:
-      load_definition.json: |
-        {
-          "users": [
-            {
-              "name": "{{ .Values.auth.username }}",
-              "password": "{{ .Values.auth.password }}",
-              "tags": "administrator"
-            }
-          ],
-          "permissions": [{
-            "user": "{{ .Values.auth.username }}",
-            "vhost": "/",
-            "configure": ".*",
-            "write": ".*",
-            "read": ".*"
-          }],
-          "policies": [
-            {
-              "name": "ha-all",
-              "pattern": ".*",
-              "vhost": "/",
-              "definition": {
-                "ha-mode": "all",
-                "ha-sync-mode": "automatic",
-                "ha-sync-batch-size": 1
-              }
-            }
-          ],
-          "vhosts": [
-            {
-              "name": "/"
-            }
-          ]
-        }
-  loadDefinition:
-    enabled: true
-    existingSecret: load-definition
-  extraConfiguration: |
-    load_definitions = /app/load_definition.json
-  ## Use this to enable an extra service account
-  # serviceAccount:
-  #   create: false
-  #   name: rabbitmq
-  metrics:
-    enabled: false
-    serviceMonitor:
-      enabled: false
-      path: "/metrics/per-object"  # https://www.rabbitmq.com/docs/prometheus
-      labels:
-        release: "prometheus-operator"  # helm release of kube-prometheus-stack
 
 memcached:
   image:

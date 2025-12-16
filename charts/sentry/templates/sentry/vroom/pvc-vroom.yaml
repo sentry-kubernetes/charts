@@ -1,6 +1,6 @@
 {{- if has "feature-complete" .Values.profiles }}
 {{- if .Values.sentry.features.enableProfiling }}
-{{- if .Values.vroom.persistence.enabled }}
+{{- if and .Values.vroom.persistence.enabled (not .Values.filestore.profiles.filesystem.persistence.existingClaim) }}
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:

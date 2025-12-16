@@ -1,0 +1,159 @@
+{{- if .Values.sentry.taskBroker.enabled }}
+{{- $root := . }}
+{{- range $broker := .Values.sentry.taskBroker.brokers }}
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ template "sentry.fullname" $root }}-taskbroker-{{ $broker.name }}
+  labels:
+    app: {{ template "sentry.fullname" $root }}
+    chart: "{{ $root.Chart.Name }}-{{ $root.Chart.Version | replace "+" "_" }}"
+    release: "{{ $root.Release.Name }}"
+    heritage: "{{ $root.Release.Service }}"
+    role: taskbroker-{{ $broker.name }}
+    {{- include "sentry.component.labels" (dict "component" (printf "taskbroker-%s" $broker.name) "ctx" $root) | nindent 4 }}
+spec:
+  serviceName: {{ template "sentry.fullname" $root }}-taskbroker-{{ $broker.name }}
+  replicas: {{ default $root.Values.sentry.taskBroker.replicas $broker.replicas }}
+  selector:
+    matchLabels:
+      app: {{ template "sentry.fullname" $root }}
+      release: "{{ $root.Release.Name }}"
+      role: taskbroker-{{ $broker.name }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "sentry.fullname" $root }}
+        release: "{{ $root.Release.Name }}"
+        role: taskbroker-{{ $broker.name }}
+        {{- include "sentry.component.labels" (dict "component" (printf "taskbroker-%s" $broker.name) "ctx" $root) | nindent 8 }}
+      annotations:
+        checksum/configYml: {{ $root.Values.config.configYml | toYaml | toString | sha256sum }}
+        checksum/sentryConfPy: {{ $root.Values.config.sentryConfPy | sha256sum }}
+        checksum/config.yaml: {{ include "sentry.config" $root | sha256sum }}
+      {{- if $root.Values.sentry.taskBroker.annotations }}
+{{ toYaml $root.Values.sentry.taskBroker.annotations | indent 8 }}
+      {{- end }}          
+    spec:
+      {{- if $root.Values.images.taskbroker.imagePullSecrets }}
+      imagePullSecrets:
+{{ toYaml $root.Values.images.taskbroker.imagePullSecrets | indent 8 }}
+      {{- end }}
+      affinity:
+      {{- if $root.Values.sentry.taskBroker.affinity }}
+{{ toYaml $root.Values.sentry.taskBroker.affinity | indent 8 }}
+      {{- end }}
+      {{- if $root.Values.sentry.taskBroker.nodeSelector }}
+      nodeSelector:
+{{ toYaml $root.Values.sentry.taskBroker.nodeSelector | indent 8 }}
+      {{- else if $root.Values.global.nodeSelector }}
+      nodeSelector:
+{{ toYaml $root.Values.global.nodeSelector | indent 8 }}
+      {{- end }}
+      {{- if $root.Values.sentry.taskBroker.tolerations }}
+      tolerations:
+{{ toYaml $root.Values.sentry.taskBroker.tolerations | indent 8 }}
+      {{- else if $root.Values.global.tolerations }}
+      tolerations:
+{{ toYaml $root.Values.global.tolerations | indent 8 }}
+      {{- end }}
+      {{- if $root.Values.sentry.taskBroker.topologySpreadConstraints }}
+      topologySpreadConstraints:
+{{ toYaml $root.Values.sentry.taskBroker.topologySpreadConstraints | indent 8 }}
+      {{- end }}
+      {{- if $root.Values.sentry.taskBroker.securityContext }}
+      securityContext:
+{{ toYaml $root.Values.sentry.taskBroker.securityContext | indent 8 }}
+      {{- end }}
+      {{- if $root.Values.sentry.taskBroker.priorityClassName }}
+      priorityClassName: "{{ $root.Values.sentry.taskBroker.priorityClassName }}"
+      {{- end }}
+      {{- if $root.Values.serviceAccount.enabled }}
+      serviceAccountName: {{ $root.Values.serviceAccount.name }}-taskbroker
+      {{- end }}
+      containers:
+      - name: taskbroker
+        image: "{{ template "taskbroker.image" $root }}"
+        imagePullPolicy: {{ default "IfNotPresent" $root.Values.images.taskbroker.pullPolicy }}
+        env:
+        - name: TASKBROKER_KAFKA_TOPIC
+          value: {{ $broker.topic }}
+        - name: TASKBROKER_KAFKA_CONSUMER_GROUP
+          value: {{ $broker.consumerGroup }}
+        - name: TASKBROKER_DB_PATH
+          value: /opt/sqlite/taskbroker-activations.sqlite
+        - name: TASKBROKER_KAFKA_CLUSTER
+          value: {{ include "sentry.kafka.bootstrap_servers_string" $root | quote }}
+{{ include "sentry.env" $root | indent 8 }}
+{{- if $root.Values.sentry.taskBroker.env }}
+{{ toYaml $root.Values.sentry.taskBroker.env | indent 8 }}
+{{- end }}
+        ports:
+        - containerPort: 50051
+          name: grpc
+        resources:
+{{ toYaml $root.Values.sentry.taskBroker.resources | indent 10 }}
+{{- if $root.Values.sentry.taskBroker.containerSecurityContext }}
+        securityContext:
+{{ toYaml $root.Values.sentry.taskBroker.containerSecurityContext | indent 10 }}
+{{- end }}
+        volumeMounts:
+        - name: data
+          mountPath: /opt/sqlite
+        - mountPath: /etc/sentry
+          name: config
+          readOnly: true
+{{- if $root.Values.sentry.taskBroker.volumeMounts }}
+{{ toYaml $root.Values.sentry.taskBroker.volumeMounts | indent 8 }}
+{{- end }}
+{{- if $root.Values.sentry.taskBroker.sidecars }}
+{{ toYaml $root.Values.sentry.taskBroker.sidecars | indent 6 }}
+{{- end }}
+{{- if $root.Values.global.sidecars }}
+{{ toYaml $root.Values.global.sidecars | indent 6 }}
+{{- end }}
+      volumes:
+      - name: config
+        configMap:
+          name: {{ template "sentry.fullname" $root }}-sentry
+{{- if $root.Values.sentry.taskBroker.volumes }}
+{{ toYaml $root.Values.sentry.taskBroker.volumes | indent 6 }}
+{{- end }}
+{{- if $root.Values.global.volumes }}
+{{ toYaml $root.Values.global.volumes | indent 6 }}
+{{- end }}
+  volumeClaimTemplates:
+  - metadata:
+      name: data
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: {{ default "1Gi" $root.Values.sentry.taskBroker.persistence.size }}
+      {{- if $root.Values.sentry.taskBroker.persistence.storageClass }}
+      {{- if (eq "-" $root.Values.sentry.taskBroker.persistence.storageClass) }}
+      storageClassName: ""
+      {{- else }}
+      storageClassName: {{ $root.Values.sentry.taskBroker.persistence.storageClass }}
+      {{- end }}
+      {{- end }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "sentry.fullname" $root }}-taskbroker-{{ $broker.name }}
+  labels:
+    app: {{ template "sentry.fullname" $root }}
+    release: "{{ $root.Release.Name }}"
+    role: taskbroker-{{ $broker.name }}
+spec:
+  ports:
+  - port: 50051
+    name: grpc
+  clusterIP: None
+  selector:
+    app: {{ template "sentry.fullname" $root }}
+    role: taskbroker-{{ $broker.name }}
+---
+{{- end }}
+{{- end }}

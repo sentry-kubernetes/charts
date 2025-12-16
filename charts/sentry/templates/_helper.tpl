@@ -58,6 +58,12 @@
 {{- default .Chart.AppVersion .Values.images.uptimeChecker.tag -}}
 {{- end -}}
 
+{{- define "taskbroker.image" -}}
+{{- default "ghcr.io/getsentry/taskbroker" .Values.images.taskbroker.repository -}}
+:
+{{- default .Chart.AppVersion .Values.images.taskbroker.tag -}}
+{{- end -}}
+
 {{/*
 Expand the name of the chart.
 */}}
@@ -180,10 +186,6 @@ We truncate at 63 chars because some Kubernetes name fields are limited to this 
 {{- printf "%s-%s" .Release.Name "sentry-redis" | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 {{- end -}}
-{{- end -}}
-
-{{- define "sentry.rabbitmq.fullname" -}}
-{{- printf "%s-%s" .Release.Name "rabbitmq" | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 
 {{- define "sentry.clickhouse.fullname" -}}
@@ -627,17 +629,6 @@ Set Senty socket.timeout for Kafka
 {{- end -}}
 
 {{/*
-Set RabbitMQ host
-*/}}
-{{- define "sentry.rabbitmq.host" -}}
-{{- if .Values.rabbitmq.enabled -}}
-{{- default "sentry-rabbitmq-ha"  (include "sentry.rabbitmq.fullname" .) -}}
-{{- else -}}
-{{ .Values.rabbitmq.host }}
-{{- end -}}
-{{- end -}}
-
-{{/*
 Common Snuba environment variables
 */}}
 {{- define "sentry.snuba.env" -}}
@@ -714,7 +705,7 @@ Set external Clickhouse password from existingSecret
 - name: SENTRY_KAFKA_BROKERS_OCCURRENCES
   value: {{ include "sentry.kafka.bootstrap_servers_string" . | quote }}
 - name: SENTRY_BUCKET_PROFILES
-  value: "file:///var/vroom/sentry-profiles"
+  value: {{ .Values.vroom.persistence.bucketString | quote }}
 - name: SENTRY_SNUBA_HOST
   value: http://{{ template "sentry.fullname" . }}-snuba:{{ template "snuba.port" . }}
 {{- end -}}
@@ -862,6 +853,38 @@ Set S3
     secretKeyRef:
       name: {{ .Values.filestore.s3.existingSecret }}
       key: {{ default "s3-secret-access-key" .Values.filestore.s3.secretAccessKeyRef }}
+{{- end }}
+
+{{/*
+Set Profiles S3
+*/}}
+{{- if and (eq .Values.filestore.profiles.backend "s3") (.Values.filestore.profiles.s3) (.Values.filestore.profiles.s3.existingSecret) }}
+- name: PROFILES_S3_ACCESS_KEY_ID
+  valueFrom:
+    secretKeyRef:
+      name: {{ .Values.filestore.profiles.s3.existingSecret }}
+      key: {{ default "s3-access-key-id" .Values.filestore.profiles.s3.accessKeyIdRef }}
+- name: PROFILES_S3_SECRET_ACCESS_KEY
+  valueFrom:
+    secretKeyRef:
+      name: {{ .Values.filestore.profiles.s3.existingSecret }}
+      key: {{ default "s3-secret-access-key" .Values.filestore.profiles.s3.secretAccessKeyRef }}
+{{- end }}
+
+{{/*
+Set Nodestore S3
+*/}}
+{{- if and (eq .Values.nodestore.backend "s3") (.Values.nodestore.s3) (.Values.nodestore.s3.existingSecret) }}
+- name: NODESTORE_S3_ACCESS_KEY_ID
+  valueFrom:
+    secretKeyRef:
+      name: {{ .Values.nodestore.s3.existingSecret }}
+      key: {{ default "s3-access-key-id" .Values.nodestore.s3.accessKeyIdRef }}
+- name: NODESTORE_S3_SECRET_ACCESS_KEY
+  valueFrom:
+    secretKeyRef:
+      name: {{ .Values.nodestore.s3.existingSecret }}
+      key: {{ default "s3-secret-access-key" .Values.nodestore.s3.secretAccessKeyRef }}
 {{- end }}
 
 {{/*

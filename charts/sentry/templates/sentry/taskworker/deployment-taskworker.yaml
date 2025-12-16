@@ -1,0 +1,184 @@
+{{- if .Values.sentry.taskWorker.enabled }}
+{{- $root := . }}
+{{- range $worker := .Values.sentry.taskWorker.workers }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "sentry.fullname" $root }}-taskworker-{{ $worker.name }}
+  labels:
+    app: {{ template "sentry.fullname" $root }}
+    chart: "{{ $root.Chart.Name }}-{{ $root.Chart.Version | replace "+" "_" }}"
+    release: "{{ $root.Release.Name }}"
+    heritage: "{{ $root.Release.Service }}"
+    role: taskworker-{{ $worker.name }}
+    {{- include "sentry.component.labels" (dict "component" (printf "taskworker-%s" $worker.name) "ctx" $root) | nindent 4 }}
+spec:
+  revisionHistoryLimit: {{ $root.Values.revisionHistoryLimit }}
+{{- $workerAutoscaling := default dict $worker.autoscaling }}
+{{- $globalAutoscaling := default dict $root.Values.sentry.taskWorker.autoscaling }}
+{{- $enabled := false }}
+{{- if hasKey $workerAutoscaling "enabled" }}
+  {{- $enabled = $workerAutoscaling.enabled }}
+{{- else if hasKey $globalAutoscaling "enabled" }}
+  {{- $enabled = $globalAutoscaling.enabled }}
+{{- end }}
+{{- if not $enabled }}
+  replicas: {{ default $root.Values.sentry.taskWorker.replicas $worker.replicas }}
+{{- end }}
+  selector:
+    matchLabels:
+        app: {{ template "sentry.fullname" $root }}
+        release: "{{ $root.Release.Name }}"
+        role: taskworker-{{ $worker.name }}
+  template:
+    metadata:
+      annotations:
+        checksum/configYml: {{ $root.Values.config.configYml | toYaml | toString | sha256sum }}
+        checksum/sentryConfPy: {{ $root.Values.config.sentryConfPy | sha256sum }}
+        checksum/config.yaml: {{ include "sentry.config" $root | sha256sum }}
+      {{- if $root.Values.sentry.taskWorker.annotations }}
+{{ toYaml $root.Values.sentry.taskWorker.annotations | indent 8 }}
+      {{- end }}          
+      labels:
+        app: {{ template "sentry.fullname" $root }}
+        release: "{{ $root.Release.Name }}"
+        role: taskworker-{{ $worker.name }}
+        {{- include "sentry.component.labels" (dict "component" (printf "taskworker-%s" $worker.name) "ctx" $root) | nindent 8 }}
+    spec:
+      {{- if $root.Values.images.sentry.imagePullSecrets }}
+      imagePullSecrets:
+{{ toYaml $root.Values.images.sentry.imagePullSecrets | indent 8 }}
+      {{- end }}
+      affinity:
+      {{- if $root.Values.sentry.taskWorker.affinity }}
+{{ toYaml $root.Values.sentry.taskWorker.affinity | indent 8 }}
+      {{- end }}
+      {{- if $root.Values.sentry.taskWorker.nodeSelector }}
+      nodeSelector:
+{{ toYaml $root.Values.sentry.taskWorker.nodeSelector | indent 8 }}
+      {{- else if $root.Values.global.nodeSelector }}
+      nodeSelector:
+{{ toYaml $root.Values.global.nodeSelector | indent 8 }}
+      {{- end }}
+      {{- if $root.Values.sentry.taskWorker.tolerations }}
+      tolerations:
+{{ toYaml $root.Values.sentry.taskWorker.tolerations | indent 8 }}
+      {{- else if $root.Values.global.tolerations }}
+      tolerations:
+{{ toYaml $root.Values.global.tolerations | indent 8 }}
+      {{- end }}
+      {{- if $root.Values.sentry.taskWorker.topologySpreadConstraints }}
+      topologySpreadConstraints:
+{{ toYaml $root.Values.sentry.taskWorker.topologySpreadConstraints | indent 8 }}
+      {{- end }}
+      {{- if $root.Values.sentry.taskWorker.securityContext }}
+      securityContext:
+{{ toYaml $root.Values.sentry.taskWorker.securityContext | indent 8 }}
+      {{- end }}
+      {{- if $root.Values.sentry.taskWorker.priorityClassName }}
+      priorityClassName: "{{ $root.Values.sentry.taskWorker.priorityClassName }}"
+      {{- end }}
+      {{- if $root.Values.serviceAccount.enabled }}
+      serviceAccountName: {{ $root.Values.serviceAccount.name }}-taskworker
+      {{- end }}
+      dnsConfig:
+        searches:
+          - {{ template "sentry.fullname" $root }}-taskbroker-{{ $worker.brokerName }}.{{ $root.Release.Namespace }}.svc.cluster.local
+      initContainers:
+{{ include "sentry.initContainer.nodestore-s3" $root | indent 6 }}
+      containers:
+      - name: taskworker
+        image: "{{ template "sentry.image" $root }}"
+        imagePullPolicy: {{ default "IfNotPresent" $root.Values.images.sentry.pullPolicy }}
+        command: ["sentry"]
+        args:
+          - "run"
+          - "taskworker"
+          - "--concurrency={{ default $root.Values.sentry.taskWorker.concurrency $worker.concurrency }}"
+          - "--rpc-host={{ template "sentry.fullname" $root }}-taskbroker-{{ $worker.brokerName }}:50051"
+          - "--num-brokers={{ default $root.Values.sentry.taskBroker.replicas $worker.brokerReplicas }}"
+          - "--health-check-file-path=/tmp/health.txt"
+        env:
+        - name: C_FORCE_ROOT
+          value: "true"
+{{ include "sentry.env" $root | indent 8 }}
+{{ include "sentry.snuba.env" $root | indent 8 }}
+{{ include "sentry.env.nodestore-s3" $root | indent 8 }}
+{{- if $root.Values.sentry.taskWorker.env }}
+{{ toYaml $root.Values.sentry.taskWorker.env | indent 8 }}
+{{- end }}
+        resources:
+{{ toYaml $root.Values.sentry.taskWorker.resources | indent 10 }}
+{{- if $root.Values.sentry.taskWorker.containerSecurityContext }}
+        securityContext:
+{{ toYaml $root.Values.sentry.taskWorker.containerSecurityContext | indent 10 }}
+{{- end }}
+        volumeMounts:
+        - mountPath: /etc/sentry
+          name: config
+          readOnly: true
+        - mountPath: {{ $root.Values.filestore.filesystem.path }}
+          name: sentry-data
+{{ include "sentry.volumeMount.nodestore-s3" $root | indent 8 }}
+        {{- if and $root.Values.geodata.volumeName $root.Values.geodata.accountID }}
+        - name: {{ $root.Values.geodata.volumeName }}
+          mountPath: {{ $root.Values.geodata.mountPath }}
+          readOnly: true
+        {{- end }}
+        {{- if and (eq $root.Values.filestore.backend "gcs") $root.Values.filestore.gcs.secretName }}
+        - name: sentry-google-cloud-key
+          mountPath: /var/run/secrets/google
+        {{ end }}
+{{- if $root.Values.sentry.taskWorker.volumeMounts }}
+{{ toYaml $root.Values.sentry.taskWorker.volumeMounts | indent 8 }}
+{{- end }}
+        livenessProbe:
+          exec:
+            command:
+            - rm
+            - /tmp/health.txt
+          initialDelaySeconds: {{ default 10 $root.Values.sentry.taskWorker.livenessProbe.initialDelaySeconds }}
+          periodSeconds: {{ default 10 $root.Values.sentry.taskWorker.livenessProbe.periodSeconds }}
+          timeoutSeconds: {{ default 5 $root.Values.sentry.taskWorker.livenessProbe.timeoutSeconds }}
+{{- if $root.Values.sentry.taskWorker.sidecars }}
+{{ toYaml $root.Values.sentry.taskWorker.sidecars | indent 6 }}
+{{- end }}
+{{- if $root.Values.global.sidecars }}
+{{ toYaml $root.Values.global.sidecars | indent 6 }}
+{{- end }}
+      volumes:
+      - name: config
+        configMap:
+          name: {{ template "sentry.fullname" $root }}-sentry
+{{ include "sentry.volume.nodestore-s3" $root | indent 6 }}
+      - name: sentry-data
+      {{- if and (eq $root.Values.filestore.backend "filesystem") $root.Values.filestore.filesystem.persistence.enabled ($root.Values.filestore.filesystem.persistence.persistentWorkers) }}
+      {{- if $root.Values.filestore.filesystem.persistence.existingClaim }}
+        persistentVolumeClaim:
+          claimName: {{ $root.Values.filestore.filesystem.persistence.existingClaim }}
+      {{- else }}
+        persistentVolumeClaim:
+          claimName: {{ template "sentry.fullname" $root }}-data
+      {{- end }}
+      {{- else }}
+        emptyDir: {}
+      {{ end }}
+      {{- if and (eq $root.Values.filestore.backend "gcs") $root.Values.filestore.gcs.secretName }}
+      - name: sentry-google-cloud-key
+        secret:
+          secretName: {{ $root.Values.filestore.gcs.secretName }}
+      {{ end }}
+      {{- if and $root.Values.geodata.volumeName $root.Values.geodata.accountID }}
+      - name: {{ $root.Values.geodata.volumeName }}
+        persistentVolumeClaim:
+          claimName: data-sentry-geoip
+      {{- end }}
+{{- if $root.Values.sentry.taskWorker.volumes }}
+{{ toYaml $root.Values.sentry.taskWorker.volumes | indent 6 }}
+{{- end }}
+{{- if $root.Values.global.volumes }}
+{{ toYaml $root.Values.global.volumes | indent 6 }}
+{{- end }}
+---
+{{- end }}
+{{- end }}

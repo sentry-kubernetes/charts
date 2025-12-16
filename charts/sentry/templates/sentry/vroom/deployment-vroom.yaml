@@ -92,7 +92,7 @@ spec:
 {{- end }}
         volumeMounts:
         - name: vroom-storage
-          mountPath: /var/vroom/sentry-profiles
+          mountPath: {{ .Values.filestore.profiles.filesystem.path }}
 {{- if .Values.vroom.volumeMounts }}
 {{ toYaml .Values.vroom.volumeMounts | indent 8 }}
 {{- end }}

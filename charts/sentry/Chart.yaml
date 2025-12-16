@@ -4,7 +4,7 @@ description: A Helm chart for Kubernetes
 type: application
 version: 27.9.0
 # renovate image=ghcr.io/getsentry/sentry
-appVersion: 25.9.0
+appVersion: 25.12.0
 dependencies:
   - name: memcached
     repository: oci://registry-1.docker.io/bitnamicharts
@@ -26,11 +26,6 @@ dependencies:
     repository: oci://registry-1.docker.io/bitnamicharts
     version: 11.4.11
     condition: zookeeper.enabled
-  - name: rabbitmq
-    repository: oci://registry-1.docker.io/bitnamicharts
-    version: 11.16.2
-    alias: rabbitmq
-    condition: rabbitmq.enabled
   - name: postgresql
     repository: oci://registry-1.docker.io/bitnamicharts
     version: 12.5.1
