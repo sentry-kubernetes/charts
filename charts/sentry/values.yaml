@@ -294,6 +294,11 @@ sentry:
     volumes: []
     volumeMounts: []
     # workers: 3
+    # installAdditionalPackages:
+    #   - django-multidb-router
+    #   - sentry-nodestore-elastic
+    #   - https://github.com/pavels/sentry-s3-nodestore/releases/download/v1.0.3/sentry-s3-nodestore-1.0.3.tar.gz
+    # caCertificatesSecret: ca-certificates  # kubectl create secret generic ca-certificates --from-file=you-certificates.crt --namespace=namespace
 
   features:
     orgSubdomains: false
@@ -350,6 +355,11 @@ sentry:
     topologySpreadConstraints: []
     volumes: []
     volumeMounts: []
+    # installAdditionalPackages:
+    #   - django-multidb-router
+    #   - sentry-nodestore-elastic
+    #   - https://github.com/pavels/sentry-s3-nodestore/releases/download/v1.0.3/sentry-s3-nodestore-1.0.3.tar.gz
+    # caCertificatesSecret: ca-certificates  # kubectl create secret generic ca-certificates --from-file=you-certificates.crt --namespace=namespace
 
   # allows to dedicate some workers to specific queues
   workerEvents:
@@ -390,6 +400,11 @@ sentry:
     topologySpreadConstraints: []
     volumes: []
     volumeMounts: []
+    # installAdditionalPackages:
+    #   - django-multidb-router
+    #   - sentry-nodestore-elastic
+    #   - https://github.com/pavels/sentry-s3-nodestore/releases/download/v1.0.3/sentry-s3-nodestore-1.0.3.tar.gz
+    # caCertificatesSecret: ca-certificates  # kubectl create secret generic ca-certificates --from-file=you-certificates.crt --namespace=namespace
 
   # allows to dedicate some workers to specific queues
   workerTransactions:
@@ -428,6 +443,11 @@ sentry:
     topologySpreadConstraints: []
     volumes: []
     volumeMounts: []
+    # installAdditionalPackages:
+    #   - django-multidb-router
+    #   - sentry-nodestore-elastic
+    #   - https://github.com/pavels/sentry-s3-nodestore/releases/download/v1.0.3/sentry-s3-nodestore-1.0.3.tar.gz
+    # caCertificatesSecret: ca-certificates  # kubectl create secret generic ca-certificates --from-file=you-certificates.crt --namespace=namespace
 
   ingestConsumerAttachments:
     enabled: true

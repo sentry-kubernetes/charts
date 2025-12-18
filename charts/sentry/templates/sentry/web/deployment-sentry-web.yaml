@@ -80,10 +80,20 @@ spec:
       - name: {{ .Chart.Name }}-web
         image: "{{ template "sentry.image" . }}"
         imagePullPolicy: {{ default "IfNotPresent" .Values.images.sentry.pullPolicy }}
-        command: ["sentry"]
+        command: ["/bin/bash", "-c"]
         args:
-          - "run"
-          - "web"
+          - |
+            {{- if .Values.sentry.web.installAdditionalPackages }}
+            pip install {{ range .Values.sentry.web.installAdditionalPackages }}{{ . }} {{ end }}
+            {{- end }}
+            {{- if .Values.sentry.web.caCertificatesSecret }}
+            mkdir -p /usr/local/share/ca-certificates/
+            for c in $(ls -1 /usr/local/share/ca-certificates/); do
+                cat /usr/local/share/ca-certificates/$c >> $(python3 -m certifi) && echo >> $(python3 -m certifi)
+            done
+            update-ca-certificates
+            {{- end }}
+            sentry run web
           {{- if .Values.sentry.web.workers }}
           - "--workers"
           - "{{ .Values.sentry.web.workers }}"
@@ -131,6 +141,11 @@ spec:
         - name: custom-ca
           mountPath: /etc/pki/ca-trust/custom
         {{ end }}
+        {{- if .Values.sentry.web.caCertificatesSecret }}
+        - name: ca-certificates
+          mountPath: /usr/local/share/ca-certificates
+          readOnly: true
+        {{- end }}
 {{- if .Values.sentry.web.volumeMounts }}
 {{ toYaml .Values.sentry.web.volumeMounts | indent 8 }}
 {{- end }}
@@ -208,5 +223,11 @@ spec:
 {{- end }}
 {{- if .Values.global.volumes }}
 {{ toYaml .Values.global.volumes | indent 6 }}
+{{- end }}
+{{- if .Values.sentry.web.caCertificatesSecret }}
+      - name: ca-certificates
+        secret:
+          secretName: {{ .Values.sentry.web.caCertificatesSecret }}
+          defaultMode: 0644
 {{- end }}
 {{- end }}
