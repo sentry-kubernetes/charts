@@ -1,5 +1,12 @@
 # Changelog
 
+## [27.10.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v27.9.0...sentry-v27.10.0) (2025-12-18)
+
+
+### Features
+
+* **sentry:** bump nginx to 22.3.9 ([#1978](https://github.com/sentry-kubernetes/charts/issues/1978)) ([c83e9dc](https://github.com/sentry-kubernetes/charts/commit/c83e9dccb985d71aa5a1e8c25437627dd1fe5350))
+
 ## [27.9.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v27.8.1...sentry-v27.9.0) (2025-12-15)
 
 
