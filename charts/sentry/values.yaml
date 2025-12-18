@@ -2711,6 +2711,7 @@ kafka:
       - name: snuba-items-commit-log
       - name: snuba-eap-mutations
       - name: snuba-lw-deletions-generic-events
+      - name: snuba-lw-deletions-eap-items
       - name: shared-resources-usage
       - name: snuba-profile-chunks
       - name: buffered-segments
@@ -2727,6 +2728,8 @@ kafka:
       - name: taskworker-billing-dlq
       - name: taskworker-control
       - name: taskworker-control-dlq
+      - name: taskworker-control-limited
+      - name: taskworker-control-limited-dlq
       - name: taskworker-ingest
       - name: taskworker-ingest-dlq
       - name: taskworker-ingest-errors

@@ -81,7 +81,7 @@ spec:
         command: ["sentry"]
         args:
           - "run"
-          - "worker"
+          - "taskworker"
           {{- if .Values.sentry.worker.excludeQueues }}
           - "--exclude-queues"
           - "{{ .Values.sentry.worker.excludeQueues }}"

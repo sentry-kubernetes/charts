@@ -79,7 +79,7 @@ spec:
         command: ["sentry"]
         args:
           - "run"
-          - "cron"
+          - "taskworker-scheduler"
           {{- if .Values.sentry.cron.logLevel }}
           - "--loglevel"
           - "{{ .Values.sentry.cron.logLevel }}"
