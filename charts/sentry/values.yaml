@@ -101,7 +101,7 @@ vroom:
   # topologySpreadConstraints: []
   service:
     annotations: {}
-  # tolerations: []
+  tolerations: []
   # podLabels: {}
   persistence:
     enabled: true  # Set true for using PersistentVolumeClaim, false for emptyDir
@@ -141,7 +141,7 @@ uptimeChecker:
   # priorityClassName: ""
   service:
     annotations: {}
-  # tolerations: []
+  tolerations: []
   # podLabels: {}
 
   sidecars: []
@@ -177,7 +177,7 @@ relay:
   containerSecurityContext: {}
   service:
     annotations: {}
-  # tolerations: []
+  tolerations: []
   # podLabels: {}
   # priorityClassName: ""
   autoscaling:
@@ -274,7 +274,7 @@ sentry:
     containerSecurityContext: {}
     service:
       annotations: {}
-    # tolerations: []
+    tolerations: []
     # podLabels: {}
     # Mount and use custom CA
     # customCA:
@@ -323,7 +323,7 @@ sentry:
     #    memory: 1100Mi
     affinity: {}
     nodeSelector: {}
-    # tolerations: []
+    tolerations: []
     # podLabels: {}
     # logLevel: "WARNING" # DEBUG|INFO|WARNING|ERROR|CRITICAL|FATAL
     # logFormat: "machine" # human|machine
@@ -364,7 +364,7 @@ sentry:
     resources: {}
     affinity: {}
     nodeSelector: {}
-    # tolerations: []
+    tolerations: []
     # podLabels: {}
     # logLevel: "WARNING" # DEBUG|INFO|WARNING|ERROR|CRITICAL|FATAL
     # logFormat: "machine" # human|machine
@@ -402,7 +402,7 @@ sentry:
     resources: {}
     affinity: {}
     nodeSelector: {}
-    # tolerations: []
+    tolerations: []
     # podLabels: {}
     # logLevel: "WARNING" # DEBUG|INFO|WARNING|ERROR|CRITICAL|FATAL
     # logFormat: "machine" # human|machine
@@ -444,7 +444,7 @@ sentry:
     nodeSelector: {}
     securityContext: {}
     containerSecurityContext: {}
-    # tolerations: []
+    tolerations: []
     # podLabels: {}
     # maxBatchSize: ""
     # logLevel: info
@@ -483,7 +483,7 @@ sentry:
     nodeSelector: {}
     securityContext: {}
     containerSecurityContext: {}
-    # tolerations: []
+    tolerations: []
     # podLabels: {}
     # maxBatchSize: ""
     # logLevel: "info"
@@ -525,7 +525,7 @@ sentry:
     nodeSelector: {}
     securityContext: {}
     containerSecurityContext: {}
-    # tolerations: []
+    tolerations: []
     # podLabels: {}
     # maxBatchSize: ""
     # logLevel: "info"
@@ -567,7 +567,7 @@ sentry:
     securityContext: {}
     containerSecurityContext: {}
     # maxPollIntervalMs: 30000
-    # tolerations: []
+    tolerations: []
     # podLabels: {}
     # it's better to use prometheus adapter and scale based on
     # the size of the rabbitmq queue
@@ -597,7 +597,7 @@ sentry:
     nodeSelector: {}
     securityContext: {}
     containerSecurityContext: {}
-    # tolerations: []
+    tolerations: []
     # podLabels: {}
     # it's better to use prometheus adapter and scale based on
     # the size of the rabbitmq queue
@@ -631,7 +631,7 @@ sentry:
     nodeSelector: {}
     securityContext: {}
     containerSecurityContext: {}
-    # tolerations: []
+    tolerations: []
     # podLabels: {}
     # it's better to use prometheus adapter and scale based on
     # the size of the rabbitmq queue
@@ -665,7 +665,7 @@ sentry:
     nodeSelector: {}
     securityContext: {}
     containerSecurityContext: {}
-    # tolerations: []
+    tolerations: []
     # podLabels: {}
     # it's better to use prometheus adapter and scale based on
     # the size of the rabbitmq queue
@@ -700,7 +700,7 @@ sentry:
     securityContext: {}
     containerSecurityContext: {}
     # maxPollIntervalMs: 30000
-    # tolerations: []
+    tolerations: []
     # podLabels: {}
     # it's better to use prometheus adapter and scale based on
     # the size of the rabbitmq queue
@@ -734,7 +734,7 @@ sentry:
     nodeSelector: {}
     securityContext: {}
     containerSecurityContext: {}
-    # tolerations: []
+    tolerations: []
     # podLabels: {}
     # it's better to use prometheus adapter and scale based on
     # the size of the rabbitmq queue
@@ -765,7 +765,7 @@ sentry:
     nodeSelector: {}
     securityContext: {}
     containerSecurityContext: {}
-    # tolerations: []
+    tolerations: []
     # podLabels: {}
     # it's better to use prometheus adapter and scale based on
     # the size of the rabbitmq queue
@@ -796,7 +796,7 @@ sentry:
     nodeSelector: {}
     securityContext: {}
     containerSecurityContext: {}
-    # tolerations: []
+    tolerations: []
     # podLabels: {}
     # it's better to use prometheus adapter and scale based on
     # the size of the rabbitmq queue
@@ -831,7 +831,7 @@ sentry:
     nodeSelector: {}
     securityContext: {}
     containerSecurityContext: {}
-    # tolerations: []
+    tolerations: []
     # podLabels: {}
     # maxPollIntervalMs: ""
     # logLevel: "info"
@@ -868,7 +868,7 @@ sentry:
     nodeSelector: {}
     securityContext: {}
     containerSecurityContext: {}
-    # tolerations: []
+    tolerations: []
     # podLabels: {}
     # logLevel: "info"
     # maxPollIntervalMs: ""
@@ -899,7 +899,7 @@ sentry:
     resources: {}
     affinity: {}
     nodeSelector: {}
-    # tolerations: []
+    tolerations: []
     # podLabels: {}
     sidecars: []
     topologySpreadConstraints: []
@@ -921,7 +921,7 @@ sentry:
     securityContext: {}
     topologySpreadConstraints: []
     containerSecurityContext: {}
-    # tolerations: []
+    tolerations: []
     # podLabels: {}
     livenessProbe:
       enabled: true
@@ -944,7 +944,7 @@ sentry:
     nodeSelector: {}
     securityContext: {}
     containerSecurityContext: {}
-    # tolerations: []
+    tolerations: []
     # podLabels: {}
     sidecars: []
     topologySpreadConstraints: []
@@ -969,7 +969,7 @@ sentry:
     nodeSelector: {}
     securityContext: {}
     containerSecurityContext: {}
-    # tolerations: []
+    tolerations: []
     # podLabels: {}
     sidecars: []
     topologySpreadConstraints: []
@@ -994,7 +994,7 @@ sentry:
     nodeSelector: {}
     securityContext: {}
     containerSecurityContext: {}
-    # tolerations: []
+    tolerations: []
     # podLabels: {}
     sidecars: []
     topologySpreadConstraints: []
@@ -1019,7 +1019,7 @@ sentry:
     nodeSelector: {}
     securityContext: {}
     containerSecurityContext: {}
-    # tolerations: []
+    tolerations: []
     # podLabels: {}
     sidecars: []
     topologySpreadConstraints: []
@@ -1045,7 +1045,7 @@ sentry:
     nodeSelector: {}
     securityContext: {}
     containerSecurityContext: {}
-    # tolerations: []
+    tolerations: []
     # podLabels: {}
     sidecars: []
     topologySpreadConstraints: []
@@ -1070,7 +1070,7 @@ sentry:
     nodeSelector: {}
     securityContext: {}
     containerSecurityContext: {}
-    # tolerations: []
+    tolerations: []
     # podLabels: {}
     sidecars: []
     topologySpreadConstraints: []
@@ -1095,7 +1095,7 @@ sentry:
     nodeSelector: {}
     securityContext: {}
     containerSecurityContext: {}
-    # tolerations: []
+    tolerations: []
     # podLabels: {}
     sidecars: []
     topologySpreadConstraints: []
@@ -1120,7 +1120,7 @@ sentry:
     nodeSelector: {}
     securityContext: {}
     containerSecurityContext: {}
-    # tolerations: []
+    tolerations: []
     # podLabels: {}
     sidecars: []
     topologySpreadConstraints: []
@@ -1146,7 +1146,7 @@ sentry:
     nodeSelector: {}
     securityContext: {}
     containerSecurityContext: {}
-    # tolerations: []
+    tolerations: []
     # podLabels: {}
     sidecars: []
     topologySpreadConstraints: []
@@ -1172,7 +1172,7 @@ sentry:
     nodeSelector: {}
     securityContext: {}
     containerSecurityContext: {}
-    # tolerations: []
+    tolerations: []
     # podLabels: {}
     sidecars: []
     topologySpreadConstraints: []
@@ -1245,7 +1245,7 @@ snuba:
     containerSecurityContext: {}
     service:
       annotations: {}
-    # tolerations: []
+    tolerations: []
     # podLabels: {}
 
     autoscaling:
@@ -1270,7 +1270,7 @@ snuba:
     securityContext: {}
     topologySpreadConstraints: []
     containerSecurityContext: {}
-    # tolerations: []
+    tolerations: []
     # podLabels: {}
     # autoOffsetReset: "earliest"
     livenessProbe:
@@ -1303,7 +1303,7 @@ snuba:
     securityContext: {}
     topologySpreadConstraints: []
     containerSecurityContext: {}
-    # tolerations: []
+    tolerations: []
     # podLabels: {}
     # autoOffsetReset: "earliest"
     livenessProbe:
@@ -1336,7 +1336,7 @@ snuba:
     securityContext: {}
     topologySpreadConstraints: []
     containerSecurityContext: {}
-    # tolerations: []
+    tolerations: []
     # podLabels: {}
     # autoOffsetReset: "earliest"
     # noStrictOffsetReset: false
@@ -1370,7 +1370,7 @@ snuba:
     topologySpreadConstraints: []
     containerSecurityContext: {}
     # maxPollIntervalMs: 30000
-    # tolerations: []
+    tolerations: []
     # podLabels: {}
     # autoOffsetReset: "earliest"
     # noStrictOffsetReset: false
@@ -1403,7 +1403,7 @@ snuba:
     securityContext: {}
     topologySpreadConstraints: []
     containerSecurityContext: {}
-    # tolerations: []
+    tolerations: []
     # podLabels: {}
     # autoOffsetReset: "earliest"
     # maxBatchTimeMs: ""
@@ -1423,7 +1423,7 @@ snuba:
     securityContext: {}
     topologySpreadConstraints: []
     containerSecurityContext: {}
-    # tolerations: []
+    tolerations: []
     # podLabels: {}
     # autoOffsetReset: "earliest"
     livenessProbe:
@@ -1451,7 +1451,7 @@ snuba:
     securityContext: {}
     topologySpreadConstraints: []
     containerSecurityContext: {}
-    # tolerations: []
+    tolerations: []
     # podLabels: {}
     livenessProbe:
       enabled: true
@@ -1472,7 +1472,7 @@ snuba:
     securityContext: {}
     topologySpreadConstraints: []
     containerSecurityContext: {}
-    # tolerations: []
+    tolerations: []
     # podLabels: {}
     livenessProbe:
       enabled: true
@@ -1493,7 +1493,7 @@ snuba:
     securityContext: {}
     topologySpreadConstraints: []
     containerSecurityContext: {}
-    # tolerations: []
+    tolerations: []
     # podLabels: {}
     livenessProbe:
       enabled: true
@@ -1514,7 +1514,7 @@ snuba:
     securityContext: {}
     topologySpreadConstraints: []
     containerSecurityContext: {}
-    # tolerations: []
+    tolerations: []
     # podLabels: {}
     livenessProbe:
       enabled: true
@@ -1535,7 +1535,7 @@ snuba:
     securityContext: {}
     topologySpreadConstraints: []
     containerSecurityContext: {}
-    # tolerations: []
+    tolerations: []
     # podLabels: {}
     livenessProbe:
       enabled: true
@@ -1556,7 +1556,7 @@ snuba:
     securityContext: {}
     topologySpreadConstraints: []
     containerSecurityContext: {}
-    # tolerations: []
+    tolerations: []
     # podLabels: {}
     livenessProbe:
       enabled: true
@@ -1577,7 +1577,7 @@ snuba:
     securityContext: {}
     topologySpreadConstraints: []
     containerSecurityContext: {}
-    # tolerations: []
+    tolerations: []
     # podLabels: {}
     # autoOffsetReset: "earliest"
     livenessProbe:
@@ -1605,7 +1605,7 @@ snuba:
     securityContext: {}
     topologySpreadConstraints: []
     containerSecurityContext: {}
-    # tolerations: []
+    tolerations: []
     # podLabels: {}
     # autoOffsetReset: "earliest"
     livenessProbe:
@@ -1633,7 +1633,7 @@ snuba:
     securityContext: {}
     topologySpreadConstraints: []
     containerSecurityContext: {}
-    # tolerations: []
+    tolerations: []
     # podLabels: {}
     # autoOffsetReset: "earliest"
     livenessProbe:
@@ -1661,7 +1661,7 @@ snuba:
     securityContext: {}
     topologySpreadConstraints: []
     containerSecurityContext: {}
-    # tolerations: []
+    tolerations: []
     # podLabels: {}
     # autoOffsetReset: "earliest"
     livenessProbe:
@@ -1692,7 +1692,7 @@ snuba:
     securityContext: {}
     topologySpreadConstraints: []
     containerSecurityContext: {}
-    # tolerations: []
+    tolerations: []
     # podLabels: {}
     # autoOffsetReset: "earliest"
     livenessProbe:
@@ -1715,7 +1715,7 @@ snuba:
     securityContext: {}
     topologySpreadConstraints: []
     containerSecurityContext: {}
-    # tolerations: []
+    tolerations: []
     # podLabels: {}
     # volumes: []
     # volumeMounts: []
@@ -1737,7 +1737,7 @@ snuba:
     topologySpreadConstraints: []
     containerSecurityContext: {}
     # maxPollIntervalMs: 30000
-    # tolerations: []
+    tolerations: []
     # podLabels: {}
     # autoOffsetReset: "earliest"
     livenessProbe:
@@ -1770,7 +1770,7 @@ snuba:
     securityContext: {}
     topologySpreadConstraints: []
     containerSecurityContext: {}
-    # tolerations: []
+    tolerations: []
     # podLabels: {}
     # autoOffsetReset: "earliest"
     livenessProbe:
@@ -1803,7 +1803,7 @@ snuba:
     securityContext: {}
     topologySpreadConstraints: []
     containerSecurityContext: {}
-    # tolerations: []
+    tolerations: []
     # podLabels: {}
     # autoOffsetReset: "earliest"
     livenessProbe:
@@ -1836,7 +1836,7 @@ snuba:
     securityContext: {}
     topologySpreadConstraints: []
     containerSecurityContext: {}
-    # tolerations: []
+    tolerations: []
     # podLabels: {}
     # autoOffsetReset: "earliest"
     livenessProbe:
@@ -1870,7 +1870,7 @@ snuba:
     securityContext: {}
     topologySpreadConstraints: []
     containerSecurityContext: {}
-    # tolerations: []
+    tolerations: []
     # podLabels: {}
     # autoOffsetReset: "earliest"
     livenessProbe:
@@ -1903,7 +1903,7 @@ snuba:
     securityContext: {}
     topologySpreadConstraints: []
     containerSecurityContext: {}
-    # tolerations: []
+    tolerations: []
     # podLabels: {}
     # autoOffsetReset: "earliest"
     livenessProbe:
@@ -1936,7 +1936,7 @@ snuba:
     securityContext: {}
     topologySpreadConstraints: []
     containerSecurityContext: {}
-    # tolerations: []
+    tolerations: []
     # podLabels: {}
     # autoOffsetReset: "earliest"
     livenessProbe:
@@ -1969,7 +1969,7 @@ snuba:
     securityContext: {}
     topologySpreadConstraints: []
     containerSecurityContext: {}
-    # tolerations: []
+    tolerations: []
     # podLabels: {}
     # autoOffsetReset: "earliest"
     livenessProbe:
@@ -2002,7 +2002,7 @@ snuba:
     securityContext: {}
     topologySpreadConstraints: []
     containerSecurityContext: {}
-    # tolerations: []
+    tolerations: []
     # podLabels: {}
     # autoOffsetReset: "earliest"
     livenessProbe:
@@ -2099,7 +2099,7 @@ snuba:
     # podLabels: {}
     # affinity: {}
     # nodeSelector: {}
-    # tolerations: []
+    tolerations: []
     # env: []
     # volumes: []
     # sidecars: []
@@ -2134,7 +2134,7 @@ hooks:
     nodeSelector: {}
     securityContext: {}
     containerSecurityContext: {}
-    # tolerations: []
+    tolerations: []
     # volumes: []
     # volumeMounts: []
   dbInit:
@@ -2152,7 +2152,7 @@ hooks:
     volumes: []
     affinity: {}
     nodeSelector: {}
-    # tolerations: []
+    tolerations: []
     # volumes: []
     # volumeMounts: []
   snubaInit:
@@ -2173,7 +2173,7 @@ hooks:
         memory: 1Gi
     affinity: {}
     nodeSelector: {}
-    # tolerations: []
+    tolerations: []
     # volumes: []
     # volumeMounts: []
   snubaMigrate:
@@ -2229,7 +2229,7 @@ symbolicator:
     securityContext: {}
     topologySpreadConstraints: []
     containerSecurityContext: {}
-    # tolerations: []
+    tolerations: []
     # podLabels: {}
     # priorityClassName: "xxx"
     config: |-
@@ -2347,7 +2347,7 @@ nginx:
   resources: {}
   replicaCount: 1
   nodeSelector: {}
-  # tolerations: []
+  tolerations: []
   service:
     type: ClusterIP
     ports:
@@ -2494,7 +2494,7 @@ config:
 clickhouse:
   enabled: true
   nodeSelector: {}
-  # tolerations: []
+  tolerations: []
   clickhouse:
     replicas: "1"
     configmap:
@@ -2570,7 +2570,7 @@ zookeeper:
   nameOverride: zookeeper-clickhouse
   replicaCount: 1
   nodeSelector: {}
-  # tolerations: []
+  tolerations: []
   ## When increasing the number of exceptions, you need to increase persistence.size
   # persistence:
   #   size: 8Gi
@@ -2767,7 +2767,7 @@ kafka:
   controller:
     replicaCount: 3
     nodeSelector: {}
-    # tolerations: []
+    tolerations: []
     ## if the load on the kafka controller increases, resourcesPreset must be increased
     # resourcesPreset: "small" # "small", "medium", "large", "xlarge", "2xlarge"
     # More information: https://github.com/bitnami/charts/blob/main/bitnami/common/templates/_resources.tpl#L15
@@ -2846,7 +2846,7 @@ redis:
   replica:
     replicaCount: 1
     nodeSelector: {}
-    # tolerations: []
+    tolerations: []
   auth:
     enabled: false
     sentinel: false
@@ -2860,7 +2860,7 @@ redis:
     persistence:
       enabled: true
     nodeSelector: {}
-    # tolerations: []
+    tolerations: []
   ## Use this to enable an extra service account
   # serviceAccount:
   #   create: false
@@ -3029,7 +3029,7 @@ memcached:
     - "-I $(MEMCACHED_MAX_ITEM_SIZE)"
   extraEnvVarsCM: "sentry-memcached"
   nodeSelector: {}
-  # tolerations: []
+  tolerations: []
 
 ## Prometheus Exporter / Metrics
 ##
