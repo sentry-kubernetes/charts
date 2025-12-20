@@ -409,12 +409,13 @@ sentry.conf.py: |-
           for feature in (
               {{- if not .Values.sentry.singleOrganization }}
               "organizations:create",
-              {{ end -}}
+              {{- end }}
               {{- if .Values.sentry.features.orgSubdomains }}
               "organizations:org-ingest-subdomains",
-              {{ end -}}
+              {{- end }}
               "organizations:discover",
               "organizations:global-views",
+              "organizations:issue-views",
               "organizations:incidents",
               "organizations:integrations-issue-basic",
               "organizations:integrations-issue-sync",
@@ -437,33 +438,32 @@ sentry.conf.py: |-
           )
           {{- if .Values.sentry.features.enableSpan }}
           + (
-              # Performance/Tracing/Spans related flags
+              # Performance/Tracing/Spans
               "organizations:performance-view",
+              "organizations:span-stats",
               "organizations:visibility-explore-view",
+              "organizations:visibility-explore-range-high",
               "organizations:transaction-metrics-extraction",
               "organizations:indexed-spans-extraction",
               "organizations:insights-entry-points",
               "organizations:insights-initial-modules",
               "organizations:insights-addon-modules",
+              "organizations:insights-modules-use-eap",
               "organizations:standalone-span-ingestion",
               "organizations:starfish-mobile-appstart",
               "projects:span-metrics-extraction",
               "projects:span-metrics-extraction-addons",
 
-              # flags added in this chart
+              # extra trace UI flags from chart
               "organizations:trace-view-load-more",
               "organizations:trace-tabs-ui",
               "organizations:trace-view-linked-traces",
-              "organizations:span-stats",
-              "organizations:visibility-explore-range-high",
           )
           {{- end }}
-          {{- if .Values.sentry.features.enableSessionReplay}}
+          {{- if .Values.sentry.features.enableSessionReplay }}
           + (
-              # Session Replay related flags
+              # Session Replay
               "organizations:session-replay",
-
-              # flags added in this chart
               "organizations:session-replay-ui",
               "organizations:session-replay-issue-emails",
               "organizations:session-replay-recording-scrubbing",
@@ -472,29 +472,36 @@ sentry.conf.py: |-
           {{- end }}
           {{- if .Values.sentry.features.enableFeedback }}
           + (
-              # User Feedback related flags
+              # User Feedback
               "organizations:user-feedback-ui",
           )
           {{- end }}
           {{- if .Values.sentry.features.enableProfiling }}
           + (
-              # Profiling related flags
+              # Profiling
               "organizations:profiling",
               "organizations:profiling-view",
-              # Continuous Profiling related flags
+
+              # Continuous Profiling
               "organizations:continuous-profiling",
               "organizations:continuous-profiling-stats",
           )
           {{- end }}
           {{- if .Values.sentry.features.enableUptime }}
           + (
-              # Uptime Monitoring related flags
+              # Uptime Monitoring
               "organizations:uptime",
               "organizations:uptime-create-issues",
           )
           {{- end }}
           + (
-              # Flags enabled in this chart but not present in https://github.com/getsentry/self-hosted/blob/master/sentry/sentry.conf.example.py
+              # Logs (OurLogs)
+              "organizations:ourlogs-enabled",
+              "organizations:ourlogs-ingestion",
+              "organizations:ourlogs-stats",
+              "organizations:ourlogs-replay-ui",
+
+              # Chart-only / misc
               "organizations:related-events",
               "organizations:reprocessing-v2",
               "organizations:set-grouping-config",
@@ -506,7 +513,7 @@ sentry.conf.py: |-
           + (
               # Custom features from values
               {{- range $CustomFeature := .Values.sentry.customFeatures }}
-              "{{ $CustomFeature}}",
+              "{{ $CustomFeature }}",
               {{- end }}
           )
           {{- end }}
