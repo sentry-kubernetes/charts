@@ -2401,7 +2401,7 @@ ingress:
   # - secretName:
   #   hosts:
 
-ingressRoute:
+traefikIngressRoute:
   # -- Enable Traefik IngressRoute instead of standard Ingress
   # Use this when running Traefik as your ingress controller for proper regex path matching
   enabled: false
