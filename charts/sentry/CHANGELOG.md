@@ -1,5 +1,13 @@
 # Changelog
 
+## [27.11.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v27.10.0...sentry-v27.11.0) (2026-01-06)
+
+
+### Features
+
+* **ingress:** Add native Traefik IngressRoute support ([#1972](https://github.com/sentry-kubernetes/charts/issues/1972)) ([096bac6](https://github.com/sentry-kubernetes/charts/commit/096bac6c0992b70b92e2fdc0593c1128aaf5b818))
+* sync feature flags with self-hosted configuration 25.9.0 ([#1985](https://github.com/sentry-kubernetes/charts/issues/1985)) ([4bf8840](https://github.com/sentry-kubernetes/charts/commit/4bf8840ce558ef9ab103c6fa6f2e0847c903a5fd))
+
 ## [27.10.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v27.9.0...sentry-v27.10.0) (2025-12-18)
 
 
