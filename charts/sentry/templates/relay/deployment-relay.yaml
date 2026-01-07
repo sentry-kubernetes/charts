@@ -168,26 +168,19 @@ spec:
 {{- if .Values.relay.volumeMounts }}
 {{ toYaml .Values.relay.volumeMounts | indent 10 }}
 {{- end }}
+{{- $port := include "relay.port" . | atoi -}}
+{{- if .Values.relay.livenessProbe.enabled }}
         livenessProbe:
-          failureThreshold: {{ .Values.relay.probeFailureThreshold }}
-          httpGet:
-            path: {{ template "relay.healthCheck.livenessRequestPath" }}
-            port: {{ template "relay.port" }}
-            scheme: HTTP
-          initialDelaySeconds: {{ .Values.relay.probeInitialDelaySeconds }}
-          periodSeconds: {{ .Values.relay.probePeriodSeconds }}
-          successThreshold: {{ .Values.relay.probeSuccessThreshold }}
-          timeoutSeconds: {{ .Values.relay.probeTimeoutSeconds }}
+            {{- $livenessProbePath := include "relay.healthCheck.livenessRequestPath" . -}}
+            {{- $livenessProbeFixedSettings := dict "httpGet" (dict "path" $livenessProbePath "port" $port "scheme" "HTTP") -}}
+            {{- merge $livenessProbeFixedSettings (omit .Values.relay.livenessProbe "enabled") | toYaml | nindent 12 }}
+{{- end }}
+{{- if .Values.relay.readinessProbe.enabled }}
         readinessProbe:
-          failureThreshold: {{ .Values.relay.probeFailureThreshold }}
-          httpGet:
-            path: {{ template "relay.healthCheck.readinessRequestPath" }}
-            port: {{ template "relay.port" }}
-            scheme: HTTP
-          initialDelaySeconds: {{ .Values.relay.probeInitialDelaySeconds }}
-          periodSeconds: {{ .Values.relay.probePeriodSeconds }}
-          successThreshold: {{ .Values.relay.probeSuccessThreshold }}
-          timeoutSeconds: {{ .Values.relay.probeTimeoutSeconds }}
+            {{- $readinessProbePath := include "relay.healthCheck.readinessRequestPath" . -}}
+            {{- $readinessProbeFixedSettings := dict "httpGet" (dict "path" $readinessProbePath "port" $port "scheme" "HTTP") -}}
+            {{- merge $readinessProbeFixedSettings (omit .Values.relay.readinessProbe "enabled") | toYaml | nindent 12 }}
+{{- end }}
         resources:
 {{ toYaml .Values.relay.resources | indent 12 }}
 {{- if .Values.relay.containerSecurityContext }}

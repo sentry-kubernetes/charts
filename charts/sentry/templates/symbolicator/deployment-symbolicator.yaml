@@ -101,26 +101,16 @@ spec:
 {{- if .Values.symbolicator.api.volumeMounts }}
 {{ toYaml .Values.symbolicator.api.volumeMounts | indent 8 }}
 {{- end }}
+        {{- $port := include "symbolicator.port" . | atoi -}}
+        {{- $portOverride := dict "httpGet" (dict "port" $port) -}}
+        {{- if .Values.symbolicator.api.livenessProbe.enabled }}
         livenessProbe:
-          failureThreshold: 5
-          httpGet:
-            path: /healthcheck
-            port: {{ template "symbolicator.port" }}
-            scheme: HTTP
-          initialDelaySeconds: {{ .Values.symbolicator.api.probeInitialDelaySeconds }}
-          periodSeconds: 10
-          successThreshold: 1
-          timeoutSeconds: 2
+          {{- merge $portOverride (omit .Values.symbolicator.api.livenessProbe "enabled") | toYaml | nindent 12 }}
+        {{- end }}
+        {{- if .Values.symbolicator.api.readinessProbe.enabled }}
         readinessProbe:
-          failureThreshold: 10
-          httpGet:
-            path: /healthcheck
-            port: {{ template "symbolicator.port" }}
-            scheme: HTTP
-          initialDelaySeconds: {{ .Values.symbolicator.api.probeInitialDelaySeconds }}
-          periodSeconds: 10
-          successThreshold: 1
-          timeoutSeconds: 2
+          {{- merge $portOverride (omit .Values.symbolicator.api.readinessProbe "enabled") | toYaml | nindent 12 }}
+        {{- end }}
         resources:
 {{ toYaml .Values.symbolicator.api.resources | indent 12 }}
 {{- if .Values.symbolicator.api.containerSecurityContext }}

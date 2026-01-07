@@ -134,26 +134,17 @@ spec:
 {{- if .Values.sentry.web.volumeMounts }}
 {{ toYaml .Values.sentry.web.volumeMounts | indent 8 }}
 {{- end }}
+        {{- $port := include "sentry.port" . | atoi -}}
+        {{- $healthRequestPath:= include "sentry.healthCheck.requestPath" . -}}
+        {{- $probeFixed := dict "httpGet" (dict "path" $healthRequestPath "port" $port "scheme" "HTTP") -}}
+        {{- if .Values.sentry.web.livenessProbe.enabled }}
         livenessProbe:
-          failureThreshold: {{ .Values.sentry.web.probeFailureThreshold }}
-          httpGet:
-            path: {{ template "sentry.healthCheck.requestPath" }}
-            port: {{ template "sentry.port" }}
-            scheme: HTTP
-          initialDelaySeconds: {{ .Values.sentry.web.probeInitialDelaySeconds }}
-          periodSeconds: {{ .Values.sentry.web.probePeriodSeconds }}
-          successThreshold: {{ .Values.sentry.web.probeSuccessThreshold }}
-          timeoutSeconds: {{ .Values.sentry.web.probeTimeoutSeconds }}
+            {{- merge $probeFixed (omit .Values.sentry.web.livenessProbe "enabled") | toYaml | nindent 12 }}
+        {{- end }}
+        {{- if .Values.sentry.web.readinessProbe.enabled }}
         readinessProbe:
-          failureThreshold: {{ .Values.sentry.web.probeFailureThreshold }}
-          httpGet:
-            path: {{ template "sentry.healthCheck.requestPath" }}
-            port: {{ template "sentry.port" }}
-            scheme: HTTP
-          initialDelaySeconds: {{ .Values.sentry.web.probeInitialDelaySeconds }}
-          periodSeconds: {{ .Values.sentry.web.probePeriodSeconds }}
-          successThreshold: {{ .Values.sentry.web.probeSuccessThreshold }}
-          timeoutSeconds: {{ .Values.sentry.web.probeTimeoutSeconds }}
+            {{- merge $probeFixed (omit .Values.sentry.web.readinessProbe "enabled") | toYaml | nindent 12 }}
+        {{- end }}
         resources:
 {{ toYaml .Values.sentry.web.resources | indent 12 }}
 {{- if .Values.sentry.web.containerSecurityContext }}

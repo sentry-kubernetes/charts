@@ -129,12 +129,7 @@ spec:
           {{- end }}
         {{- if .Values.snuba.outcomesConsumer.livenessProbe.enabled }}
         livenessProbe:
-          exec:
-            command:
-              - rm
-              - /tmp/health.txt
-          initialDelaySeconds: {{ .Values.snuba.outcomesConsumer.livenessProbe.initialDelaySeconds }}
-          periodSeconds: {{ .Values.snuba.outcomesConsumer.livenessProbe.periodSeconds }}
+          {{- omit .Values.snuba.outcomesConsumer.livenessProbe "enabled" | toYaml | nindent 12 }}
         {{- end }}
         ports:
         - containerPort: {{ template "snuba.port" }}

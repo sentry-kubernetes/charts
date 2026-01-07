@@ -97,12 +97,7 @@ spec:
           {{- end }}
         {{- if .Values.sentry.subscriptionConsumerEvents.livenessProbe.enabled }}
         livenessProbe:
-          exec:
-            command:
-              - rm
-              - /tmp/health.txt
-          initialDelaySeconds: {{ .Values.sentry.subscriptionConsumerEvents.livenessProbe.initialDelaySeconds }}
-          periodSeconds: {{ .Values.sentry.subscriptionConsumerEvents.livenessProbe.periodSeconds }}
+          {{- omit .Values.snuba.subscriptionConsumerEvents.livenessProbe "enabled" | toYaml | nindent 12 }}
         {{- end }}
         env:
 {{ include "sentry.env" . | indent 8 }}

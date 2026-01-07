@@ -114,12 +114,7 @@ spec:
           {{- end }}
         {{- if .Values.sentry.subscriptionConsumerMetrics.livenessProbe.enabled }}
         livenessProbe:
-          exec:
-            command:
-              - rm
-              - /tmp/health.txt
-          initialDelaySeconds: {{ .Values.sentry.subscriptionConsumerMetrics.livenessProbe.initialDelaySeconds }}
-          periodSeconds: {{ .Values.sentry.subscriptionConsumerMetrics.livenessProbe.periodSeconds }}
+          {{- omit .Values.snuba.subscriptionConsumerMetrics.livenessProbe "enabled" | toYaml | nindent 12 }}
         {{- end }}
         env:
         - name: C_FORCE_ROOT

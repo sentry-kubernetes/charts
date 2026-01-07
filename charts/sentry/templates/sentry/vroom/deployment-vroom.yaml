@@ -96,26 +96,16 @@ spec:
 {{- if .Values.vroom.volumeMounts }}
 {{ toYaml .Values.vroom.volumeMounts | indent 8 }}
 {{- end }}
+        {{- $port := include "vroom.port" . | atoi -}}
+        {{- $probeFixed := dict "httpGet" (dict "port" $port "scheme" "HTTP") -}}
+        {{- if .Values.vroom.livenessProbe.enabled }}
         livenessProbe:
-          failureThreshold: {{ .Values.vroom.probeFailureThreshold }}
-          httpGet:
-            path: /health
-            port: {{ template "vroom.port" }}
-            scheme: HTTP
-          initialDelaySeconds: {{ .Values.vroom.probeInitialDelaySeconds }}
-          periodSeconds: {{ .Values.vroom.probePeriodSeconds }}
-          successThreshold: {{ .Values.vroom.probeSuccessThreshold }}
-          timeoutSeconds: {{ .Values.vroom.probeTimeoutSeconds }}
+            {{- merge $probeFixed (omit .Values.vroom.livenessProbe "enabled") | toYaml | nindent 12 }}
+        {{- end }}
+        {{- if .Values.vroom.readinessProbe.enabled }}
         readinessProbe:
-          failureThreshold: {{ .Values.vroom.probeFailureThreshold }}
-          httpGet:
-            path: /health
-            port: {{ template "vroom.port" }}
-            scheme: HTTP
-          initialDelaySeconds: {{ .Values.vroom.probeInitialDelaySeconds }}
-          periodSeconds: {{ .Values.vroom.probePeriodSeconds }}
-          successThreshold: {{ .Values.vroom.probeSuccessThreshold }}
-          timeoutSeconds: {{ .Values.vroom.probeTimeoutSeconds }}
+            {{- merge $probeFixed (omit .Values.vroom.readinessProbe "enabled") | toYaml | nindent 12 }}
+        {{- end }}
         resources:
 {{ toYaml .Values.vroom.resources | indent 12 }}
 {{- if .Values.vroom.containerSecurityContext }}

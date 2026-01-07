@@ -84,11 +84,26 @@ vroom:
   # args: []
   replicas: 1
   env: []
-  probeFailureThreshold: 5
-  probeInitialDelaySeconds: 10
-  probePeriodSeconds: 10
-  probeSuccessThreshold: 1
-  probeTimeoutSeconds: 2
+  livenessProbe:
+    enabled: true
+    failureThreshold: 5
+    initialDelaySeconds: 10
+    periodSeconds: 10
+    successThreshold: 1
+    timeoutSeconds: 2
+    httpGet:
+      path: /health
+      scheme: HTTP
+  readinessProbe:
+    enabled: true
+    failureThreshold: 5
+    initialDelaySeconds: 10
+    periodSeconds: 10
+    successThreshold: 1
+    timeoutSeconds: 2
+    httpGet:
+      path: /health
+      scheme: HTTP
   resources: {}
   #  requests:
   #    cpu: 100m
@@ -156,11 +171,20 @@ relay:
   # args: []
   mode: managed
   env: []
-  probeFailureThreshold: 5
-  probeInitialDelaySeconds: 10
-  probePeriodSeconds: 10
-  probeSuccessThreshold: 1
-  probeTimeoutSeconds: 2
+  livenessProbe:
+    enabled: true
+    failureThreshold: 5
+    initialDelaySeconds: 10
+    periodSeconds: 10
+    successThreshold: 1
+    timeoutSeconds: 2
+  readinessProbe:
+    enabled: true
+    failureThreshold: 5
+    initialDelaySeconds: 10
+    periodSeconds: 10
+    successThreshold: 1
+    timeoutSeconds: 2
   resources: {}
   #  requests:
   #    cpu: 100m
@@ -255,11 +279,20 @@ sentry:
     replicas: 1
     env: []
     existingSecretEnv: ""
-    probeFailureThreshold: 5
-    probeInitialDelaySeconds: 10
-    probePeriodSeconds: 10
-    probeSuccessThreshold: 1
-    probeTimeoutSeconds: 2
+    livenessProbe:
+      enabled: true
+      failureThreshold: 5
+      initialDelaySeconds: 10
+      periodSeconds: 10
+      successThreshold: 1
+      timeoutSeconds: 2
+    readinessProbe:
+      enabled: true
+      failureThreshold: 5
+      initialDelaySeconds: 10
+      periodSeconds: 10
+      successThreshold: 1
+      timeoutSeconds: 2
     resources: {}
     #  requests:
     #    cpu: 200m
@@ -340,9 +373,17 @@ sentry:
       behavior: {}
     livenessProbe:
       enabled: true
+      initialDelaySeconds: 10
       periodSeconds: 60
       timeoutSeconds: 10
       failureThreshold: 3
+      exec:
+        command:
+          - sentry
+          - exec
+          - -c
+          - 'from sentry.celery import app; import os; dest="celery@{}".format(os.environ["HOSTNAME"]); print(app.control.ping(destination=[dest], timeout=5)[0][dest]["ok"])'
+
     sidecars: []
     # securityContext: {}
     # containerSecurityContext: {}
@@ -380,9 +421,17 @@ sentry:
       behavior: {}
     livenessProbe:
       enabled: false
+      initialDelaySeconds: 10
       periodSeconds: 60
       timeoutSeconds: 10
       failureThreshold: 3
+      exec:
+        command:
+          - sentry
+          - exec
+          - -c
+          - 'from sentry.celery import app; import os; dest="celery@{}".format(os.environ["HOSTNAME"]); print(app.control.ping(destination=[dest], timeout=5)[0][dest]["ok"])'
+
     sidecars: []
     # securityContext: {}
     # containerSecurityContext: {}
@@ -418,9 +467,17 @@ sentry:
       behavior: {}
     livenessProbe:
       enabled: false
+      initialDelaySeconds: 10
       periodSeconds: 60
       timeoutSeconds: 10
       failureThreshold: 3
+      exec:
+        command:
+          - sentry
+          - exec
+          - -c
+          - 'from sentry.celery import app; import os; dest="celery@{}".format(os.environ["HOSTNAME"]); print(app.control.ping(destination=[dest], timeout=5)[0][dest]["ok"])'
+
     sidecars: []
     # securityContext: {}
     # containerSecurityContext: {}
@@ -464,6 +521,10 @@ sentry:
       enabled: true
       initialDelaySeconds: 5
       periodSeconds: 320
+      exec:
+        command:
+          - rm
+          - /tmp/health.txt
     # volumeMounts:
     #   - mountPath: /dev/shm
     #     name: dshm
@@ -506,6 +567,10 @@ sentry:
       enabled: true
       initialDelaySeconds: 5
       periodSeconds: 320
+      exec:
+        command:
+          - rm
+          - /tmp/health.txt
     # volumeMounts:
     #   - mountPath: /dev/shm
     #     name: dshm
@@ -548,6 +613,10 @@ sentry:
       enabled: true
       initialDelaySeconds: 5
       periodSeconds: 320
+      exec:
+        command:
+          - rm
+          - /tmp/health.txt
     # volumeMounts:
     #   - mountPath: /dev/shm
     #     name: dshm
@@ -583,6 +652,10 @@ sentry:
       enabled: true
       initialDelaySeconds: 5
       periodSeconds: 320
+      exec:
+        command:
+          - rm
+          - /tmp/health.txt
     # volumeMounts:
     #   - mountPath: /dev/shm
     #     name: dshm
@@ -613,6 +686,10 @@ sentry:
       enabled: true
       initialDelaySeconds: 5
       periodSeconds: 320
+      exec:
+        command:
+          - rm
+          - /tmp/health.txt
     # volumeMounts:
     #   - mountPath: /dev/shm
     #     name: dshm
@@ -647,6 +724,10 @@ sentry:
       enabled: true
       initialDelaySeconds: 5
       periodSeconds: 320
+      exec:
+        command:
+          - rm
+          - /tmp/health.txt
     # volumeMounts:
     #   - mountPath: /dev/shm
     #     name: dshm
@@ -681,6 +762,10 @@ sentry:
       enabled: true
       initialDelaySeconds: 5
       periodSeconds: 320
+      exec:
+        command:
+          - rm
+          - /tmp/health.txt
     # volumeMounts:
     #   - mountPath: /dev/shm
     #     name: dshm
@@ -716,6 +801,10 @@ sentry:
       enabled: true
       initialDelaySeconds: 5
       periodSeconds: 320
+      exec:
+        command:
+          - rm
+          - /tmp/health.txt
     # volumeMounts:
     #   - mountPath: /dev/shm
     #     name: dshm
@@ -747,6 +836,10 @@ sentry:
       enabled: true
       initialDelaySeconds: 5
       periodSeconds: 320
+      exec:
+        command:
+          - rm
+          - /tmp/health.txt
     # volumeMounts:
     #   - mountPath: /dev/shm
     #     name: dshm
@@ -778,6 +871,10 @@ sentry:
       enabled: true
       initialDelaySeconds: 5
       periodSeconds: 320
+      exec:
+        command:
+          - rm
+          - /tmp/health.txt
     # volumeMounts:
     #   - mountPath: /dev/shm
     #     name: dshm
@@ -812,6 +909,10 @@ sentry:
       enabled: true
       initialDelaySeconds: 5
       periodSeconds: 320
+      exec:
+        command:
+          - rm
+          - /tmp/health.txt
     # volumeMounts:
     #   - mountPath: /dev/shm
     #     name: dshm
@@ -849,6 +950,10 @@ sentry:
       enabled: true
       initialDelaySeconds: 5
       periodSeconds: 320
+      exec:
+        command:
+          - rm
+          - /tmp/health.txt
     # volumeMounts:
     #   - mountPath: /dev/shm
     #     name: dshm
@@ -886,6 +991,10 @@ sentry:
       enabled: true
       initialDelaySeconds: 5
       periodSeconds: 320
+      exec:
+        command:
+          - rm
+          - /tmp/health.txt
     # volumeMounts:
     #   - mountPath: /dev/shm
     #     name: dshm
@@ -927,6 +1036,10 @@ sentry:
       enabled: true
       initialDelaySeconds: 5
       periodSeconds: 320
+      exec:
+        command:
+          - rm
+          - /tmp/health.txt
     # volumes: []
     # volumeMounts: []
     # autoOffsetReset: "earliest"
@@ -953,6 +1066,10 @@ sentry:
       enabled: true
       initialDelaySeconds: 5
       periodSeconds: 320
+      exec:
+        command:
+          - rm
+          - /tmp/health.txt
     # autoOffsetReset: "earliest"
     # noStrictOffsetReset: false
     # volumeMounts: []
@@ -978,6 +1095,10 @@ sentry:
       enabled: true
       initialDelaySeconds: 5
       periodSeconds: 320
+      exec:
+        command:
+          - rm
+          - /tmp/health.txt
     # autoOffsetReset: "earliest"
     # noStrictOffsetReset: false
     # volumeMounts: []
@@ -1003,6 +1124,10 @@ sentry:
       enabled: true
       initialDelaySeconds: 5
       periodSeconds: 320
+      exec:
+        command:
+          - rm
+          - /tmp/health.txt
     # autoOffsetReset: "earliest"
     # noStrictOffsetReset: false
     # volumeMounts: []
@@ -1029,6 +1154,10 @@ sentry:
       enabled: true
       initialDelaySeconds: 5
       periodSeconds: 320
+      exec:
+        command:
+          - rm
+          - /tmp/health.txt
     # autoOffsetReset: "earliest"
     # noStrictOffsetReset: false
 
@@ -1054,6 +1183,10 @@ sentry:
       enabled: true
       initialDelaySeconds: 5
       periodSeconds: 320
+      exec:
+        command:
+          - rm
+          - /tmp/health.txt
     # volumeMounts: []
     # autoOffsetReset: "earliest"
     # noStrictOffsetReset: false
@@ -1080,6 +1213,10 @@ sentry:
       enabled: true
       initialDelaySeconds: 5
       periodSeconds: 320
+      exec:
+        command:
+          - rm
+          - /tmp/health.txt
     # autoOffsetReset: "earliest"
     # noStrictOffsetReset: false
 
@@ -1105,6 +1242,10 @@ sentry:
       enabled: true
       initialDelaySeconds: 5
       periodSeconds: 320
+      exec:
+        command:
+          - rm
+          - /tmp/health.txt
     # autoOffsetReset: "earliest"
     # noStrictOffsetReset: false
 
@@ -1130,6 +1271,10 @@ sentry:
       enabled: true
       initialDelaySeconds: 5
       periodSeconds: 320
+      exec:
+        command:
+          - rm
+          - /tmp/health.txt
     # autoOffsetReset: "earliest"
     # noStrictOffsetReset: false
 
@@ -1156,6 +1301,10 @@ sentry:
       enabled: true
       initialDelaySeconds: 5
       periodSeconds: 320
+      exec:
+        command:
+          - rm
+          - /tmp/health.txt
     # autoOffsetReset: "earliest"
     # noStrictOffsetReset: false
 
@@ -1182,6 +1331,10 @@ sentry:
       enabled: true
       initialDelaySeconds: 5
       periodSeconds: 320
+      exec:
+        command:
+          - rm
+          - /tmp/health.txt
     # autoOffsetReset: "earliest"
     # noStrictOffsetReset: false
 
@@ -1231,9 +1384,19 @@ snuba:
     #   - api
     env: []
     probeInitialDelaySeconds: 10
-    liveness:
+    livenessProbe:
+      enabled: true
+      failureThreshold: 5
+      initialDelaySeconds: 10
+      periodSeconds: 10
+      successThreshold: 1
       timeoutSeconds: 2
-    readiness:
+    readinessProbe:
+      enabled: true
+      failureThreshold: 5
+      initialDelaySeconds: 10
+      periodSeconds: 10
+      successThreshold: 1
       timeoutSeconds: 2
     resources: {}
     #  requests:
@@ -1277,6 +1440,10 @@ snuba:
       enabled: true
       initialDelaySeconds: 5
       periodSeconds: 320
+      exec:
+        command:
+          - rm
+          - /tmp/health.txt
     # noStrictOffsetReset: false
     # maxBatchSize: ""
     # processes: ""
@@ -1310,6 +1477,10 @@ snuba:
       enabled: true
       initialDelaySeconds: 5
       periodSeconds: 320
+      exec:
+        command:
+          - rm
+          - /tmp/health.txt
     # maxBatchSize: ""
     # processes: ""
     # inputBlockSize: ""
@@ -1345,6 +1516,10 @@ snuba:
       enabled: true
       initialDelaySeconds: 5
       periodSeconds: 320
+      exec:
+        command:
+          - rm
+          - /tmp/health.txt
     # processes: ""
     # inputBlockSize: ""
     # outputBlockSize: ""
@@ -1379,6 +1554,10 @@ snuba:
       enabled: true
       initialDelaySeconds: 5
       periodSeconds: 320
+      exec:
+        command:
+          - rm
+          - /tmp/health.txt
     # processes: ""
     # inputBlockSize: ""
     # outputBlockSize: ""
@@ -1430,6 +1609,10 @@ snuba:
       enabled: true
       initialDelaySeconds: 5
       periodSeconds: 320
+      exec:
+        command:
+          - rm
+          - /tmp/health.txt
     # volumes: []
     # volumeMounts: []
     # maxBatchSize: ""
@@ -1457,6 +1640,10 @@ snuba:
       enabled: true
       initialDelaySeconds: 5
       periodSeconds: 320
+      exec:
+        command:
+          - rm
+          - /tmp/health.txt
     # volumes: []
     # volumeMounts: []
     # autoOffsetReset: "earliest"
@@ -1478,6 +1665,10 @@ snuba:
       enabled: true
       initialDelaySeconds: 5
       periodSeconds: 320
+      exec:
+        command:
+          - rm
+          - /tmp/health.txt
     # volumes: []
     # volumeMounts: []
     # autoOffsetReset: "earliest"
@@ -1499,6 +1690,10 @@ snuba:
       enabled: true
       initialDelaySeconds: 5
       periodSeconds: 320
+      exec:
+        command:
+          - rm
+          - /tmp/health.txt
     # volumes: []
     # volumeMounts: []
     # autoOffsetReset: "earliest"
@@ -1520,6 +1715,10 @@ snuba:
       enabled: true
       initialDelaySeconds: 5
       periodSeconds: 320
+      exec:
+        command:
+          - rm
+          - /tmp/health.txt
     # volumes: []
     # volumeMounts: []
     # autoOffsetReset: "earliest"
@@ -1541,6 +1740,10 @@ snuba:
       enabled: true
       initialDelaySeconds: 5
       periodSeconds: 320
+      exec:
+        command:
+          - rm
+          - /tmp/health.txt
     # volumes: []
     # volumeMounts: []
     # autoOffsetReset: "earliest"
@@ -1562,6 +1765,10 @@ snuba:
       enabled: true
       initialDelaySeconds: 5
       periodSeconds: 320
+      exec:
+        command:
+          - rm
+          - /tmp/health.txt
     # volumes: []
     # volumeMounts: []
     # autoOffsetReset: "earliest"
@@ -1584,6 +1791,10 @@ snuba:
       enabled: true
       initialDelaySeconds: 5
       periodSeconds: 320
+      exec:
+        command:
+          - rm
+          - /tmp/health.txt
     # volumes: []
     # volumeMounts: []
     # maxBatchSize: ""
@@ -1612,6 +1823,10 @@ snuba:
       enabled: true
       initialDelaySeconds: 5
       periodSeconds: 320
+      exec:
+        command:
+          - rm
+          - /tmp/health.txt
     # volumes: []
     # volumeMounts: []
     # maxBatchSize: ""
@@ -1640,6 +1855,10 @@ snuba:
       enabled: true
       initialDelaySeconds: 5
       periodSeconds: 320
+      exec:
+        command:
+          - rm
+          - /tmp/health.txt
     # volumes: []
     # volumeMounts: []
     # maxBatchSize: ""
@@ -1668,6 +1887,10 @@ snuba:
       enabled: true
       initialDelaySeconds: 5
       periodSeconds: 320
+      exec:
+        command:
+          - rm
+          - /tmp/health.txt
     # volumes: []
     # volumeMounts: []
     # maxBatchSize: ""
@@ -1699,6 +1922,10 @@ snuba:
       enabled: true
       initialDelaySeconds: 5
       periodSeconds: 320
+      exec:
+        command:
+          - rm
+          - /tmp/health.txt
     # volumes: []
     # volumeMounts: []
 
@@ -1723,6 +1950,10 @@ snuba:
       enabled: true
       initialDelaySeconds: 5
       periodSeconds: 320
+      exec:
+        command:
+          - rm
+          - /tmp/health.txt
     # autoOffsetReset: "earliest"
     # noStrictOffsetReset: false
 
@@ -1744,6 +1975,10 @@ snuba:
       enabled: true
       initialDelaySeconds: 5
       periodSeconds: 320
+      exec:
+        command:
+          - rm
+          - /tmp/health.txt
     # maxBatchSize: ""
     # processes: ""
     # inputBlockSize: ""
@@ -1777,6 +2012,10 @@ snuba:
       enabled: true
       initialDelaySeconds: 5
       periodSeconds: 320
+      exec:
+        command:
+          - rm
+          - /tmp/health.txt
     # maxBatchSize: ""
     # processes: ""
     # inputBlockSize: ""
@@ -1810,6 +2049,10 @@ snuba:
       enabled: true
       initialDelaySeconds: 5
       periodSeconds: 320
+      exec:
+        command:
+          - rm
+          - /tmp/health.txt
     # maxBatchSize: ""
     # processes: ""
     # inputBlockSize: ""
@@ -1843,6 +2086,10 @@ snuba:
       enabled: true
       initialDelaySeconds: 5
       periodSeconds: 320
+      exec:
+        command:
+          - rm
+          - /tmp/health.txt
     # maxBatchSize: ""
     # processes: ""
     # inputBlockSize: ""
@@ -1877,6 +2124,10 @@ snuba:
       enabled: true
       initialDelaySeconds: 5
       periodSeconds: 320
+      exec:
+        command:
+          - rm
+          - /tmp/health.txt
     # maxBatchSize: ""
     # processes: ""
     # inputBlockSize: ""
@@ -1910,6 +2161,10 @@ snuba:
       enabled: true
       initialDelaySeconds: 5
       periodSeconds: 320
+      exec:
+        command:
+          - rm
+          - /tmp/health.txt
     # maxBatchSize: ""
     # processes: ""
     # inputBlockSize: ""
@@ -1943,6 +2198,10 @@ snuba:
       enabled: true
       initialDelaySeconds: 5
       periodSeconds: 320
+      exec:
+        command:
+          - rm
+          - /tmp/health.txt
     # maxBatchSize: ""
     # processes: ""
     # inputBlockSize: ""
@@ -1976,6 +2235,10 @@ snuba:
       enabled: true
       initialDelaySeconds: 5
       periodSeconds: 320
+      exec:
+        command:
+          - rm
+          - /tmp/health.txt
     # maxBatchSize: ""
     # processes: ""
     # inputBlockSize: ""
@@ -2009,6 +2272,10 @@ snuba:
       enabled: true
       initialDelaySeconds: 5
       periodSeconds: 320
+      exec:
+        command:
+          - rm
+          - /tmp/health.txt
     # maxBatchSize: ""
     # processes: ""
     # inputBlockSize: ""
@@ -2222,7 +2489,26 @@ symbolicator:
       lookupVolumeName: true
     replicas: 1
     env: []
-    probeInitialDelaySeconds: 10
+    livenessProbe:
+      enabled: true
+      failureThreshold: 5
+      httpGet:
+        path: /healthcheck
+        scheme: HTTP
+      initialDelaySeconds: 10
+      periodSeconds: 10
+      successThreshold: 1
+      timeoutSeconds: 2
+    readinessProbe:
+      enabled: true
+      failureThreshold: 5
+      httpGet:
+        path: /healthcheck
+        scheme: HTTP
+      initialDelaySeconds: 10
+      periodSeconds: 10
+      successThreshold: 1
+      timeoutSeconds: 2
     resources: {}
     affinity: {}
     nodeSelector: {}
@@ -3077,6 +3363,11 @@ metrics:
     timeoutSeconds: 2
     failureThreshold: 3
     successThreshold: 1
+    httpGet:
+      path: /metrics
+      port: 9102
+      scheme: HTTP
+
   readinessProbe:
     enabled: true
     initialDelaySeconds: 30
@@ -3084,6 +3375,10 @@ metrics:
     timeoutSeconds: 2
     failureThreshold: 3
     successThreshold: 1
+    httpGet:
+      path: /metrics
+      port: 9102
+      scheme: HTTP
 
   ## Metrics exporter resource requests and limits
   ## ref: http://kubernetes.io/docs/user-guide/compute-resources/

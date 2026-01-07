@@ -105,12 +105,7 @@ spec:
           {{- end }}
         {{- if .Values.sentry.processSpans.livenessProbe.enabled }}
         livenessProbe:
-          exec:
-            command:
-              - rm
-              - /tmp/health.txt
-          initialDelaySeconds: {{ .Values.sentry.processSpans.livenessProbe.initialDelaySeconds }}
-          periodSeconds: {{ .Values.sentry.processSpans.livenessProbe.periodSeconds }}
+          {{- omit .Values.sentry.processSpans.livenessProbe "enabled" | toYaml | nindent 12 }}
         {{- end }}
         env:
 {{ include "sentry.env" . | indent 8 }}
