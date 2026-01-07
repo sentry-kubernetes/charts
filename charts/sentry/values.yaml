@@ -2428,7 +2428,7 @@ filestore:
     filesystem:
       ## Not recommended for production. Use only for development or when sharing PVC
       ## between vroom and ingest-profiles pods.
-      path: /var/lib/sentry/files/profiles
+      path: /var/vroom/sentry-profiles
 
       ## Enable persistence using Persistent Volume Claims
       ## ref: http://kubernetes.io/docs/user-guide/persistent-volumes/
