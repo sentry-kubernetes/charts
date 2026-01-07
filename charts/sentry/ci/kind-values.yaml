@@ -21,8 +21,13 @@ rabbitmq:
   enabled: false
 
 clickhouse:
-  enabled: true
-  replicaCount: 1
-  shards: 1
-  keeper:
-    replicaCount: 1
+  enabled: false
+
+externalClickhouse:
+  host: "clickhouse-clickhouse-external.default.svc"
+  tcpPort: 9000
+  httpPort: 8123
+  username: "default"
+  password: ""
+  database: "default"
+  singleNode: true

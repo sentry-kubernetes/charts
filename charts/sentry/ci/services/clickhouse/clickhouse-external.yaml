@@ -1,0 +1,25 @@
+apiVersion: clickhouse.altinity.com/v1
+kind: ClickHouseInstallation
+metadata:
+  name: clickhouse-external
+  namespace: default
+spec:
+  configuration:
+    clusters:
+      - name: single-node
+        layout:
+          shardsCount: 1
+          replicasCount: 1
+    users:
+      default/networks/ip:
+        - "0.0.0.0/0"
+  templates:
+    podTemplates:
+      - name: clickhouse-single-node
+        spec:
+          containers:
+            - name: clickhouse
+              image: altinity/clickhouse-server:25.3.6.10034.altinitystable
+  defaults:
+    templates:
+      podTemplate: clickhouse-single-node

@@ -22,7 +22,7 @@ jobs:
 
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.9'
+          python-version: "3.9"
           check-latest: true
 
       - name: Set up chart-testing
@@ -32,6 +32,7 @@ jobs:
         run: |
           helm repo add sentry-kubernetes https://sentry-kubernetes.github.io/charts
           helm repo add bitnami https://charts.bitnami.com/bitnami
+          helm repo add altinity https://helm.altinity.com
           helm repo update
 
       - name: Run chart-testing (list-changed)
@@ -49,6 +50,21 @@ jobs:
       - name: Create kind cluster
         if: steps.list-changed.outputs.changed == 'true'
         uses: helm/kind-action@v1.12.0
+
+      - name: Install Altinity ClickHouse Operator
+        if: steps.list-changed.outputs.changed == 'true'
+        run: |
+          # renovate: datasource=helm depName=altinity-clickhouse-operator registryUrl=https://helm.altinity.com
+          helm install altinity-clickhouse-operator altinity/altinity-clickhouse-operator --version 0.25.6 --namespace default --values charts/sentry/ci/services/clickhouse/operator.values.yaml   
+          kubectl -n default wait --for=condition=ready pod -l app.kubernetes.io/name=altinity-clickhouse-operator --timeout=120s
+
+      - name: Deploy External ClickHouse
+        if: steps.list-changed.outputs.changed == 'true'
+        run: |
+          kubectl apply -f charts/sentry/ci/services/clickhouse/clickhouse-external.yaml
+
+          # Wait for the ClickHouseInstallation to be ready
+          kubectl -n default wait --for=jsonpath='{.status.status}'=Completed --timeout=300s clickhouseinstallation/clickhouse-external
 
       - name: Run chart-testing (install)
         if: steps.list-changed.outputs.changed == 'true'

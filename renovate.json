@@ -7,29 +7,24 @@
   ],
   "enabled": true,
   "prConcurrentLimit": 30,
-  "enabledManagers": [
-    "helmv3",
-    "github-actions"
-  ],
-  "schedule": [
-    "before 5am on Monday"
-  ],
+  "enabledManagers": ["helmv3", "github-actions"],
+  "schedule": ["before 5am on Monday"],
   "packageRules": [
     {
-      "updateTypes": [
-        "patch",
-        "minor"
-      ],
-      "schedule": [
-        "before 5am on Monday"
-      ]
+      "updateTypes": ["patch", "minor"],
+      "schedule": ["before 5am on Monday"]
     },
     {
-      "updateTypes": [
-        "major"
-      ],
-      "schedule": [
-        "before 5am on the first day of the month"
+      "updateTypes": ["major"],
+      "schedule": ["before 5am on the first day of the month"]
+    }
+  ],
+  "customManagers": [
+    {
+      "customType": "regex",
+      "fileMatch": ["^\\.github/workflows/lint-test\\.yaml$"],
+      "matchStrings": [
+        "# renovate: datasource=(?<datasource>.*?) depName=(?<depName>.*?)( registryUrl=(?<registryUrl>.*?))?\\n.*?--version (?<currentValue>.*?) "
       ]
     }
   ]
