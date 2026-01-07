@@ -22,7 +22,7 @@ For now the full list of values is not documented, but you can get inspired by t
 
 ### Storage Configuration Changes
 
-This release introduces significant changes to how Sentry handles storage for `nodestore` (raw events) and `profiling`. We strongly recommend using an external S3-compatible storage provider (e.g., AWS S3, Google Cloud Storage, MinIO) for these components to ensure performance and scalability.
+This release introduces significant changes to how Sentry handles storage for `nodestore` (raw events) and `profiling`. We strongly recommend using an external S3-compatible storage provider (e.g., AWS S3, Google Cloud Storage, MinIO) for these components to ensure performance and scalability, however, `nodestore` can be very write heavy (if you have tons of throughput), so take this into consideration (cloud bills).
 
 - **Nodestore**: You can now configure S3-based node storage via `nodestore.s3`.
 - **Profiles**: The `filestore.profiles` section now supports an S3 backend. Using the `filesystem` backend is discouraged for production environments.

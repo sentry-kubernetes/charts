@@ -1,5 +1,13 @@
 # Install
 
+## External Services
+
+This chart relies on several external services for data storage and message brokering. While bundled versions are provided for testing and development, **production deployments should use external services**.
+
+Currently, using an **external ClickHouse is a requirement** as the bundled version is deprecated.
+
+Please refer to the [External Services Documentation](docs/external-services.md) for detailed setup instructions.
+
 ## Add repo
 
 ```
@@ -1336,3 +1344,5 @@ externalPostgresql:
 
 - [AWS + Terraform](docs/usage-aws-terraform.md)
 - [DigitalOcean](docs/usage-digitalocean.md)
+- [External Services](docs/external-services.md)
+
