@@ -1,5 +1,16 @@
 # Changelog
 
+## [28.0.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v27.11.0...sentry-v28.0.0) (2026-01-08)
+
+
+### ⚠ BREAKING CHANGES
+
+* upgrade to v25.12.1 ([#1981](https://github.com/sentry-kubernetes/charts/issues/1981))
+
+### Features
+
+* upgrade to v25.12.1 ([#1981](https://github.com/sentry-kubernetes/charts/issues/1981)) ([709b8f7](https://github.com/sentry-kubernetes/charts/commit/709b8f715a007feb3e6f180106923eae31b0d86a))
+
 ## [27.11.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v27.10.0...sentry-v27.11.0) (2026-01-06)
 
 
