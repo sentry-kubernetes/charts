@@ -1,5 +1,13 @@
 # Changelog
 
+## [28.0.1](https://github.com/sentry-kubernetes/charts/compare/sentry-v28.0.0...sentry-v28.0.1) (2026-01-09)
+
+
+### Bug Fixes
+
+* duplicated envs for taskworker & taskscheduler ([#1998](https://github.com/sentry-kubernetes/charts/issues/1998)) ([f48af58](https://github.com/sentry-kubernetes/charts/commit/f48af589a1a4b98005ecedc5bcbf705651e4e2cf))
+* symbolicator cleanup command arguments on statefulset ([#1995](https://github.com/sentry-kubernetes/charts/issues/1995)) ([12e957a](https://github.com/sentry-kubernetes/charts/commit/12e957adc92eb0ba1751cff4f9ce9dc6b0794bab))
+
 ## [28.0.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v27.11.0...sentry-v28.0.0) (2026-01-08)
 
 
