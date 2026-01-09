@@ -136,11 +136,11 @@ spec:
           - /bin/sh
           - -c
         args:
-          - |
-            while true; do
-              symbolicator cleanup -c /etc/symbolicator/config.yml;
-              sleep {{ .Values.symbolicator.api.cleaner.sleepInterval }};
-            done
+          - cleanup
+          - -c
+          - /etc/symbolicator/config.yml 
+          - --repeat
+          - {{ .Values.symbolicator.api.cleaner.repeat }}
         volumeMounts:
         - mountPath: /etc/symbolicator
           name: config
