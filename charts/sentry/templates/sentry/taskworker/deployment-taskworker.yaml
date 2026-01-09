@@ -102,7 +102,6 @@ spec:
         - name: C_FORCE_ROOT
           value: "true"
 {{ include "sentry.env" $root | indent 8 }}
-{{ include "sentry.snuba.env" $root | indent 8 }}
 {{ include "sentry.env.nodestore-s3" $root | indent 8 }}
 {{- if $root.Values.sentry.taskWorker.env }}
 {{ toYaml $root.Values.sentry.taskWorker.env | indent 8 }}
