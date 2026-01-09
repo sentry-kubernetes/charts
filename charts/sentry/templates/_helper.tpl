@@ -654,30 +654,6 @@ Common Snuba environment variables
 - name: KAFKA_SECURITY_PROTOCOL
   value: {{ include "sentry.kafka.security_protocol" . | quote }}
 
-{{/*
-Set external Redis password from existingSecret
-*/}}
-{{- if and (.Values.redis.enabled) (.Values.redis.auth.enabled) }}
-{{- if .Values.redis.auth.password }}
-- name: REDIS_PASSWORD
-  value: {{ .Values.redis.auth.password | quote }}
-{{- else if .Values.redis.auth.existingSecret }}
-- name: REDIS_PASSWORD
-  valueFrom:
-    secretKeyRef:
-      name: {{ default (include "sentry.redis.fullname" .) .Values.redis.auth.existingSecret }}
-      key: {{ default "redis-password" .Values.redis.auth.existingSecretPasswordKey }}
-{{- end }}
-{{- else if .Values.externalRedis.password }}
-- name: REDIS_PASSWORD
-  value: {{ .Values.externalRedis.password | quote }}
-{{- else if .Values.externalRedis.existingSecret }}
-- name: REDIS_PASSWORD
-  valueFrom:
-    secretKeyRef:
-      name: {{ .Values.externalRedis.existingSecret }}
-      key: {{ default "redis-password" .Values.externalRedis.existingSecretKey }}
-{{- end }}
 
 {{/*
 Set external Clickhouse password from existingSecret
