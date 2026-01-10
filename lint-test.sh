@@ -222,22 +222,9 @@ deploy_external_clickhouse() {
 run_install() {
     log_info "Запуск chart-testing install для charts/sentry..."
     
-    # Отладочная информация
-    log_info "DEBUG: Текущая рабочая директория: $(pwd)"
-    log_info "DEBUG: Проверка существования charts/sentry/Chart.yaml..."
-    if [[ -f "charts/sentry/Chart.yaml" ]]; then
-        log_info "DEBUG: charts/sentry/Chart.yaml существует"
-    else
-        log_error "DEBUG: charts/sentry/Chart.yaml НЕ найден!"
-    fi
-    log_info "DEBUG: Содержимое директории charts/sentry:"
-    ls -la charts/sentry/ || log_error "DEBUG: Не удалось прочитать директорию charts/sentry"
-    log_info "DEBUG: Содержимое директории charts:"
-    ls -la charts/ || log_error "DEBUG: Не удалось прочитать директорию charts"
-    log_info "DEBUG: Команда для выполнения: ./ct install --chart-dirs charts --charts sentry --debug --helm-extra-args \"--timeout 1000s\""
-    
-    # Используем --charts с именем chart из Chart.yaml (sentry)
-    ./ct install --chart-dirs charts --charts sentry --debug --helm-extra-args "--timeout 1000s"
+    # Используем --all для установки всех charts из директории charts/
+    # Это устанавливает все charts: clickhouse, sentry, sentry-kubernetes
+    ./ct install --chart-dirs charts --all --debug --helm-extra-args "--timeout 1000s"
 }
 
 # Очистка
