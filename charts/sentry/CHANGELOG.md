@@ -1,5 +1,12 @@
 # Changelog
 
+## [28.0.2](https://github.com/sentry-kubernetes/charts/compare/sentry-v28.0.1...sentry-v28.0.2) (2026-01-12)
+
+
+### Bug Fixes
+
+* symbolicator statefulset cleaner configuration ([#2004](https://github.com/sentry-kubernetes/charts/issues/2004)) ([80b95a4](https://github.com/sentry-kubernetes/charts/commit/80b95a4f1c8407f803d1b790b84ff03417f6b885))
+
 ## [28.0.1](https://github.com/sentry-kubernetes/charts/compare/sentry-v28.0.0...sentry-v28.0.1) (2026-01-09)
 
 
