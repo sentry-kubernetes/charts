@@ -132,9 +132,6 @@ spec:
       - name: {{ .Chart.Name }}-symbolicator-cleaner
         image: "{{ template "symbolicator.image" . }}"
         imagePullPolicy: {{ default "IfNotPresent" .Values.images.symbolicator.pullPolicy }}
-        command:
-          - /bin/sh
-          - -c
         args:
           - cleanup
           - -c
