@@ -706,6 +706,12 @@ sentry.conf.py: |-
   ##########
   # Github #
   ##########
+  {{- if .Values.github.existingSecretAppIdKey }}
+  SENTRY_OPTIONS['github-app.id'] = os.environ.get("GITHUB_APP_ID")
+  {{- end }}
+  {{- if .Values.github.existingSecretAppNameKey }}
+  SENTRY_OPTIONS['github-app.name'] = os.environ.get("GITHUB_APP_NAME")
+  {{- end }}
   SENTRY_OPTIONS['github-app.private-key'] = os.environ.get("GITHUB_APP_PRIVATE_KEY")
   SENTRY_OPTIONS['github-app.webhook-secret'] = os.environ.get("GITHUB_APP_WEBHOOK_SECRET")
   SENTRY_OPTIONS['github-app.client-id'] = os.environ.get("GITHUB_APP_CLIENT_ID")

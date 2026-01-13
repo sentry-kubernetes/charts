@@ -1024,6 +1024,20 @@ Set github app
     secretKeyRef:
       name: {{ .Values.github.existingSecret }}
       key: {{ default "client-secret" .Values.github.existingSecretClientSecretKey }}
+{{- if .Values.github.existingSecretAppIdKey }}
+- name: GITHUB_APP_ID
+  valueFrom:
+    secretKeyRef:
+      name: {{ .Values.github.existingSecret }}
+      key: {{ .Values.github.existingSecretAppIdKey }}
+{{- end }}
+{{- if .Values.github.existingSecretAppNameKey }}
+- name: GITHUB_APP_NAME
+  valueFrom:
+    secretKeyRef:
+      name: {{ .Values.github.existingSecret }}
+      key: {{ .Values.github.existingSecretAppNameKey }}
+{{- end }}
 {{- end }}
 
 {{/*

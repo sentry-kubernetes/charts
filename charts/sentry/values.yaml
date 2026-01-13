@@ -2203,13 +2203,17 @@ github: {}
 #   Note: if you use `existingSecret`, all above `clientId`, `clientSecret`, `privateKey`, `webhookSecret`
 #   params would be ignored, because chart will suppose that they are stored in `existingSecret`. So you
 #   must define all required keys and set it at least to empty strings if they are not needed in `existingSecret`
-#   secret (client-id, client-secret, webhook-secret, private-key)
+#   secret (client-id, client-secret, webhook-secret, private-key).
+#   However, `appId` and `appName` will be used from the values above,
+#   if `existingSecretAppIdKey` and `existingSecretAppNameKey` are not specified.
 #
 #   existingSecret: "xxxxx"
 #   existingSecretPrivateKeyKey: ""     # by default "private-key"
 #   existingSecretWebhookSecretKey: ""  # by default "webhook-secret"
 #   existingSecretClientIdKey: ""       # by default "client-id"
 #   existingSecretClientSecretKey: ""   # by default "client-secret"
+#   existingSecretAppIdKey: ""          # if it is specified, it will override .Values.github.appId
+#   existingSecretAppNameKey: ""        # if it is specified, it will override .Values.github.appName
 #
 #   Reference -> https://docs.sentry.io/product/integrations/source-code-mgmt/github/
 
