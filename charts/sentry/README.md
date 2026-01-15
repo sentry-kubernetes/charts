@@ -190,6 +190,16 @@ Note: this table is incomplete, so have a look at the values.yaml in case you mi
 | ingress.alb.httpRedirect | bool | `false` |  |
 | ingress.enabled | bool | `true` |  |
 | ingress.regexPathStyle | string | `"nginx"` |  |
+| ingress.pathType | string | `"ImplementationSpecific"` |  |
+| ingress.assets.enabled | bool | `true` |  |
+| ingress.assets.path | string | `"/_assets/(.*)"` |  |
+| ingress.assets.rewriteTarget | string | `"/_static/dist/sentry/$1"` |  |
+| ingress.assets.enableConfigurationSnippet | bool | `false` |  |
+| ingress.assets.configurationSnippet | string | `"proxy_hide_header Content-Disposition;"` |  |
+| ingress.static.enabled | bool | `true` |  |
+| ingress.static.path | string | `"/_static/"` |  |
+| ingress.static.enableConfigurationSnippet | bool | `false` |  |
+| ingress.static.configurationSnippet | string | `"proxy_hide_header Content-Disposition;"` |  |
 | ipv6 | bool | `false` |  |
 | kafka.controller.nodeSelector | object | `{}` |  |
 | kafka.controller.replicaCount | int | `3` |  |
@@ -1154,9 +1164,9 @@ Note: this table is incomplete, so have a look at the values.yaml in case you mi
 | zookeeper.nodeSelector | object | `{}` |  |
 | zookeeper.replicaCount | int | `1` |  |
 
-## NGINX and/or Ingress
+## Ingress
 
-By default, NGINX is enabled to allow sending the incoming requests to [Sentry Relay](https://getsentry.github.io/relay/) or the Django backend depending on the path. When Sentry is meant to be exposed outside of the Kubernetes cluster, it is recommended to disable NGINX and let the Ingress do the same. It's recommended to go with the go to Ingress Controller, [NGINX Ingress](https://kubernetes.github.io/ingress-nginx/) but others should work as well.
+This chart routes traffic via Kubernetes Ingress only (the nginx subchart has been removed). Configure `ingress.*` (including `ingress.assets` and `ingress.static`) to mirror the previous nginx routing behavior. The defaults target nginx-ingress, but you can override annotations for other controllers.
 
 ## Sentry secret key
 

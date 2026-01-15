@@ -18,6 +18,14 @@ helm install my-sentry sentry/sentry --wait --timeout=1000s
 
 For now the full list of values is not documented, but you can get inspired by the `values.yaml` specific to each directory.
 
+## Upgrading to Chart 29.x.x
+
+The nginx container has been removed because it became a throughput bottleneck; routing directly via Kubernetes Ingress improves performance and reduces hop latency.
+
+- Remove any `nginx.*` values and ensure `ingress.enabled=true`.
+- Configure `ingress.assets` and `ingress.static` to keep asset rewrites and response header handling.
+- If you previously relied on nginx extraLocationSnippet, move the logic to ingress annotations, your controller ConfigMap, or create dedicated ingress object manually or via `extraManifests`.
+
 ## Upgrading to Chart 28.x.x
 
 ### Storage Configuration Changes

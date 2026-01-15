@@ -1,0 +1,74 @@
+{{- if and .Values.ingress.enabled .Values.ingress.assets.enabled -}}
+{{- $root := . -}}
+{{- $ingressApiIsStable := eq (include "sentry.ingress.isStable" .) "true" -}}
+{{- $ingressSupportsIngressClassName := eq (include "sentry.ingress.supportsIngressClassName" .) "true" -}}
+{{- $ingressSupportsPathType := eq (include "sentry.ingress.supportsPathType" .) "true" -}}
+{{- $defaultPathType := .Values.ingress.pathType | default "ImplementationSpecific" -}}
+{{- $ingressPathType := .Values.ingress.assets.pathType | default $defaultPathType -}}
+{{- $hosts := list .Values.ingress.hostname -}}
+{{- range .Values.ingress.additionalHostNames -}}
+{{- $hosts = append $hosts . -}}
+{{- end -}}
+{{- $commonAnnotations := .Values.ingress.annotations | default dict -}}
+{{- $assetAnnotations := .Values.ingress.assets.annotations | default dict -}}
+{{- $annotations := merge (deepCopy $commonAnnotations) $assetAnnotations -}}
+{{- $isNginx := eq (default "nginx" .Values.ingress.regexPathStyle) "nginx" -}}
+{{- if and $isNginx (not (hasKey $annotations "nginx.ingress.kubernetes.io/use-regex")) -}}
+{{- $_ := set $annotations "nginx.ingress.kubernetes.io/use-regex" "true" -}}
+{{- end -}}
+{{- if and $isNginx .Values.ingress.assets.enableConfigurationSnippet .Values.ingress.assets.configurationSnippet (not (hasKey $annotations "nginx.ingress.kubernetes.io/configuration-snippet")) -}}
+{{- $_ := set $annotations "nginx.ingress.kubernetes.io/configuration-snippet" .Values.ingress.assets.configurationSnippet -}}
+{{- end -}}
+{{- if and $isNginx .Values.ingress.assets.rewriteTarget -}}
+{{- $_ := set $annotations "nginx.ingress.kubernetes.io/rewrite-target" .Values.ingress.assets.rewriteTarget -}}
+{{- end -}}
+apiVersion: {{ include "sentry.ingress.apiVersion" . }}
+kind: Ingress
+metadata:
+  name: {{ template "sentry.fullname" . }}-assets
+  labels:
+    app: {{ template "sentry.fullname" . }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
+    release: "{{ .Release.Name }}"
+    heritage: "{{ .Release.Service }}"
+    {{- include "sentry.labels" . | nindent 4 }}
+  {{- range $key, $value := .Values.ingress.labels }}
+    {{ $key }}: {{ $value | quote }}
+  {{- end }}
+  {{- if $annotations }}
+  annotations:
+    {{- toYaml $annotations | nindent 4 }}
+  {{- end }}
+spec:
+  {{- if and $ingressSupportsIngressClassName .Values.ingress.ingressClassName }}
+  ingressClassName: {{ .Values.ingress.ingressClassName | quote }}
+  {{- end }}
+  rules:
+  {{- range $idx, $host := $hosts }}
+    - host: {{ $host }}
+      http:
+        paths:
+          - path: {{ $root.Values.ingress.assets.path | default "/_assets/(.*)" | quote }}
+            {{- if $ingressSupportsPathType }}
+            pathType: {{ $ingressPathType }}
+            {{- end }}
+            backend:
+              {{- if $ingressApiIsStable }}
+              service:
+                name: {{ template "sentry.fullname" $root }}-web
+                port:
+                  {{- if kindIs "float64" $root.Values.service.externalPort }}
+                  number: {{ $root.Values.service.externalPort }}
+                  {{- else }}
+                  name: {{ $root.Values.service.externalPort }}
+                  {{- end }}
+              {{- else }}
+              serviceName: {{ template "sentry.fullname" $root }}-web
+              servicePort: {{ $root.Values.service.externalPort }}
+              {{- end }}
+  {{- end }}
+{{- if .Values.ingress.tls }}
+  tls:
+{{ toYaml .Values.ingress.tls | indent 4 }}
+{{- end }}
+{{- end }}

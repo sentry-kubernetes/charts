@@ -7,7 +7,6 @@
     {{- end -}}
 {{- end -}}
 
-{{- define "nginx.port" -}}{{ default "8080" .Values.nginx.containerPort }}{{- end -}}
 {{- define "relay.port" -}}3000{{- end -}}
 {{- define "relay.healthCheck.readinessRequestPath" -}}/api/relay/healthcheck/ready/{{- end -}}
 {{- define "relay.healthCheck.livenessRequestPath" -}}/api/relay/healthcheck/live/{{- end -}}
