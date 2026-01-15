@@ -1,5 +1,13 @@
 # Changelog
 
+## [28.0.3](https://github.com/sentry-kubernetes/charts/compare/sentry-v28.0.2...sentry-v28.0.3) (2026-01-15)
+
+
+### Bug Fixes
+
+* high uwsgi memory usage caused by uwsgi allocating memory based on ([#1974](https://github.com/sentry-kubernetes/charts/issues/1974)) ([a50c90c](https://github.com/sentry-kubernetes/charts/commit/a50c90c7f44b6647f74c12b000e961c5656029a0))
+* optionally take app_id and app_name from secrets for Github ([#2009](https://github.com/sentry-kubernetes/charts/issues/2009)) ([b70306c](https://github.com/sentry-kubernetes/charts/commit/b70306ca35b96b5e6a13358ae8988255f49be045))
+
 ## [28.0.2](https://github.com/sentry-kubernetes/charts/compare/sentry-v28.0.1...sentry-v28.0.2) (2026-01-12)
 
 
