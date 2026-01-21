@@ -2982,21 +2982,13 @@ externalPostgresql:
   connMaxAge: 0
 
 memcached:
-  image:
-    repository: bitnamilegacy/memcached
-  metrics:
-    image:
-      repository: bitnamilegacy/memcached-exporter
-  memoryLimit: "2048"
-  maxItemSize: "26214400"
-  args:
-    - "memcached"
-    - "-u memcached"
-    - "-p 11211"
-    - "-v"
-    - "-m $(MEMCACHED_MEMORY_LIMIT)"
-    - "-I $(MEMCACHED_MAX_ITEM_SIZE)"
-  extraEnvVarsCM: "sentry-memcached"
+  config:
+    memoryLimit: 2048
+    verbosity: 1
+    extraArgs:
+      # memcached max item size
+      - "-I"
+      - "26214400"
   nodeSelector: {}
   tolerations: []
 

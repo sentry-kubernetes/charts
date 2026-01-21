@@ -312,16 +312,12 @@ Note: this table is incomplete, so have a look at the values.yaml in case you mi
 | mail.useSsl | bool | `false` |  |
 | mail.useTls | bool | `false` |  |
 | mail.username | string | `""` |  |
-| memcached.args[0] | string | `"memcached"` |  |
-| memcached.args[1] | string | `"-u memcached"` |  |
-| memcached.args[2] | string | `"-p 11211"` |  |
-| memcached.args[3] | string | `"-v"` |  |
-| memcached.args[4] | string | `"-m $(MEMCACHED_MEMORY_LIMIT)"` |  |
-| memcached.args[5] | string | `"-I $(MEMCACHED_MAX_ITEM_SIZE)"` |  |
-| memcached.extraEnvVarsCM | string | `"sentry-memcached"` |  |
-| memcached.maxItemSize | string | `"26214400"` |  |
-| memcached.memoryLimit | string | `"2048"` |  |
+| memcached.config.extraArgs[0] | string | `"-I"` |  |
+| memcached.config.extraArgs[1] | string | `"26214400"` |  |
+| memcached.config.memoryLimit | int | `2048` |  |
+| memcached.config.verbosity | int | `1` |  |
 | memcached.nodeSelector | object | `{}` |  |
+| memcached.tolerations | list | `[]` |  |
 | metrics.affinity | object | `{}` |  |
 | metrics.containerSecurityContext | object | `{}` |  |
 | metrics.enabled | bool | `false` |  |

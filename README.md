@@ -18,6 +18,27 @@ helm install my-sentry sentry/sentry --wait --timeout=1000s
 
 For now the full list of values is not documented, but you can get inspired by the `values.yaml` specific to each directory.
 
+## Upgrading to Chart 29.x.x
+
+### Memcached chart switch
+
+This release replaces the Bitnami Memcached dependency with the CloudPirates Memcached chart (`oci://registry-1.docker.io/cloudpirates/memcached`). Values have changed accordingly:
+
+- `memcached.args` and `memcached.extraEnvVarsCM` were removed.
+- `memcached.memoryLimit` is now `memcached.config.memoryLimit` (value in MB).
+- `memcached.maxItemSize` must be configured via `memcached.config.extraArgs` using the `-I` flag.
+
+Example:
+
+```yaml
+memcached:
+  config:
+    memoryLimit: 2048
+    extraArgs:
+      - "-I"
+      - "26214400"
+```
+
 ## Upgrading to Chart 28.x.x
 
 ### Storage Configuration Changes
