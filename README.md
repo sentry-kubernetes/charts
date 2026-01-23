@@ -290,7 +290,7 @@ As Relay is now part of this chart, you need to make sure you enable either Ngin
 
 If you are using an ingress gateway (like Istio), you have to change your inbound path from `sentry-web` to `nginx`.
 
-## NGINX and/or Ingress
+## Traffic Routing
 
 By default, NGINX is enabled to allow sending the incoming requests to [Sentry Relay](https://getsentry.github.io/relay/) or the Django backend depending on the path. When Sentry is meant to be exposed outside of the Kubernetes cluster, it is recommended to disable NGINX and let the Ingress do the same. It's recommended to go with the go-to Ingress Controller, [NGINX Ingress](https://kubernetes.github.io/ingress-nginx/), but others should work as well.
 
@@ -309,6 +309,41 @@ nginx:
     hostname: fqdn
     ingressClassName: "nginx"
     tls: true
+```
+
+### Gateway API
+
+This chart supports [Kubernetes Gateway API](https://gateway-api.sigs.k8s.io/) HTTPRoute as an alternative to traditional Ingress.
+
+```yaml
+nginx:
+  enabled: false
+route:
+  main:
+    enabled: true
+    hostnames:
+      - sentry.example.com
+    parentRefs:
+      - name: my-gateway
+        namespace: default
+```
+
+With HTTP to HTTPS redirect:
+
+```yaml
+route:
+  main:
+    enabled: true
+    hostnames:
+      - sentry.example.com
+    parentRefs:
+      - name: my-gateway
+        sectionName: https
+  httpRedirect:
+    enabled: true
+    parentRefs:
+      - name: my-gateway
+        sectionName: http
 ```
 
 ## ClickHouse warning

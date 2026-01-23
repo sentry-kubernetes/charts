@@ -1180,3 +1180,16 @@ app.kubernetes.io/name: {{ include "sentry.name" .ctx }}
 app.kubernetes.io/instance: {{ .ctx.Release.Name }}
 app.kubernetes.io/component: {{ .component }}
 {{- end }}
+
+{{/*
+Return the appropriate apiVersion for Gateway API HTTPRoute.
+Returns empty string if Gateway API is not available in the cluster.
+Gateway API v1 is GA since Kubernetes 1.29.
+*/}}
+{{- define "sentry.route.apiVersion" -}}
+{{- if .Capabilities.APIVersions.Has "gateway.networking.k8s.io/v1" -}}
+{{- print "gateway.networking.k8s.io/v1" -}}
+{{- else if .Capabilities.APIVersions.Has "gateway.networking.k8s.io/v1beta1" -}}
+{{- print "gateway.networking.k8s.io/v1beta1" -}}
+{{- end -}}
+{{- end -}}

@@ -465,6 +465,24 @@ Note: this table is incomplete, so have a look at the values.yaml in case you mi
 | relay.topologySpreadConstraints | list | `[]` |  |
 | relay.volumeMounts | list | `[]` |  |
 | relay.volumes | list | `[]` |  |
+| route.httpRedirect.annotations | object | `{}` | Annotations for the HTTP redirect HTTPRoute |
+| route.httpRedirect.apiVersion | string | `"gateway.networking.k8s.io/v1"` | API version for HTTPRoute (auto-detected if not set) |
+| route.httpRedirect.enabled | bool | `false` | Enable HTTP to HTTPS redirect HTTPRoute |
+| route.httpRedirect.hostnames | list | `[]` | Hostnames (inherits from main route if empty) |
+| route.httpRedirect.kind | string | `"HTTPRoute"` | Route kind |
+| route.httpRedirect.labels | object | `{}` | Labels for the HTTP redirect HTTPRoute |
+| route.httpRedirect.parentRefs | list | `[]` | Parent Gateway references for HTTP listener |
+| route.httpRedirect.statusCode | int | `301` | HTTP redirect status code (301=permanent, 302=temporary) |
+| route.main.additionalRules | list | `[]` | Additional custom rules to prepend |
+| route.main.annotations | object | `{}` | Annotations for the HTTPRoute |
+| route.main.apiVersion | string | `"gateway.networking.k8s.io/v1"` | API version for HTTPRoute (auto-detected if not set) |
+| route.main.enabled | bool | `false` | Enable Gateway API HTTPRoute |
+| route.main.filters | list | `[]` | Filters applied to all backend requests |
+| route.main.hostnames | list | `[]` | Hostnames for the HTTPRoute |
+| route.main.kind | string | `"HTTPRoute"` | Route kind (HTTPRoute, GRPCRoute, etc.) |
+| route.main.labels | object | `{}` | Labels for the HTTPRoute |
+| route.main.parentRefs | list | `[]` | Parent Gateway references (required when enabled) |
+| route.main.path | string | `"/"` | Base path prefix for subpath deployments |
 | revisionHistoryLimit | int | `10` |  |
 | sentry.billingMetricsConsumer.affinity | object | `{}` |  |
 | sentry.billingMetricsConsumer.autoscaling.enabled | bool | `false` |  |

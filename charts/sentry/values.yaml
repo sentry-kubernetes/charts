@@ -2348,6 +2348,80 @@ traefikIngressRoute:
   priority: 100
 
 
+# Kubernetes Gateway API HTTPRoute configuration
+# Configure gateway routes for the chart here. More routes can be added by adding
+# a dictionary key like the 'main' route.
+# Reference: https://gateway-api.sigs.k8s.io/
+route:
+  main:
+    # -- Enables or disables the route
+    enabled: false
+
+    # -- Set the route apiVersion
+    apiVersion: gateway.networking.k8s.io/v1
+
+    # -- Set the route kind
+    # Valid options are GRPCRoute, HTTPRoute, TCPRoute, TLSRoute, UDPRoute
+    kind: HTTPRoute
+
+    # -- Route annotations
+    annotations: {}
+
+    # -- Route labels
+    labels: {}
+
+    # -- Hostnames for the HTTPRoute
+    # Example: ["sentry.example.com", "sentry.internal.example.com"]
+    hostnames: []
+
+    # -- Parent Gateway references
+    # At least one parentRef is required when enabled
+    parentRefs: []
+      # - name: my-gateway
+      #   namespace: default
+      #   sectionName: https
+
+    # -- Base path prefix for all routes (for subpath deployments)
+    # Use this if Sentry is deployed at a subpath, e.g., "/sentry"
+    path: /
+
+    # -- Additional custom rules to prepend
+    additionalRules: []
+
+    # -- Filters applied to requests
+    filters: []
+
+  # -- HTTP to HTTPS redirect route
+  # Creates a separate HTTPRoute that redirects HTTP traffic to HTTPS
+  httpRedirect:
+    # -- Enables or disables the redirect route
+    enabled: false
+
+    # -- Set the route apiVersion
+    apiVersion: gateway.networking.k8s.io/v1
+
+    # -- Set the route kind
+    kind: HTTPRoute
+
+    # -- Route annotations
+    annotations: {}
+
+    # -- Route labels
+    labels: {}
+
+    # -- Hostnames (if empty, inherits from main route)
+    hostnames: []
+
+    # -- Parent reference for the HTTP listener
+    parentRefs: []
+      # - name: my-gateway
+      #   namespace: default
+      #   sectionName: http
+
+    # -- HTTP status code for redirect (301 = permanent, 302 = temporary)
+    statusCode: 301
+
+
 filestore:
   # Set to one of filesystem, gcs or s3 as supported by Sentry.
   backend: filesystem
