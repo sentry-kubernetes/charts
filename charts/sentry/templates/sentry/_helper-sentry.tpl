@@ -736,6 +736,10 @@ Init container for installing sentry-nodestore-s3 package
   volumeMounts:
     - name: sentry-plugins
       mountPath: /sentry-plugins
+  {{- if .Values.nodestore.initContainer.env }}
+  env:
+  {{- toYaml .Values.nodestore.initContainer.env | nindent 4 }}
+  {{- end }}
 {{- end }}
 {{- end -}}
 

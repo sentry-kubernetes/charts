@@ -2479,6 +2479,13 @@ nodestore:
   # Set to "s3" to enable S3-based node storage
   # When backend is empty (default), nodestore-s3 is NOT installed
   backend: ""
+  # Optional environment variables for the init container that installs nodestore-s3
+  initContainer:
+    env: []
+    # - name: HTTP_PROXY
+    #   value: "http://proxy.example.com:8080"
+    # - name: HTTPS_PROXY
+    #   value: "http://proxy.example.com:8080"
   s3:
     # deleteThrough: "False"
     # writeThrough: "False"
