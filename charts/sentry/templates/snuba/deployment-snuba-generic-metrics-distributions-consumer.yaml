@@ -143,6 +143,7 @@ spec:
         - containerPort: {{ template "snuba.port" }}
         env:
 {{ include "sentry.snuba.env" . | indent 8 }}
+{{ include "sentry.customCA.env" (dict "customCA" nil "global" .Values.global) | indent 8 }}
 {{- if .Values.snuba.genericMetricsDistributionConsumer.env }}
 {{ toYaml .Values.snuba.genericMetricsDistributionConsumer.env | indent 8 }}
 {{- end }}
@@ -153,6 +154,7 @@ spec:
         - mountPath: /etc/snuba
           name: config
           readOnly: true
+{{ include "sentry.customCA.volumeMount" (dict "customCA" nil "global" .Values.global) | indent 8 }}
 {{- if .Values.snuba.genericMetricsDistributionConsumer.volumeMounts }}
 {{ toYaml .Values.snuba.genericMetricsDistributionConsumer.volumeMounts | indent 8 }}
 {{- end }}
@@ -175,6 +177,7 @@ spec:
         - name: config
           configMap:
             name: {{ template "sentry.fullname" . }}-snuba
+{{ include "sentry.customCA.volume" (dict "customCA" nil "global" .Values.global) | indent 8 }}
 {{- if .Values.snuba.genericMetricsDistributionConsumer.volumes }}
 {{ toYaml .Values.snuba.genericMetricsDistributionConsumer.volumes | indent 8 }}
 {{- end }}

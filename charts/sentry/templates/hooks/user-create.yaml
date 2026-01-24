@@ -98,6 +98,7 @@ spec:
         env:
 {{ include "sentry.env" . | indent 8 }}
 {{ include "sentry.env.nodestore-s3" . | indent 8 }}
+{{ include "sentry.customCA.env" (dict "customCA" nil "global" .Values.global) | indent 8 }}
         {{- if .Values.user.existingSecret }}
         - name: ADMIN_PASSWORD
           valueFrom:
@@ -116,6 +117,7 @@ spec:
           name: config
           readOnly: true
 {{ include "sentry.volumeMount.nodestore-s3" . | indent 8 }}
+{{ include "sentry.customCA.volumeMount" (dict "customCA" nil "global" .Values.global) | indent 8 }}
 {{- if .Values.hooks.dbInit.volumeMounts }}
 {{ toYaml .Values.hooks.dbInit.volumeMounts | indent 8 }}
 {{- end }}
@@ -136,6 +138,7 @@ spec:
         configMap:
           name: {{ template "sentry.fullname" . }}-sentry
 {{ include "sentry.volume.nodestore-s3" . | indent 6 }}
+{{ include "sentry.customCA.volume" (dict "customCA" nil "global" .Values.global) | indent 6 }}
 {{- if .Values.hooks.dbInit.volumes }}
 {{ toYaml .Values.hooks.dbInit.volumes | indent 6 }}
 {{- end }}

@@ -87,12 +87,14 @@ spec:
         - name: VROOM_PORT
           value: '{{ template "vroom.port" }}'
 {{- include "vroom.env" . | nindent 8 }}
+{{ include "sentry.customCA.env" (dict "customCA" nil "global" .Values.global) | indent 8 }}
 {{- if .Values.vroom.env }}
 {{ toYaml .Values.vroom.env | indent 8 }}
 {{- end }}
         volumeMounts:
         - name: vroom-storage
           mountPath: {{ .Values.filestore.profiles.filesystem.path }}
+{{ include "sentry.customCA.volumeMount" (dict "customCA" nil "global" .Values.global) | indent 8 }}
 {{- if .Values.vroom.volumeMounts }}
 {{ toYaml .Values.vroom.volumeMounts | indent 8 }}
 {{- end }}
@@ -140,6 +142,7 @@ spec:
       - name: vroom-storage
         emptyDir: {}
       {{- end }}
+{{ include "sentry.customCA.volume" (dict "customCA" nil "global" .Values.global) | indent 6 }}
 {{- if .Values.vroom.volumes }}
 {{ toYaml .Values.vroom.volumes | indent 6 }}
 {{- end }}

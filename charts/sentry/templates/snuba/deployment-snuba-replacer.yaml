@@ -114,6 +114,7 @@ spec:
         - containerPort: {{ template "snuba.port" }}
         env:
 {{ include "sentry.snuba.env" . | indent 8 }}
+{{ include "sentry.customCA.env" (dict "customCA" nil "global" .Values.global) | indent 8 }}
 {{- if .Values.snuba.replacer.env }}
 {{ toYaml .Values.snuba.replacer.env | indent 8 }}
 {{- end }}
@@ -124,6 +125,7 @@ spec:
         - mountPath: /etc/snuba
           name: config
           readOnly: true
+{{ include "sentry.customCA.volumeMount" (dict "customCA" nil "global" .Values.global) | indent 8 }}
 {{- if .Values.snuba.replacer.volumeMounts }}
 {{ toYaml .Values.snuba.replacer.volumeMounts | indent 8 }}
 {{- end }}
@@ -146,6 +148,7 @@ spec:
       - name: config
         configMap:
           name: {{ template "sentry.fullname" . }}-snuba
+{{ include "sentry.customCA.volume" (dict "customCA" nil "global" .Values.global) | indent 6 }}
 {{- if .Values.snuba.replacer.volumes }}
 {{ toYaml .Values.snuba.replacer.volumes | indent 6 }}
 {{- end }}

@@ -13,6 +13,20 @@ global:
   sidecars: []
   volumes: []
 
+  # Custom CA certificate configuration (global fallback)
+  # Applies to all components unless overridden by component-specific customCA.
+  # Sets REQUESTS_CA_BUNDLE and SSL_CERT_FILE environment variables.
+  # Useful for corporate proxies or internal services with custom certificates.
+  #
+  # Components can override this with their own customCA setting, e.g.:
+  #   sentry.web.customCA, sentry.worker.customCA, snuba.api.customCA, etc.
+  #
+  # Example:
+  #   kubectl create secret generic custom-ca --from-file=ca.crt
+  # customCA:
+  #   secretName: custom-ca
+  #   item: ca.crt
+
 # Profiles correspond to COMPOSE_PROFILES in the original self-hosted docker-compose.yml.
 # https://github.com/getsentry/self-hosted/blob/master/docker-compose.yml
 # When set to errors-only, the chart only deploys components related to processing errors.
@@ -289,7 +303,7 @@ sentry:
       annotations: {}
     tolerations: []
     # podLabels: {}
-    # Mount and use custom CA
+    # Mount and use custom CA (overrides global.customCA for this component)
     # customCA:
     #   secretName: custom-ca
     #   item: ca.crt

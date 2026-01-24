@@ -97,6 +97,7 @@ spec:
         - name: LOG_LEVEL
           value: debug
 {{ include "sentry.snuba.env" . | indent 8 }}
+{{ include "sentry.customCA.env" (dict "customCA" nil "global" .Values.global) | indent 8 }}
 {{- if .Values.snuba.dbInitJob.env }}
 {{ toYaml .Values.snuba.dbInitJob.env | indent 8 }}
 {{- end }}
@@ -107,6 +108,7 @@ spec:
         - mountPath: /etc/snuba
           name: config
           readOnly: true
+{{ include "sentry.customCA.volumeMount" (dict "customCA" nil "global" .Values.global) | indent 8 }}
 {{- if .Values.hooks.snubaInit.volumeMounts }}
 {{ toYaml .Values.hooks.snubaInit.volumeMounts | indent 8 }}
 {{- end }}
@@ -126,6 +128,7 @@ spec:
       - name: config
         configMap:
           name: {{ template "sentry.fullname" . }}-snuba
+{{ include "sentry.customCA.volume" (dict "customCA" nil "global" .Values.global) | indent 6 }}
 {{- if .Values.hooks.snubaInit.volumes }}
 {{ toYaml .Values.hooks.snubaInit.volumes | indent 6 }}
 {{- end }}

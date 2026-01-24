@@ -105,10 +105,7 @@ spec:
           value: {{ .Values.sentry.web.uwsgiMaxFd|quote }}
 {{ include "sentry.env" . | indent 8 }}
 {{ include "sentry.env.nodestore-s3" . | indent 8 }}
-        {{ if .Values.sentry.web.customCA }}
-        - name: REQUESTS_CA_BUNDLE
-          value: /etc/pki/ca-trust/custom/{{ default "ca.crt" .Values.sentry.web.customCA.item }}
-        {{ end }}
+{{ include "sentry.customCA.env" (dict "customCA" .Values.sentry.web.customCA "global" .Values.global) | indent 8 }}
 {{- if .Values.sentry.web.env }}
 {{ toYaml .Values.sentry.web.env | indent 8 }}
 {{- end }}
@@ -124,6 +121,7 @@ spec:
         - mountPath: {{ .Values.filestore.filesystem.path }}
           name: sentry-data
 {{ include "sentry.volumeMount.nodestore-s3" . | indent 8 }}
+{{ include "sentry.customCA.volumeMount" (dict "customCA" .Values.sentry.web.customCA "global" .Values.global) | indent 8 }}
         {{- if and .Values.geodata.volumeName .Values.geodata.accountID }}
         - name: {{ .Values.geodata.volumeName }}
           mountPath: {{ .Values.geodata.mountPath }}
@@ -132,10 +130,6 @@ spec:
         {{- if and (eq .Values.filestore.backend "gcs") .Values.filestore.gcs.secretName }}
         - name: sentry-google-cloud-key
           mountPath: /var/run/secrets/google
-        {{ end }}
-        {{- if .Values.sentry.web.customCA }}
-        - name: custom-ca
-          mountPath: /etc/pki/ca-trust/custom
         {{ end }}
 {{- if .Values.sentry.web.volumeMounts }}
 {{ toYaml .Values.sentry.web.volumeMounts | indent 8 }}
@@ -180,6 +174,7 @@ spec:
         configMap:
           name: {{ template "sentry.fullname" . }}-sentry
 {{ include "sentry.volume.nodestore-s3" . | indent 6 }}
+{{ include "sentry.customCA.volume" (dict "customCA" .Values.sentry.web.customCA "global" .Values.global) | indent 6 }}
       - name: sentry-data
       {{- if and (eq .Values.filestore.backend "filesystem") .Values.filestore.filesystem.persistence.enabled }}
       {{- if .Values.filestore.filesystem.persistence.existingClaim }}
@@ -196,11 +191,6 @@ spec:
       - name: sentry-google-cloud-key
         secret:
           secretName: {{ .Values.filestore.gcs.secretName }}
-      {{ end }}
-      {{- if .Values.sentry.web.customCA }}
-      - name: custom-ca
-        secret:
-{{ toYaml .Values.sentry.web.customCA | indent 10 }}
       {{ end }}
       {{- if .Values.sentry.web.priorityClassName }}
       priorityClassName: "{{ .Values.sentry.web.priorityClassName }}"

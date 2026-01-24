@@ -85,6 +85,7 @@ spec:
         - name: GOOGLE_APPLICATION_CREDENTIALS
           value: /var/run/secrets/google/{{ .Values.filestore.gcs.credentialsFile }}
         {{ end }}
+{{ include "sentry.customCA.env" (dict "customCA" nil "global" .Values.global) | indent 8 }}
 {{- if .Values.symbolicator.api.env }}
 {{ toYaml .Values.symbolicator.api.env | indent 8 }}
 {{- end }}
@@ -98,6 +99,7 @@ spec:
         - name: sentry-google-cloud-key
           mountPath: /var/run/secrets/google
         {{ end }}
+{{ include "sentry.customCA.volumeMount" (dict "customCA" nil "global" .Values.global) | indent 8 }}
 {{- if .Values.symbolicator.api.volumeMounts }}
 {{ toYaml .Values.symbolicator.api.volumeMounts | indent 8 }}
 {{- end }}
@@ -183,6 +185,7 @@ spec:
         secret:
           secretName: {{ .Values.filestore.gcs.secretName }}
       {{ end }}
+{{ include "sentry.customCA.volume" (dict "customCA" nil "global" .Values.global) | indent 6 }}
 {{- if .Values.symbolicator.api.volumes }}
 {{ toYaml .Values.symbolicator.api.volumes | indent 6 }}
 {{- end }}

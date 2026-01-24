@@ -108,6 +108,7 @@ spec:
             - name: RELAY_REDIS_URL
               value: {{ $redisProto }}://:$(HELM_CHARTS_RELAY_REDIS_PASSWORD_CONTROLLED)@{{ $redisHost }}:{{ $redisPort }}/{{ $redisDb }}
           {{- end }}
+{{ include "sentry.customCA.env" (dict "customCA" nil "global" .Values.global) | indent 12 }}
 {{- if .Values.relay.init.env }}
 {{ toYaml .Values.relay.init.env | indent 12 }}
 {{- end }}
@@ -118,6 +119,7 @@ spec:
               mountPath: /work/.relay/config.yml
               subPath: config.yml
               readOnly: true
+{{ include "sentry.customCA.volumeMount" (dict "customCA" nil "global" .Values.global) | indent 12 }}
 {{- if .Values.relay.init.volumeMounts }}
 {{ toYaml .Values.relay.init.volumeMounts | indent 12 }}
 {{- end }}
@@ -150,6 +152,7 @@ spec:
         - name: RELAY_REDIS_URL
           value: {{ $redisProto }}://:$(HELM_CHARTS_RELAY_REDIS_PASSWORD_CONTROLLED)@{{ $redisHost }}:{{ $redisPort }}/{{ $redisDb }}
         {{- end }}
+{{ include "sentry.customCA.env" (dict "customCA" nil "global" .Values.global) | indent 8 }}
 {{- if .Values.relay.env }}
 {{ toYaml .Values.relay.env | indent 8 }}
 {{- end }}
@@ -165,6 +168,7 @@ spec:
             mountPath: {{ .Values.geodata.mountPath }}
             readOnly: true
           {{- end }}
+{{ include "sentry.customCA.volumeMount" (dict "customCA" nil "global" .Values.global) | indent 10 }}
 {{- if .Values.relay.volumeMounts }}
 {{ toYaml .Values.relay.volumeMounts | indent 10 }}
 {{- end }}
@@ -215,6 +219,7 @@ spec:
         persistentVolumeClaim:
           claimName: data-sentry-geoip
       {{- end }}
+{{ include "sentry.customCA.volume" (dict "customCA" nil "global" .Values.global) | indent 6 }}
 {{- if .Values.relay.volumes }}
 {{ toYaml .Values.relay.volumes | indent 6 }}
 {{- end }}

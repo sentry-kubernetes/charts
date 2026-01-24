@@ -84,6 +84,7 @@ spec:
           value: "true"
 {{ include "sentry.env" . | indent 8 }}
 {{ include "sentry.env.nodestore-s3" . | indent 8 }}
+{{ include "sentry.customCA.env" (dict "customCA" nil "global" .Values.global) | indent 8 }}
 {{- if .Values.sentry.taskScheduler.env }}
 {{ toYaml .Values.sentry.taskScheduler.env | indent 8 }}
 {{- end }}
@@ -100,6 +101,7 @@ spec:
         - mountPath: {{ .Values.filestore.filesystem.path }}
           name: sentry-data
 {{ include "sentry.volumeMount.nodestore-s3" . | indent 8 }}
+{{ include "sentry.customCA.volumeMount" (dict "customCA" nil "global" .Values.global) | indent 8 }}
         {{- if and .Values.geodata.volumeName .Values.geodata.accountID }}
         - name: {{ .Values.geodata.volumeName }}
           mountPath: {{ .Values.geodata.mountPath }}
@@ -123,6 +125,7 @@ spec:
         configMap:
           name: {{ template "sentry.fullname" . }}-sentry
 {{ include "sentry.volume.nodestore-s3" . | indent 6 }}
+{{ include "sentry.customCA.volume" (dict "customCA" nil "global" .Values.global) | indent 6 }}
       - name: sentry-data
       {{- if and (eq .Values.filestore.backend "filesystem") .Values.filestore.filesystem.persistence.enabled (.Values.filestore.filesystem.persistence.persistentWorkers) }}
       {{- if .Values.filestore.filesystem.persistence.existingClaim }}

@@ -92,6 +92,7 @@ spec:
               value: "true"
 {{ include "sentry.env" . | indent 12 }}
 {{ include "sentry.env.nodestore-s3" . | indent 12 }}
+{{ include "sentry.customCA.env" (dict "customCA" nil "global" .Values.global) | indent 12 }}
 {{- if .Values.sentry.cleanup.env }}
 {{ toYaml .Values.sentry.cleanup.env | indent 12 }}
 {{- end }}
@@ -100,6 +101,7 @@ spec:
               name: config
               readOnly: true
   {{ include "sentry.volumeMount.nodestore-s3" . | indent 12 }}
+  {{ include "sentry.customCA.volumeMount" (dict "customCA" nil "global" .Values.global) | indent 12 }}
             - mountPath: {{ .Values.filestore.filesystem.path }}
               name: sentry-data
             {{- if and (eq .Values.filestore.backend "gcs") .Values.filestore.gcs.secretName }}
@@ -124,6 +126,7 @@ spec:
           restartPolicy: Never
           volumes:
           {{ include "sentry.volume.nodestore-s3" . | indent 10 }}
+          {{ include "sentry.customCA.volume" (dict "customCA" nil "global" .Values.global) | indent 10 }}
           - name: config
             configMap:
               name: {{ template "sentry.fullname" . }}-sentry

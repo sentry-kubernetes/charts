@@ -721,6 +721,47 @@ sentry.conf.py: |-
 {{- end -}}
 
 {{/*
+Custom CA environment variables
+Checks component-specific customCA first, falls back to global.customCA
+Usage: {{ include "sentry.customCA.env" (dict "customCA" .Values.sentry.web.customCA "global" .Values.global) | indent 8 }}
+*/}}
+{{- define "sentry.customCA.env" -}}
+{{- $customCA := .customCA | default .global.customCA -}}
+{{- if $customCA }}
+- name: REQUESTS_CA_BUNDLE
+  value: /etc/pki/ca-trust/custom/{{ default "ca.crt" $customCA.item }}
+- name: SSL_CERT_FILE
+  value: /etc/pki/ca-trust/custom/{{ default "ca.crt" $customCA.item }}
+{{- end }}
+{{- end -}}
+
+{{/*
+Custom CA volume mount
+Usage: {{ include "sentry.customCA.volumeMount" (dict "customCA" .Values.sentry.web.customCA "global" .Values.global) | indent 8 }}
+*/}}
+{{- define "sentry.customCA.volumeMount" -}}
+{{- $customCA := .customCA | default .global.customCA -}}
+{{- if $customCA }}
+- name: custom-ca
+  mountPath: /etc/pki/ca-trust/custom
+  readOnly: true
+{{- end }}
+{{- end -}}
+
+{{/*
+Custom CA volume
+Usage: {{ include "sentry.customCA.volume" (dict "customCA" .Values.sentry.web.customCA "global" .Values.global) | indent 6 }}
+*/}}
+{{- define "sentry.customCA.volume" -}}
+{{- $customCA := .customCA | default .global.customCA -}}
+{{- if $customCA }}
+- name: custom-ca
+  secret:
+{{ toYaml $customCA | indent 4 }}
+{{- end }}
+{{- end -}}
+
+{{/*
 Init container for installing sentry-nodestore-s3 package
 */}}
 {{- define "sentry.initContainer.nodestore-s3" -}}
