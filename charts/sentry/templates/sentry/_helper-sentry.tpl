@@ -757,7 +757,10 @@ Usage: {{ include "sentry.customCA.volume" (dict "customCA" .Values.sentry.web.c
 {{- if $customCA }}
 - name: custom-ca
   secret:
-{{ toYaml $customCA | indent 4 }}
+    secretName: {{ $customCA.secretName }}
+    items:
+      - key: {{ $customCA.item }}
+        path: {{ $customCA.item }}
 {{- end }}
 {{- end -}}
 
