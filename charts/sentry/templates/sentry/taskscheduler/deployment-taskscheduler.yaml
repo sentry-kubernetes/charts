@@ -26,7 +26,7 @@ spec:
         checksum/config.yaml: {{ include "sentry.config" . | sha256sum }}
       {{- if .Values.sentry.taskScheduler.annotations }}
 {{ toYaml .Values.sentry.taskScheduler.annotations | indent 8 }}
-      {{- end }}          
+      {{- end }}
       labels:
         app: {{ template "sentry.fullname" . }}
         release: "{{ .Release.Name }}"
