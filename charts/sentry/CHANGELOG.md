@@ -1,5 +1,14 @@
 # Changelog
 
+## [28.1.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v28.0.3...sentry-v28.1.0) (2026-01-28)
+
+
+### Features
+
+* add optional environment variables for nodestore init container ([#2019](https://github.com/sentry-kubernetes/charts/issues/2019)) ([b4dab3d](https://github.com/sentry-kubernetes/charts/commit/b4dab3dde3bffb999961947274e3cd3291e2e170))
+* **gateway:** add gateway api httpRoute support ([#2016](https://github.com/sentry-kubernetes/charts/issues/2016)) ([1c9a2f9](https://github.com/sentry-kubernetes/charts/commit/1c9a2f9c8501a0a140b49d62525705e193afcece))
+* update sentry to v26 ([#2015](https://github.com/sentry-kubernetes/charts/issues/2015)) ([22c44f0](https://github.com/sentry-kubernetes/charts/commit/22c44f0c84a054be818c7812427f17f8e829aa03))
+
 ## [28.0.3](https://github.com/sentry-kubernetes/charts/compare/sentry-v28.0.2...sentry-v28.0.3) (2026-01-15)
 
 
