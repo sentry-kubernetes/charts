@@ -1,0 +1,132 @@
+{{- $mainRoute := .Values.route.main -}}
+{{- $redirectRoute := .Values.route.httpRedirect -}}
+{{- $defaultApiVersion := include "sentry.route.apiVersion" . -}}
+{{- if and $mainRoute.enabled $defaultApiVersion }}
+{{- $fullName := include "sentry.fullname" . -}}
+{{- $relayPort := (include "relay.port" .) | int -}}
+{{- $webPort := .Values.service.externalPort | int -}}
+{{- $nginxEnabled := .Values.nginx.enabled -}}
+{{- $nginxPort := .Values.nginx.service.ports.http | int -}}
+{{- $hostnames := $mainRoute.hostnames -}}
+{{- $basePath := $mainRoute.path | default "/" | trimSuffix "/" -}}
+{{- if $redirectRoute.enabled }}
+{{- $redirectHostnames := $redirectRoute.hostnames | default $hostnames -}}
+---
+apiVersion: {{ $redirectRoute.apiVersion | default $defaultApiVersion }}
+kind: {{ $redirectRoute.kind | default "HTTPRoute" }}
+metadata:
+  name: {{ $fullName }}-http-redirect
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: {{ $fullName }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
+    release: "{{ .Release.Name }}"
+    heritage: "{{ .Release.Service }}"
+    {{- include "sentry.labels" . | nindent 4 }}
+    {{- with $redirectRoute.labels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+  {{- with $redirectRoute.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  {{- with $redirectRoute.parentRefs }}
+  parentRefs:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  {{- with $redirectHostnames }}
+  hostnames:
+    {{- tpl (toYaml .) $ | nindent 4 }}
+  {{- end }}
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: {{ $basePath | default "/" }}
+      filters:
+        - type: RequestRedirect
+          requestRedirect:
+            scheme: https
+            statusCode: {{ $redirectRoute.statusCode | default 301 }}
+{{- end }}
+---
+apiVersion: {{ $mainRoute.apiVersion | default $defaultApiVersion }}
+kind: {{ $mainRoute.kind | default "HTTPRoute" }}
+metadata:
+  name: {{ $fullName }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: {{ $fullName }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
+    release: "{{ .Release.Name }}"
+    heritage: "{{ .Release.Service }}"
+    {{- include "sentry.labels" . | nindent 4 }}
+    {{- with $mainRoute.labels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+  {{- with $mainRoute.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  {{- with $mainRoute.parentRefs }}
+  parentRefs:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  {{- with $hostnames }}
+  hostnames:
+    {{- tpl (toYaml .) $ | nindent 4 }}
+  {{- end }}
+  rules:
+{{- if $mainRoute.additionalRules }}
+    {{- tpl (toYaml $mainRoute.additionalRules) $ | nindent 4 }}
+{{- end }}
+{{- if $nginxEnabled }}
+    - matches:
+        - path:
+            type: PathPrefix
+            value: {{ $basePath | default "/" }}
+      {{- with $mainRoute.filters }}
+      filters:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      backendRefs:
+        - name: {{ $fullName }}-nginx
+          port: {{ $nginxPort }}
+{{- else }}
+    - matches:
+        - path:
+            type: PathPrefix
+            value: {{ $basePath }}/api/0
+      {{- with $mainRoute.filters }}
+      filters:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      backendRefs:
+        - name: {{ $fullName }}-web
+          port: {{ $webPort }}
+    - matches:
+        - path:
+            type: PathPrefix
+            value: {{ $basePath }}/api
+      {{- with $mainRoute.filters }}
+      filters:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      backendRefs:
+        - name: {{ $fullName }}-relay
+          port: {{ $relayPort }}
+    - matches:
+        - path:
+            type: PathPrefix
+            value: {{ $basePath | default "/" }}
+      {{- with $mainRoute.filters }}
+      filters:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      backendRefs:
+        - name: {{ $fullName }}-web
+          port: {{ $webPort }}
+{{- end }}
+{{- end }}
