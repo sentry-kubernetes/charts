@@ -321,59 +321,7 @@ If you are using an ingress gateway (like Istio), you have to change your inboun
 
 ## Traffic Routing
 
-By default, NGINX is enabled to allow sending the incoming requests to [Sentry Relay](https://getsentry.github.io/relay/) or the Django backend depending on the path. When Sentry is meant to be exposed outside of the Kubernetes cluster, it is recommended to disable NGINX and let the Ingress do the same. It's recommended to go with the go-to Ingress Controller, [NGINX Ingress](https://kubernetes.github.io/ingress-nginx/), but others should work as well.
-
-Note: if you are using NGINX Ingress, please set this annotation on your ingress: `nginx.ingress.kubernetes.io/use-regex: "true"`.
-If you are using `additionalHostNames`, the `nginx.ingress.kubernetes.io/upstream-vhost` annotation might also come in handy.
-It sets the `Host` header to the value you provide to avoid CSRF issues.
-
-### Letsencrypt on NGINX Ingress Controller
-
-```yaml
-nginx:
-  ingress:
-    annotations:
-      cert-manager.io/cluster-issuer: "letsencrypt-prod"
-    enabled: true
-    hostname: fqdn
-    ingressClassName: "nginx"
-    tls: true
-```
-
-### Gateway API
-
-This chart supports [Kubernetes Gateway API](https://gateway-api.sigs.k8s.io/) HTTPRoute as an alternative to traditional Ingress.
-
-```yaml
-nginx:
-  enabled: false
-route:
-  main:
-    enabled: true
-    hostnames:
-      - sentry.example.com
-    parentRefs:
-      - name: my-gateway
-        namespace: default
-```
-
-With HTTP to HTTPS redirect:
-
-```yaml
-route:
-  main:
-    enabled: true
-    hostnames:
-      - sentry.example.com
-    parentRefs:
-      - name: my-gateway
-        sectionName: https
-  httpRedirect:
-    enabled: true
-    parentRefs:
-      - name: my-gateway
-        sectionName: http
-```
+This chart routes traffic via Kubernetes Ingress by default, with optional Gateway API HTTPRoute support. Configure `ingress.*` or `route.*` in the chart values; see [`charts/sentry/README.md`](charts/sentry/README.md) for the full routing and Gateway API examples.
 
 ## ClickHouse warning
 
