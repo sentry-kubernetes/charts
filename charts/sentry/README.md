@@ -1238,6 +1238,20 @@ route:
         sectionName: http
 ```
 
+## Traefik IngressRoute
+
+If you run Traefik, you can enable the bundled `IngressRoute` resources instead of standard Ingress. When using Traefik, disable the standard Ingress to avoid duplicate routes.
+
+```yaml
+ingress:
+  enabled: false
+traefikIngressRoute:
+  enabled: true
+  hostname: sentry.example.com
+  tls:
+    secretName: sentry-tls
+```
+
 ## Sentry secret key
 
 If no `sentry.existingSecret` value is specified, for your security, the [`system.secret-key`](https://develop.sentry.dev/config/#general) is generated for you on the first installation and stored in a kubernetes secret.
