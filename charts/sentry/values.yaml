@@ -83,6 +83,9 @@ serviceAccount:
   name: "sentry"
   # serviceAccount.automountServiceAccountToken -- Automount API credentials for a Service Account.
   automountServiceAccountToken: true
+  # serviceAccount.shared -- If `true`, all components will use a single shared ServiceAccount with the name specified in `serviceAccount.name`.
+  # If `false` (default), each component will have its own ServiceAccount with a suffix (e.g., `sentry-web`, `sentry-snuba`).
+  shared: false
 
 vroom:
   annotations: {}

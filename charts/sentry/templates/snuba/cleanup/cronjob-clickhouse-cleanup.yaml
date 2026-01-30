@@ -252,6 +252,6 @@ spec:
           priorityClassName: "{{ .Values.snuba.cleanup.priorityClassName }}"
           {{- end }}
           {{- if .Values.serviceAccount.enabled }}
-          serviceAccountName: {{ .Values.serviceAccount.name }}-clickhouse-cleanup
+          serviceAccountName: {{ if .Values.serviceAccount.shared }}{{ .Values.serviceAccount.name }}{{ else }}{{ .Values.serviceAccount.name }}-clickhouse-cleanup{{ end }}
           {{- end }}
 {{- end }}

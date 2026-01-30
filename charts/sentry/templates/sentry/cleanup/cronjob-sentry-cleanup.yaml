@@ -154,6 +154,6 @@ spec:
           priorityClassName: "{{ .Values.sentry.cleanup.priorityClassName }}"
           {{- end }}
           {{- if .Values.serviceAccount.enabled }}
-          serviceAccountName: {{ .Values.serviceAccount.name }}-cleanup
+          serviceAccountName: {{ if .Values.serviceAccount.shared }}{{ .Values.serviceAccount.name }}{{ else }}{{ .Values.serviceAccount.name }}-cleanup{{ end }}
           {{- end }}
 {{- end }}

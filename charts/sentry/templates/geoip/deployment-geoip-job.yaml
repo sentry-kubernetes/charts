@@ -15,7 +15,7 @@ spec:
       {{- end }}
     spec:
       {{- if .Values.serviceAccount.enabled }}
-      serviceAccountName: {{ .Values.serviceAccount.name }}-geoip
+      serviceAccountName: {{ if .Values.serviceAccount.shared }}{{ .Values.serviceAccount.name }}{{ else }}{{ .Values.serviceAccount.name }}-geoip{{ end }}
       {{- end }}
       initContainers:
         - name: init-create-geoip-dir

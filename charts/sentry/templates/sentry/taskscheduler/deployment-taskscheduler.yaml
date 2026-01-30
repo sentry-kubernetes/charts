@@ -67,7 +67,7 @@ spec:
       priorityClassName: "{{ .Values.sentry.taskScheduler.priorityClassName }}"
       {{- end }}
       {{- if .Values.serviceAccount.enabled }}
-      serviceAccountName: {{ .Values.serviceAccount.name }}-taskscheduler
+      serviceAccountName: {{ if .Values.serviceAccount.shared }}{{ .Values.serviceAccount.name }}{{ else }}{{ .Values.serviceAccount.name }}-taskscheduler{{ end }}
       {{- end }}
       initContainers:
 {{ include "sentry.initContainer.nodestore-s3" . | indent 6 }}

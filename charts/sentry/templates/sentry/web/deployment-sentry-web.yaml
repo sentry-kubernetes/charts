@@ -173,7 +173,7 @@ spec:
 {{ toYaml .Values.global.sidecars | indent 6 }}
 {{- end }}
       {{- if .Values.serviceAccount.enabled }}
-      serviceAccountName: {{ .Values.serviceAccount.name }}-web
+      serviceAccountName: {{ if .Values.serviceAccount.shared }}{{ .Values.serviceAccount.name }}{{ else }}{{ .Values.serviceAccount.name }}-web{{ end }}
       {{- end }}
       volumes:
       - name: config

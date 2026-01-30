@@ -69,7 +69,7 @@ spec:
       priorityClassName: "{{ $root.Values.sentry.taskBroker.priorityClassName }}"
       {{- end }}
       {{- if $root.Values.serviceAccount.enabled }}
-      serviceAccountName: {{ $root.Values.serviceAccount.name }}-taskbroker
+      serviceAccountName: {{ if $root.Values.serviceAccount.shared }}{{ $root.Values.serviceAccount.name }}{{ else }}{{ $root.Values.serviceAccount.name }}-taskbroker{{ end }}
       {{- end }}
       containers:
       - name: taskbroker

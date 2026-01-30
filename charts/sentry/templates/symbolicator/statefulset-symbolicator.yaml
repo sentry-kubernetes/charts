@@ -150,7 +150,7 @@ spec:
         {{ end }}
       {{- end }}
       {{- if .Values.serviceAccount.enabled }}
-      serviceAccountName: {{ .Values.serviceAccount.name }}-symbolicator-api
+      serviceAccountName: {{ if .Values.serviceAccount.shared }}{{ .Values.serviceAccount.name }}{{ else }}{{ .Values.serviceAccount.name }}-symbolicator-api{{ end }}
       {{- end }}
       volumes:
       - name: config
