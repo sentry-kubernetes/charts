@@ -28,6 +28,10 @@ The nginx container has been removed because it became a throughput bottleneck; 
 
 Nginx Ingress and Traefik Ingress are currently supported, pull requests for other controllers are welcome!
 
+### External ClickHouse
+
+Removed bundled ClickHouse. Use an external ClickHouse deployment and follow the [External ClickHouse guide](charts/sentry/docs/external-clickhouse.md).
+
 ### Memcached chart switch
 
 This release replaces the Bitnami Memcached dependency with the CloudPirates Memcached chart (`oci://registry-1.docker.io/cloudpirates/memcached`). Values have changed accordingly:

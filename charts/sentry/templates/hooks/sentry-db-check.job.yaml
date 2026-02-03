@@ -87,26 +87,11 @@ spec:
             CLICKHOUSE_STATUS=0
             while [ $CLICKHOUSE_STATUS -eq 0 ]; do
               CLICKHOUSE_STATUS=1
-              CLICKHOUSE_REPLICAS={{ .Values.clickhouse.enabled | ternary .Values.clickhouse.clickhouse.replicas "1" }}
-              i=0; while [ $i -lt $CLICKHOUSE_REPLICAS ]; do
-                {{- if .Values.clickhouse.enabled }}
-                CLICKHOUSE_HOST={{ $clickhouseHost }}-$i.{{ $clickhouseHost }}-headless
-                {{- else }}
-                CLICKHOUSE_HOST={{ .Values.externalClickhouse.host }}
-                {{- end }}
-                if ! nc -z "$CLICKHOUSE_HOST" {{ $clickhousePort }}; then
-                  CLICKHOUSE_STATUS=0
-                  echo "$CLICKHOUSE_HOST is not available yet"
-                fi
-                {{- if and .Values.clickhouse.enabled .Values.clickhouse.clickhouse.configmap.remote_servers.replica.backup.enabled }}
-                CLICKHOUSE_HOST={{ $clickhouseHost }}-replica-$i.{{ $clickhouseHost }}-replica-headless
-                if ! nc -z "$CLICKHOUSE_HOST" {{ $clickhousePort }}; then
-                  CLICKHOUSE_STATUS=0
-                  echo "$CLICKHOUSE_HOST is not available yet"
-                fi
-                {{- end }}
-                i=$((i+1))
-              done
+              CLICKHOUSE_HOST={{ $clickhouseHost }}
+              if ! nc -z "$CLICKHOUSE_HOST" {{ $clickhousePort }}; then
+                CLICKHOUSE_STATUS=0
+                echo "$CLICKHOUSE_HOST is not available yet"
+              fi
               if [ "$CLICKHOUSE_STATUS" -eq 0 ]; then
                 echo "Clickhouse not ready. Sleeping for 10s before trying again"
                 sleep 10;

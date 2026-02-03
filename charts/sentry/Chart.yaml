@@ -18,14 +18,6 @@ dependencies:
     repository: oci://registry-1.docker.io/bitnamicharts
     version: 29.3.14
     condition: kafka.enabled
-  - name: clickhouse
-    repository: https://sentry-kubernetes.github.io/charts
-    version: 4.1.1
-    condition: clickhouse.enabled
-  - name: zookeeper
-    repository: oci://registry-1.docker.io/bitnamicharts
-    version: 11.4.11
-    condition: zookeeper.enabled
   - name: postgresql
     repository: oci://registry-1.docker.io/bitnamicharts
     version: 12.5.1
