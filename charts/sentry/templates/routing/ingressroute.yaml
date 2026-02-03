@@ -24,7 +24,7 @@ spec:
   routes:
     # Route for project-specific API endpoints (e.g., /api/2/store/, /api/123/envelope/)
     # This handles SDK event ingestion
-    - match: Host(`{{ .Values.traefikIngressRoute.hostname | default .Values.ingress.hostname }}`) && PathRegexp(`/api/[0-9]+/`)
+    - match: Host(`{{ .Values.traefikIngressRoute.hostname | default .Values.ingress.hostname }}`) && PathRegexp(`/api/[1-9][0-9]*/.*`)
       kind: Rule
       priority: {{ .Values.traefikIngressRoute.priority | default 100 }}
       services:
@@ -81,7 +81,7 @@ spec:
   {{- end }}
   routes:
     # Catch-all route for Sentry web UI and API
-    - match: Host(`{{ .Values.traefikIngressRoute.hostname | default .Values.ingress.hostname }}`)
+    - match: Host(`{{ .Values.traefikIngressRoute.hostname | default .Values.ingress.hostname }}`) && PathPrefix(`/`)
       kind: Rule
       priority: {{ sub (.Values.traefikIngressRoute.priority | default 100) 10 }}
       services:

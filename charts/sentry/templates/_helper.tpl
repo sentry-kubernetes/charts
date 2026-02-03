@@ -7,7 +7,7 @@
     {{- end -}}
 {{- end -}}
 
-{{- define "relay.port" -}}3000{{- end -}}
+{{- define "relay.port" -}}{{ default 3000 .Values.relay.service.port }}{{- end -}}
 {{- define "relay.healthCheck.readinessRequestPath" -}}/api/relay/healthcheck/ready/{{- end -}}
 {{- define "relay.healthCheck.livenessRequestPath" -}}/api/relay/healthcheck/live/{{- end -}}
 {{- define "sentry.port" -}}9000{{- end -}}
@@ -107,20 +107,36 @@ Get KubeVersion removing pre-release information.
 Return the appropriate apiVersion for ingress.
 */}}
 {{- define "sentry.ingress.apiVersion" -}}
-  {{- if and (.Capabilities.APIVersions.Has "networking.k8s.io/v1") (semverCompare ">= 1.19.x" (include "sentry.kubeVersion" .)) -}}
-      {{- print "networking.k8s.io/v1" -}}
-  {{- else if .Capabilities.APIVersions.Has "networking.k8s.io/v1beta1" -}}
-    {{- print "networking.k8s.io/v1beta1" -}}
-  {{- else -}}
-    {{- print "extensions/v1beta1" -}}
-  {{- end -}}
+  {{- print "networking.k8s.io/v1" -}}
 {{- end -}}
 
 {{/*
-Return if ingress is stable.
+Resolve ingress controller style for path rules.
 */}}
-{{- define "sentry.ingress.isStable" -}}
-  {{- eq (include "sentry.ingress.apiVersion" .) "networking.k8s.io/v1" -}}
+{{- define "sentry.ingress.controller" -}}
+  {{- $style := default "" .Values.ingress.regexPathStyle -}}
+  {{- if $style -}}
+    {{- if or (eq $style "alb") (eq $style "aws-alb") -}}
+      {{- print "alb" -}}
+    {{- else if or (eq $style "gce") (eq $style "gke") (eq $style "gce-internal") -}}
+      {{- print "gce" -}}
+    {{- else -}}
+      {{- $style -}}
+    {{- end -}}
+  {{- else if .Values.ingress.ingressClassName -}}
+    {{- $class := .Values.ingress.ingressClassName -}}
+    {{- if or (eq $class "alb") (eq $class "aws-alb") -}}
+      {{- print "alb" -}}
+    {{- else if or (eq $class "gce") (eq $class "gke") (eq $class "gce-internal") -}}
+      {{- print "gce" -}}
+    {{- else if eq $class "traefik" -}}
+      {{- print "traefik" -}}
+    {{- else -}}
+      {{- print "nginx" -}}
+    {{- end -}}
+  {{- else -}}
+    {{- print "nginx" -}}
+  {{- end -}}
 {{- end -}}
 
 {{/*
@@ -141,20 +157,6 @@ Return if batch is stable.
 */}}
 {{- define "sentry.batch.isStable" -}}
   {{- eq (include "sentry.batch.apiVersion" .) "batch/v1" -}}
-{{- end -}}
-
-{{/*
-Return if ingress supports ingressClassName.
-*/}}
-{{- define "sentry.ingress.supportsIngressClassName" -}}
-  {{- or (eq (include "sentry.ingress.isStable" .) "true") (and (eq (include "sentry.ingress.apiVersion" .) "networking.k8s.io/v1beta1") (semverCompare ">= 1.18.x" (include "sentry.kubeVersion" .))) -}}
-{{- end -}}
-
-{{/*
-Return if ingress supports pathType.
-*/}}
-{{- define "sentry.ingress.supportsPathType" -}}
-  {{- or (eq (include "sentry.ingress.isStable" .) "true") (and (eq (include "sentry.ingress.apiVersion" .) "networking.k8s.io/v1beta1") (semverCompare ">= 1.18.x" (include "sentry.kubeVersion" .))) -}}
 {{- end -}}
 
 {{/*

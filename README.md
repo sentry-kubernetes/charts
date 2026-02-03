@@ -23,7 +23,9 @@ For now the full list of values is not documented, but you can get inspired by t
 The nginx container has been removed because it became a throughput bottleneck; routing directly via Kubernetes Ingress improves performance and reduces hop latency.
 
 - Remove any `nginx.*` values and ensure `ingress.enabled=true` or `traefikIngressRoute.enabled=true`.
-- Enable `enableConfigurationSnippet` in the `ingress.assets` and `ingress.static` to turn on response header handling if your nginx ingress supports risky server snippet annotations.
+- `ingress.alb.httpRedirect` was removed. For ALB HTTP→HTTPS redirect, set `alb.ingress.kubernetes.io/listen-ports` and `alb.ingress.kubernetes.io/ssl-redirect` in `ingress.annotations`.
+- Ingress templates now assume the stable `networking.k8s.io/v1` API.
+- Subpath routing options were removed (`route.main.path`, `traefikIngressRoute.path`); Sentry must be served at `/`.
 - If you previously relied on nginx extraLocationSnippet, move the logic to ingress annotations, your controller ConfigMap, or create dedicated ingress object manually or via `extraManifests`.
 
 Nginx Ingress and Traefik Ingress are currently supported, pull requests for other controllers are welcome!

@@ -8,7 +8,6 @@
 {{- $nginxEnabled := .Values.nginx.enabled -}}
 {{- $nginxPort := .Values.nginx.service.ports.http | int -}}
 {{- $hostnames := $mainRoute.hostnames -}}
-{{- $basePath := $mainRoute.path | default "/" | trimSuffix "/" -}}
 {{- if $redirectRoute.enabled }}
 {{- $redirectHostnames := $redirectRoute.hostnames | default $hostnames -}}
 ---
@@ -43,7 +42,7 @@ spec:
     - matches:
         - path:
             type: PathPrefix
-            value: {{ $basePath | default "/" }}
+            value: /
       filters:
         - type: RequestRedirect
           requestRedirect:
@@ -86,7 +85,7 @@ spec:
     - matches:
         - path:
             type: PathPrefix
-            value: {{ $basePath | default "/" }}
+            value: /
       {{- with $mainRoute.filters }}
       filters:
         {{- toYaml . | nindent 8 }}
@@ -98,18 +97,7 @@ spec:
     - matches:
         - path:
             type: PathPrefix
-            value: {{ $basePath }}/api/0
-      {{- with $mainRoute.filters }}
-      filters:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
-      backendRefs:
-        - name: {{ $fullName }}-web
-          port: {{ $webPort }}
-    - matches:
-        - path:
-            type: PathPrefix
-            value: {{ $basePath }}/api
+            value: /api/store
       {{- with $mainRoute.filters }}
       filters:
         {{- toYaml . | nindent 8 }}
@@ -120,7 +108,40 @@ spec:
     - matches:
         - path:
             type: PathPrefix
-            value: {{ $basePath | default "/" }}
+            value: /api/0/relays
+      {{- with $mainRoute.filters }}
+      filters:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      backendRefs:
+        - name: {{ $fullName }}-relay
+          port: {{ $relayPort }}
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /api/0
+      {{- with $mainRoute.filters }}
+      filters:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      backendRefs:
+        - name: {{ $fullName }}-web
+          port: {{ $webPort }}
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /api
+      {{- with $mainRoute.filters }}
+      filters:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      backendRefs:
+        - name: {{ $fullName }}-relay
+          port: {{ $relayPort }}
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
       {{- with $mainRoute.filters }}
       filters:
         {{- toYaml . | nindent 8 }}

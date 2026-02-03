@@ -1,0 +1,64 @@
+{{- if .Values.ingress.enabled -}}
+{{- $ingressPathType := .Values.ingress.pathType | default "ImplementationSpecific" -}}
+{{- $pathRulesByStyle := .Values.ingress.pathRules | default dict -}}
+{{- $ingressController := include "sentry.ingress.controller" . -}}
+{{- $pathRules := get $pathRulesByStyle $ingressController | default (get $pathRulesByStyle "nginx") | default list -}}
+apiVersion: {{ include "sentry.ingress.apiVersion" . }}
+kind: Ingress
+metadata:
+  name: {{ template "sentry.fullname" . }}
+  labels:
+    app: {{ template "sentry.fullname" . }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
+    release: "{{ .Release.Name }}"
+    heritage: "{{ .Release.Service }}"
+    {{- include "sentry.labels" . | nindent 4 }}
+  {{- range $key, $value := .Values.ingress.labels }}
+    {{ $key }}: {{ $value | quote }}
+  {{- end }}
+  annotations:
+    {{- range $key, $value := .Values.ingress.annotations }}
+    {{ $key }}: {{ $value | quote }}
+    {{- end }}
+spec:
+  {{- if .Values.ingress.ingressClassName }}
+  ingressClassName: {{ .Values.ingress.ingressClassName | quote }}
+  {{- end }}
+  rules:
+{{- $hosts := list .Values.ingress.hostname }}
+{{- range .Values.ingress.additionalHostNames -}}
+{{- $hosts = append $hosts . -}}
+{{- end -}}
+{{- $outer := . -}}
+{{- range $idx, $host := $hosts }}
+{{- with $outer }}
+    - host: {{ $host }}
+      http:
+        paths:
+        {{- range $rule := $pathRules }}
+          - path: {{ $rule.path | quote }}
+            pathType: {{ $rule.pathType | default $ingressPathType }}
+            backend:
+              {{- if eq (default "web" $rule.service) "relay" }}
+              service:
+                name: {{ template "sentry.fullname" $outer }}-relay
+                port:
+                  number: {{ template "relay.port" $outer }}
+              {{- else }}
+              service:
+                name: {{ template "sentry.fullname" $outer }}-web
+                port:
+                  {{- if kindIs "float64" $outer.Values.service.externalPort }}
+                  number: {{ $outer.Values.service.externalPort }}
+                  {{- else }}
+                  name: {{ $outer.Values.service.externalPort }}
+                  {{- end }}
+              {{- end }}
+        {{- end }}
+{{- end -}}
+{{- end -}}
+{{- if .Values.ingress.tls }}
+  tls:
+{{ toYaml .Values.ingress.tls | indent 4 }}
+{{- end -}}
+{{- end -}}

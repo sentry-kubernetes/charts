@@ -31,6 +31,11 @@ helm install sentry sentry/sentry -f values.yaml --wait --timeout=1000s
 Read the upgrade guide before upgrading to major versions of the chart.
 [Upgrade Guide](docs/UPGRADE.md)
 
+Recent routing changes:
+- `ingress.alb.httpRedirect` was removed. For ALB HTTP→HTTPS redirect, set `alb.ingress.kubernetes.io/listen-ports` and `alb.ingress.kubernetes.io/ssl-redirect` in `ingress.annotations`.
+- Subpath routing options were removed (`route.main.path`, `route.path`); Sentry must be served at `/`.
+- Ingress templates now assume the stable `networking.k8s.io/v1` API.
+
 ## Configuration
 
 The following table lists the configurable parameters of the Sentry chart and their default values.
@@ -169,19 +174,12 @@ Note: this table is incomplete, so have a look at the values.yaml in case you mi
 | images.snuba.imagePullSecrets | list | `[]` |  |
 | images.symbolicator.imagePullSecrets | list | `[]` |  |
 | images.vroom.imagePullSecrets | list | `[]` |  |
-| ingress.alb.httpRedirect | bool | `false` |  |
+| ingress.annotations | object | `{"nginx.ingress.kubernetes.io/use-regex":"true","nginx.ingress.kubernetes.io/proxy-buffers-number":"4","nginx.ingress.kubernetes.io/proxy-buffer-size":"128k","nginx.ingress.kubernetes.io/proxy-busy-buffers-size":"256k"}` | Default ingress annotations (override per controller) |
 | ingress.enabled | bool | `true` |  |
-| ingress.regexPathStyle | string | `"nginx"` |  |
+| ingress.ingressClassName | string | `"nginx"` |  |
+| ingress.pathRules | object | `{"nginx":[...],"traefik":[...],"alb":[...],"gce":[...]}` | Controller-specific path rules (see values.yaml for defaults) |
 | ingress.pathType | string | `"ImplementationSpecific"` |  |
-| ingress.assets.enabled | bool | `true` |  |
-| ingress.assets.path | string | `"/_assets/(.*)"` |  |
-| ingress.assets.rewriteTarget | string | `"/_static/dist/sentry/$1"` |  |
-| ingress.assets.enableConfigurationSnippet | bool | `false` |  |
-| ingress.assets.configurationSnippet | string | `"proxy_hide_header Content-Disposition;"` |  |
-| ingress.static.enabled | bool | `true` |  |
-| ingress.static.path | string | `"/_static/"` |  |
-| ingress.static.enableConfigurationSnippet | bool | `false` |  |
-| ingress.static.configurationSnippet | string | `"proxy_hide_header Content-Disposition;"` |  |
+| ingress.regexPathStyle | string | `""` | Controller style for path rules (auto from ingressClassName if empty) |
 | ipv6 | bool | `false` |  |
 | kafka.controller.nodeSelector | object | `{}` |  |
 | kafka.controller.replicaCount | int | `3` |  |
@@ -470,7 +468,6 @@ Note: this table is incomplete, so have a look at the values.yaml in case you mi
 | route.main.kind | string | `"HTTPRoute"` | Route kind (HTTPRoute, GRPCRoute, etc.) |
 | route.main.labels | object | `{}` | Labels for the HTTPRoute |
 | route.main.parentRefs | list | `[]` | Parent Gateway references (required when enabled) |
-| route.main.path | string | `"/"` | Base path prefix for subpath deployments |
 | revisionHistoryLimit | int | `10` |  |
 | sentry.billingMetricsConsumer.affinity | object | `{}` |  |
 | sentry.billingMetricsConsumer.autoscaling.enabled | bool | `false` |  |
@@ -1158,9 +1155,30 @@ Note: this table is incomplete, so have a look at the values.yaml in case you mi
 
 ## Ingress
 
-This chart routes traffic via Kubernetes Ingress only (the nginx subchart has been removed). Configure `ingress.*` (including `ingress.assets` and `ingress.static`) to mirror the previous nginx routing behavior. The defaults target nginx-ingress, but you can override annotations for other controllers.
+This chart supports three routing modes; enable only one at a time:
 
-Note: if you are using nginx-ingress, please set this annotation on your ingress: `nginx.ingress.kubernetes.io/use-regex: "true"`.
+- Kubernetes Ingress (`ingress.enabled`)
+- Gateway API HTTPRoute (`route.main.enabled`)
+- Traefik IngressRoute (`traefikIngressRoute.enabled`)
+
+Sentry does not support subpath deployments; all routes assume the application is served at `/`.
+
+### Standard Ingress (nginx, AWS ALB, GCE)
+
+Routing rules are defined by `ingress.pathRules`, keyed by controller style. The controller style is selected by `ingress.ingressClassName`; for custom class names, set `ingress.regexPathStyle` to one of `nginx`, `traefik`, `alb`, or `gce`.
+
+Defaults target nginx-ingress. If you override `ingress.annotations`, keep `nginx.ingress.kubernetes.io/use-regex: "true"` for nginx.
+If you need per-path annotations or extra routing rules, create additional Ingress objects via `extraManifests`.
+
+For AWS ALB HTTPS redirect, set these annotations in `ingress.annotations`:
+
+```yaml
+ingress:
+  annotations:
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS":443}]'
+    alb.ingress.kubernetes.io/ssl-redirect: '443'
+```
+
 If you are using `additionalHostNames`, the `nginx.ingress.kubernetes.io/upstream-vhost` annotation might also come in handy.
 It sets the `Host` header to the value you provide to avoid CSRF issues.
 
@@ -1182,6 +1200,7 @@ ingress:
 ## Gateway API (HTTPRoute)
 
 The chart also supports [Kubernetes Gateway API](https://gateway-api.sigs.k8s.io/) HTTPRoute as an alternative to traditional Ingress. When using Gateway API, disable the standard Ingress to avoid duplicate routes.
+Ingress endpoints (`/api/*`) are routed to Relay, while UI and other API endpoints go to the web service (`/api/store` goes to Relay).
 
 ```yaml
 ingress:
@@ -1218,7 +1237,7 @@ route:
 
 ## Traefik IngressRoute
 
-If you run Traefik, you can enable the bundled `IngressRoute` resources instead of standard Ingress. When using Traefik, disable the standard Ingress to avoid duplicate routes.
+If you run Traefik, you can enable the bundled `IngressRoute` resources instead of standard Ingress. When using Traefik, disable the standard Ingress to avoid duplicate routes. The Traefik routes use `traefikIngressRoute.hostname` (defaults to `ingress.hostname`).
 
 ```yaml
 ingress:
@@ -1228,7 +1247,29 @@ traefikIngressRoute:
   hostname: sentry.example.com
   tls:
     secretName: sentry-tls
+
 ```
+
+## Custom routing and external proxies
+
+If you need custom routing beyond the chart defaults (advanced path matching, headers, or per-path middleware), disable the built-in routing and manage your own Ingress/HTTPRoute/IngressRoute objects or an external proxy.
+
+```yaml
+ingress:
+  enabled: false
+route:
+  main:
+    enabled: false
+  httpRedirect:
+    enabled: false
+traefikIngressRoute:
+  enabled: false
+```
+
+You can create your own routing resources in a separate manifest or via `extraManifests`. For an external proxy, a good starting point is the nginx chart from CloudPirates and the Sentry self-hosted nginx config:
+
+- https://github.com/CloudPirates-io/helm-charts/tree/main/charts/nginx
+- https://github.com/getsentry/self-hosted/blame/master/nginx.conf
 
 ## Sentry secret key
 

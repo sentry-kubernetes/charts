@@ -2257,55 +2257,70 @@ openai: {}
 
 ingress:
   enabled: true
-  # If you are using traefik ingress controller, switch this to 'traefik'
-  # if you are using AWS ALB Ingress controller, switch this to 'aws-alb'
-  # if you are using GKE Ingress controller, switch this to 'gke'
-  regexPathStyle: nginx
+  ingressClassName: nginx
+  # Select the ingress controller path style (nginx, traefik, alb, gce).
+  # If empty, it is inferred from ingressClassName (defaults to nginx).
+  # For custom ingressClassName values, set regexPathStyle explicitly.
+  # Aliases: aws-alb -> alb, gke/gce-internal -> gce.
+  regexPathStyle: ""
   pathType: ImplementationSpecific
-  # ingressClassName: nginx
-  # If you are using AWS ALB Ingress controller, switch to true if you want activate the http to https redirection.
-  alb:
-    httpRedirect: false
   # Add custom labels for ingress resource
   # labels:
+  # Default annotations are tuned for nginx ingress; override for other controllers.
   annotations:
+    nginx.ingress.kubernetes.io/use-regex: "true"
     nginx.ingress.kubernetes.io/proxy-buffers-number: "4"
     nginx.ingress.kubernetes.io/proxy-buffer-size: "128k"
     nginx.ingress.kubernetes.io/proxy-busy-buffers-size: "256k"
+    # Use below annotations to enable HTTP to HTTPS redirects on AWS ALB
+    # alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS":443}]'
+    # alb.ingress.kubernetes.io/ssl-redirect: '443'
+  # Default ingress path rules keyed by controller style.
+  # Override this when using a different controller or custom class name.
+  # Each rule supports: path, service (web|relay) and optional pathType.
+  pathRules:
+    nginx:
+      - path: /api/store
+        service: relay
+      - path: /api/[1-9][0-9]*/(.*)
+        service: relay
+      - path: /api/0/relays/(.*)
+        service: relay
+      - path: /
+        service: web
+    traefik:
+      - path: /api/store
+        service: relay
+      - path: /api/{[1-9][0-9]*}/{(.*)}
+        service: relay
+      - path: /api/0/relays/{(.*)}
+        service: relay
+      - path: /
+        service: web
+    alb:
+      - path: /api/0/relays/*
+        service: relay
+      - path: /api/0/*
+        service: web
+      - path: /api/*
+        service: relay
+      - path: /*
+        service: web
+    gce:
+      - path: /api/0/relays/*
+        service: relay
+      - path: /api/0/*
+        service: web
+      - path: /api/*
+        service: relay
+      - path: /*
+        service: web
   # hostname:
   # additionalHostNames: []
   #
   # tls:
   # - secretName:
   #   hosts:
-  assets:
-    enabled: true
-    path: /_assets/(.*)
-    pathType: ImplementationSpecific
-    rewriteTarget: /_static/dist/sentry/$1
-    # Some ingress controllers require risky annotations to set response headers.
-    # When enabled, this adds nginx.ingress.kubernetes.io/configuration-snippet.
-    enableConfigurationSnippet: false
-    configurationSnippet: |
-      proxy_hide_header Content-Disposition;
-    annotations:
-      nginx.ingress.kubernetes.io/use-regex: "true"
-      nginx.ingress.kubernetes.io/proxy-buffers-number: "4"
-      nginx.ingress.kubernetes.io/proxy-buffer-size: "128k"
-      nginx.ingress.kubernetes.io/proxy-busy-buffers-size: "256k"
-  static:
-    enabled: true
-    path: /_static/
-    pathType: Prefix
-    # Some ingress controllers require risky annotations to set response headers.
-    # When enabled, this adds nginx.ingress.kubernetes.io/configuration-snippet.
-    enableConfigurationSnippet: false
-    configurationSnippet: |
-      proxy_hide_header Content-Disposition;
-    annotations:
-      nginx.ingress.kubernetes.io/proxy-buffers-number: "4"
-      nginx.ingress.kubernetes.io/proxy-buffer-size: "128k"
-      nginx.ingress.kubernetes.io/proxy-busy-buffers-size: "256k"
 
 traefikIngressRoute:
   # -- Enable Traefik IngressRoute instead of standard Ingress
@@ -2370,9 +2385,6 @@ route:
       #   namespace: default
       #   sectionName: https
 
-    # -- Base path prefix for all routes (for subpath deployments)
-    # Use this if Sentry is deployed at a subpath, e.g., "/sentry"
-    path: /
 
     # -- Additional custom rules to prepend
     additionalRules: []
