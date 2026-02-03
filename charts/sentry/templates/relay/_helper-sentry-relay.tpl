@@ -98,7 +98,8 @@ config.yml: |-
     {{- if ((.Values.kafkaTopicOverrides).prefix) }}
     topics:
       metrics_sessions: "{{ default "" .Values.kafkaTopicOverrides.prefix }}ingest-metrics"
-      events: "{{ default "" .Values.kafkaTopicOverrides.prefix }}ingest-attachments"
+      attachments: "{{ default "" .Values.kafkaTopicOverrides.prefix }}ingest-attachments"
+      events: "{{ default "" .Values.kafkaTopicOverrides.prefix }}ingest-events"
       transactions: "{{ default "" .Values.kafkaTopicOverrides.prefix }}ingest-transactions"
       outcomes: "{{ default "" .Values.kafkaTopicOverrides.prefix }}outcomes"
       outcomes_billing: "{{ default "" .Values.kafkaTopicOverrides.prefix }}ingest-outcomes"
