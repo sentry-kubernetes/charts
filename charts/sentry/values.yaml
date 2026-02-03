@@ -2618,54 +2618,8 @@ config:
     ignoreWriteErrors: true
     disableWriteException: true
 
-clickhouse:
-  enabled: true
-  nodeSelector: {}
-  tolerations: []
-  clickhouse:
-    replicas: "1"
-    configmap:
-      remote_servers:
-        internal_replication: true
-        replica:
-          backup:
-            enabled: false
-      zookeeper_servers:
-        enabled: true
-        config:
-          - index: "clickhouse"
-            hostTemplate: "{{ .Release.Name }}-zookeeper-clickhouse"
-            port: "2181"
-      users:
-        enabled: false
-        user:
-          # the first user will be used if enabled
-          - name: default
-            config:
-              password: ""
-              networks:
-                - ::/0
-              profile: default
-              quota: default
-
-    persistentVolumeClaim:
-      enabled: true
-      dataPersistentVolume:
-        enabled: true
-        accessModes:
-          - "ReadWriteOnce"
-        storage: "30Gi"
-
-  ## Use this to enable an extra service account
-  # serviceAccount:
-  #   annotations: {}
-  #   enabled: false
-  #   name: "sentry-clickhouse"
-  #   automountServiceAccountToken: true
-
-## This value is only used when clickhouse.enabled is set to false
-##
 externalClickhouse:
+  ## External ClickHouse configuration (required).
   ## Hostname or ip address of external clickhouse
   ##
   host: "clickhouse"
@@ -2687,20 +2641,6 @@ externalClickhouse:
   ## Use this when your ClickHouse distributed queries need a different cluster name
   ##
   # distributedClusterName: distributed_test_shard_localhost
-
-# Settings for Zookeeper.
-# See https://github.com/bitnami/charts/tree/master/bitnami/zookeeper
-zookeeper:
-  enabled: true
-  image:
-    repository: bitnamilegacy/zookeeper
-  nameOverride: zookeeper-clickhouse
-  replicaCount: 1
-  nodeSelector: {}
-  tolerations: []
-  ## When increasing the number of exceptions, you need to increase persistence.size
-  # persistence:
-  #   size: 8Gi
 
 # Settings for Kafka.
 # See https://github.com/bitnami/charts/tree/master/bitnami/kafka

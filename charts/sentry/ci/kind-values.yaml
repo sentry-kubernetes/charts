@@ -20,9 +20,6 @@ redis:
 rabbitmq:
   enabled: false
 
-clickhouse:
-  enabled: false
-
 externalClickhouse:
   host: "clickhouse-clickhouse-external.default.svc"
   tcpPort: 9000

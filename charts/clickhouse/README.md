@@ -2,6 +2,10 @@
 
 [ClickHouse](https://clickhouse.yandex/) is an open source column-oriented database management system capable of real time generation of analytical data reports using SQL queries.
 
+## Deprecation Notice
+
+This chart is deprecated and will not receive further updates in this repository. For Sentry deployments, use an external ClickHouse cluster and follow the [External ClickHouse guide](../sentry/docs/external-clickhouse.md).
+
 ## Introduction
 This chart bootstraps a [ClickHouse](https://clickhouse.yandex/) replication cluster deployment on a [Kubernetes](http://kubernetes.io) cluster using the [Helm](https://helm.sh) package manager.
 

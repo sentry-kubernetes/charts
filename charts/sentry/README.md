@@ -41,24 +41,6 @@ Note: this table is incomplete, so have a look at the values.yaml in case you mi
 |-----|------|---------|-------------|
 | asHook | bool | `true` |  |
 | auth.register | bool | `true` |  |
-| clickhouse.clickhouse.configmap.remote_servers.internal_replication | bool | `true` |  |
-| clickhouse.clickhouse.configmap.remote_servers.replica.backup.enabled | bool | `false` |  |
-| clickhouse.clickhouse.configmap.users.enabled | bool | `false` |  |
-| clickhouse.clickhouse.configmap.users.user[0].config.networks[0] | string | `"::/0"` |  |
-| clickhouse.clickhouse.configmap.users.user[0].config.password | string | `""` |  |
-| clickhouse.clickhouse.configmap.users.user[0].config.profile | string | `"default"` |  |
-| clickhouse.clickhouse.configmap.users.user[0].config.quota | string | `"default"` |  |
-| clickhouse.clickhouse.configmap.users.user[0].name | string | `"default"` |  |
-| clickhouse.clickhouse.configmap.zookeeper_servers.config[0].hostTemplate | string | `"{{ .Release.Name }}-zookeeper-clickhouse"` |  |
-| clickhouse.clickhouse.configmap.zookeeper_servers.config[0].index | string | `"clickhouse"` |  |
-| clickhouse.clickhouse.configmap.zookeeper_servers.config[0].port | string | `"2181"` |  |
-| clickhouse.clickhouse.configmap.zookeeper_servers.enabled | bool | `true` |  |
-| clickhouse.clickhouse.persistentVolumeClaim.dataPersistentVolume.accessModes[0] | string | `"ReadWriteOnce"` |  |
-| clickhouse.clickhouse.persistentVolumeClaim.dataPersistentVolume.enabled | bool | `true` |  |
-| clickhouse.clickhouse.persistentVolumeClaim.dataPersistentVolume.storage | string | `"30Gi"` |  |
-| clickhouse.clickhouse.persistentVolumeClaim.enabled | bool | `true` |  |
-| clickhouse.clickhouse.replicas | string | `"1"` |  |
-| clickhouse.enabled | bool | `true` |  |
 | clickhouse.nodeSelector | object | `{}` |  |
 | config.configYml | object | `{}` |  |
 | config.relay | string | `"# No YAML relay config given\n"` |  |
@@ -1163,10 +1145,6 @@ Note: this table is incomplete, so have a look at the values.yaml in case you mi
 | vroom.persistence.accessModes[0] | string | `"ReadWriteOnce"` | Access mode for vroom PVC. Use ReadWriteMany if sharing with ingest-profiles (filestore.profiles.filesystem.persistence.shareWithVroom) |
 | vroom.persistence.size | string | `"10Gi"` | Size of vroom PVC |
 | vroom.persistence.storageClassName | string | `nil` | Storage class for vroom PVC |
-| zookeeper.enabled | bool | `true` |  |
-| zookeeper.nameOverride | string | `"zookeeper-clickhouse"` |  |
-| zookeeper.nodeSelector | object | `{}` |  |
-| zookeeper.replicaCount | int | `1` |  |
 
 ## NGINX and/or Ingress
 

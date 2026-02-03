@@ -124,10 +124,6 @@ Once your ClickHouse cluster is running, configure the Sentry Helm chart to use 
 In your `values.yaml`:
 
 ```yaml
-# Disable the bundled ClickHouse
-clickhouse:
-  enabled: false
-
 externalClickhouse:
   host: "clickhouse-sentry-clickhouse.sentry.svc" # Service name of your CHI
   tcpPort: 9000

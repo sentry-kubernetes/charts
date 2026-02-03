@@ -71,15 +71,13 @@ settings.py: |
           "profile_chunks",
       },
       {{- /*
-        The default clickhouse installation runs in distributed mode, while the external
-        clickhouse configured can be configured any way you choose
+        External ClickHouse can be single-node or clustered. When singleNode is
+        enabled, omit cluster settings.
       */}}
-      {{- if and .Values.externalClickhouse.singleNode (not .Values.clickhouse.enabled) }}
+      {{- if .Values.externalClickhouse.singleNode }}
       "single_node": True,
       {{- else }}
       "single_node": False,
-      {{- end }}
-      {{- if or .Values.clickhouse.enabled (not .Values.externalClickhouse.singleNode) }}
       "cluster_name": {{ include "sentry.clickhouse.cluster.name" . | quote }},
       "distributed_cluster_name": {{ include "sentry.clickhouse.distributed.cluster.name" . | quote }},
       {{- end }}

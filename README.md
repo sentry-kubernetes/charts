@@ -20,6 +20,10 @@ For now the full list of values is not documented, but you can get inspired by t
 
 ## Upgrading to Chart 29.x.x
 
+## External ClickHouse
+
+Removed bundled ClickHouse. Use an external ClickHouse deployment and follow the [External ClickHouse guide](charts/sentry/docs/external-clickhouse.md).
+
 ### Memcached chart switch
 
 This release replaces the Bitnami Memcached dependency with the CloudPirates Memcached chart (`oci://registry-1.docker.io/cloudpirates/memcached`). Values have changed accordingly:

@@ -8,7 +8,7 @@ This guide outlines how to configure the various external services required by S
 
 **Status: REQUIRED**
 
-The bundled ClickHouse chart is deprecated. You must provide an external ClickHouse endpoint.
+The bundled ClickHouse chart has been removed. You must provide an external ClickHouse endpoint.
 
 - [ClickHouse Setup Guide](external-clickhouse.md)
 
