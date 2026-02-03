@@ -107,7 +107,7 @@ config.yml: |-
       replay_events: "{{ default "" .Values.kafkaTopicOverrides.prefix }}ingest-replay-events"
       replay_recordings: "{{ default "" .Values.kafkaTopicOverrides.prefix }}ingest-replay-recordings"
       monitors: "{{ default "" .Values.kafkaTopicOverrides.prefix }}ingest-monitors"
-      spans: "{{ default "" .Values.kafkaTopicOverrides.prefix }}snuba-spans"
+      spans: "{{ default "" .Values.kafkaTopicOverrides.prefix }}ingest-spans"
       metrics_summaries: "{{ default "" .Values.kafkaTopicOverrides.prefix }}snuba-metrics-summaries"
       cogs: "{{ default "" .Values.kafkaTopicOverrides.prefix }}shared-resources-usage"
       feedback: "{{ default "" .Values.kafkaTopicOverrides.prefix }}ingest-feedback-events"
