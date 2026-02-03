@@ -652,7 +652,7 @@ sentry:
     # noStrictOffsetReset: false
 
   ingestFeedback:
-    enabled: false
+    enabled: true
     replicas: 1
     env: []
     resources: {}
@@ -721,7 +721,7 @@ sentry:
     # noStrictOffsetReset: false
 
   monitorsClockTasks:
-    enabled: false
+    enabled: true
     replicas: 1
     env: []
     resources: {}
@@ -752,7 +752,7 @@ sentry:
     # noStrictOffsetReset: false
 
   monitorsClockTick:
-    enabled: false
+    enabled: true
     replicas: 1
     env: []
     resources: {}
