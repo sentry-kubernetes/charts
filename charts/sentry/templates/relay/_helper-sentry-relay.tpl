@@ -111,6 +111,7 @@ config.yml: |-
       metrics_summaries: "{{ default "" .Values.kafkaTopicOverrides.prefix }}snuba-metrics-summaries"
       cogs: "{{ default "" .Values.kafkaTopicOverrides.prefix }}shared-resources-usage"
       feedback: "{{ default "" .Values.kafkaTopicOverrides.prefix }}ingest-feedback-events"
+      items: "{{ default "" .Values.kafkaTopicOverrides.prefix }}snuba-items"
     {{- else }}
     topics:
       metrics_sessions: "ingest-metrics"
