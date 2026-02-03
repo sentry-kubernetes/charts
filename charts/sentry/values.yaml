@@ -2256,7 +2256,7 @@ openai: {}
 #   existingSecretKey: ""               # by default "api-token"
 
 ingress:
-  enabled: true
+  enabled: false
   ingressClassName: nginx
   # Select the ingress controller path style (nginx, traefik, alb, gce).
   # If empty, it is inferred from ingressClassName (defaults to nginx).
@@ -2351,7 +2351,6 @@ traefikIngressRoute:
   # -- Route priority (higher = matched first)
   priority: 100
 
-
 # Kubernetes Gateway API HTTPRoute configuration
 # Configure gateway routes for the chart here. More routes can be added by adding
 # a dictionary key like the 'main' route.
@@ -2422,6 +2421,17 @@ route:
     # -- HTTP status code for redirect (301 = permanent, 302 = temporary)
     statusCode: 301
 
+# For other configuration options see: https://github.com/CloudPirates-io/helm-charts/tree/main/charts/nginx
+nginx:
+  enabled: false
+  existingServerConfigConfigmap: '{{ template "sentry.fullname" . }}'
+  extraLocationSnippet: false
+  # extraLocationSnippet: |
+  #  location /admin {
+  #    allow 1.2.3.4; # VPN network
+  #    deny all;
+  #    proxy_pass http://sentry;
+  #  }
 
 filestore:
   # Set to one of filesystem, gcs or s3 as supported by Sentry.

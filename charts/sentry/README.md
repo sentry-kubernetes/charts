@@ -31,11 +31,6 @@ helm install sentry sentry/sentry -f values.yaml --wait --timeout=1000s
 Read the upgrade guide before upgrading to major versions of the chart.
 [Upgrade Guide](docs/UPGRADE.md)
 
-Recent routing changes:
-- `ingress.alb.httpRedirect` was removed. For ALB HTTP→HTTPS redirect, set `alb.ingress.kubernetes.io/listen-ports` and `alb.ingress.kubernetes.io/ssl-redirect` in `ingress.annotations`.
-- Subpath routing options were removed (`route.main.path`, `route.path`); Sentry must be served at `/`.
-- Ingress templates now assume the stable `networking.k8s.io/v1` API.
-
 ## Configuration
 
 The following table lists the configurable parameters of the Sentry chart and their default values.
@@ -175,7 +170,7 @@ Note: this table is incomplete, so have a look at the values.yaml in case you mi
 | images.symbolicator.imagePullSecrets | list | `[]` |  |
 | images.vroom.imagePullSecrets | list | `[]` |  |
 | ingress.annotations | object | `{"nginx.ingress.kubernetes.io/use-regex":"true","nginx.ingress.kubernetes.io/proxy-buffers-number":"4","nginx.ingress.kubernetes.io/proxy-buffer-size":"128k","nginx.ingress.kubernetes.io/proxy-busy-buffers-size":"256k"}` | Default ingress annotations (override per controller) |
-| ingress.enabled | bool | `true` |  |
+| ingress.enabled | bool | `false` |  |
 | ingress.ingressClassName | string | `"nginx"` |  |
 | ingress.pathRules | object | `{"nginx":[...],"traefik":[...],"alb":[...],"gce":[...]}` | Controller-specific path rules (see values.yaml for defaults) |
 | ingress.pathType | string | `"ImplementationSpecific"` |  |
@@ -349,15 +344,9 @@ Note: this table is incomplete, so have a look at the values.yaml in case you mi
 | nginx.customReadinessProbe.successThreshold | int | `1` |  |
 | nginx.customReadinessProbe.tcpSocket.port | string | `"http"` |  |
 | nginx.customReadinessProbe.timeoutSeconds | int | `3` |  |
-| nginx.enabled | bool | `true` |  |
-| nginx.existingServerBlockConfigmap | string | `"{{ template \"sentry.fullname\" . }}"` |  |
+| nginx.enabled | bool | `false` |  |
+| nginx.existingServerConfigConfigmap | string | `"{{ template \"sentry.fullname\" . }}"` |  |
 | nginx.extraLocationSnippet | bool | `false` |  |
-| nginx.metrics.serviceMonitor | object | `{}` |  |
-| nginx.nodeSelector | object | `{}` |  |
-| nginx.replicaCount | int | `1` |  |
-| nginx.resources | object | `{}` |  |
-| nginx.service.ports.http | int | `80` |  |
-| nginx.service.type | string | `"ClusterIP"` |  |
 | openai | object | `{}` |  |
 | pgbouncer.affinity | object | `{}` |  |
 | pgbouncer.authType | string | `"md5"` |  |
@@ -1155,15 +1144,70 @@ Note: this table is incomplete, so have a look at the values.yaml in case you mi
 
 ## Ingress
 
-This chart supports three routing modes; enable only one at a time:
+This chart supports **four mutually exclusive** exposure modes. **Enable exactly one**.
+All routing options are **disabled by default**, so you must choose and enable one:
 
-- Kubernetes Ingress (`ingress.enabled`)
 - Gateway API HTTPRoute (`route.main.enabled`)
 - Traefik IngressRoute (`traefikIngressRoute.enabled`)
+- Kubernetes Ingress (`ingress.enabled`)
+- In-cluster nginx reverse proxy Service (`nginx.enabled`)
+
+**Important:** Do **not** enable more than one of `ingress.enabled`, `route.main.enabled`, `traefikIngressRoute.enabled`, or `nginx.enabled`.
+In particular, running Kubernetes Ingress / Gateway API / Traefik **in front of** the in-cluster nginx (proxy chaining) is **discouraged**: it adds an extra hop, increases latency, and can reduce throughput.
 
 Sentry does not support subpath deployments; all routes assume the application is served at `/`.
 
-### Standard Ingress (nginx, AWS ALB, GCE)
+## Gateway API (HTTPRoute)
+
+The chart also supports [Kubernetes Gateway API](https://gateway-api.sigs.k8s.io/) HTTPRoute as an alternative to traditional Ingress.
+
+Ingestion endpoints (`/api/*`) are routed to Relay, while UI and other API endpoints go to the web service (`/api/store` goes to Relay).
+
+```yaml
+route:
+  main:
+    enabled: true
+    hostnames:
+      - sentry.example.com
+    parentRefs:
+      - name: my-gateway
+        namespace: default
+```
+
+With HTTP to HTTPS redirect:
+
+```yaml
+route:
+  main:
+    enabled: true
+    hostnames:
+      - sentry.example.com
+    parentRefs:
+      - name: my-gateway
+        sectionName: https
+  httpRedirect:
+    enabled: true
+    parentRefs:
+      - name: my-gateway
+        sectionName: http
+```
+
+## Traefik IngressRoute
+
+If you run Traefik, you can enable the bundled `IngressRoute` resources instead of standard Ingress.
+
+The Traefik routes use `traefikIngressRoute.hostname` (defaults to `ingress.hostname`).
+
+```yaml
+traefikIngressRoute:
+  enabled: true
+  hostname: sentry.example.com
+  tls:
+    secretName: sentry-tls
+
+```
+
+## Kubernetes Ingress (nginx, traefik, AWS ALB, GCE)
 
 Routing rules are defined by `ingress.pathRules`, keyed by controller style. The controller style is selected by `ingress.ingressClassName`; for custom class names, set `ingress.regexPathStyle` to one of `nginx`, `traefik`, `alb`, or `gce`.
 
@@ -1197,79 +1241,30 @@ ingress:
         - fqdn
 ```
 
-## Gateway API (HTTPRoute)
 
-The chart also supports [Kubernetes Gateway API](https://gateway-api.sigs.k8s.io/) HTTPRoute as an alternative to traditional Ingress. When using Gateway API, disable the standard Ingress to avoid duplicate routes.
-Ingress endpoints (`/api/*`) are routed to Relay, while UI and other API endpoints go to the web service (`/api/store` goes to Relay).
+## NGINX service
 
-```yaml
-ingress:
-  enabled: false
-route:
-  main:
-    enabled: true
-    hostnames:
-      - sentry.example.com
-    parentRefs:
-      - name: my-gateway
-        namespace: default
-```
-
-With HTTP to HTTPS redirect:
+If you prefer a single in-cluster Service as the HTTP entrypoint (for example to attach a `LoadBalancer` directly, or to use nginx `location` snippets), you can enable the bundled nginx reverse proxy based on the CloudPirates `nginx` chart dependency.
 
 ```yaml
-ingress:
-  enabled: false
-route:
-  main:
-    enabled: true
-    hostnames:
-      - sentry.example.com
-    parentRefs:
-      - name: my-gateway
-        sectionName: https
-  httpRedirect:
-    enabled: true
-    parentRefs:
-      - name: my-gateway
-        sectionName: http
-```
 
-## Traefik IngressRoute
-
-If you run Traefik, you can enable the bundled `IngressRoute` resources instead of standard Ingress. When using Traefik, disable the standard Ingress to avoid duplicate routes. The Traefik routes use `traefikIngressRoute.hostname` (defaults to `ingress.hostname`).
-
-```yaml
-ingress:
-  enabled: false
-traefikIngressRoute:
+nginx:
   enabled: true
-  hostname: sentry.example.com
-  tls:
-    secretName: sentry-tls
-
+  # Optional: add extra nginx locations/snippets
+  # extraLocationSnippet: |
+  #   location /admin {
+  #     allow 1.2.3.4;
+  #     deny all;
+  #     proxy_pass http://sentry;
+  #   }
 ```
 
-## Custom routing and external proxies
+Notes:
 
-If you need custom routing beyond the chart defaults (advanced path matching, headers, or per-path middleware), disable the built-in routing and manage your own Ingress/HTTPRoute/IngressRoute objects or an external proxy.
+- When `nginx.enabled=true`, the chart creates an nginx config ConfigMap (see `templates/routing/nginx-config.yaml`) that proxies to `sentry-web` and, when enabled, to `relay` for ingestion endpoints.
+- Expose the `*-nginx` Service by configuring the nginx chart values (for example `nginx.service.type=LoadBalancer`).
+- Using an additional router in front of this in-cluster nginx is discouraged (see warning above).
 
-```yaml
-ingress:
-  enabled: false
-route:
-  main:
-    enabled: false
-  httpRedirect:
-    enabled: false
-traefikIngressRoute:
-  enabled: false
-```
-
-You can create your own routing resources in a separate manifest or via `extraManifests`. For an external proxy, a good starting point is the nginx chart from CloudPirates and the Sentry self-hosted nginx config:
-
-- https://github.com/CloudPirates-io/helm-charts/tree/main/charts/nginx
-- https://github.com/getsentry/self-hosted/blame/master/nginx.conf
 
 ## Sentry secret key
 

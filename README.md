@@ -20,13 +20,18 @@ For now the full list of values is not documented, but you can get inspired by t
 
 ## Upgrading to Chart 29.x.x
 
-The nginx container has been removed because it became a throughput bottleneck; routing directly via Kubernetes Ingress improves performance and reduces hop latency.
+- Routing is now **opt-in**: all routing options are **disabled by default**. Choose and enable **exactly one** of `ingress.enabled`, `route.main.enabled`, `traefikIngressRoute.enabled`, or `nginx.enabled`.
+- When you use Kubernetes Ingress / Gateway API / Traefik, traffic is routed directly to `web`/`relay` to avoid an extra proxy hop and improve throughput.
+- Optional in-cluster NGINX service support is available via the CloudPirates `nginx` chart dependency. Enable it with `nginx.enabled=true` when you need a single service endpoint or nginx-specific routing snippets. Do not run another router in front of it.
 
-- Remove any `nginx.*` values and ensure `ingress.enabled=true` or `traefikIngressRoute.enabled=true`.
+Migration guidance:
+
+- If you **do not** want an in-cluster nginx proxy, keep `nginx.enabled=false` and enable exactly one of `ingress.enabled`, `route.main.enabled`, or `traefikIngressRoute.enabled`.
+- If you **do** want an in-cluster nginx proxy, set `nginx.enabled=true` and keep `ingress.enabled`, `route.main.enabled`, and `traefikIngressRoute.enabled` disabled. Expose the `*-nginx` service directly (for example with `nginx.service.type=LoadBalancer`).
 - `ingress.alb.httpRedirect` was removed. For ALB HTTP→HTTPS redirect, set `alb.ingress.kubernetes.io/listen-ports` and `alb.ingress.kubernetes.io/ssl-redirect` in `ingress.annotations`.
 - Ingress templates now assume the stable `networking.k8s.io/v1` API.
 - Subpath routing options were removed (`route.main.path`, `traefikIngressRoute.path`); Sentry must be served at `/`.
-- If you previously relied on nginx extraLocationSnippet, move the logic to ingress annotations, your controller ConfigMap, or create dedicated ingress object manually or via `extraManifests`.
+- If you previously relied on `nginx.extraLocationSnippet`, either keep using it with `nginx.enabled=true` or move the logic to ingress/controller configuration (annotations, controller ConfigMap) or dedicated routing objects via `extraManifests`.
 
 Nginx Ingress and Traefik Ingress are currently supported, pull requests for other controllers are welcome!
 
