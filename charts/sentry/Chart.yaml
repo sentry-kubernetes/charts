@@ -24,7 +24,7 @@ dependencies:
     condition: postgresql.enabled
   - name: nginx
     repository: oci://registry-1.docker.io/bitnamicharts
-    version: 22.3.9
+    version: 22.4.4
     condition: nginx.enabled
 maintainers:
   - name: sentry-kubernetes
