@@ -1,0 +1,97 @@
+{{- if .Values.cleanerfs.enabled }}
+apiVersion: {{ include "sentry.batch.apiVersion" . }}
+kind: CronJob
+metadata:
+  name: {{ template "sentry.fullname" . }}-sentry-cleanerfs
+  labels:
+    app: {{ template "sentry.fullname" . }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
+    release: "{{ .Release.Name }}"
+    heritage: "{{ .Release.Service }}"
+spec:
+  schedule: "{{ .Values.cleanerfs.schedule }}"
+  successfulJobsHistoryLimit: {{ .Values.cleanerfs.successfulJobsHistoryLimit }}
+  failedJobsHistoryLimit: {{ .Values.cleanerfs.failedJobsHistoryLimit }}
+  concurrencyPolicy: "{{ .Values.cleanerfs.concurrencyPolicy }}"
+  jobTemplate:
+    spec:
+      {{- if .Values.cleanerfs.activeDeadlineSeconds }}
+      activeDeadlineSeconds: {{ .Values.cleanerfs.activeDeadlineSeconds }}
+      {{- end}}
+      template:
+        metadata:
+          annotations:
+            {{- if .Values.cleanerfs.annotations }}
+{{ toYaml .Values.cleanerfs.annotations | indent 12 }}
+            {{- end }}
+          labels:
+            app: {{ template "sentry.fullname" . }}
+            release: "{{ .Release.Name }}"
+            {{- if .Values.cleanerfs.podLabels }}
+{{ toYaml .Values.cleanerfs.podLabels | indent 12 }}
+            {{- end }}
+        spec:
+          affinity:
+            {{- if .Values.cleanerfs.affinity }}
+{{ toYaml .Values.cleanerfs.affinity | indent 12 }}
+            {{- end }}
+            {{- if .Values.cleanerfs.nodeSelector }}
+          nodeSelector:
+{{ toYaml .Values.cleanerfs.nodeSelector | indent 12 }}
+            {{- else if .Values.global.nodeSelector }}
+          nodeSelector:
+{{ toYaml .Values.global.nodeSelector | indent 12 }}
+            {{- end }}
+            {{- if .Values.cleanerfs.tolerations }}
+          tolerations:
+{{ toYaml .Values.cleanerfs.tolerations | indent 12 }}
+            {{- else if .Values.global.tolerations }}
+          tolerations:
+{{ toYaml .Values.global.tolerations | indent 12 }}
+            {{- end }}
+            {{- if .Values.dnsPolicy }}
+          dnsPolicy: {{ .Values.dnsPolicy | quote }}
+            {{- end }}
+            {{- if .Values.dnsConfig }}
+          dnsConfig:
+{{ toYaml .Values.dnsConfig | indent 12 }}
+            {{- end }}
+            {{- if .Values.images.sentry.imagePullSecrets }}
+          imagePullSecrets:
+{{ toYaml .Values.images.sentry.imagePullSecrets | indent 12 }}
+            {{- end }}
+            {{- if .Values.cleanerfs.securityContext }}
+          securityContext:
+{{ toYaml .Values.cleanerfs.securityContext | indent 12 }}
+      {{- end }}
+          containers:
+          - name: {{ .Chart.Name }}-sentry-cleanerfs
+            image: "{{ template "sentry.image" . }}"
+            imagePullPolicy: {{ default "IfNotPresent" .Values.images.sentry.pullPolicy }}
+            command: ["find"]
+            args:
+              - "{{ .Values.filestore.filesystem.path }}"
+              - "-type"
+              - "f"
+              - "-mtime"
+              - "+{{ .Values.cleanerfs.days }}"
+              - "-print"
+              - "-delete"
+            volumeMounts:
+            - mountPath: {{ .Values.filestore.filesystem.path }}
+              name: sentry-data
+          restartPolicy: Never
+          volumes:
+          - name: sentry-data
+          {{- if and (eq .Values.filestore.backend "filesystem") .Values.filestore.filesystem.persistence.enabled (.Values.filestore.filesystem.persistence.persistentWorkers) }}
+          {{- if .Values.filestore.filesystem.persistence.existingClaim }}
+            persistentVolumeClaim:
+              claimName: {{ .Values.filestore.filesystem.persistence.existingClaim }}
+          {{- else }}
+            persistentVolumeClaim:
+              claimName: {{ template "sentry.fullname" . }}-data
+          {{- end }}
+          {{- else }}
+            emptyDir: {}
+          {{ end }}
+{{- end }}

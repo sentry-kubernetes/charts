@@ -2552,6 +2552,23 @@ filestore:
         ## the current value of 'spec.volumeName' and incorporate it into the template.
         lookupVolumeName: true
 
+# Cronjob for filesystem cleanup when using backend filesystem 
+cleanerfs:
+  enabled: false
+  successfulJobsHistoryLimit: 5
+  failedJobsHistoryLimit: 5
+  activeDeadlineSeconds: 900
+  concurrencyPolicy: Allow
+  schedule: "0 1 * * *"
+  days: 90
+# securityContext: {}
+# containerSecurityContext: {}
+  annotations: {}
+# podLabels: {}
+# affinity: {}
+# nodeSelector: {}
+# tolerations: {}
+
 ## Node Storage configuration
 ## Sentry uses an abstraction layer called "node storage" to store raw events.
 ## Previously, it used PostgreSQL as the backend, but this didn't scale for
