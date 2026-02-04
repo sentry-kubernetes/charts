@@ -19,7 +19,7 @@ jobs:
         uses: webiny/action-conventional-commits@v1.3.1
 
       - name: Check Semantic Pull Request title
-        uses: amannn/action-semantic-pull-request@v5
+        uses: amannn/action-semantic-pull-request@v6
         id: lint_pr_title
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
