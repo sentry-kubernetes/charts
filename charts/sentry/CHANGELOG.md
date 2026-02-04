@@ -1,5 +1,33 @@
 # Changelog
 
+## [29.0.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v28.1.0...sentry-v29.0.0) (2026-02-04)
+
+
+### ⚠ BREAKING CHANGES
+
+* replace nginx chart, refactor ingress, unify routing configurations ([#2012](https://github.com/sentry-kubernetes/charts/issues/2012))
+* remove bundled clickhouse chart ([#2029](https://github.com/sentry-kubernetes/charts/issues/2029))
+* replace bitnami/memcached with cloudpirates/memcached ([#2014](https://github.com/sentry-kubernetes/charts/issues/2014))
+
+### Features
+
+* align defaults to sentry self hosted repo ([#2031](https://github.com/sentry-kubernetes/charts/issues/2031)) ([86b4c7c](https://github.com/sentry-kubernetes/charts/commit/86b4c7c2f05d410df81ea67cf50578d335db2a25))
+* replace bitnami/memcached with cloudpirates/memcached ([#2014](https://github.com/sentry-kubernetes/charts/issues/2014)) ([1092a3c](https://github.com/sentry-kubernetes/charts/commit/1092a3c982477d0eb2d5c827d393c95b30d28be7))
+* replace nginx chart, refactor ingress, unify routing configurations ([#2012](https://github.com/sentry-kubernetes/charts/issues/2012)) ([c7748d5](https://github.com/sentry-kubernetes/charts/commit/c7748d5562f84a43525a7b1d17d538a806c95c5a))
+
+
+### Bug Fixes
+
+* Convert github-app.id to integer for Sentry 26.x compatibility ([#2022](https://github.com/sentry-kubernetes/charts/issues/2022)) ([0b9de28](https://github.com/sentry-kubernetes/charts/commit/0b9de28e344b6766a0deec9ff5ebc91ed7dc1d5c))
+* relay rename topic events/attachments ([#2033](https://github.com/sentry-kubernetes/charts/issues/2033)) ([bc07c1c](https://github.com/sentry-kubernetes/charts/commit/bc07c1c1af507af3b2b91b936800c0fd03174202))
+* relay rename topic snuba-spans -&gt; ingest-spans ([#2032](https://github.com/sentry-kubernetes/charts/issues/2032)) ([859ce4f](https://github.com/sentry-kubernetes/charts/commit/859ce4f9e90cf65e43e242e059269317eeee7551))
+* relay topic mappings for items ([#2030](https://github.com/sentry-kubernetes/charts/issues/2030)) ([a98c78b](https://github.com/sentry-kubernetes/charts/commit/a98c78b534a849bdc078234ad93666805a2d7cb7))
+
+
+### Miscellaneous Chores
+
+* remove bundled clickhouse chart ([#2029](https://github.com/sentry-kubernetes/charts/issues/2029)) ([4334428](https://github.com/sentry-kubernetes/charts/commit/4334428cee22eef330baa5591d7ce37fc963afe8))
+
 ## [28.1.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v28.0.3...sentry-v28.1.0) (2026-01-28)
 
 
