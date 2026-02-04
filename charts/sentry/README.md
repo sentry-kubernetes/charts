@@ -1142,7 +1142,7 @@ Note: this table is incomplete, so have a look at the values.yaml in case you mi
 | vroom.persistence.size | string | `"10Gi"` | Size of vroom PVC |
 | vroom.persistence.storageClassName | string | `nil` | Storage class for vroom PVC |
 
-## Ingress
+## Routing
 
 This chart supports **four mutually exclusive** exposure modes. **Enable exactly one**.
 All routing options are **disabled by default**, so you must choose and enable one:
@@ -1157,7 +1157,7 @@ In particular, running Kubernetes Ingress / Gateway API / Traefik **in front of*
 
 Sentry does not support subpath deployments; all routes assume the application is served at `/`.
 
-## Gateway API (HTTPRoute)
+### Gateway API (HTTPRoute)
 
 The chart also supports [Kubernetes Gateway API](https://gateway-api.sigs.k8s.io/) HTTPRoute as an alternative to traditional Ingress.
 
@@ -1192,7 +1192,7 @@ route:
         sectionName: http
 ```
 
-## Traefik IngressRoute
+### Traefik IngressRoute
 
 If you run Traefik, you can enable the bundled `IngressRoute` resources instead of standard Ingress.
 
@@ -1207,7 +1207,7 @@ traefikIngressRoute:
 
 ```
 
-## Kubernetes Ingress (nginx, traefik, AWS ALB, GCE)
+### Kubernetes Ingress (nginx, traefik, AWS ALB, GCE)
 
 Routing rules are defined by `ingress.pathRules`, keyed by controller style. The controller style is selected by `ingress.ingressClassName`; for custom class names, set `ingress.regexPathStyle` to one of `nginx`, `traefik`, `alb`, or `gce`.
 
@@ -1226,7 +1226,7 @@ ingress:
 If you are using `additionalHostNames`, the `nginx.ingress.kubernetes.io/upstream-vhost` annotation might also come in handy.
 It sets the `Host` header to the value you provide to avoid CSRF issues.
 
-### Letsencrypt on NGINX Ingress Controller
+#### Letsencrypt on NGINX Ingress Controller
 
 ```yaml
 ingress:
@@ -1242,7 +1242,7 @@ ingress:
 ```
 
 
-## NGINX service
+### NGINX service
 
 If you prefer a single in-cluster Service as the HTTP entrypoint (for example to attach a `LoadBalancer` directly, or to use nginx `location` snippets), you can enable the bundled nginx reverse proxy based on the CloudPirates `nginx` chart dependency.
 

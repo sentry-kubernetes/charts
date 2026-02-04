@@ -16,7 +16,8 @@ helm install my-sentry sentry/sentry --wait --timeout=1000s
 
 ## Values
 
-For now the full list of values is not documented, but you can get inspired by the `values.yaml` specific to each directory.
+Each chart has its own `README.md` in its directory with values and configuration instructions (for example `charts/sentry/README.md`).
+The changelog below refers to the main `sentry` chart only.
 
 ## Upgrading to Chart 29.x.x
 
@@ -33,7 +34,9 @@ Migration guidance:
 - Subpath routing options were removed (`route.main.path`, `traefikIngressRoute.path`); Sentry must be served at `/`.
 - If you previously relied on `nginx.extraLocationSnippet`, either keep using it with `nginx.enabled=true` or move the logic to ingress/controller configuration (annotations, controller ConfigMap) or dedicated routing objects via `extraManifests`.
 
-Nginx Ingress and Traefik Ingress are currently supported, pull requests for other controllers are welcome!
+Nginx Ingress, Traefik Ingress, GCE and AWS ALB are currently supported, pull requests for other controllers are welcome!
+
+Routing changes: see the [routing section](charts/sentry/README.md#routing) for the supported modes and configuration details.
 
 ### External ClickHouse
 
@@ -330,9 +333,26 @@ As Relay is now part of this chart, you need to make sure you enable either Ngin
 
 If you are using an ingress gateway (like Istio), you have to change your inbound path from `sentry-web` to `nginx`.
 
-## Traffic Routing
+## NGINX and/or Ingress
 
-This chart routes traffic via Kubernetes Ingress by default, with optional Gateway API HTTPRoute support. Configure `ingress.*` or `route.*` in the chart values; see [`charts/sentry/README.md`](charts/sentry/README.md) for the full routing and Gateway API examples.
+By default, NGINX is enabled to allow sending the incoming requests to [Sentry Relay](https://getsentry.github.io/relay/) or the Django backend depending on the path. When Sentry is meant to be exposed outside of the Kubernetes cluster, it is recommended to disable NGINX and let the Ingress do the same. It's recommended to go with the go-to Ingress Controller, [NGINX Ingress](https://kubernetes.github.io/ingress-nginx/), but others should work as well.
+
+Note: if you are using NGINX Ingress, please set this annotation on your ingress: `nginx.ingress.kubernetes.io/use-regex: "true"`.
+If you are using `additionalHostNames`, the `nginx.ingress.kubernetes.io/upstream-vhost` annotation might also come in handy.
+It sets the `Host` header to the value you provide to avoid CSRF issues.
+
+### Letsencrypt on NGINX Ingress Controller
+
+```yaml
+nginx:
+  ingress:
+    annotations:
+      cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    enabled: true
+    hostname: fqdn
+    ingressClassName: "nginx"
+    tls: true
+```
 
 ## ClickHouse warning
 
