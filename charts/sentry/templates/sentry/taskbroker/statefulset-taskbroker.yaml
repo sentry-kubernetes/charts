@@ -116,12 +116,17 @@ spec:
       - name: config
         configMap:
           name: {{ template "sentry.fullname" $root }}-sentry
+      {{- if not $root.Values.sentry.taskBroker.persistence.enabled }}
+      - name: data
+        emptyDir: {}
+      {{- end }}
 {{- if $root.Values.sentry.taskBroker.volumes }}
 {{ toYaml $root.Values.sentry.taskBroker.volumes | indent 6 }}
 {{- end }}
 {{- if $root.Values.global.volumes }}
 {{ toYaml $root.Values.global.volumes | indent 6 }}
 {{- end }}
+  {{- if $root.Values.sentry.taskBroker.persistence.enabled }}
   volumeClaimTemplates:
   - metadata:
       name: data
@@ -137,6 +142,7 @@ spec:
       storageClassName: {{ $root.Values.sentry.taskBroker.persistence.storageClass }}
       {{- end }}
       {{- end }}
+  {{- end }}
 ---
 apiVersion: v1
 kind: Service
