@@ -2552,7 +2552,7 @@ filestore:
         ## the current value of 'spec.volumeName' and incorporate it into the template.
         lookupVolumeName: true
 
-# Cronjob for filesystem cleanup when using backend filesystem 
+# Cronjob for filesystem cleanup when using backend filesystem
 cleanerfs:
   enabled: false
   successfulJobsHistoryLimit: 5
