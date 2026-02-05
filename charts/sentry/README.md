@@ -1311,6 +1311,119 @@ sourcemaps:
 
 For details on the background see this blog post: https://engblog.yext.com/post/sentry-js-source-maps
 
+## External storage (filestore, replays, profiles)
+
+Sentry can offload blobs to filesystem or bucket storage. See the Sentry docs for details and backend-specific caveats:
+https://develop.sentry.dev/self-hosted/production-enhancements/external-storage/
+
+### Filestore (attachments, sourcemaps, and default replays)
+
+Set `filestore.backend` to one of `filesystem`, `s3`, or `gcs`:
+
+```yaml
+filestore:
+  backend: gcs
+  gcs:
+    bucketName: sentry-filestore
+    secretName: sentry-gcs
+    credentialsFile: credentials.json
+```
+
+### Replays storage (optional separate backend)
+
+By default, replays use the main filestore. To store replays separately, set `replay.storage.backend` to `filesystem`, `s3`, or `gcs`.
+
+Filesystem example (keep the path inside a mounted volume or add your own volume mounts):
+
+```yaml
+replay:
+  storage:
+    backend: filesystem
+    filesystem:
+      path: /var/lib/sentry/files/replays
+```
+
+Filesystem with a separate PVC (different from filestore):
+
+```yaml
+replay:
+  storage:
+    backend: filesystem
+    filesystem:
+      path: /var/lib/sentry/replays
+      persistence:
+        enabled: true
+        size: 20Gi
+```
+
+S3 example:
+
+```yaml
+replay:
+  storage:
+    backend: s3
+    s3:
+      bucketName: sentry-replays
+      endpointUrl: https://s3.example.com
+      region_name: auto
+      signature_version: s3v4
+      default_acl: private
+      bucket_acl: private
+```
+
+GCS example:
+
+```yaml
+replay:
+  storage:
+    backend: gcs
+    gcs:
+      bucketName: sentry-replays
+      secretName: sentry-gcs
+      credentialsFile: credentials.json
+```
+
+When using GCS for both filestore and replays, `replay.storage.gcs.secretName` and
+`replay.storage.gcs.credentialsFile` must match `filestore.gcs.*`.
+
+### Profiles storage (vroom)
+
+Profiling uses `filestore.profiles`. Supported backends are `filesystem` and `s3` (S3-compatible is recommended for production).
+
+### Retention and lifecycle policies
+
+- For S3 or GCS, all buckets except the **main filestore** should have a lifecycle policy to delete objects after your retention period (match `sentry.cleanup.days` / `SENTRY_EVENT_RETENTION_DAYS`).
+- For the main filestore bucket, you may configure a lifecycle rule to delete objects under `eventattachments/` after retention; other filestore paths should remain indefinitely.
+
+## Nodestore (raw events)
+
+Sentry stores raw event payloads in the nodestore. This chart supports an S3-compatible nodestore backend.
+When enabled, the `sentry-nodestore-s3` package is installed automatically via init containers.
+
+Example:
+
+```yaml
+nodestore:
+  backend: s3
+  s3:
+    bucketName: sentry-nodestore
+    bucketPath: nodestore
+    endpointUrl: https://s3.example.com
+    regionName: us-east-1
+```
+
+You can also supply credentials via an existing secret:
+
+```yaml
+nodestore:
+  backend: s3
+  s3:
+    existingSecret: nodestore-s3-credentials
+    accessKeyIdRef: s3-access-key-id
+    secretAccessKeyRef: s3-secret-access-key
+    bucketName: sentry-nodestore
+```
+
 
 ## Geolocation
 

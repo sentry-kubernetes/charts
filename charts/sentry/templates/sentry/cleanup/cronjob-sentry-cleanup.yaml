@@ -102,7 +102,7 @@ spec:
   {{ include "sentry.volumeMount.nodestore-s3" . | indent 12 }}
             - mountPath: {{ .Values.filestore.filesystem.path }}
               name: sentry-data
-            {{- if and (eq .Values.filestore.backend "gcs") .Values.filestore.gcs.secretName }}
+            {{- if include "sentry.gcs.secretName" . }}
             - name: sentry-google-cloud-key
               mountPath: /var/run/secrets/google
             {{ end }}
@@ -139,10 +139,10 @@ spec:
           {{- else }}
             emptyDir: {}
           {{ end }}
-          {{- if and (eq .Values.filestore.backend "gcs") .Values.filestore.gcs.secretName }}
+          {{- if include "sentry.gcs.secretName" . }}
           - name: sentry-google-cloud-key
             secret:
-              secretName: {{ .Values.filestore.gcs.secretName }}
+              secretName: {{ include "sentry.gcs.secretName" . }}
           {{ end }}
 {{- if .Values.sentry.cleanup.volumes }}
 {{ toYaml .Values.sentry.cleanup.volumes | indent 10 }}

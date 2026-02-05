@@ -118,13 +118,14 @@ spec:
           readOnly: true
         - mountPath: {{ $root.Values.filestore.filesystem.path }}
           name: sentry-data
+{{ include "sentry.volumeMount.replay-filesystem" $root | indent 8 }}
 {{ include "sentry.volumeMount.nodestore-s3" $root | indent 8 }}
         {{- if and $root.Values.geodata.volumeName $root.Values.geodata.accountID }}
         - name: {{ $root.Values.geodata.volumeName }}
           mountPath: {{ $root.Values.geodata.mountPath }}
           readOnly: true
         {{- end }}
-        {{- if and (eq $root.Values.filestore.backend "gcs") $root.Values.filestore.gcs.secretName }}
+        {{- if include "sentry.gcs.secretName" $root }}
         - name: sentry-google-cloud-key
           mountPath: /var/run/secrets/google
         {{ end }}
@@ -162,10 +163,11 @@ spec:
       {{- else }}
         emptyDir: {}
       {{ end }}
-      {{- if and (eq $root.Values.filestore.backend "gcs") $root.Values.filestore.gcs.secretName }}
+{{ include "sentry.volume.replay-filesystem" $root | indent 6 }}
+      {{- if include "sentry.gcs.secretName" $root }}
       - name: sentry-google-cloud-key
         secret:
-          secretName: {{ $root.Values.filestore.gcs.secretName }}
+          secretName: {{ include "sentry.gcs.secretName" $root }}
       {{ end }}
       {{- if and $root.Values.geodata.volumeName $root.Values.geodata.accountID }}
       - name: {{ $root.Values.geodata.volumeName }}

@@ -549,6 +549,57 @@ sentry.conf.py: |-
   }
   {{- end }}
 
+  ##################
+  # Replay Storage #
+  ##################
+  {{- if .Values.replay.storage.backend }}
+  SENTRY_OPTIONS['replay.storage.backend'] = {{ .Values.replay.storage.backend | quote }}
+
+  {{- if eq .Values.replay.storage.backend "filesystem" }}
+  SENTRY_OPTIONS['replay.storage.options'] = {
+      'location': {{ .Values.replay.storage.filesystem.path | quote }},
+  }
+  {{- end }}
+
+  {{- if eq .Values.replay.storage.backend "gcs" }}
+  SENTRY_OPTIONS['replay.storage.options'] = {
+      'bucket_name': {{ .Values.replay.storage.gcs.bucketName | quote }},
+  }
+  {{- end }}
+
+  {{- if eq .Values.replay.storage.backend "s3" }}
+  {{- $replayS3 := .Values.replay.storage.s3 | default dict }}
+  SENTRY_OPTIONS['replay.storage.options'] = {
+      'access_key': os.getenv("REPLAY_S3_ACCESS_KEY_ID", {{ $replayS3.accessKey | default "" | quote }}),
+      'secret_key': os.getenv("REPLAY_S3_SECRET_ACCESS_KEY", {{ $replayS3.secretKey | default "" | quote }}),
+      {{- if $replayS3.bucketName }}
+      'bucket_name': {{ $replayS3.bucketName | quote }},
+      {{- end }}
+      {{- if $replayS3.endpointUrl }}
+      'endpoint_url': {{ $replayS3.endpointUrl | quote }},
+      {{- end }}
+      {{- if $replayS3.signature_version }}
+      'signature_version': {{ $replayS3.signature_version | quote }},
+      {{- end }}
+      {{- if $replayS3.region_name }}
+      'region_name': {{ $replayS3.region_name | quote }},
+      {{- end }}
+      {{- if $replayS3.default_acl }}
+      'default_acl': {{ $replayS3.default_acl | quote }},
+      {{- end }}
+      {{- if $replayS3.bucket_acl }}
+      'bucket_acl': {{ $replayS3.bucket_acl | quote }},
+      {{- end }}
+      {{- if $replayS3.addressing_style }}
+      'addressing_style': {{ $replayS3.addressing_style | quote }},
+      {{- end }}
+      {{- if $replayS3.location }}
+      'location': {{ $replayS3.location | quote }},
+      {{- end }}
+  }
+  {{- end }}
+  {{- end }}
+
   ###################
   # Profiling Store #
   ###################
@@ -763,6 +814,32 @@ Volume mount for sentry plugins
 {{- if .Values.nodestore.backend }}
 - name: sentry-plugins
   mountPath: /sentry-plugins
+{{- end }}
+{{- end -}}
+
+{{/*
+Volume definition for replay filesystem storage
+*/}}
+{{- define "sentry.volume.replay-filesystem" -}}
+{{- if and (eq .Values.replay.storage.backend "filesystem") .Values.replay.storage.filesystem.persistence.enabled }}
+- name: sentry-replay-data
+  {{- if .Values.replay.storage.filesystem.persistence.existingClaim }}
+  persistentVolumeClaim:
+    claimName: {{ .Values.replay.storage.filesystem.persistence.existingClaim }}
+  {{- else }}
+  persistentVolumeClaim:
+    claimName: {{ template "sentry.fullname" . }}-replay-data
+  {{- end }}
+{{- end }}
+{{- end -}}
+
+{{/*
+Volume mount for replay filesystem storage
+*/}}
+{{- define "sentry.volumeMount.replay-filesystem" -}}
+{{- if and (eq .Values.replay.storage.backend "filesystem") .Values.replay.storage.filesystem.persistence.enabled }}
+- name: sentry-replay-data
+  mountPath: {{ .Values.replay.storage.filesystem.path }}
 {{- end }}
 {{- end -}}
 

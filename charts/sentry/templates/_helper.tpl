@@ -814,6 +814,22 @@ Set S3
 {{- end }}
 
 {{/*
+Set Replay S3
+*/}}
+{{- if and (eq .Values.replay.storage.backend "s3") .Values.replay.storage.s3.existingSecret }}
+- name: REPLAY_S3_ACCESS_KEY_ID
+  valueFrom:
+    secretKeyRef:
+      name: {{ .Values.replay.storage.s3.existingSecret }}
+      key: {{ default "s3-access-key-id" .Values.replay.storage.s3.accessKeyIdRef }}
+- name: REPLAY_S3_SECRET_ACCESS_KEY
+  valueFrom:
+    secretKeyRef:
+      name: {{ .Values.replay.storage.s3.existingSecret }}
+      key: {{ default "s3-secret-access-key" .Values.replay.storage.s3.secretAccessKeyRef }}
+{{- end }}
+
+{{/*
 Set Profiles S3
 */}}
 {{- if and (eq .Values.filestore.profiles.backend "s3") (.Values.filestore.profiles.s3) (.Values.filestore.profiles.s3.existingSecret) }}
@@ -892,9 +908,11 @@ Set redis password
 {{/*
 Set google application
 */}}
-{{- if and (eq .Values.filestore.backend "gcs") .Values.filestore.gcs.secretName }}
+{{- $gcsSecretName := include "sentry.gcs.secretName" . -}}
+{{- $gcsCredentialsFile := include "sentry.gcs.credentialsFile" . -}}
+{{- if and $gcsSecretName $gcsCredentialsFile }}
 - name: GOOGLE_APPLICATION_CREDENTIALS
-  value: /var/run/secrets/google/{{ .Values.filestore.gcs.credentialsFile }}
+  value: /var/run/secrets/google/{{ $gcsCredentialsFile }}
 {{- end }}
 
 {{/*
@@ -1095,6 +1113,35 @@ Pgbouncer environment variables
 - name: POSTGRESQL_USERNAME
   value: {{ include "sentry.postgresql.username" . | quote }}
 {{- end }}
+{{- end -}}
+
+{{/*
+GCS settings for filestore/replay storage.
+*/}}
+{{- define "sentry.gcs.secretName" -}}
+{{- $filestoreSecret := default "" .Values.filestore.gcs.secretName -}}
+{{- $replaySecret := default "" .Values.replay.storage.gcs.secretName -}}
+{{- if and (eq .Values.filestore.backend "gcs") (eq .Values.replay.storage.backend "gcs") $filestoreSecret $replaySecret (ne $filestoreSecret $replaySecret) -}}
+{{- fail "When using GCS for both filestore and replays, filestore.gcs.secretName and replay.storage.gcs.secretName must match." -}}
+{{- end -}}
+{{- if and (eq .Values.replay.storage.backend "gcs") .Values.replay.storage.gcs.secretName -}}
+{{- .Values.replay.storage.gcs.secretName -}}
+{{- else if and (eq .Values.filestore.backend "gcs") .Values.filestore.gcs.secretName -}}
+{{- .Values.filestore.gcs.secretName -}}
+{{- end -}}
+{{- end -}}
+
+{{- define "sentry.gcs.credentialsFile" -}}
+{{- $filestoreCredentialsFile := default "" .Values.filestore.gcs.credentialsFile -}}
+{{- $replayCredentialsFile := default "" .Values.replay.storage.gcs.credentialsFile -}}
+{{- if and (eq .Values.filestore.backend "gcs") (eq .Values.replay.storage.backend "gcs") $filestoreCredentialsFile $replayCredentialsFile (ne $filestoreCredentialsFile $replayCredentialsFile) -}}
+{{- fail "When using GCS for both filestore and replays, filestore.gcs.credentialsFile and replay.storage.gcs.credentialsFile must match." -}}
+{{- end -}}
+{{- if and (eq .Values.replay.storage.backend "gcs") .Values.replay.storage.gcs.credentialsFile -}}
+{{- .Values.replay.storage.gcs.credentialsFile -}}
+{{- else if and (eq .Values.filestore.backend "gcs") .Values.filestore.gcs.credentialsFile -}}
+{{- .Values.filestore.gcs.credentialsFile -}}
+{{- end -}}
 {{- end -}}
 
 {{/*

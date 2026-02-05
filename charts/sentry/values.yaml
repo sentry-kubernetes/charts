@@ -2552,6 +2552,45 @@ filestore:
         ## the current value of 'spec.volumeName' and incorporate it into the template.
         lookupVolumeName: true
 
+replay:
+  storage:
+    # Leave empty to use the main filestore.
+    # Set to one of filesystem, gcs or s3 to use a separate backend for replays.
+    backend: ""
+    filesystem:
+      path: /var/lib/sentry/files/replays
+      ## Use a separate PVC for replays (optional).
+      ## When disabled, replays are stored on the container filesystem,
+      ## or on the main filestore PVC if the path is under filestore.filesystem.path.
+      persistence:
+        enabled: false
+        accessMode: ReadWriteOnce
+        size: 10Gi
+        existingClaim: ""
+        lookupVolumeName: true
+        # storageClass: "-"
+    gcs: {}
+      ## Point this at a pre-configured secret containing a service account. The resulting
+      ## secret will be mounted at /var/run/secrets/google
+      ## When using GCS for both filestore and replays, this must match filestore.gcs.*
+      # secretName:
+      # credentialsFile: credentials.json
+    # bucketName:
+    s3: {}
+    #  existingSecret:
+    #  accessKeyIdRef:
+    #  secretAccessKeyRef:
+    #  accessKey:
+    #  secretKey:
+    #  bucketName:
+    #  endpointUrl:
+    #  signature_version:
+    #  region_name:
+    #  default_acl:
+    #  bucket_acl:
+    #  addressing_style:
+    #  location:
+
 # Cronjob for filesystem cleanup when using backend filesystem
 cleanerfs:
   enabled: false

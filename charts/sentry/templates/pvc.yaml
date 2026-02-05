@@ -25,5 +25,34 @@ spec:
   storageClassName: "{{ .Values.filestore.filesystem.persistence.storageClass }}"
 {{- end }}
 {{- end }}
-{{- end -}}
-{{- end -}}
+{{- end }}
+{{- end }}
+
+{{ if and (eq .Values.replay.storage.backend "filesystem") .Values.replay.storage.filesystem.persistence.enabled (not .Values.replay.storage.filesystem.persistence.existingClaim) }}
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: {{ template "sentry.fullname" . }}-replay-data
+  labels:
+    app: sentry
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
+    release: "{{ .Release.Name }}"
+    heritage: "{{ .Release.Service }}"
+spec:
+  accessModes:
+    - {{ .Values.replay.storage.filesystem.persistence.accessMode | quote }}
+  resources:
+    requests:
+      storage: {{ .Values.replay.storage.filesystem.persistence.size | quote }}
+{{- if and (.Values.replay.storage.filesystem.persistence.lookupVolumeName) (lookup "v1" "PersistentVolumeClaim" .Release.Namespace (printf "%s-replay-data" (include "sentry.fullname" .))) }}
+  volumeName: {{ (lookup "v1" "PersistentVolumeClaim" .Release.Namespace (printf "%s-replay-data" (include "sentry.fullname" .))).spec.volumeName }}
+{{- end }}
+{{- if .Values.replay.storage.filesystem.persistence.storageClass }}
+{{- if (eq "-" .Values.replay.storage.filesystem.persistence.storageClass) }}
+  storageClassName: ""
+{{- else }}
+  storageClassName: "{{ .Values.replay.storage.filesystem.persistence.storageClass }}"
+{{- end }}
+{{- end }}
+{{ end }}

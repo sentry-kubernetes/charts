@@ -81,9 +81,9 @@ spec:
         ports:
         - containerPort: {{ template "symbolicator.port" }}
         env:
-        {{ if and (eq .Values.filestore.backend "gcs") .Values.filestore.gcs.secretName }}
+        {{ if include "sentry.gcs.secretName" . }}
         - name: GOOGLE_APPLICATION_CREDENTIALS
-          value: /var/run/secrets/google/{{ .Values.filestore.gcs.credentialsFile }}
+          value: /var/run/secrets/google/{{ include "sentry.gcs.credentialsFile" . }}
         {{ end }}
 {{- if .Values.symbolicator.api.env }}
 {{ toYaml .Values.symbolicator.api.env | indent 8 }}
@@ -94,7 +94,7 @@ spec:
           readOnly: true
         - mountPath: /data
           name: symbolicator-data
-        {{- if and (eq .Values.filestore.backend "gcs") .Values.filestore.gcs.secretName }}
+        {{- if include "sentry.gcs.secretName" . }}
         - name: sentry-google-cloud-key
           mountPath: /var/run/secrets/google
         {{ end }}
@@ -138,9 +138,9 @@ spec:
           - --repeat
           - {{ .Values.symbolicator.api.cleaner.repeat }}
         env:
-        {{ if and (eq .Values.filestore.backend "gcs") .Values.filestore.gcs.secretName }}
+        {{ if include "sentry.gcs.secretName" . }}
         - name: GOOGLE_APPLICATION_CREDENTIALS
-          value: /var/run/secrets/google/{{ .Values.filestore.gcs.credentialsFile }}
+          value: /var/run/secrets/google/{{ include "sentry.gcs.credentialsFile" . }}
         {{ end }}
         volumeMounts:
         - mountPath: /etc/symbolicator
@@ -148,7 +148,7 @@ spec:
           readOnly: true
         - mountPath: /data
           name: symbolicator-data
-        {{- if and (eq .Values.filestore.backend "gcs") .Values.filestore.gcs.secretName }}
+        {{- if include "sentry.gcs.secretName" . }}
         - name: sentry-google-cloud-key
           mountPath: /var/run/secrets/google
         {{ end }}
@@ -178,10 +178,10 @@ spec:
       - name: symbolicator-data
         emptyDir: {}
       {{- end }}
-      {{- if and (eq .Values.filestore.backend "gcs") .Values.filestore.gcs.secretName }}
+      {{- if include "sentry.gcs.secretName" . }}
       - name: sentry-google-cloud-key
         secret:
-          secretName: {{ .Values.filestore.gcs.secretName }}
+          secretName: {{ include "sentry.gcs.secretName" . }}
       {{ end }}
 {{- if .Values.symbolicator.api.volumes }}
 {{ toYaml .Values.symbolicator.api.volumes | indent 6 }}
