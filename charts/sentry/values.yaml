@@ -2591,23 +2591,6 @@ replay:
     #  addressing_style:
     #  location:
 
-# Cronjob for filesystem cleanup when using backend filesystem
-cleanerfs:
-  enabled: false
-  successfulJobsHistoryLimit: 5
-  failedJobsHistoryLimit: 5
-  activeDeadlineSeconds: 900
-  concurrencyPolicy: Allow
-  schedule: "0 1 * * *"
-  days: 90
-# securityContext: {}
-# containerSecurityContext: {}
-  annotations: {}
-# podLabels: {}
-# affinity: {}
-# nodeSelector: {}
-# tolerations: {}
-
 ## Node Storage configuration
 ## Sentry uses an abstraction layer called "node storage" to store raw events.
 ## Previously, it used PostgreSQL as the backend, but this didn't scale for
@@ -2643,6 +2626,24 @@ nodestore:
     # regionName: "us-east-1"
     # If you are using S3 provider other than AWS, and seeing SignatureDoesNotMatch errors enable this
     # setAwsChecksumCalculationVar: false
+
+# Cronjob for filesystem cleanup when using backend filesystem
+# WARNING: Use with caution as some files in the default filestore should never be deleted after the retention period
+cleanerfs:
+  enabled: false
+  successfulJobsHistoryLimit: 5
+  failedJobsHistoryLimit: 5
+  activeDeadlineSeconds: 900
+  concurrencyPolicy: Allow
+  schedule: "0 1 * * *"
+  days: 90
+# securityContext: {}
+# containerSecurityContext: {}
+  annotations: {}
+# podLabels: {}
+# affinity: {}
+# nodeSelector: {}
+# tolerations: {}
 
 config:
   # No YAML Extension Config Given
