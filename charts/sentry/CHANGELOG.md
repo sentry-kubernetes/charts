@@ -1,5 +1,18 @@
 # Changelog
 
+## [29.1.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v29.0.0...sentry-v29.1.0) (2026-02-06)
+
+
+### Features
+
+* **cronjob:** add filesystem cleanup cronjob for filesystem backend ([#2037](https://github.com/sentry-kubernetes/charts/issues/2037)) ([a7a1b78](https://github.com/sentry-kubernetes/charts/commit/a7a1b78b74a363b7a3a3273c3e3868f78377a0ed))
+
+
+### Bug Fixes
+
+* Fix taskbroker persistence enabled flag ([#2036](https://github.com/sentry-kubernetes/charts/issues/2036)) ([ed5c3b6](https://github.com/sentry-kubernetes/charts/commit/ed5c3b68d0a94962ec8fdbb6790836bdc1a57e99))
+* **nginx:** nginx config name must match in the configmap and in the subchart values ([#2042](https://github.com/sentry-kubernetes/charts/issues/2042)) ([f1cc6fd](https://github.com/sentry-kubernetes/charts/commit/f1cc6fdf0f5747f115ed997271efdb6b71ec47e3))
+
 ## [29.0.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v28.1.0...sentry-v29.0.0) (2026-02-04)
 
 
