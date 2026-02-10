@@ -1,5 +1,12 @@
 # Changelog
 
+## [29.2.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v29.1.0...sentry-v29.2.0) (2026-02-10)
+
+
+### Features
+
+* optional separate replay storage ([#2040](https://github.com/sentry-kubernetes/charts/issues/2040)) ([404c688](https://github.com/sentry-kubernetes/charts/commit/404c6884e9f16f290053350e153d114d4b59d6d5))
+
 ## [29.1.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v29.0.0...sentry-v29.1.0) (2026-02-06)
 
 
