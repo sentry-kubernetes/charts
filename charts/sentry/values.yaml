@@ -3154,11 +3154,8 @@ metrics:
 
 revisionHistoryLimit: 10
 
-dnsPolicy: "None"
+dnsPolicy: "ClusterFirst"
 dnsConfig:
-  nameservers:
-    - "10.2.0.211"
-    - "10.43.0.10"
   searches:
     - sentry.svc.cluster.local
     - svc.cluster.local
