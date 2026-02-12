@@ -54,6 +54,13 @@ spec:
       nodeSelector:
 {{ toYaml .Values.global.nodeSelector | indent 8 }}
       {{- end }}
+      {{- if .Values.dnsPolicy }}
+      dnsPolicy: {{ .Values.dnsPolicy | quote }}
+      {{- end }}
+      {{- if .Values.dnsConfig }}
+      dnsConfig:
+{{ toYaml .Values.dnsConfig | indent 8 }}
+      {{- end }}
       {{- if .Values.snuba.subscriptionConsumerGenericMetricsGauges.tolerations }}
       tolerations:
 {{ toYaml .Values.snuba.subscriptionConsumerGenericMetricsGauges.tolerations | indent 8 }}

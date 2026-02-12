@@ -81,9 +81,17 @@ spec:
       {{- if $root.Values.serviceAccount.enabled }}
       serviceAccountName: {{ $root.Values.serviceAccount.name }}-taskworker
       {{- end }}
+      {{- if $root.Values.dnsPolicy }}
+      dnsPolicy: {{ $root.Values.dnsPolicy | quote }}
+      {{- end }}
+      {{- if $root.Values.dnsConfig }}
+      dnsConfig:
+{{ toYaml $root.Values.dnsConfig | indent 8 }}
+      {{- else }}
       dnsConfig:
         searches:
           - {{ template "sentry.fullname" $root }}-taskbroker-{{ $worker.brokerName }}.{{ $root.Release.Namespace }}.svc.cluster.local
+      {{- end }}
       initContainers:
 {{ include "sentry.initContainer.nodestore-s3" $root | indent 6 }}
       containers:

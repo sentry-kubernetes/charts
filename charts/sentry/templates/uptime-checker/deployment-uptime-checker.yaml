@@ -59,6 +59,13 @@ spec:
       tolerations:
 {{ toYaml .Values.global.tolerations | indent 8 }}
       {{- end }}
+      {{- if .Values.dnsPolicy }}
+      dnsPolicy: {{ .Values.dnsPolicy | quote }}
+      {{- end }}
+      {{- if .Values.dnsConfig }}
+      dnsConfig:
+{{ toYaml .Values.dnsConfig | indent 8 }}
+      {{- end }}
       {{- if .Values.uptimeChecker.topologySpreadConstraints }}
       topologySpreadConstraints:
 {{ toYaml .Values.uptimeChecker.topologySpreadConstraints | indent 8 }}
