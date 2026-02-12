@@ -91,6 +91,7 @@ spec:
       dnsConfig:
         searches:
           - {{ template "sentry.fullname" $root }}-taskbroker-{{ $worker.brokerName }}.{{ $root.Release.Namespace }}.svc.{{ $root.Values.global.clusterDomain | default "cluster.local" }}
+      {{- end }}
       initContainers:
 {{ include "sentry.initContainer.nodestore-s3" $root | indent 6 }}
       containers:
