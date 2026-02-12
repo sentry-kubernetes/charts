@@ -61,6 +61,13 @@ spec:
       tolerations:
 {{ toYaml .Values.global.tolerations | indent 8 }}
       {{- end }}
+      {{- if .Values.dnsPolicy }}
+      dnsPolicy: {{ .Values.dnsPolicy | quote }}
+      {{- end }}
+      {{- if .Values.dnsConfig }}
+      dnsConfig:
+{{ toYaml .Values.dnsConfig | indent 8 }}
+      {{- end }}
       {{- if .Values.snuba.subscriptionConsumerMetrics.topologySpreadConstraints }}
       topologySpreadConstraints:
 {{ toYaml .Values.snuba.subscriptionConsumerMetrics.topologySpreadConstraints | indent 8 }}

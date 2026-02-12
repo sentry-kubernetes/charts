@@ -50,6 +50,13 @@ spec:
       nodeSelector:
 {{ toYaml $root.Values.global.nodeSelector | indent 8 }}
       {{- end }}
+      {{- if .Values.dnsPolicy }}
+      dnsPolicy: {{ .Values.dnsPolicy | quote }}
+      {{- end }}
+      {{- if .Values.dnsConfig }}
+      dnsConfig:
+{{ toYaml .Values.dnsConfig | indent 8 }}
+      {{- end }}
       {{- if $root.Values.sentry.taskBroker.tolerations }}
       tolerations:
 {{ toYaml $root.Values.sentry.taskBroker.tolerations | indent 8 }}
