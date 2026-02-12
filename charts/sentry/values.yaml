@@ -2340,7 +2340,7 @@ traefikIngressRoute:
     # secretName: sentry-tls
     # options:
     #   name: default
-    #   namespace: default
+  #   namespace: default
 
   # -- Additional route annotations
   annotations: {}
@@ -2382,7 +2382,7 @@ route:
     parentRefs: []
       # - name: my-gateway
       #   namespace: default
-      #   sectionName: https
+    #   sectionName: https
 
 
     # -- Additional custom rules to prepend
@@ -2416,7 +2416,7 @@ route:
     parentRefs: []
       # - name: my-gateway
       #   namespace: default
-      #   sectionName: http
+    #   sectionName: http
 
     # -- HTTP status code for redirect (301 = permanent, 302 = temporary)
     statusCode: 301
@@ -2478,7 +2478,7 @@ filestore:
     ## Point this at a pre-configured secret containing a service account. The resulting
     ## secret will be mounted at /var/run/secrets/google
     # secretName:
-    # credentialsFile: credentials.json
+  # credentialsFile: credentials.json
   # bucketName:
 
   s3: {}
@@ -2574,7 +2574,7 @@ replay:
       ## secret will be mounted at /var/run/secrets/google
       ## When using GCS for both filestore and replays, this must match filestore.gcs.*
       # secretName:
-      # credentialsFile: credentials.json
+    # credentialsFile: credentials.json
     # bucketName:
     s3: {}
     #  existingSecret:
@@ -2611,21 +2611,21 @@ nodestore:
     # - name: HTTPS_PROXY
     #   value: "http://proxy.example.com:8080"
   s3:
-    # deleteThrough: "False"
-    # writeThrough: "False"
-    # readThrough: "False"
-    # compression: "True"
-    # existingSecret: "nodestore-s3-credentials"
-    # accessKeyIdRef: "access-key-id"
-    # secretAccessKeyRef: "secret-access-key"
-    # accessKeyId: ""
-    # secretAccessKey: ""
-    # bucketName: "nodestore"
-    # bucketPath: "nodestore"
-    # endpointUrl: "http://seaweedfs:8333"
-    # regionName: "us-east-1"
-    # If you are using S3 provider other than AWS, and seeing SignatureDoesNotMatch errors enable this
-    # setAwsChecksumCalculationVar: false
+  # deleteThrough: "False"
+  # writeThrough: "False"
+  # readThrough: "False"
+  # compression: "True"
+  # existingSecret: "nodestore-s3-credentials"
+  # accessKeyIdRef: "access-key-id"
+  # secretAccessKeyRef: "secret-access-key"
+  # accessKeyId: ""
+  # secretAccessKey: ""
+  # bucketName: "nodestore"
+  # bucketPath: "nodestore"
+  # endpointUrl: "http://seaweedfs:8333"
+  # regionName: "us-east-1"
+  # If you are using S3 provider other than AWS, and seeing SignatureDoesNotMatch errors enable this
+  # setAwsChecksumCalculationVar: false
 
 # Cronjob for filesystem cleanup when using backend filesystem
 # WARNING: Use with caution as some files in the default filestore should never be deleted after the retention period
@@ -2637,8 +2637,8 @@ cleanerfs:
   concurrencyPolicy: Allow
   schedule: "0 1 * * *"
   days: 90
-# securityContext: {}
-# containerSecurityContext: {}
+  # securityContext: {}
+  # containerSecurityContext: {}
   annotations: {}
 # podLabels: {}
 # affinity: {}
@@ -3154,15 +3154,11 @@ metrics:
 
 revisionHistoryLimit: 10
 
-dnsPolicy: "ClusterFirst"
-dnsConfig:
-  searches:
-    - sentry.svc.cluster.local
-    - svc.cluster.local
-    - cluster.local
-  options:
-    - name: "ndots"
-      value: "5"
+# dnsPolicy: "ClusterFirst"
+# dnsConfig:
+#   nameservers: []
+#   searches: []
+#   options: []
 
 extraManifests: []
 
