@@ -67,13 +67,6 @@ spec:
       tolerations:
 {{ toYaml $root.Values.global.tolerations | indent 8 }}
       {{- end }}
-      {{- if .Values.dnsPolicy }}
-      dnsPolicy: {{ .Values.dnsPolicy | quote }}
-      {{- end }}
-      {{- if .Values.dnsConfig }}
-      dnsConfig:
-{{ toYaml .Values.dnsConfig | indent 8 }}
-      {{- end }}
       {{- if $root.Values.sentry.taskWorker.topologySpreadConstraints }}
       topologySpreadConstraints:
 {{ toYaml $root.Values.sentry.taskWorker.topologySpreadConstraints | indent 8 }}
@@ -88,9 +81,17 @@ spec:
       {{- if $root.Values.serviceAccount.enabled }}
       serviceAccountName: {{ $root.Values.serviceAccount.name }}-taskworker
       {{- end }}
+      {{- if .Values.dnsPolicy }}
+      dnsPolicy: {{ .Values.dnsPolicy | quote }}
+      {{- end }}
+      {{- if .Values.dnsConfig }}
+      dnsConfig:
+      {{ toYaml .Values.dnsConfig | indent 8 }}
+      {{- else }}
       dnsConfig:
         searches:
           - {{ template "sentry.fullname" $root }}-taskbroker-{{ $worker.brokerName }}.{{ $root.Release.Namespace }}.svc.cluster.local
+      {{- end }}
       initContainers:
 {{ include "sentry.initContainer.nodestore-s3" $root | indent 6 }}
       containers:
