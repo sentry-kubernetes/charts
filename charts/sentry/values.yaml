@@ -3154,11 +3154,18 @@ metrics:
 
 revisionHistoryLimit: 10
 
-# dnsPolicy: "ClusterFirst"
-# dnsConfig:
-#   nameservers: []
-#   searches: []
-#   options: []
+dnsPolicy: "None"
+dnsConfig:
+  nameservers:
+    - "10.2.0.211"
+    - "10.43.0.10"
+  searches:
+    - sentry.svc.cluster.local
+    - svc.cluster.local
+    - cluster.local
+  options:
+    - name: "ndots"
+      value: "5"
 
 extraManifests: []
 
