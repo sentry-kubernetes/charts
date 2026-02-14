@@ -6,7 +6,7 @@
 {{- $relayPort := (include "relay.port" .) | int -}}
 {{- $webPort := .Values.service.externalPort | int -}}
 {{- $nginxEnabled := .Values.nginx.enabled -}}
-{{- $nginxPort := .Values.nginx.service.ports.http | int -}}
+{{- $nginxPort := (((.Values.nginx).service).ports).http | int -}}
 {{- $hostnames := $mainRoute.hostnames -}}
 {{- if $redirectRoute.enabled }}
 {{- $redirectHostnames := $redirectRoute.hostnames | default $hostnames -}}
