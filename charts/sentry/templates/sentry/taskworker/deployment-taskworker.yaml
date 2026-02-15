@@ -83,7 +83,7 @@ spec:
       {{- end }}
       dnsConfig:
         searches:
-          - {{ template "sentry.fullname" $root }}-taskbroker-{{ $worker.brokerName }}.{{ $root.Release.Namespace }}.svc.cluster.local
+          - {{ template "sentry.fullname" $root }}-taskbroker-{{ $worker.brokerName }}.{{ $root.Release.Namespace }}.svc.{{ $root.Values.global.clusterDomain | default "cluster.local" }}
       initContainers:
 {{ include "sentry.initContainer.nodestore-s3" $root | indent 6 }}
       containers:
