@@ -8,6 +8,9 @@ global:
   # Set SAMPLED_DEFAULT_RATE parameter for all projects
   # sampledDefaultRate: 1.0
 
+  # Kubernetes cluster domain
+  clusterDomain: "cluster.local"
+
   nodeSelector: {}
   tolerations: []
   sidecars: []
