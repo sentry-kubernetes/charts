@@ -3157,6 +3157,8 @@ metrics:
 
 revisionHistoryLimit: 10
 
+# Custom DNS settings to apply to all pods. note that enabling a custom dnsConfig disables the deployment-taskworker
+# default search paths. (See ./templates/sentry/taskworker/deployment-taskworker.yaml #84-94)
 # dnsPolicy: "ClusterFirst"
 # dnsConfig:
 #   nameservers: []
