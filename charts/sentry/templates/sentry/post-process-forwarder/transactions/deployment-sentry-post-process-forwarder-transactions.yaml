@@ -108,7 +108,6 @@ spec:
           - "--healthcheck-file-path"
           - "/tmp/health.txt"
           {{- end }}
-          - "--"
           {{- if .Values.sentry.postProcessForwardTransactions.processes }}
           - "--mode"
           - "multiprocess"

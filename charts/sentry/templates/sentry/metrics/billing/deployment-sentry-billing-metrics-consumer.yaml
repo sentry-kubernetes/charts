@@ -107,7 +107,6 @@ spec:
           - "--healthcheck-file-path"
           - "/tmp/health.txt"
           {{- end }}
-          - "--"
         {{- if .Values.sentry.billingMetricsConsumer.livenessProbe.enabled }}
         livenessProbe:
           exec:

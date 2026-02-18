@@ -111,7 +111,6 @@ spec:
           - "--max-poll-interval-ms"
           - "{{ .Values.sentry.ingestMonitors.maxPollIntervalMs }}"
           {{- end }}
-          - "--"
         {{- if .Values.sentry.ingestMonitors.livenessProbe.enabled }}
         livenessProbe:
           exec:

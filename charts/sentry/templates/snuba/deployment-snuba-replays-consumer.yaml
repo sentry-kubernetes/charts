@@ -134,7 +134,6 @@ spec:
           - "--max-poll-interval-ms"
           - "{{ .Values.snuba.replaysConsumer.maxPollIntervalMs }}"
           {{- end }}
-          - "--"
         {{- if .Values.snuba.replaysConsumer.livenessProbe.enabled }}
         livenessProbe:
           exec:
