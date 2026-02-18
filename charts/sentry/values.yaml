@@ -127,6 +127,7 @@ vroom:
     # storageClassName: standard
     size: "10Gi"
     # this will be passed to the SENTRY_BUCKET_PROFILES env var
+    # examples: file:///var/vroom/sentry-profiles, s3://my-profiles-bucket, gs://my-profiles-bucket
     bucketString: "file:///var/vroom/sentry-profiles"
 
   autoscaling:
@@ -2480,6 +2481,8 @@ filestore:
   gcs: {}
     ## Point this at a pre-configured secret containing a service account. The resulting
     ## secret will be mounted at /var/run/secrets/google
+    ## If replay.storage.backend or filestore.profiles.backend is also "gcs",
+    ## secretName and credentialsFile must match.
     # secretName:
     # credentialsFile: credentials.json
   # bucketName:
@@ -2501,12 +2504,20 @@ filestore:
   ## The ingest-profiles container now processes profiles immediately via vroomrs and writes
   ## them directly to your bucket. This streamlines the pipeline.
   ##
-  ## RECOMMENDATION: Use an S3-compatible backend for profiles storage (e.g., AWS S3, MinIO, SeaweedFS).
+  ## RECOMMENDATION: Use object storage for profiles (for example S3-compatible storage or GCS).
   ## While filesystem backend is supported (for sharing PVC between vroom and ingest-profiles pods),
   ## it's not recommended for production use due to performance and scalability concerns.
   profiles:
-    # Set to one of filesystem or s3 as supported by Sentry profiling.
+    # Set to one of filesystem, gcs or s3 as supported by Sentry profiling.
     backend: filesystem
+    gcs: {}
+    ## Point this at a pre-configured secret containing a service account. The resulting
+    ## secret will be mounted at /var/run/secrets/google
+    ## IMPORTANT: This secret/credentialsFile pair is mounted into all Sentry pods.
+    ## If filestore.backend or replay.storage.backend is also "gcs", these values must match.
+    #  secretName:
+    #  credentialsFile: credentials.json
+    #  bucketName:
     s3:
     #  existingSecret:
     #  accessKeyIdRef:
@@ -2575,7 +2586,8 @@ replay:
     gcs: {}
       ## Point this at a pre-configured secret containing a service account. The resulting
       ## secret will be mounted at /var/run/secrets/google
-      ## When using GCS for both filestore and replays, this must match filestore.gcs.*
+      ## If filestore.backend or filestore.profiles.backend is also "gcs",
+      ## secretName and credentialsFile must match.
       # secretName:
       # credentialsFile: credentials.json
     # bucketName:

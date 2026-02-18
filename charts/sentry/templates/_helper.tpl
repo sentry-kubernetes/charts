@@ -1116,32 +1116,54 @@ Pgbouncer environment variables
 {{- end -}}
 
 {{/*
-GCS settings for filestore/replay storage.
+GCS settings for filestore/replay/profiles storage.
 */}}
-{{- define "sentry.gcs.secretName" -}}
-{{- $filestoreSecret := default "" .Values.filestore.gcs.secretName -}}
-{{- $replaySecret := default "" .Values.replay.storage.gcs.secretName -}}
-{{- if and (eq .Values.filestore.backend "gcs") (eq .Values.replay.storage.backend "gcs") $filestoreSecret $replaySecret (ne $filestoreSecret $replaySecret) -}}
-{{- fail "When using GCS for both filestore and replays, filestore.gcs.secretName and replay.storage.gcs.secretName must match." -}}
+{{- define "sentry.gcs.sharedValue" -}}
+{{- $ctx := .ctx -}}
+{{- $field := .field -}}
+{{- $filestoreGcs := default dict $ctx.Values.filestore.gcs -}}
+{{- $replayGcs := default dict $ctx.Values.replay.storage.gcs -}}
+{{- $profilesGcs := default dict $ctx.Values.filestore.profiles.gcs -}}
+
+{{- /* Collect all GCS-backed field configs as a list of (backend, value, name) tuples */ -}}
+{{- $sources := list
+  (dict "backend" $ctx.Values.filestore.backend          "value" (default "" (index $filestoreGcs $field)) "name" (printf "filestore.gcs.%s" $field))
+  (dict "backend" $ctx.Values.replay.storage.backend     "value" (default "" (index $replayGcs $field))    "name" (printf "replay.storage.gcs.%s" $field))
+  (dict "backend" $ctx.Values.filestore.profiles.backend "value" (default "" (index $profilesGcs $field))  "name" (printf "filestore.profiles.gcs.%s" $field))
+-}}
+
+{{- /* Filter to only active GCS sources */ -}}
+{{- $gcsSources := list -}}
+{{- range $sources -}}
+  {{- if eq .backend "gcs" -}}
+    {{- $gcsSources = append $gcsSources . -}}
+  {{- end -}}
 {{- end -}}
-{{- if and (eq .Values.replay.storage.backend "gcs") .Values.replay.storage.gcs.secretName -}}
-{{- .Values.replay.storage.gcs.secretName -}}
-{{- else if and (eq .Values.filestore.backend "gcs") .Values.filestore.gcs.secretName -}}
-{{- .Values.filestore.gcs.secretName -}}
+
+{{- /* Cross-check all pairs: if both have a value set, they must match */ -}}
+{{- range $i, $a := $gcsSources -}}
+  {{- range $j, $b := $gcsSources -}}
+    {{- if and (gt $j $i) $a.value $b.value (ne $a.value $b.value) -}}
+      {{- fail (printf "When using GCS for multiple backends, %s and %s must match." $a.name $b.name) -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+
+{{- /* Return the first non-empty value found among active GCS sources */ -}}
+{{- range $gcsSources -}}
+  {{- if .value -}}
+    {{- .value -}}
+    {{- break -}}
+  {{- end -}}
 {{- end -}}
 {{- end -}}
 
+{{- define "sentry.gcs.secretName" -}}
+{{- include "sentry.gcs.sharedValue" (dict "ctx" . "field" "secretName") -}}
+{{- end -}}
+
 {{- define "sentry.gcs.credentialsFile" -}}
-{{- $filestoreCredentialsFile := default "" .Values.filestore.gcs.credentialsFile -}}
-{{- $replayCredentialsFile := default "" .Values.replay.storage.gcs.credentialsFile -}}
-{{- if and (eq .Values.filestore.backend "gcs") (eq .Values.replay.storage.backend "gcs") $filestoreCredentialsFile $replayCredentialsFile (ne $filestoreCredentialsFile $replayCredentialsFile) -}}
-{{- fail "When using GCS for both filestore and replays, filestore.gcs.credentialsFile and replay.storage.gcs.credentialsFile must match." -}}
-{{- end -}}
-{{- if and (eq .Values.replay.storage.backend "gcs") .Values.replay.storage.gcs.credentialsFile -}}
-{{- .Values.replay.storage.gcs.credentialsFile -}}
-{{- else if and (eq .Values.filestore.backend "gcs") .Values.filestore.gcs.credentialsFile -}}
-{{- .Values.filestore.gcs.credentialsFile -}}
-{{- end -}}
+{{- include "sentry.gcs.sharedValue" (dict "ctx" . "field" "credentialsFile") -}}
 {{- end -}}
 
 {{/*

@@ -607,11 +607,18 @@ sentry.conf.py: |-
   # The ingest-profiles container now processes profiles immediately via vroomrs and writes
   # them directly to your bucket. This streamlines the pipeline.
   #
-  # NOTE: It's recommended to use an S3-compatible backend for profiles storage.
+  # NOTE: It's recommended to use an object storage backend for profiles storage
+  # (for example S3-compatible storage or GCS).
   # While filesystem backend is supported (for sharing PVC between vroom and ingest-profiles),
   # it's not recommended for production use.
   {{- if .Values.filestore.profiles.backend }}
   SENTRY_OPTIONS['filestore.profiles-backend'] = {{ .Values.filestore.profiles.backend | quote }}
+
+  {{- if eq .Values.filestore.profiles.backend "gcs" }}
+  SENTRY_OPTIONS['filestore.profiles-options'] = {
+      'bucket_name': {{ .Values.filestore.profiles.gcs.bucketName | quote }},
+  }
+  {{- end }}
 
   {{- if eq .Values.filestore.profiles.backend "s3" }}
   {{- $profilesS3 := .Values.filestore.profiles.s3 | default dict }}

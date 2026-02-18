@@ -83,7 +83,10 @@ Note: this table is incomplete, so have a look at the values.yaml in case you mi
 | filestore.filesystem.persistence.size | string | `"10Gi"` |  |
 | filestore.gcs | object | `{}` |  |
 | filestore.s3 | object | `{}` |  |
-| filestore.profiles.backend | string | `"s3"` | Profiles storage backend (filesystem or s3). Recommended: s3-compatible backend |
+| filestore.profiles.backend | string | `"filesystem"` | Profiles storage backend (filesystem, gcs or s3). Recommended: object storage backend |
+| filestore.profiles.gcs.secretName | string | `nil` | GCS service-account secret name for profiles storage. Must match filestore/replay GCS secret when shared in Sentry pods |
+| filestore.profiles.gcs.credentialsFile | string | `nil` | Credentials filename inside the GCS secret for profiles storage. Must match filestore/replay GCS credentialsFile when shared in Sentry pods |
+| filestore.profiles.gcs.bucketName | string | `nil` | GCS bucket name for profiles storage |
 | filestore.profiles.s3.existingSecret | string | `nil` | Existing secret containing S3 credentials |
 | filestore.profiles.s3.accessKeyIdRef | string | `nil` | Key in existingSecret for access key ID |
 | filestore.profiles.s3.secretAccessKeyRef | string | `nil` | Key in existingSecret for secret access key |
@@ -1388,7 +1391,63 @@ When using GCS for both filestore and replays, `replay.storage.gcs.secretName` a
 
 ### Profiles storage (vroom)
 
-Profiling uses `filestore.profiles`. Supported backends are `filesystem` and `s3` (S3-compatible is recommended for production).
+Profiling uses `filestore.profiles`. Supported backends are `filesystem`, `gcs` and `s3` (object storage is recommended for production).
+
+- Keep `vroom.persistence.bucketString` and `filestore.profiles.*` pointed at the same bucket/prefix.
+- For `filesystem` backend, if `filestore.profiles.filesystem.persistence.shareWithVroom=true`, set `vroom.persistence.accessModes` to include `ReadWriteMany`.
+- For `gcs` backend, Sentry pods mount a single GCS credentials secret. If `filestore.backend` or `replay.storage.backend` is also set to `gcs`, the corresponding `secretName` and `credentialsFile` must match `filestore.profiles.gcs.*`.
+- Configure vroom credentials yourself via `vroom.env`, `vroom.volumeMounts`, and `vroom.volumes`.
+
+S3 example:
+
+```yaml
+filestore:
+  profiles:
+    backend: s3
+    s3:
+      existingSecret: sentry-profiles-s3
+      bucketName: sentry-profiles
+vroom:
+  persistence:
+    bucketString: "s3://sentry-profiles"
+  env:
+    - name: AWS_ACCESS_KEY_ID
+      valueFrom:
+        secretKeyRef:
+          name: sentry-profiles-s3
+          key: s3-access-key-id
+    - name: AWS_SECRET_ACCESS_KEY
+      valueFrom:
+        secretKeyRef:
+          name: sentry-profiles-s3
+          key: s3-secret-access-key
+```
+
+GCS example:
+
+```yaml
+filestore:
+  profiles:
+    backend: gcs
+    gcs:
+      bucketName: sentry-profiles
+      secretName: sentry-storage-creds
+      credentialsFile: credentials.json
+vroom:
+  persistence:
+    enabled: false
+    bucketString: "gs://sentry-profiles"
+  env:
+    - name: GOOGLE_APPLICATION_CREDENTIALS
+      value: /var/run/secrets/google/credentials.json
+  volumeMounts:
+    - mountPath: /var/run/secrets/google
+      name: sentry-google-cloud-key
+  volumes:
+    - name: sentry-google-cloud-key
+      secret:
+        secretName: sentry-storage-creds
+```
 
 ### Retention and lifecycle policies
 
