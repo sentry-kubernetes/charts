@@ -1,5 +1,21 @@
 # Changelog
 
+## [29.3.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v29.2.0...sentry-v29.3.0) (2026-02-19)
+
+
+### Features
+
+* add configurable clusterDomain to global section in values.yaml ([#2048](https://github.com/sentry-kubernetes/charts/issues/2048)) ([9d9b36d](https://github.com/sentry-kubernetes/charts/commit/9d9b36de11636e38d2a461c66004630b3041726f))
+* support gcs as profiles backend ([#2051](https://github.com/sentry-kubernetes/charts/issues/2051)) ([6edda3b](https://github.com/sentry-kubernetes/charts/commit/6edda3bf5cf27e52ae641253f4bd9c0301c3a9bf))
+* upgrade to v26.2.0 ([#2053](https://github.com/sentry-kubernetes/charts/issues/2053)) ([2180e03](https://github.com/sentry-kubernetes/charts/commit/2180e0382f80a8720633adc6ae97693e0c29025f))
+
+
+### Bug Fixes
+
+* add missing dnsPolicy to deployments ([#2046](https://github.com/sentry-kubernetes/charts/issues/2046)) ([ea1e67a](https://github.com/sentry-kubernetes/charts/commit/ea1e67a5d826ed9efacbb1195e1ab70ff08d1a77))
+* remove empty arguments ([#2052](https://github.com/sentry-kubernetes/charts/issues/2052)) ([1acfcad](https://github.com/sentry-kubernetes/charts/commit/1acfcadc8733374a31fbeab5ccad1fbde3e5bbed))
+* **routing:** nil pointer error when using Gateway API without nginx ([#2047](https://github.com/sentry-kubernetes/charts/issues/2047)) ([5820fd1](https://github.com/sentry-kubernetes/charts/commit/5820fd19a72cf0e1ccbdb73b33db5ff8393e89c2))
+
 ## [29.2.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v29.1.0...sentry-v29.2.0) (2026-02-10)
 
 
