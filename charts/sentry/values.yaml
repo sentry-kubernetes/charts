@@ -2428,7 +2428,7 @@ route:
 # For other configuration options see: https://github.com/CloudPirates-io/helm-charts/tree/main/charts/nginx
 nginx:
   enabled: false
-  existingServerConfigConfigmap: '{{ include "nginx.configName" . }}'
+  existingServerConfigConfigmap: '{{ template "sentry.fullname" . }}'
   extraLocationSnippet: false
   # extraLocationSnippet: |
   #  location /admin {

@@ -1220,5 +1220,3 @@ Gateway API v1 is GA since Kubernetes 1.29.
 {{- print "gateway.networking.k8s.io/v1beta1" -}}
 {{- end -}}
 {{- end -}}
-
-{{- define "nginx.configName" -}}{{ template "sentry.fullname" . }}-nginx{{- end -}}
