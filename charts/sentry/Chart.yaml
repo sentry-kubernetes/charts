@@ -24,7 +24,7 @@ dependencies:
     condition: postgresql.enabled
   - name: nginx
     repository: oci://registry-1.docker.io/cloudpirates
-    version: 0.5.9
+    version: 0.7.0
     condition: nginx.enabled
 maintainers:
   - name: sentry-kubernetes
