@@ -1,5 +1,17 @@
 # Changelog
 
+## [29.4.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v29.3.0...sentry-v29.4.0) (2026-02-26)
+
+
+### Features
+
+* upgrade to v26.2.1 ([22ae555](https://github.com/sentry-kubernetes/charts/commit/22ae5555474653532f7030c22bfad23d65775674))
+
+
+### Bug Fixes
+
+* **nginx:** nginx config name must match in the configmap and in the subchart values  ([#2058](https://github.com/sentry-kubernetes/charts/issues/2058)) ([69b5f06](https://github.com/sentry-kubernetes/charts/commit/69b5f06c4cd5c5537dbc490cb5e7363bb6ca92ac))
+
 ## [29.3.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v29.2.0...sentry-v29.3.0) (2026-02-19)
 
 
