@@ -523,8 +523,12 @@ sentry.conf.py: |-
 
   {{- if eq .Values.filestore.backend "s3" }}
   SENTRY_OPTIONS['filestore.options'] = {
+      {{- if .Values.filestore.s3.accessKey }}  
       'access_key': os.getenv("S3_ACCESS_KEY_ID", {{ .Values.filestore.s3.accessKey | default "" | quote }}),
+      {{- end }}
+      {{- if .Values.filestore.s3.secretKey }}  
       'secret_key': os.getenv("S3_SECRET_ACCESS_KEY", {{ .Values.filestore.s3.secretKey | default "" | quote }}),
+      {{- end }}
       {{- if .Values.filestore.s3.bucketName }}
       'bucket_name': {{ .Values.filestore.s3.bucketName | quote }},
       {{- end }}
@@ -571,8 +575,12 @@ sentry.conf.py: |-
   {{- if eq .Values.replay.storage.backend "s3" }}
   {{- $replayS3 := .Values.replay.storage.s3 | default dict }}
   SENTRY_OPTIONS['replay.storage.options'] = {
-      'access_key': os.getenv("REPLAY_S3_ACCESS_KEY_ID", {{ $replayS3.accessKey | default "" | quote }}),
-      'secret_key': os.getenv("REPLAY_S3_SECRET_ACCESS_KEY", {{ $replayS3.secretKey | default "" | quote }}),
+      {{- if $replayS3.accessKey }}
+      'access_key': os.getenv("REPLAY_S3_ACCESS_KEY_ID", {{ $replayS3.accessKey | quote }}),
+      {{- end }}
+      {{- if $replayS3.secretKey }}
+      'secret_key': os.getenv("REPLAY_S3_SECRET_ACCESS_KEY", {{ $replayS3.secretKey | quote }}),
+      {{- end }}
       {{- if $replayS3.bucketName }}
       'bucket_name': {{ $replayS3.bucketName | quote }},
       {{- end }}
@@ -624,8 +632,12 @@ sentry.conf.py: |-
   {{- if eq .Values.filestore.profiles.backend "s3" }}
   {{- $profilesS3 := .Values.filestore.profiles.s3 | default dict }}
   SENTRY_OPTIONS['filestore.profiles-options'] = {
-      'access_key': os.getenv("PROFILES_S3_ACCESS_KEY_ID", {{ $profilesS3.accessKey | default "" | quote }}),
-      'secret_key': os.getenv("PROFILES_S3_SECRET_ACCESS_KEY", {{ $profilesS3.secretKey | default "" | quote }}),
+      {{- if $profilesS3.accessKey }}
+      'access_key': os.getenv("PROFILES_S3_ACCESS_KEY_ID", {{ $profilesS3.accessKey | quote }}),
+      {{- end }}
+      {{- if $profilesS3.secretKey }}
+      'secret_key': os.getenv("PROFILES_S3_SECRET_ACCESS_KEY", {{ $profilesS3.secretKey | quote }}),
+      {{- end }}
       {{- if $profilesS3.bucketName }}
       'bucket_name': {{ $profilesS3.bucketName | quote }},
       {{- end }}
@@ -699,8 +711,12 @@ sentry.conf.py: |-
       {{- if $nodestoreS3.regionName }}
       "region_name": {{ $nodestoreS3.regionName | quote }},
       {{- end }}
-      "aws_access_key_id": os.getenv("NODESTORE_S3_ACCESS_KEY_ID", {{ $nodestoreS3.accessKeyId | default "" | quote }}),
-      "aws_secret_access_key": os.getenv("NODESTORE_S3_SECRET_ACCESS_KEY", {{ $nodestoreS3.secretAccessKey | default "" | quote }}),
+      {{- if $nodestoreS3.accessKeyId }}
+      "aws_access_key_id": os.getenv("NODESTORE_S3_ACCESS_KEY_ID", {{ $nodestoreS3.accessKeyId | quote }}),
+      {{- end }}
+      {{- if $nodestoreS3.secretAccessKey }}
+      "aws_secret_access_key": os.getenv("NODESTORE_S3_SECRET_ACCESS_KEY", {{ $nodestoreS3.secretAccessKey | quote }}),
+      {{- end }}
   }
   {{- end }}
   {{- end }}
