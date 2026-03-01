@@ -348,6 +348,11 @@ sentry:
       size: 1Gi
       storageClass: ""
       accessMode: ReadWriteOnce
+      # persistentVolumeClaimRetentionPolicy controls PVC lifecycle on StatefulSet deletion/scale-down.
+      # Requires Kubernetes 1.27+ with StatefulSetAutoDeletePVC feature gate enabled.
+      # persistentVolumeClaimRetentionPolicy:
+      #   whenDeleted: Retain  # or Delete
+      #   whenScaled: Retain   # or Delete
     brokers:
       - name: default
         topic: taskworker
@@ -2137,6 +2142,11 @@ symbolicator:
       ## If 'lookupVolumeName' is set to true, Helm will attempt to retrieve
       ## the current value of 'spec.volumeName' and incorporate it into the template.
       lookupVolumeName: true
+      # persistentVolumeClaimRetentionPolicy controls PVC lifecycle on StatefulSet deletion/scale-down.
+      # Requires Kubernetes 1.27+ with StatefulSetAutoDeletePVC feature gate enabled.
+      # persistentVolumeClaimRetentionPolicy:
+      #   whenDeleted: Retain  # or Delete
+      #   whenScaled: Retain   # or Delete
     replicas: 1
     env: []
     probeInitialDelaySeconds: 10

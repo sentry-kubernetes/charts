@@ -15,6 +15,10 @@ metadata:
 spec:
   serviceName: {{ template "sentry.fullname" $root }}-taskbroker-{{ $broker.name }}
   replicas: {{ default $root.Values.sentry.taskBroker.replicas $broker.replicas }}
+  {{- if $root.Values.sentry.taskBroker.persistence.persistentVolumeClaimRetentionPolicy }}
+  persistentVolumeClaimRetentionPolicy:
+    {{- toYaml $root.Values.sentry.taskBroker.persistence.persistentVolumeClaimRetentionPolicy | nindent 4 }}
+  {{- end }}
   selector:
     matchLabels:
       app: {{ template "sentry.fullname" $root }}

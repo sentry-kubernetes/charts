@@ -13,6 +13,10 @@ metadata:
 spec:
   serviceName: {{ template "sentry.fullname" . }}-symbolicator-api
   revisionHistoryLimit: {{ .Values.revisionHistoryLimit }}
+  {{- if .Values.symbolicator.api.persistence.persistentVolumeClaimRetentionPolicy }}
+  persistentVolumeClaimRetentionPolicy:
+    {{- toYaml .Values.symbolicator.api.persistence.persistentVolumeClaimRetentionPolicy | nindent 4 }}
+  {{- end }}
   selector:
     matchLabels:
       app: {{ template "sentry.fullname" . }}
