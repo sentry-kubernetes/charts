@@ -24,15 +24,15 @@ config.yml: |-
     {{- end }}
     {{- end }}
 
-    {{- if .Values.relay.logging }}
-    logging:
-      {{- if .Values.relay.logging.level }}
-      level: {{ .Values.relay.logging.level }}
-      {{- end }}
-      {{- if .Values.relay.logging.format }}
-      format: {{ .Values.relay.logging.format }}
-      {{- end }}
+  {{- if .Values.relay.logging }}
+  logging:
+    {{- if .Values.relay.logging.level }}
+    level: {{ .Values.relay.logging.level }}
     {{- end }}
+    {{- if .Values.relay.logging.format }}
+    format: {{ .Values.relay.logging.format }}
+    {{- end }}
+  {{- end }}
 
   processing:
     enabled: true
