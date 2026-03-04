@@ -81,6 +81,44 @@ spec:
 {{ toYaml .Values.relay.securityContext | indent 8 }}
       {{- end }}
       initContainers:
+        {{- if and (not .Values.kafka.enabled) .Values.externalKafka.sasl.existingSecret }}
+        - name: {{ .Chart.Name }}-relay-config-render
+          image: "busybox:1.36"
+          imagePullPolicy: IfNotPresent
+          command:
+            - /bin/sh
+            - -c
+            - |
+              sed "s|\${KAFKA_SASL_MECHANISM}|$KAFKA_SASL_MECHANISM|g; s|\${KAFKA_SASL_USERNAME}|$KAFKA_SASL_USERNAME|g; s|\${KAFKA_SASL_PASSWORD}|$KAFKA_SASL_PASSWORD|g" /config-template/config.yml > /rendered-config/config.yml
+          env:
+            - name: KAFKA_SASL_MECHANISM
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.externalKafka.sasl.existingSecret }}
+                  key: {{ default "mechanism" .Values.externalKafka.sasl.existingSecretKeys.mechanism }}
+            - name: KAFKA_SASL_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.externalKafka.sasl.existingSecret }}
+                  key: {{ default "username" .Values.externalKafka.sasl.existingSecretKeys.username }}
+            - name: KAFKA_SASL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.externalKafka.sasl.existingSecret }}
+                  key: {{ default "password" .Values.externalKafka.sasl.existingSecretKeys.password }}
+          volumeMounts:
+            - name: config
+              mountPath: /config-template
+              readOnly: true
+            - name: rendered-config
+              mountPath: /rendered-config
+          resources:
+            requests:
+              cpu: 10m
+              memory: 16Mi
+            limits:
+              memory: 32Mi
+        {{- end }}
         - name: {{ .Chart.Name }}-relay-init
           image: "{{ template "relay.image" . }}"
           imagePullPolicy: {{ default "IfNotPresent" .Values.images.sentry.pullPolicy }}
@@ -114,10 +152,17 @@ spec:
           volumeMounts:
             - name: credentials
               mountPath: /work/.relay
+            {{- if and (not .Values.kafka.enabled) .Values.externalKafka.sasl.existingSecret }}
+            - name: rendered-config
+              mountPath: /work/.relay/config.yml
+              subPath: config.yml
+              readOnly: true
+            {{- else }}
             - name: config
               mountPath: /work/.relay/config.yml
               subPath: config.yml
               readOnly: true
+            {{- end }}
 {{- if .Values.relay.init.volumeMounts }}
 {{ toYaml .Values.relay.init.volumeMounts | indent 12 }}
 {{- end }}
@@ -156,10 +201,17 @@ spec:
         volumeMounts:
           - name: credentials
             mountPath: /work/.relay
+          {{- if and (not .Values.kafka.enabled) .Values.externalKafka.sasl.existingSecret }}
+          - name: rendered-config
+            mountPath: /work/.relay/config.yml
+            subPath: config.yml
+            readOnly: true
+          {{- else }}
           - name: config
             mountPath: /work/.relay/config.yml
             subPath: config.yml
             readOnly: true
+          {{- end }}
           {{- if and .Values.geodata.volumeName .Values.geodata.accountID }}
           - name: {{ .Values.geodata.volumeName }}
             mountPath: {{ .Values.geodata.mountPath }}
@@ -210,6 +262,10 @@ spec:
           defaultMode: 0644
       - name: credentials
         emptyDir: {}
+      {{- if and (not .Values.kafka.enabled) .Values.externalKafka.sasl.existingSecret }}
+      - name: rendered-config
+        emptyDir: {}
+      {{- end }}
       {{- if and .Values.geodata.volumeName .Values.geodata.accountID }}
       - name: {{ .Values.geodata.volumeName }}
         persistentVolumeClaim:

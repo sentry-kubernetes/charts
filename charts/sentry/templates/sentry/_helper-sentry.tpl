@@ -212,6 +212,11 @@ sentry.conf.py: |-
           "compression.type": {{ $sentryKafkaCompressionType | quote }},
       {{- end }}
           "socket.timeout.ms": {{ include "sentry.kafka.socket_timeout_ms" . }},
+      {{- if and (not .Values.kafka.enabled) .Values.externalKafka.sasl.existingSecret }}
+          "sasl.mechanism": os.getenv("KAFKA_SASL_MECHANISM", ""),
+          "sasl.username": os.getenv("KAFKA_SASL_USERNAME", ""),
+          "sasl.password": os.getenv("KAFKA_SASL_PASSWORD", ""),
+      {{- else }}
       {{- $sentryKafkaSaslMechanism := include "sentry.kafka.sasl_mechanism" . -}}
       {{- if not (eq "None" $sentryKafkaSaslMechanism) }}
           "sasl.mechanism": {{ $sentryKafkaSaslMechanism | quote }},
@@ -223,6 +228,7 @@ sentry.conf.py: |-
       {{- $sentryKafkaSaslPassword := include "sentry.kafka.sasl_password" . -}}
       {{- if not (eq "None" $sentryKafkaSaslPassword) }}
           "sasl.password": {{ $sentryKafkaSaslPassword | quote }},
+      {{- end }}
       {{- end }}
       {{- $sentryKafkaSecurityProtocol := include "sentry.kafka.security_protocol" . -}}
       {{- if not (eq "plaintext" $sentryKafkaSecurityProtocol) }}

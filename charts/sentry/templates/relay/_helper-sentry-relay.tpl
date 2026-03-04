@@ -63,6 +63,14 @@ config.yml: |-
       - name: "api.version.request.timeout.ms"
         value: {{ int64 .Values.relay.processing.kafkaConfig.apiVersionRequestTimeoutMs | quote }}
       {{- end }}
+      {{- if and (not .Values.kafka.enabled) .Values.externalKafka.sasl.existingSecret }}
+      - name: "sasl.mechanism"
+        value: "${KAFKA_SASL_MECHANISM}"
+      - name: "sasl.username"
+        value: "${KAFKA_SASL_USERNAME}"
+      - name: "sasl.password"
+        value: "${KAFKA_SASL_PASSWORD}"
+      {{- else }}
       {{- $sentryKafkaSaslMechanism := include "sentry.kafka.sasl_mechanism" . -}}
       {{- if not (eq "None" $sentryKafkaSaslMechanism) }}
       - name: "sasl.mechanism"
@@ -77,6 +85,7 @@ config.yml: |-
       {{- if not (eq "None" $sentryKafkaSaslPassword) }}
       - name: "sasl.password"
         value: {{ $sentryKafkaSaslPassword | quote }}
+      {{- end }}
       {{- end }}
       {{- $sentryKafkaSecurityProtocol := include "sentry.kafka.security_protocol" . -}}
       {{- if not (eq "plaintext" $sentryKafkaSecurityProtocol) }}

@@ -2977,6 +2977,12 @@ externalKafka:
     mechanism: None  # PLAIN,SCRAM-256,SCRAM-512
     username: None
     password: None
+    # (Optional) Use existing secret for SASL credentials instead of inline values
+    # existingSecret: ""
+    # existingSecretKeys:
+    #   mechanism: "mechanism"
+    #   username: "username"
+    #   password: "password"
   security:
     protocol: plaintext  # 'PLAINTEXT', 'SASL_PLAINTEXT', 'SASL_SSL' and 'SSL'
   socket:

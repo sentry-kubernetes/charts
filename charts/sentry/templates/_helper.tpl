@@ -594,6 +594,23 @@ Common Snuba environment variables
   value: /etc/snuba/settings.py
 - name: DEFAULT_BROKERS
   value: {{ include "sentry.kafka.bootstrap_servers_string" . | quote }}
+{{- if and (not .Values.kafka.enabled) .Values.externalKafka.sasl.existingSecret }}
+- name: KAFKA_SASL_MECHANISM
+  valueFrom:
+    secretKeyRef:
+      name: {{ .Values.externalKafka.sasl.existingSecret }}
+      key: {{ default "mechanism" .Values.externalKafka.sasl.existingSecretKeys.mechanism }}
+- name: KAFKA_SASL_USERNAME
+  valueFrom:
+    secretKeyRef:
+      name: {{ .Values.externalKafka.sasl.existingSecret }}
+      key: {{ default "username" .Values.externalKafka.sasl.existingSecretKeys.username }}
+- name: KAFKA_SASL_PASSWORD
+  valueFrom:
+    secretKeyRef:
+      name: {{ .Values.externalKafka.sasl.existingSecret }}
+      key: {{ default "password" .Values.externalKafka.sasl.existingSecretKeys.password }}
+{{- else }}
 {{- $sentryKafkaSaslMechanism := include "sentry.kafka.sasl_mechanism" . -}}
 {{- if not (eq "None" $sentryKafkaSaslMechanism) }}
 - name: KAFKA_SASL_MECHANISM
@@ -608,6 +625,7 @@ Common Snuba environment variables
 {{- if not (eq "None" $sentryKafkaSaslPassword) }}
 - name: KAFKA_SASL_PASSWORD
   value: {{ $sentryKafkaSaslPassword | quote }}
+{{- end }}
 {{- end }}
 - name: KAFKA_SECURITY_PROTOCOL
   value: {{ include "sentry.kafka.security_protocol" . | quote }}
@@ -709,6 +727,27 @@ Common Sentry environment variables
     secretKeyRef:
       name: {{ template "sentry.fullname" . }}-sentry-secret
       key: "key"
+{{- end }}
+
+{{/*
+Set Kafka SASL credentials from existingSecret
+*/}}
+{{- if and (not .Values.kafka.enabled) .Values.externalKafka.sasl.existingSecret }}
+- name: KAFKA_SASL_MECHANISM
+  valueFrom:
+    secretKeyRef:
+      name: {{ .Values.externalKafka.sasl.existingSecret }}
+      key: {{ default "mechanism" .Values.externalKafka.sasl.existingSecretKeys.mechanism }}
+- name: KAFKA_SASL_USERNAME
+  valueFrom:
+    secretKeyRef:
+      name: {{ .Values.externalKafka.sasl.existingSecret }}
+      key: {{ default "username" .Values.externalKafka.sasl.existingSecretKeys.username }}
+- name: KAFKA_SASL_PASSWORD
+  valueFrom:
+    secretKeyRef:
+      name: {{ .Values.externalKafka.sasl.existingSecret }}
+      key: {{ default "password" .Values.externalKafka.sasl.existingSecretKeys.password }}
 {{- end }}
 
 {{/*
