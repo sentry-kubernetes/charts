@@ -1,0 +1,179 @@
+{{- if and (not .Values.kafka.enabled) .Values.externalKafka.provisioning.enabled }}
+{{- $provisioning := .Values.externalKafka.provisioning }}
+{{- $sasl := .Values.externalKafka.sasl | default dict }}
+{{- $saslEnabled := and $sasl.mechanism (ne $sasl.mechanism "None") }}
+{{- $saslFromSecret := $sasl.existingSecret }}
+{{- $securityProtocol := .Values.externalKafka.security.protocol | default "PLAINTEXT" | upper }}
+
+{{/* Build bootstrap servers from cluster or host/port */}}
+{{- $brokers := list }}
+{{- if .Values.externalKafka.cluster }}
+{{- range .Values.externalKafka.cluster }}
+{{- $brokers = append $brokers (dict "host" .host "port" (int .port)) }}
+{{- end }}
+{{- else }}
+{{- $brokers = append $brokers (dict "host" .Values.externalKafka.host "port" (int .Values.externalKafka.port)) }}
+{{- end }}
+
+{{- $bootstrapServers := list }}
+{{- range $brokers }}
+{{- $bootstrapServers = append $bootstrapServers (printf "%s:%d" .host .port) }}
+{{- end }}
+{{- $bootstrapServersString := join "," $bootstrapServers }}
+
+{{/* Get topic list from externalKafka.provisioning.topics or fall back to kafka.provisioning.topics */}}
+{{- $topics := $provisioning.topics | default .Values.kafka.provisioning.topics }}
+{{- $replicationFactor := int ($provisioning.replicationFactor | default 1) }}
+{{- $defaultPartitions := int ($provisioning.numPartitions | default 1) }}
+
+{{- $image := printf "%s:%s" ($provisioning.image.repository | default "bitnamilegacy/kafka") ($provisioning.image.tag | default "3.7.1-debian-12-r4") }}
+
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ .Release.Name }}-kafka-provisioning
+  labels:
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    app.kubernetes.io/name: kafka
+    app.kubernetes.io/component: kafka-provisioning
+spec:
+  backoffLimit: 10
+  ttlSecondsAfterFinished: 300
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/instance: {{ .Release.Name }}
+        app.kubernetes.io/managed-by: {{ .Release.Service }}
+        app.kubernetes.io/name: kafka
+        app.kubernetes.io/component: kafka-provisioning
+      annotations:
+        helm.sh/hook: "pre-install,pre-upgrade"
+        helm.sh/hook-delete-policy: "hook-succeeded,before-hook-creation"
+        helm.sh/hook-weight: "0"
+    spec:
+      restartPolicy: OnFailure
+      terminationGracePeriodSeconds: 0
+      securityContext:
+        fsGroup: 1001
+        seccompProfile:
+          type: RuntimeDefault
+      {{- if $provisioning.nodeSelector }}
+      nodeSelector:
+{{ toYaml $provisioning.nodeSelector | indent 8 }}
+      {{- end }}
+      {{- if $provisioning.tolerations }}
+      tolerations:
+{{ toYaml $provisioning.tolerations | indent 8 }}
+      {{- end }}
+      initContainers:
+        - name: wait-for-kafka
+          image: {{ $image }}
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            readOnlyRootFilesystem: true
+            runAsGroup: 1001
+            runAsNonRoot: true
+            runAsUser: 1001
+          command:
+            - /bin/bash
+          args:
+            - -ec
+            - |
+              {{- range $brokers }}
+              wait-for-port --host={{ .host }} --state=inuse --timeout=120 {{ .port }};
+              {{- end }}
+              echo "Kafka is available";
+          {{- if $provisioning.resources }}
+          resources:
+{{ toYaml $provisioning.resources | indent 12 }}
+          {{- end }}
+      containers:
+        - name: kafka-provisioning
+          image: {{ $image }}
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            readOnlyRootFilesystem: true
+            runAsGroup: 1001
+            runAsNonRoot: true
+            runAsUser: 1001
+          {{- if $saslFromSecret }}
+          env:
+            - name: KAFKA_SASL_MECHANISM
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $sasl.existingSecret }}
+                  key: {{ ($sasl.existingSecretKeys).mechanism | default "mechanism" }}
+            - name: KAFKA_SASL_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $sasl.existingSecret }}
+                  key: {{ ($sasl.existingSecretKeys).username | default "username" }}
+            - name: KAFKA_SASL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $sasl.existingSecret }}
+                  key: {{ ($sasl.existingSecretKeys).password | default "password" }}
+          {{- end }}
+          command:
+            - /bin/bash
+          args:
+            - -ec
+            - |
+              . /opt/bitnami/scripts/libkafka.sh
+
+              export CLIENT_CONF="${CLIENT_CONF:-/tmp/client.properties}"
+              if [ ! -f "$CLIENT_CONF" ]; then
+                touch "$CLIENT_CONF"
+                kafka_common_conf_set "$CLIENT_CONF" security.protocol "{{ $securityProtocol }}"
+                {{- if $saslFromSecret }}
+                kafka_common_conf_set "$CLIENT_CONF" sasl.mechanism "${KAFKA_SASL_MECHANISM}"
+                kafka_common_conf_set "$CLIENT_CONF" sasl.jaas.config "org.apache.kafka.common.security.scram.ScramLoginModule required username=\"${KAFKA_SASL_USERNAME}\" password=\"${KAFKA_SASL_PASSWORD}\";"
+                {{- else if $saslEnabled }}
+                kafka_common_conf_set "$CLIENT_CONF" sasl.mechanism "{{ $sasl.mechanism }}"
+                {{- if and $sasl.username $sasl.password }}
+                kafka_common_conf_set "$CLIENT_CONF" sasl.jaas.config "org.apache.kafka.common.security.scram.ScramLoginModule required username=\"{{ $sasl.username }}\" password=\"{{ $sasl.password }}\";"
+                {{- end }}
+                {{- end }}
+              fi
+
+              kafka_provisioning_commands=(
+                {{- range $topics }}
+                "/opt/bitnami/kafka/bin/kafka-topics.sh \
+                  --create \
+                  --if-not-exists \
+                  --bootstrap-server {{ $bootstrapServersString }} \
+                  --replication-factor {{ $replicationFactor }} \
+                  --partitions {{ .partitions | default $defaultPartitions }} \
+                  {{- range $key, $value := .config }}
+                  --config {{ $key }}={{ $value }} \
+                  {{- end }}
+                  --command-config ${CLIENT_CONF} \
+                  --topic {{ .name }}"
+                {{- end }}
+              )
+
+              echo "Starting provisioning of ${#kafka_provisioning_commands[@]} topics"
+              for ((i=0; i < ${#kafka_provisioning_commands[@]}; i++)); do
+                ${kafka_provisioning_commands[i]}
+              done
+              echo "Provisioning succeeded"
+          {{- if $provisioning.resources }}
+          resources:
+{{ toYaml $provisioning.resources | indent 12 }}
+          {{- end }}
+          volumeMounts:
+            - name: tmp
+              mountPath: /tmp
+      volumes:
+        - name: tmp
+          emptyDir: {}
+{{- end }}

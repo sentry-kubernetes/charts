@@ -2998,7 +2998,7 @@ externalKafka:
     username: None
     password: None
     # (Optional) Use existing secret for SASL credentials instead of inline values
-    # existingSecret: ""
+    # existingSecret: "my-kafka-secret"
     # existingSecretKeys:
     #   mechanism: "mechanism"
     #   username: "username"
@@ -3008,6 +3008,19 @@ externalKafka:
   socket:
     timeout:
       ms: 1000
+  ## Kafka topic provisioning for external Kafka
+  ## When enabled, creates a Job that provisions Kafka topics
+  provisioning:
+    enabled: false
+    image:
+      repository: bitnamilegacy/kafka
+      tag: "3.7.1-debian-12-r4"
+    # topics: []  # If empty, uses kafka.provisioning.topics
+    replicationFactor: 3
+    numPartitions: 1
+    resources: {}
+    nodeSelector: {}
+    tolerations: []
 
 sourcemaps:
   enabled: false
