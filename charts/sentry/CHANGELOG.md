@@ -1,5 +1,13 @@
 # Changelog
 
+## [29.4.1](https://github.com/sentry-kubernetes/charts/compare/sentry-v29.4.0...sentry-v29.4.1) (2026-03-09)
+
+
+### Bug Fixes
+
+* incorrect component labels on uptime-results and snuba eap-items deployments ([#2072](https://github.com/sentry-kubernetes/charts/issues/2072)) ([143d812](https://github.com/sentry-kubernetes/charts/commit/143d812678826e3024e169d7e909cefbfaa4708e))
+* **relay:** indent logging key to be a root key ([#2066](https://github.com/sentry-kubernetes/charts/issues/2066)) ([d357411](https://github.com/sentry-kubernetes/charts/commit/d357411434a19cc01a50f702a0a252e14ccebb9d))
+
 ## [29.4.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v29.3.0...sentry-v29.4.0) (2026-02-26)
 
 
