@@ -89,6 +89,7 @@ spec:
         metadata:
           containers:
             - name: clickhouse-keeper
+              image: altinity/clickhouse-keeper:25.3.6.10034.altinitystable
         spec:
           affinity:
             podAntiAffinity:
@@ -115,6 +116,7 @@ spec:
     zookeeper:
       nodes:
         - host: keeper-clickhouse-keeper.sentry.svc.cluster.local
+          port: 2181
 ```
 
 ## Configuring Sentry Chart
