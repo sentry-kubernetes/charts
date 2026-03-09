@@ -148,7 +148,7 @@ Note: this table is incomplete, so have a look at the values.yaml in case you mi
 | hooks.dbInit.env | list | `[]` |  |
 | hooks.dbInit.nodeSelector | object | `{}` |  |
 | hooks.dbInit.podAnnotations | object | `{}` |  |
-| hooks.dbInit.resources.limits.memory | string | `"2048Mi"` |  |
+| hooks.dbInit.resources.limits.memory | string | `"2560Mi"` |  |
 | hooks.dbInit.resources.requests.cpu | string | `"300m"` |  |
 | hooks.dbInit.resources.requests.memory | string | `"2048Mi"` |  |
 | hooks.dbInit.sidecars | list | `[]` |  |
