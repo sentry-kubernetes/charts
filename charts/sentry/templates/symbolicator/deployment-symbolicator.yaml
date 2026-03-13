@@ -101,6 +101,9 @@ spec:
 {{- if .Values.symbolicator.api.volumeMounts }}
 {{ toYaml .Values.symbolicator.api.volumeMounts | indent 8 }}
 {{- end }}
+{{- if .Values.global.volumeMounts }}
+{{ toYaml .Values.global.volumeMounts | indent 8 }}
+{{- end }}
         livenessProbe:
           failureThreshold: 5
           httpGet:

@@ -87,6 +87,9 @@ spec:
         volumeMounts:
 {{ toYaml .Values.metrics.volumeMounts | indent 8 }}
 {{- end }}
+{{- if .Values.global.volumeMounts }}
+{{ toYaml .Values.global.volumeMounts | indent 8 }}
+{{- end }}
 {{- if .Values.metrics.livenessProbe.enabled }}
         livenessProbe:
           httpGet:

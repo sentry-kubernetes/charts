@@ -138,6 +138,9 @@ spec:
 {{- if .Values.sentry.monitorsClockTick.volumeMounts }}
 {{ toYaml .Values.sentry.monitorsClockTick.volumeMounts | indent 8 }}
 {{- end }}
+{{- if .Values.global.volumeMounts }}
+{{ toYaml .Values.global.volumeMounts | indent 8 }}
+{{- end }}
         resources:
 {{ toYaml .Values.sentry.monitorsClockTick.resources | indent 12 }}
 {{- if .Values.sentry.monitorsClockTick.containerSecurityContext }}

@@ -98,6 +98,9 @@ spec:
 {{- if .Values.snuba.api.volumeMounts }}
 {{ toYaml .Values.snuba.api.volumeMounts | indent 8 }}
 {{- end }}
+{{- if .Values.global.volumeMounts }}
+{{ toYaml .Values.global.volumeMounts | indent 8 }}
+{{- end }}
         livenessProbe:
           failureThreshold: 5
           httpGet:

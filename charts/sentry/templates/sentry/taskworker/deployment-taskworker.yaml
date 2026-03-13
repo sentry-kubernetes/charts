@@ -140,6 +140,9 @@ spec:
 {{- if $root.Values.sentry.taskWorker.volumeMounts }}
 {{ toYaml $root.Values.sentry.taskWorker.volumeMounts | indent 8 }}
 {{- end }}
+{{- if $root.Values.global.volumeMounts }}
+{{ toYaml $root.Values.global.volumeMounts | indent 8 }}
+{{- end }}
         livenessProbe:
           exec:
             command:

@@ -155,6 +155,9 @@ spec:
 {{- if .Values.snuba.groupAttributesConsumer.volumeMounts }}
 {{ toYaml .Values.snuba.groupAttributesConsumer.volumeMounts | indent 8 }}
 {{- end }}
+{{- if .Values.global.volumeMounts }}
+{{ toYaml .Values.global.volumeMounts | indent 8 }}
+{{- end }}
         resources:
 {{ toYaml .Values.snuba.groupAttributesConsumer.resources | indent 12 }}
 {{- if .Values.snuba.groupAttributesConsumer.containerSecurityContext }}

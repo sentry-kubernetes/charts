@@ -145,6 +145,9 @@ spec:
 {{- if .Values.sentry.subscriptionConsumerMetrics.volumeMounts }}
 {{ toYaml .Values.sentry.subscriptionConsumerMetrics.volumeMounts | indent 8 }}
 {{- end }}
+{{- if .Values.global.volumeMounts }}
+{{ toYaml .Values.global.volumeMounts | indent 8 }}
+{{- end }}
         resources:
 {{ toYaml .Values.sentry.subscriptionConsumerMetrics.resources | indent 12 }}
 {{- if .Values.sentry.subscriptionConsumerMetrics.containerSecurityContext }}

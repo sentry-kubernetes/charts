@@ -113,6 +113,9 @@ spec:
 {{- if $root.Values.sentry.taskBroker.volumeMounts }}
 {{ toYaml $root.Values.sentry.taskBroker.volumeMounts | indent 8 }}
 {{- end }}
+{{- if $root.Values.global.volumeMounts }}
+{{ toYaml $root.Values.global.volumeMounts | indent 8 }}
+{{- end }}
 {{- if $root.Values.sentry.taskBroker.sidecars }}
 {{ toYaml $root.Values.sentry.taskBroker.sidecars | indent 6 }}
 {{- end }}

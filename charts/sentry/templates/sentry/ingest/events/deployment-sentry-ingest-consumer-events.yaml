@@ -158,6 +158,9 @@ spec:
 {{- if .Values.sentry.ingestConsumerEvents.volumeMounts }}
 {{ toYaml .Values.sentry.ingestConsumerEvents.volumeMounts | indent 8 }}
 {{- end }}
+{{- if .Values.global.volumeMounts }}
+{{ toYaml .Values.global.volumeMounts | indent 8 }}
+{{- end }}
         resources:
 {{ toYaml .Values.sentry.ingestConsumerEvents.resources | indent 12 }}
 {{- if .Values.sentry.ingestConsumerEvents.containerSecurityContext }}

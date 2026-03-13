@@ -130,6 +130,9 @@ spec:
 {{- if .Values.snuba.subscriptionConsumerTransactions.volumeMounts }}
 {{ toYaml .Values.snuba.subscriptionConsumerTransactions.volumeMounts | indent 8 }}
 {{- end }}
+{{- if .Values.global.volumeMounts }}
+{{ toYaml .Values.global.volumeMounts | indent 8 }}
+{{- end }}
         resources:
 {{ toYaml .Values.snuba.subscriptionConsumerTransactions.resources | indent 12 }}
 {{- if .Values.snuba.subscriptionConsumerTransactions.containerSecurityContext }}

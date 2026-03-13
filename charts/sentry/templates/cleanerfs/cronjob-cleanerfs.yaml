@@ -80,6 +80,9 @@ spec:
             volumeMounts:
             - mountPath: {{ .Values.filestore.filesystem.path }}
               name: sentry-data
+            {{- if .Values.global.volumeMounts }}
+{{ toYaml .Values.global.volumeMounts | indent 12 }}
+            {{- end }}
           restartPolicy: Never
           volumes:
           - name: sentry-data

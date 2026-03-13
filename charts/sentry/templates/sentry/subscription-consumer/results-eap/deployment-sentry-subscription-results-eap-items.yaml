@@ -127,6 +127,9 @@ spec:
 {{- if .Values.sentry.subscriptionConsumerResultsEapItems.volumeMounts }}
 {{ toYaml .Values.sentry.subscriptionConsumerResultsEapItems.volumeMounts | indent 8 }}
 {{- end }}
+{{- if .Values.global.volumeMounts }}
+{{ toYaml .Values.global.volumeMounts | indent 8 }}
+{{- end }}
         resources:
 {{ toYaml .Values.sentry.subscriptionConsumerResultsEapItems.resources | indent 12 }}
 {{- if .Values.sentry.subscriptionConsumerResultsEapItems.containerSecurityContext }}

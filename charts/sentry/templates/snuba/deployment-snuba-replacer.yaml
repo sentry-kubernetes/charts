@@ -127,6 +127,9 @@ spec:
 {{- if .Values.snuba.replacer.volumeMounts }}
 {{ toYaml .Values.snuba.replacer.volumeMounts | indent 8 }}
 {{- end }}
+{{- if .Values.global.volumeMounts }}
+{{ toYaml .Values.global.volumeMounts | indent 8 }}
+{{- end }}
         resources:
 {{ toYaml .Values.snuba.replacer.resources | indent 12 }}
 {{- if .Values.snuba.replacer.containerSecurityContext }}

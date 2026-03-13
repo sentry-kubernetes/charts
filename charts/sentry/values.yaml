@@ -14,6 +14,7 @@ global:
   nodeSelector: {}
   tolerations: []
   sidecars: []
+  volumeMounts: []
   volumes: []
 
 # Profiles correspond to COMPOSE_PROFILES in the original self-hosted docker-compose.yml.

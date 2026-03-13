@@ -120,6 +120,9 @@ spec:
 {{- if .Values.sentry.taskScheduler.volumeMounts }}
 {{ toYaml .Values.sentry.taskScheduler.volumeMounts | indent 8 }}
 {{- end }}
+{{- if .Values.global.volumeMounts }}
+{{ toYaml .Values.global.volumeMounts | indent 8 }}
+{{- end }}
 {{- if .Values.sentry.taskScheduler.sidecars }}
 {{ toYaml .Values.sentry.taskScheduler.sidecars | indent 6 }}
 {{- end }}

@@ -172,6 +172,9 @@ spec:
         volumeMounts:
 {{ toYaml .Values.hooks.dbCheck.volumeMounts | indent 8 }}
 {{- end }}
+{{- if .Values.global.volumeMounts }}
+{{ toYaml .Values.global.volumeMounts | indent 8 }}
+{{- end }}
         env:
 {{- if .Values.hooks.dbCheck.env }}
 {{ toYaml .Values.hooks.dbCheck.env | indent 8 }}

@@ -42,6 +42,9 @@ spec:
           volumeMounts:
             - name: {{ .Values.geodata.volumeName }}
               mountPath: {{ .Values.geodata.mountPath }}
+{{- if .Values.global.volumeMounts }}
+{{ toYaml .Values.global.volumeMounts | indent 12 }}
+{{- end }}
       volumes:
       - name: {{ .Values.geodata.volumeName }}
         persistentVolumeClaim:

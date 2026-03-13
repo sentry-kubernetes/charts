@@ -96,6 +96,9 @@ spec:
 {{- if .Values.uptimeChecker.volumeMounts }}
 {{ toYaml .Values.uptimeChecker.volumeMounts | indent 8 }}
 {{- end }}
+{{- if .Values.global.volumeMounts }}
+{{ toYaml .Values.global.volumeMounts | indent 8 }}
+{{- end }}
         resources:
 {{ toYaml .Values.uptimeChecker.resources | indent 12 }}
 {{- if .Values.uptimeChecker.containerSecurityContext }}

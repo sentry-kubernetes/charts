@@ -135,6 +135,9 @@ spec:
 {{- if .Values.sentry.uptimeResults.volumeMounts }}
 {{ toYaml .Values.sentry.uptimeResults.volumeMounts | indent 8 }}
 {{- end }}
+{{- if .Values.global.volumeMounts }}
+{{ toYaml .Values.global.volumeMounts | indent 8 }}
+{{- end }}
         resources:
 {{ toYaml .Values.sentry.uptimeResults.resources | indent 12 }}
 {{- if .Values.sentry.uptimeResults.containerSecurityContext }}

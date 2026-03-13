@@ -129,6 +129,7 @@ Note: this table is incomplete, so have a look at the values.yaml in case you mi
 | global.nodeSelector | object | `{}` |  |
 | global.sidecars | list | `[]` |  |
 | global.tolerations | list | `[]` |  |
+| global.volumeMounts | list | `[]` |  |
 | global.volumes | list | `[]` |  |
 | google | object | `{}` |  |
 | hooks.activeDeadlineSeconds | int | `600` |  |

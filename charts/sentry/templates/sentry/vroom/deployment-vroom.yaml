@@ -103,6 +103,9 @@ spec:
 {{- if .Values.vroom.volumeMounts }}
 {{ toYaml .Values.vroom.volumeMounts | indent 8 }}
 {{- end }}
+{{- if .Values.global.volumeMounts }}
+{{ toYaml .Values.global.volumeMounts | indent 8 }}
+{{- end }}
         livenessProbe:
           failureThreshold: {{ .Values.vroom.probeFailureThreshold }}
           httpGet:

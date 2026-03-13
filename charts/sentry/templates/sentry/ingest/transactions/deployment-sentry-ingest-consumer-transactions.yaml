@@ -159,6 +159,9 @@ spec:
 {{- if .Values.sentry.ingestConsumerTransactions.volumeMounts }}
 {{ toYaml .Values.sentry.ingestConsumerTransactions.volumeMounts | indent 8 }}
 {{- end }}
+{{- if .Values.global.volumeMounts }}
+{{ toYaml .Values.global.volumeMounts | indent 8 }}
+{{- end }}
         resources:
 {{ toYaml .Values.sentry.ingestConsumerTransactions.resources | indent 12 }}
 {{- if .Values.sentry.ingestConsumerTransactions.containerSecurityContext }}

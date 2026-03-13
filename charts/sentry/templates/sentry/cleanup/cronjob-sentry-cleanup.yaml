@@ -109,6 +109,9 @@ spec:
 {{- if .Values.sentry.cleanup.volumeMounts }}
 {{ toYaml .Values.sentry.cleanup.volumeMounts | indent 12 }}
 {{- end }}
+{{- if .Values.global.volumeMounts }}
+{{ toYaml .Values.global.volumeMounts | indent 12 }}
+{{- end }}
             resources:
 {{ toYaml .Values.sentry.cleanup.resources | indent 14 }}
 {{- if .Values.sentry.cleanup.containerSecurityContext }}

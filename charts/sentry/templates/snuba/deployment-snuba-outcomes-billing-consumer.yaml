@@ -160,6 +160,9 @@ spec:
 {{- if .Values.snuba.outcomesBillingConsumer.volumeMounts }}
 {{ toYaml .Values.snuba.outcomesBillingConsumer.volumeMounts | indent 8 }}
 {{- end }}
+{{- if .Values.global.volumeMounts }}
+{{ toYaml .Values.global.volumeMounts | indent 8 }}
+{{- end }}
         resources:
 {{ toYaml .Values.snuba.outcomesBillingConsumer.resources | indent 12 }}
 {{- if .Values.snuba.outcomesBillingConsumer.containerSecurityContext }}

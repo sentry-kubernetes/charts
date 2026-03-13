@@ -143,6 +143,9 @@ spec:
 {{- if .Values.sentry.ingestProfiles.volumeMounts }}
 {{ toYaml .Values.sentry.ingestProfiles.volumeMounts | indent 8 }}
 {{- end }}
+{{- if .Values.global.volumeMounts }}
+{{ toYaml .Values.global.volumeMounts | indent 8 }}
+{{- end }}
         resources:
 {{ toYaml .Values.sentry.ingestProfiles.resources | indent 12 }}
 {{- if .Values.sentry.ingestProfiles.containerSecurityContext }}

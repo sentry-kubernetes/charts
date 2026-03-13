@@ -136,6 +136,9 @@ spec:
 {{- if .Values.sentry.postProcessForwardErrors.volumeMounts }}
 {{ toYaml .Values.sentry.postProcessForwardErrors.volumeMounts | indent 8 }}
 {{- end }}
+{{- if .Values.global.volumeMounts }}
+{{ toYaml .Values.global.volumeMounts | indent 8 }}
+{{- end }}
         resources:
 {{ toYaml .Values.sentry.postProcessForwardErrors.resources | indent 12 }}
 {{- if .Values.sentry.postProcessForwardErrors.containerSecurityContext }}

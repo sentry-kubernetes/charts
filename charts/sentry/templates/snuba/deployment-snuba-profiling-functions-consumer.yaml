@@ -156,6 +156,9 @@ spec:
 {{- if .Values.snuba.profilingFunctionsConsumer.volumeMounts }}
 {{ toYaml .Values.snuba.profilingFunctionsConsumer.volumeMounts | indent 8 }}
 {{- end }}
+{{- if .Values.global.volumeMounts }}
+{{ toYaml .Values.global.volumeMounts | indent 8 }}
+{{- end }}
         resources:
 {{ toYaml .Values.snuba.profilingFunctionsConsumer.resources | indent 12 }}
 {{- if .Values.snuba.profilingFunctionsConsumer.containerSecurityContext }}

@@ -129,6 +129,9 @@ spec:
 {{- if .Values.snuba.subscriptionConsumerEapItems.volumeMounts }}
 {{ toYaml .Values.snuba.subscriptionConsumerEapItems.volumeMounts | indent 8 }}
 {{- end }}
+{{- if .Values.global.volumeMounts }}
+{{ toYaml .Values.global.volumeMounts | indent 8 }}
+{{- end }}
         resources:
 {{ toYaml .Values.snuba.subscriptionConsumerEapItems.resources | indent 12 }}
 {{- if .Values.snuba.subscriptionConsumerEapItems.containerSecurityContext }}

@@ -160,6 +160,9 @@ spec:
 {{- if .Values.snuba.replaysConsumer.volumeMounts }}
 {{ toYaml .Values.snuba.replaysConsumer.volumeMounts | indent 8 }}
 {{- end }}
+{{- if .Values.global.volumeMounts }}
+{{ toYaml .Values.global.volumeMounts | indent 8 }}
+{{- end }}
         resources:
 {{ toYaml .Values.snuba.replaysConsumer.resources | indent 12 }}
 {{- if .Values.snuba.replaysConsumer.containerSecurityContext }}

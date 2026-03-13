@@ -168,6 +168,9 @@ spec:
 {{- if .Values.relay.volumeMounts }}
 {{ toYaml .Values.relay.volumeMounts | indent 10 }}
 {{- end }}
+{{- if .Values.global.volumeMounts }}
+{{ toYaml .Values.global.volumeMounts | indent 10 }}
+{{- end }}
         livenessProbe:
           failureThreshold: {{ .Values.relay.probeFailureThreshold }}
           httpGet:

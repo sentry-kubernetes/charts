@@ -156,6 +156,9 @@ spec:
 {{- if .Values.snuba.genericMetricsSetsConsumer.volumeMounts }}
 {{ toYaml .Values.snuba.genericMetricsSetsConsumer.volumeMounts | indent 8 }}
 {{- end }}
+{{- if .Values.global.volumeMounts }}
+{{ toYaml .Values.global.volumeMounts | indent 8 }}
+{{- end }}
         resources:
 {{ toYaml .Values.snuba.genericMetricsSetsConsumer.resources | indent 12 }}
 {{- if .Values.snuba.genericMetricsSetsConsumer.containerSecurityContext }}

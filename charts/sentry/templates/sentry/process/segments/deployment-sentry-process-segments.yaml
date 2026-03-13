@@ -135,6 +135,9 @@ spec:
 {{- if .Values.sentry.processSegments.volumeMounts }}
 {{ toYaml .Values.sentry.processSegments.volumeMounts | indent 8 }}
 {{- end }}
+{{- if .Values.global.volumeMounts }}
+{{ toYaml .Values.global.volumeMounts | indent 8 }}
+{{- end }}
         resources:
 {{ toYaml .Values.sentry.processSegments.resources | indent 12 }}
 {{- if .Values.sentry.processSegments.containerSecurityContext }}

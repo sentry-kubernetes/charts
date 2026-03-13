@@ -101,6 +101,9 @@ spec:
 {{- if .Values.hooks.snubaInit.volumeMounts }}
 {{ toYaml .Values.hooks.snubaInit.volumeMounts | indent 8 }}
 {{- end }}
+{{- if .Values.global.volumeMounts }}
+{{ toYaml .Values.global.volumeMounts | indent 8 }}
+{{- end }}
         resources:
 {{ toYaml .Values.hooks.snubaInit.resources | indent 10 }}
 {{- if .Values.hooks.snubaMigrate.containerSecurityContext }}

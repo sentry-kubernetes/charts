@@ -99,6 +99,9 @@ spec:
 {{- if .Values.hooks.dbInit.volumeMounts }}
 {{ toYaml .Values.hooks.dbInit.volumeMounts | indent 8 }}
 {{- end }}
+{{- if .Values.global.volumeMounts }}
+{{ toYaml .Values.global.volumeMounts | indent 8 }}
+{{- end }}
         resources:
 {{ toYaml .Values.hooks.dbInit.resources | indent 10 }}
 {{- if .Values.hooks.dbInit.containerSecurityContext }}
