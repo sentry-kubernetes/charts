@@ -1,5 +1,21 @@
 # Changelog
 
+## [29.5.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v29.4.1...sentry-v29.5.0) (2026-03-16)
+
+
+### Features
+
+* add global volumeMounts support across chart workloads ([#2083](https://github.com/sentry-kubernetes/charts/issues/2083)) ([482041d](https://github.com/sentry-kubernetes/charts/commit/482041dbfc8431adbb7c1ab0f036477d81a62290))
+* Add optional memory-based autoscaling to all HPA components ([#2071](https://github.com/sentry-kubernetes/charts/issues/2071)) ([3e10c57](https://github.com/sentry-kubernetes/charts/commit/3e10c570d076d17ff81b2ada47245c390b661635))
+* **sentry:** add support for Kafka SASL credentials from secret ([#2068](https://github.com/sentry-kubernetes/charts/issues/2068)) ([e68e92f](https://github.com/sentry-kubernetes/charts/commit/e68e92f80d88269148a8b99a1c3875e0bb227de2))
+* **statefulset:** add persistentVolumeClaimRetentionPolicy option ([#2063](https://github.com/sentry-kubernetes/charts/issues/2063)) ([11c11b8](https://github.com/sentry-kubernetes/charts/commit/11c11b8718323e690c944a210388a965cda29ce3))
+
+
+### Bug Fixes
+
+* correct swapped default args for taskScheduler replicas in Helm chart ([#2064](https://github.com/sentry-kubernetes/charts/issues/2064)) ([163048a](https://github.com/sentry-kubernetes/charts/commit/163048a1510e044e96b9f2ce4aa3109f718f9506))
+* **relay:** add explicit RollingUpdate strategy to prevent connection drops during redeployment ([#2078](https://github.com/sentry-kubernetes/charts/issues/2078)) ([419b5eb](https://github.com/sentry-kubernetes/charts/commit/419b5eb56779487e2a48dff5490848d4a1164248))
+
 ## [29.4.1](https://github.com/sentry-kubernetes/charts/compare/sentry-v29.4.0...sentry-v29.4.1) (2026-03-09)
 
 
