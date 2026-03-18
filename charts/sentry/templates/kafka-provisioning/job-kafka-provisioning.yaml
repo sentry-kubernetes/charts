@@ -26,7 +26,7 @@
 {{- $replicationFactor := int ($provisioning.replicationFactor | default 1) }}
 {{- $defaultPartitions := int ($provisioning.numPartitions | default 1) }}
 
-{{- $image := printf "%s:%s" ($provisioning.image.repository | default "bitnamilegacy/kafka") ($provisioning.image.tag | default "3.7.1-debian-12-r4") }}
+{{- $image := printf "%s:%s" ($provisioning.image.repository | default "apache/kafka") ($provisioning.image.tag | default "3.7.1") }}
 
 apiVersion: batch/v1
 kind: Job
@@ -55,7 +55,7 @@ spec:
       restartPolicy: OnFailure
       terminationGracePeriodSeconds: 0
       securityContext:
-        fsGroup: 1001
+        fsGroup: 1000
         seccompProfile:
           type: RuntimeDefault
       {{- if $provisioning.nodeSelector }}
@@ -76,16 +76,19 @@ spec:
               drop:
                 - ALL
             readOnlyRootFilesystem: true
-            runAsGroup: 1001
+            runAsGroup: 1000
             runAsNonRoot: true
-            runAsUser: 1001
+            runAsUser: 1000
           command:
             - /bin/bash
           args:
             - -ec
             - |
               {{- range $brokers }}
-              wait-for-port --host={{ .host }} --state=inuse --timeout=120 {{ .port }};
+              timeout=120; until nc -z {{ .host }} {{ .port }} 2>/dev/null; do
+                timeout=$((timeout - 2)); [ $timeout -le 0 ] && echo "Timed out waiting for {{ .host }}:{{ .port }}" && exit 1;
+                sleep 2;
+              done;
               {{- end }}
               echo "Kafka is available";
           {{- if $provisioning.resources }}
@@ -102,9 +105,9 @@ spec:
               drop:
                 - ALL
             readOnlyRootFilesystem: true
-            runAsGroup: 1001
+            runAsGroup: 1000
             runAsNonRoot: true
-            runAsUser: 1001
+            runAsUser: 1000
           {{- if $saslFromSecret }}
           env:
             - name: KAFKA_SASL_MECHANISM
@@ -128,26 +131,23 @@ spec:
           args:
             - -ec
             - |
-              . /opt/bitnami/scripts/libkafka.sh
-
               export CLIENT_CONF="${CLIENT_CONF:-/tmp/client.properties}"
               if [ ! -f "$CLIENT_CONF" ]; then
-                touch "$CLIENT_CONF"
-                kafka_common_conf_set "$CLIENT_CONF" security.protocol "{{ $securityProtocol }}"
+                echo "security.protocol={{ $securityProtocol }}" > "$CLIENT_CONF"
                 {{- if $saslFromSecret }}
-                kafka_common_conf_set "$CLIENT_CONF" sasl.mechanism "${KAFKA_SASL_MECHANISM}"
-                kafka_common_conf_set "$CLIENT_CONF" sasl.jaas.config "org.apache.kafka.common.security.scram.ScramLoginModule required username=\"${KAFKA_SASL_USERNAME}\" password=\"${KAFKA_SASL_PASSWORD}\";"
+                echo "sasl.mechanism=${KAFKA_SASL_MECHANISM}" >> "$CLIENT_CONF"
+                echo "sasl.jaas.config=org.apache.kafka.common.security.scram.ScramLoginModule required username=\"${KAFKA_SASL_USERNAME}\" password=\"${KAFKA_SASL_PASSWORD}\";" >> "$CLIENT_CONF"
                 {{- else if $saslEnabled }}
-                kafka_common_conf_set "$CLIENT_CONF" sasl.mechanism "{{ $sasl.mechanism }}"
+                echo "sasl.mechanism={{ $sasl.mechanism }}" >> "$CLIENT_CONF"
                 {{- if and $sasl.username $sasl.password }}
-                kafka_common_conf_set "$CLIENT_CONF" sasl.jaas.config "org.apache.kafka.common.security.scram.ScramLoginModule required username=\"{{ $sasl.username }}\" password=\"{{ $sasl.password }}\";"
+                echo "sasl.jaas.config=org.apache.kafka.common.security.scram.ScramLoginModule required username=\"{{ $sasl.username }}\" password=\"{{ $sasl.password }}\";" >> "$CLIENT_CONF"
                 {{- end }}
                 {{- end }}
               fi
 
               kafka_provisioning_commands=(
                 {{- range $topics }}
-                "/opt/bitnami/kafka/bin/kafka-topics.sh \
+                "/opt/kafka/bin/kafka-topics.sh \
                   --create \
                   --if-not-exists \
                   --bootstrap-server {{ $bootstrapServersString }} \

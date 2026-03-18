@@ -3013,8 +3013,8 @@ externalKafka:
   provisioning:
     enabled: false
     image:
-      repository: bitnamilegacy/kafka
-      tag: "3.7.1-debian-12-r4"
+      repository: apache/kafka
+      tag: "3.7.1"
     # topics: []  # If empty, uses kafka.provisioning.topics
     replicationFactor: 3
     numPartitions: 1
