@@ -91,7 +91,11 @@ spec:
             - /bin/sh
             - -c
             - |
-              sed "s|\${KAFKA_SASL_MECHANISM}|$KAFKA_SASL_MECHANISM|g; s|\${KAFKA_SASL_USERNAME}|$KAFKA_SASL_USERNAME|g; s|\${KAFKA_SASL_PASSWORD}|$KAFKA_SASL_PASSWORD|g" /config-template/config.yml > /rendered-config/config.yml
+              esc() { printf '%s' "$1" | sed 's/[&|\\]/\\&/g'; }
+              ESC_MECH=$(esc "$KAFKA_SASL_MECHANISM")
+              ESC_USER=$(esc "$KAFKA_SASL_USERNAME")
+              ESC_PASS=$(esc "$KAFKA_SASL_PASSWORD")
+              sed "s|\${KAFKA_SASL_MECHANISM}|${ESC_MECH}|g; s|\${KAFKA_SASL_USERNAME}|${ESC_USER}|g; s|\${KAFKA_SASL_PASSWORD}|${ESC_PASS}|g" /config-template/config.yml > /rendered-config/config.yml
           env:
             - name: KAFKA_SASL_MECHANISM
               valueFrom:
