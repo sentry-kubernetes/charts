@@ -1,5 +1,13 @@
 # Changelog
 
+## [29.5.1](https://github.com/sentry-kubernetes/charts/compare/sentry-v29.5.0...sentry-v29.5.1) (2026-03-19)
+
+
+### Bug Fixes
+
+* **kafka:** topic provisioning for external Kafka cluster ([#2070](https://github.com/sentry-kubernetes/charts/issues/2070)) ([191a010](https://github.com/sentry-kubernetes/charts/commit/191a01035fe6d2e716e117ce7c8ec75e3f0aec46))
+* **relay:** escape sed special characters in SASL credential substitution ([#2089](https://github.com/sentry-kubernetes/charts/issues/2089)) ([845504d](https://github.com/sentry-kubernetes/charts/commit/845504d4c283ccc04025f8aa22a21e0db5d95958))
+
 ## [29.5.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v29.4.1...sentry-v29.5.0) (2026-03-16)
 
 
