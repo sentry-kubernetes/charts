@@ -37,9 +37,15 @@ metadata:
     app.kubernetes.io/managed-by: {{ .Release.Service }}
     app.kubernetes.io/name: kafka
     app.kubernetes.io/component: kafka-provisioning
+  annotations:
+    "helm.sh/hook": "pre-install,pre-upgrade"
+    "helm.sh/hook-delete-policy": "before-hook-creation"
+    "helm.sh/hook-weight": "0"
 spec:
+  {{- if .Values.hooks.activeDeadlineSeconds }}
+  activeDeadlineSeconds: {{ .Values.hooks.activeDeadlineSeconds }}
+  {{- end}}
   backoffLimit: 10
-  ttlSecondsAfterFinished: 300
   template:
     metadata:
       labels:
@@ -47,10 +53,6 @@ spec:
         app.kubernetes.io/managed-by: {{ .Release.Service }}
         app.kubernetes.io/name: kafka
         app.kubernetes.io/component: kafka-provisioning
-      annotations:
-        helm.sh/hook: "pre-install,pre-upgrade"
-        helm.sh/hook-delete-policy: "hook-succeeded,before-hook-creation"
-        helm.sh/hook-weight: "0"
     spec:
       restartPolicy: OnFailure
       terminationGracePeriodSeconds: 0
@@ -136,11 +138,23 @@ spec:
                 echo "security.protocol={{ $securityProtocol }}" > "$CLIENT_CONF"
                 {{- if $saslFromSecret }}
                 echo "sasl.mechanism=${KAFKA_SASL_MECHANISM}" >> "$CLIENT_CONF"
-                echo "sasl.jaas.config=org.apache.kafka.common.security.scram.ScramLoginModule required username=\"${KAFKA_SASL_USERNAME}\" password=\"${KAFKA_SASL_PASSWORD}\";" >> "$CLIENT_CONF"
+                case "${KAFKA_SASL_MECHANISM}" in
+                  PLAIN)
+                    LOGIN_MODULE="org.apache.kafka.common.security.plain.PlainLoginModule"
+                    ;;
+                  *)
+                    LOGIN_MODULE="org.apache.kafka.common.security.scram.ScramLoginModule"
+                    ;;
+                esac
+                echo "sasl.jaas.config=${LOGIN_MODULE} required username=\"${KAFKA_SASL_USERNAME}\" password=\"${KAFKA_SASL_PASSWORD}\";" >> "$CLIENT_CONF"
                 {{- else if $saslEnabled }}
                 echo "sasl.mechanism={{ $sasl.mechanism }}" >> "$CLIENT_CONF"
                 {{- if and $sasl.username $sasl.password }}
+                {{- if eq $sasl.mechanism "PLAIN" }}
+                echo "sasl.jaas.config=org.apache.kafka.common.security.plain.PlainLoginModule required username=\"{{ $sasl.username }}\" password=\"{{ $sasl.password }}\";" >> "$CLIENT_CONF"
+                {{- else }}
                 echo "sasl.jaas.config=org.apache.kafka.common.security.scram.ScramLoginModule required username=\"{{ $sasl.username }}\" password=\"{{ $sasl.password }}\";" >> "$CLIENT_CONF"
+                {{- end }}
                 {{- end }}
                 {{- end }}
               fi
