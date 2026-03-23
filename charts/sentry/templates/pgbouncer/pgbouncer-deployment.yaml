@@ -22,45 +22,70 @@ spec:
         app: {{ template "sentry.fullname" . }}-pgbouncer
         {{- include "sentry.component.labels" (dict "component" "pgbouncer" "ctx" .) | nindent 8 }}
     spec:
+      initContainers:
+        - name: config
+          image: busybox
+          command: ["sh", "-c"]
+          args:
+            - |
+                cat <<EOF > /etc/pgbouncer/pgbouncer.ini
+                [databases]
+                ${PGBOUNCER_DATABASE}=host=${POSTGRESQL_HOST} port=${POSTGRESQL_PORT} dbname=${PGBOUNCER_DATABASE}
+                [pgbouncer]
+                listen_port=5432
+                listen_addr=0.0.0.0
+                unix_socket_dir=/tmp/
+                unix_socket_mode=0777
+                auth_file = /etc/userlist/userlist.txt
+                server_reset_query = SELECT pg_advisory_unlock_all()
+                server_reset_query_always = 1
+                admin_users=${POSTGRESQL_USERNAME}
+                pool_mode={{ .Values.pgbouncer.poolMode }}
+                auth_type={{ .Values.pgbouncer.authType }}
+                default_pool_size={{ .Values.pgbouncer.poolSize }}
+                max_client_conn={{ .Values.pgbouncer.maxClientConn }}
+                {{- range $key, $val := .Values.pgbouncer.extraParameters }}
+                {{ $key }} = {{ $val }}
+                {{- end }}
+                EOF
+                echo "\"${POSTGRESQL_USERNAME}\" \"${POSTGRESQL_PASSWORD}\"" > /etc/userlist/userlist.txt
+          env:
+            {{ include "sentry.pgbouncer.env" . | nindent 12 }}
+          volumeMounts:
+            - name: config
+              mountPath: /etc/pgbouncer/
+            - name: userlist
+              mountPath: /etc/userlist/
       containers:
-      - name: pgbouncer
-        image: {{ .Values.pgbouncer.image.repository }}:{{ .Values.pgbouncer.image.tag }}
-        imagePullPolicy: {{ .Values.pgbouncer.image.pullPolicy }}
-        resources:
-          {{ toYaml .Values.pgbouncer.resources | nindent 10 }}
-        env:
-          {{- if .Values.pgbouncer.env }}
-          {{ toYaml .Values.pgbouncer.env | nindent 10 }}
-          {{- end }}
-          {{ include "sentry.pgbouncer.env" . | nindent 10 }}
-          - name: PGBOUNCER_PORT
-            value: "5432"
-          - name: PGBOUNCER_AUTH_TYPE
-            value: {{ .Values.pgbouncer.authType | quote }}
-          - name: PGBOUNCER_MAX_CLIENT_CONN
-            value: {{ .Values.pgbouncer.maxClientConn | quote }}
-          - name: PGBOUNCER_DEFAULT_POOL_SIZE
-            value: {{ .Values.pgbouncer.poolSize | quote }}
-          - name: PGBOUNCER_POOL_MODE
-            value: {{ .Values.pgbouncer.poolMode | quote }}
-        ports:
-          - containerPort: 5432
-            name: pgbouncer
-            protocol: TCP
-{{- if or .Values.pgbouncer.volumeMounts .Values.global.volumeMounts }}
-        volumeMounts:
-{{- end }}
+        - name: pgbouncer
+          image: {{ .Values.pgbouncer.image.repository }}:{{ .Values.pgbouncer.image.tag }}
+          imagePullPolicy: {{ .Values.pgbouncer.image.pullPolicy }}
+          resources:
+            {{ toYaml .Values.pgbouncer.resources | nindent 12 }}
+          env:
+            {{- if .Values.pgbouncer.env }}
+            {{ toYaml .Values.pgbouncer.env | nindent 12 }}
+            {{- end }}
+          ports:
+            - containerPort: 5432
+              name: pgbouncer
+              protocol: TCP
+          volumeMounts:
+            - name: config
+              mountPath: /etc/pgbouncer/
+            - name: userlist
+              mountPath: /etc/userlist/
 {{- if .Values.pgbouncer.volumeMounts }}
-{{ toYaml .Values.pgbouncer.volumeMounts | indent 8 }}
+{{ toYaml .Values.pgbouncer.volumeMounts | indent 12 }}
 {{- end }}
 {{- if .Values.global.volumeMounts }}
-{{ toYaml .Values.global.volumeMounts | indent 8 }}
+{{ toYaml .Values.global.volumeMounts | indent 12 }}
 {{- end }}
 {{- if .Values.pgbouncer.sidecars }}
-{{ toYaml .Values.pgbouncer.sidecars | indent 6 }}
+{{ toYaml .Values.pgbouncer.sidecars | indent 8 }}
 {{- end }}
 {{- if .Values.global.sidecars }}
-{{ toYaml .Values.global.sidecars | indent 6 }}
+{{ toYaml .Values.global.sidecars | indent 8 }}
 {{- end }}
       {{- if .Values.pgbouncer.nodeSelector }}
       nodeSelector:
@@ -88,13 +113,15 @@ spec:
       priorityClassName: "{{ .Values.pgbouncer.priorityClassName }}"
       {{- end }}
       terminationGracePeriodSeconds: 10
-{{- if or .Values.pgbouncer.volumes .Values.global.volumes }}
       volumes:
-{{- end }}
+        - name: config
+          emptyDir: {}
+        - name: userlist
+          emptyDir: {}
 {{- if .Values.pgbouncer.volumes }}
-{{ toYaml .Values.pgbouncer.volumes | indent 6 }}
+{{ toYaml .Values.pgbouncer.volumes | indent 8 }}
 {{- end }}
 {{- if .Values.global.volumes }}
-{{ toYaml .Values.global.volumes | indent 6 }}
+{{ toYaml .Values.global.volumes | indent 8 }}
 {{- end }}
 {{- end }}
