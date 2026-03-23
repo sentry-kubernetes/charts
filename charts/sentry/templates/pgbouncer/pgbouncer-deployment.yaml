@@ -48,6 +48,7 @@ spec:
                 {{ $key }} = {{ $val }}
                 {{- end }}
                 EOF
+
                 echo "\"${POSTGRESQL_USERNAME}\" \"${POSTGRESQL_PASSWORD}\"" > /etc/userlist/userlist.txt
           env:
             {{ include "sentry.pgbouncer.env" . | nindent 12 }}
