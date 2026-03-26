@@ -1,0 +1,153 @@
+{{- if has "feature-complete" .Values.profiles }}
+{{- if .Values.snuba.subscriptionConsumerGenericMetricsSets.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "sentry.fullname" . }}-snuba-subscription-consumer-generic-metrics-sets
+  labels:
+    app: {{ template "sentry.fullname" . }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
+    release: "{{ .Release.Name }}"
+    heritage: "{{ .Release.Service }}"
+    {{- include "sentry.component.labels" (dict "component" "snuba-subscription-consumer-generic-metrics-sets" "ctx" .) | nindent 4 }}
+  {{- if .Values.asHook }}
+  {{- /* Add the Helm annotations so that deployment after asHook from true to false works */}}
+  annotations:
+    meta.helm.sh/release-name: "{{ .Release.Name }}"
+    meta.helm.sh/release-namespace: "{{ .Release.Namespace }}"
+    "helm.sh/hook": "post-install,post-upgrade"
+    "helm.sh/hook-weight": "18"
+  {{- end }}
+spec:
+  revisionHistoryLimit: {{ .Values.revisionHistoryLimit }}
+  selector:
+    matchLabels:
+        app: {{ template "sentry.fullname" . }}
+        release: "{{ .Release.Name }}"
+        role: snuba-subscription-consumer-generic-metrics-sets
+  replicas: {{ .Values.snuba.subscriptionConsumerGenericMetricsSets.replicas }}
+  template:
+    metadata:
+      annotations:
+        checksum/snubaSettingsPy: {{ .Values.config.snubaSettingsPy | sha256sum }}
+        checksum/config.yaml: {{ include "sentry.snuba.config" . | sha256sum }}
+        {{- if .Values.snuba.subscriptionConsumerGenericMetricsSets.annotations }}
+{{ toYaml .Values.snuba.subscriptionConsumerGenericMetricsSets.annotations | indent 8 }}
+        {{- end }}
+      labels:
+        app: {{ template "sentry.fullname" . }}
+        release: "{{ .Release.Name }}"
+        role: snuba-subscription-consumer-generic-metrics-sets
+        {{- include "sentry.component.labels" (dict "component" "snuba-subscription-consumer-generic-metrics-sets" "ctx" .) | nindent 8 }}
+        {{- if .Values.snuba.subscriptionConsumerGenericMetricsSets.podLabels }}
+{{ toYaml .Values.snuba.subscriptionConsumerGenericMetricsSets.podLabels | indent 8 }}
+        {{- end }}
+    spec:
+      affinity:
+      {{- if .Values.snuba.subscriptionConsumerGenericMetricsSets.affinity }}
+{{ toYaml .Values.snuba.subscriptionConsumerGenericMetricsSets.affinity | indent 8 }}
+      {{- end }}
+      {{- if .Values.snuba.subscriptionConsumerGenericMetricsSets.nodeSelector }}
+      nodeSelector:
+{{ toYaml .Values.snuba.subscriptionConsumerGenericMetricsSets.nodeSelector | indent 8 }}
+      {{- else if .Values.global.nodeSelector }}
+      nodeSelector:
+{{ toYaml .Values.global.nodeSelector | indent 8 }}
+      {{- end }}
+      {{- if .Values.snuba.subscriptionConsumerGenericMetricsSets.tolerations }}
+      tolerations:
+{{ toYaml .Values.snuba.subscriptionConsumerGenericMetricsSets.tolerations | indent 8 }}
+      {{- else if .Values.global.tolerations }}
+      tolerations:
+{{ toYaml .Values.global.tolerations | indent 8 }}
+      {{- end }}
+      {{- if .Values.snuba.subscriptionConsumerGenericMetricsSets.topologySpreadConstraints }}
+      topologySpreadConstraints:
+{{ toYaml .Values.snuba.subscriptionConsumerGenericMetricsSets.topologySpreadConstraints | indent 8 }}
+      {{- end }}
+      {{- if .Values.images.snuba.imagePullSecrets }}
+      imagePullSecrets:
+{{ toYaml .Values.images.snuba.imagePullSecrets | indent 8 }}
+      {{- end }}
+      {{- if .Values.snuba.subscriptionConsumerGenericMetricsSets.securityContext }}
+      securityContext:
+{{ toYaml .Values.snuba.subscriptionConsumerGenericMetricsSets.securityContext | indent 8 }}
+      {{- end }}
+      containers:
+      - name: {{ .Chart.Name }}-snuba
+        image: "{{ template "snuba.image" . }}"
+        imagePullPolicy: {{ default "IfNotPresent" .Values.images.snuba.pullPolicy }}
+        command:
+          - "snuba"
+          - "subscriptions-scheduler-executor"
+          {{- if .Values.snuba.subscriptionConsumerGenericMetricsSets.autoOffsetReset }}
+          - "--auto-offset-reset"
+          - "{{ .Values.snuba.subscriptionConsumerGenericMetricsSets.autoOffsetReset }}"
+          {{- end }}
+          - "--dataset=generic_metrics"
+          - "--entity=generic_metrics_sets"
+          {{- if .Values.snuba.subscriptionConsumerGenericMetricsSets.noStrictOffsetReset }}
+          - "--no-strict-offset-reset"
+          {{- end }}
+          - "--consumer-group=snuba-generic-metrics-sets-subscriptions-schedulers"
+          - "--followed-consumer-group=snuba-gen-metrics-sets-consumers"
+          - "--schedule-ttl=60"
+          - "--stale-threshold-seconds=900"
+          {{- if .Values.snuba.subscriptionConsumerGenericMetricsSets.livenessProbe.enabled }}
+          - "--health-check-file"
+          - "/tmp/health.txt"
+          {{- end }}
+        {{- if .Values.snuba.subscriptionConsumerGenericMetricsSets.livenessProbe.enabled }}
+        livenessProbe:
+          exec:
+            command:
+              - rm
+              - /tmp/health.txt
+          initialDelaySeconds: {{ .Values.snuba.subscriptionConsumerGenericMetricsSets.livenessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.snuba.subscriptionConsumerGenericMetricsSets.livenessProbe.periodSeconds }}
+        {{- end }}
+        ports:
+        - containerPort: {{ template "snuba.port" }}
+        env:
+{{ include "sentry.snuba.env" . | indent 8 }}
+{{- if .Values.snuba.subscriptionConsumerGenericMetricsSets.env }}
+{{ toYaml .Values.snuba.subscriptionConsumerGenericMetricsSets.env | indent 8 }}
+{{- end }}
+        envFrom:
+        - secretRef:
+            name: {{ template "sentry.fullname" . }}-snuba-env
+        volumeMounts:
+        - mountPath: /etc/snuba
+          name: config
+          readOnly: true
+{{- if .Values.snuba.subscriptionConsumerGenericMetricsSets.volumeMounts }}
+{{ toYaml .Values.snuba.subscriptionConsumerGenericMetricsSets.volumeMounts | indent 8 }}
+{{- end }}
+        resources:
+{{ toYaml .Values.snuba.subscriptionConsumerGenericMetricsSets.resources | indent 12 }}
+{{- if .Values.snuba.subscriptionConsumerGenericMetricsSets.containerSecurityContext }}
+        securityContext:
+{{ toYaml .Values.snuba.subscriptionConsumerGenericMetricsSets.containerSecurityContext | indent 12 }}
+{{- end }}
+{{- if .Values.snuba.subscriptionConsumerGenericMetricsSets.sidecars }}
+{{ toYaml .Values.snuba.subscriptionConsumerGenericMetricsSets.sidecars | indent 6 }}
+{{- end }}
+{{- if .Values.global.sidecars }}
+{{ toYaml .Values.global.sidecars | indent 6 }}
+{{- end }}
+      {{- if .Values.serviceAccount.enabled }}
+      serviceAccountName: {{ .Values.serviceAccount.name }}-snuba
+      {{- end }}
+      volumes:
+      - name: config
+        configMap:
+          name: {{ template "sentry.fullname" . }}-snuba
+{{- if .Values.snuba.subscriptionConsumerGenericMetricsSets.volumes }}
+{{ toYaml .Values.snuba.subscriptionConsumerGenericMetricsSets.volumes | indent 6 }}
+{{- end }}
+{{- if .Values.global.volumes }}
+{{ toYaml .Values.global.volumes | indent 6 }}
+{{- end }}
+{{- end }}
+{{- end }}
+

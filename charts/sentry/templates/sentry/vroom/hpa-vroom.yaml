@@ -1,8 +1,11 @@
+{{- if has "feature-complete" .Values.profiles }}
 {{- if .Values.vroom.autoscaling.enabled }}
 apiVersion: {{ template "sentry.autoscaling.apiVersion" . }}
 kind: HorizontalPodAutoscaler
 metadata:
   name: {{ template "sentry.fullname" . }}-vroom
+  labels:
+    {{- include "sentry.component.labels" (dict "component" "vroom" "ctx" .) | nindent 4 }}
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
@@ -14,20 +17,27 @@ spec:
   targetCPUUtilizationPercentage: {{ .Values.vroom.autoscaling.targetCPUUtilizationPercentage }}
   {{- else if semverCompare ">=1.27-0" .Capabilities.KubeVersion.GitVersion }}
   metrics:
-  - type: ContainerResource
-    containerResource:
-      container: {{ .Chart.Name }}-vroom
-      name: cpu
-      target:
-        type: Utilization
-        averageUtilization: {{ .Values.vroom.autoscaling.targetCPUUtilizationPercentage }}
+    - type: ContainerResource
+      containerResource:
+        container: {{ .Chart.Name }}-vroom
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: {{ .Values.vroom.autoscaling.targetCPUUtilizationPercentage }}
   {{- else }}
   metrics:
-  - type: Resource
-    resource:
-      name: cpu
-      target:
-        type: Utilization
-        averageUtilization: {{ .Values.vroom.autoscaling.targetCPUUtilizationPercentage }}
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: {{ .Values.vroom.autoscaling.targetCPUUtilizationPercentage }}
   {{- end }}
+  {{- if eq (include "sentry.autoscaling.apiVersion" .) "autoscaling/v2" }}
+  {{- with .Values.vroom.autoscaling.behavior }}
+  behavior:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  {{- end }}
+{{- end }}
 {{- end }}

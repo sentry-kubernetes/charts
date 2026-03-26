@@ -1,0 +1,257 @@
+{{- if .Values.snuba.cleanup.enabled }}
+{{- $batchApiIsStable := eq (include "sentry.batch.isStable" .) "true" -}}
+apiVersion: {{ include "sentry.batch.apiVersion" . }}
+kind: CronJob
+metadata:
+  name: {{ template "sentry.fullname" . }}-clickhouse-cleanup
+  labels:
+    app: {{ template "sentry.fullname" . }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
+    release: "{{ .Release.Name }}"
+    heritage: "{{ .Release.Service }}"
+spec:
+  schedule: "{{ .Values.snuba.cleanup.schedule }}"
+  successfulJobsHistoryLimit: {{ .Values.snuba.cleanup.successfulJobsHistoryLimit }}
+  failedJobsHistoryLimit: {{ .Values.snuba.cleanup.failedJobsHistoryLimit }}
+  concurrencyPolicy: "{{ .Values.snuba.cleanup.concurrencyPolicy }}"
+  jobTemplate:
+    spec:
+      {{- if .Values.snuba.cleanup.activeDeadlineSeconds }}
+      activeDeadlineSeconds: {{ .Values.snuba.cleanup.activeDeadlineSeconds }}
+      {{- end}}
+      template:
+        metadata:
+          annotations:
+            checksum/configYml: {{ .Values.config.configYml | toYaml | toString | sha256sum }}
+            checksum/config.yaml: {{ include "sentry.snuba.config" . | sha256sum }}
+            {{- if .Values.snuba.cleanup.annotations }}
+{{ toYaml .Values.snuba.cleanup.annotations | indent 12 }}
+            {{- end }}
+          labels:
+            app: {{ template "sentry.fullname" . }}
+            release: "{{ .Release.Name }}"
+            {{- if .Values.snuba.cleanup.podLabels }}
+{{ toYaml .Values.snuba.cleanup.podLabels | indent 12 }}
+            {{- end }}
+        spec:
+          {{- if .Values.snuba.cleanup.affinity }}
+          affinity:
+{{ toYaml .Values.snuba.cleanup.affinity | indent 12 }}
+          {{- end }}
+          {{- if .Values.snuba.cleanup.nodeSelector }}
+          nodeSelector:
+{{ toYaml .Values.snuba.cleanup.nodeSelector | indent 12 }}
+          {{- else if .Values.global.nodeSelector }}
+          nodeSelector:
+{{ toYaml .Values.global.nodeSelector | indent 12 }}
+          {{- end }}
+          {{- if .Values.snuba.cleanup.tolerations }}
+          tolerations:
+{{ toYaml .Values.snuba.cleanup.tolerations | indent 12 }}
+          {{- else if .Values.global.tolerations }}
+          tolerations:
+{{ toYaml .Values.global.tolerations | indent 12 }}
+          {{- end }}
+          {{- if .Values.dnsPolicy }}
+          dnsPolicy: {{ .Values.dnsPolicy | quote }}
+          {{- end }}
+          {{- if .Values.dnsConfig }}
+          dnsConfig:
+{{ toYaml .Values.dnsConfig | indent 12 }}
+          {{- end }}
+          {{- if .Values.images.snuba.imagePullSecrets }}
+          imagePullSecrets:
+{{ toYaml .Values.images.snuba.imagePullSecrets | indent 12 }}
+          {{- end }}
+          {{- if .Values.snuba.cleanup.securityContext }}
+          securityContext:
+{{ toYaml .Values.snuba.cleanup.securityContext | indent 12 }}
+          {{- end }}
+          containers:
+          - name: {{ .Chart.Name }}-clickhouse-cleanup
+            image: {{ .Values.snuba.cleanup.image.repository }}:{{ .Values.snuba.cleanup.image.tag }}
+            imagePullPolicy: {{ .Values.snuba.cleanup.image.pullPolicy }}
+            command: ["/bin/bash"]
+            args:
+              - "-c"
+              - |
+                set -e
+                echo "Starting ClickHouse cleanup with retention period of {{ .Values.snuba.cleanup.retentionDays }} days"
+                echo "Connecting to ClickHouse at $CLICKHOUSE_HOST:$CLICKHOUSE_PORT"
+
+                # Build clickhouse-client arguments; omit --password if empty to avoid bad-arg error
+                CH_ARGS=(--host="$CLICKHOUSE_HOST" --port="$CLICKHOUSE_PORT" --user="$CLICKHOUSE_USER" --database="$CLICKHOUSE_DATABASE")
+                if [ -n "$CLICKHOUSE_PASSWORD" ]; then
+                  CH_ARGS+=(--password="$CLICKHOUSE_PASSWORD")
+                fi
+
+                # Function to discover tables
+                discover_tables() {
+                  echo "Auto-detecting tables in ClickHouse database..."
+
+                  # Get all tables that have a 'timestamp' column from system.columns for current database
+                  # This returns table names only
+                  ALL_TABLES=$(clickhouse-client "${CH_ARGS[@]}" --query="SELECT DISTINCT table FROM system.columns WHERE database = '${CLICKHOUSE_DATABASE}' AND name = 'timestamp'" 2>/dev/null || echo "")
+
+                  if [ -z "$ALL_TABLES" ]; then
+                    echo "Warning: Could not retrieve table list, falling back to hardcoded list"
+                    return 1
+                  fi
+
+                  echo "Found tables: $ALL_TABLES"
+
+                  # Filter tables based on include/exclude patterns
+                  DISCOVERED_TABLES=()
+                  {{- range .Values.snuba.cleanup.tables.includePatterns }}
+                  INCLUDE_PATTERN="{{ . }}"
+                  {{- end }}
+                  {{- range .Values.snuba.cleanup.tables.excludePatterns }}
+                  EXCLUDE_PATTERN="{{ . }}"
+                  {{- end }}
+
+                  for table in $ALL_TABLES; do
+                    # Check include patterns
+                    INCLUDE_MATCH=false
+                    {{- range .Values.snuba.cleanup.tables.includePatterns }}
+                    if echo "$table" | grep -E "{{ . }}" >/dev/null 2>&1; then
+                      INCLUDE_MATCH=true
+                    fi
+                    {{- end }}
+
+                    # Check exclude patterns
+                    EXCLUDE_MATCH=false
+                    {{- range .Values.snuba.cleanup.tables.excludePatterns }}
+                    if echo "$table" | grep -E "{{ . }}" >/dev/null 2>&1; then
+                      EXCLUDE_MATCH=true
+                    fi
+                    {{- end }}
+
+                    # Add to discovered tables if it matches include and doesn't match exclude
+                    if [ "$INCLUDE_MATCH" = true ] && [ "$EXCLUDE_MATCH" = false ]; then
+                      DISCOVERED_TABLES+=("$table")
+                      echo "Including table: $table"
+                    else
+                      echo "Excluding table: $table (include=$INCLUDE_MATCH, exclude=$EXCLUDE_MATCH)"
+                    fi
+                  done
+
+                  if [ ${#DISCOVERED_TABLES[@]} -eq 0 ]; then
+                    echo "Warning: No tables matched the include/exclude patterns, falling back to hardcoded list"
+                    return 1
+                  fi
+
+                  # Export discovered tables for cleanup
+                  printf '%s\n' "${DISCOVERED_TABLES[@]}"
+                  return 0
+                }
+
+                # Determine which tables to clean up
+                {{- if .Values.snuba.cleanup.tables.autoDetect }}
+                echo "Table auto-detection enabled"
+                if TABLES_TO_CLEANUP=$(discover_tables); then
+                  readarray -t TABLES <<< "$TABLES_TO_CLEANUP"
+                  echo "Using auto-detected tables: ${TABLES[*]}"
+                else
+                  echo "Auto-detection failed, using fallback list"
+                  TABLES=(
+                    {{- range .Values.snuba.cleanup.tables.fallbackList }}
+                    "{{ . }}"
+                    {{- end }}
+                  )
+                fi
+                {{- else }}
+                echo "Table auto-detection disabled, using configured fallback list"
+                TABLES=(
+                  {{- range .Values.snuba.cleanup.tables.fallbackList }}
+                  "{{ . }}"
+                  {{- end }}
+                )
+                {{- end }}
+
+                echo "Tables to cleanup: ${TABLES[*]}"
+
+                # Compute cutoff timestamp: retentionDays-ago at 00:00:00 (use UTC)
+                echo "Computing cutoff timestamp for retention {{ .Values.snuba.cleanup.retentionDays }} days (midnight UTC)..."
+                # Try to compute via GNU date (-d), fallback to BSD date (macOS) with -v
+                CUT_DAYS="{{ .Values.snuba.cleanup.retentionDays }}"
+                TIMESTAMP=$(date -u -d "${CUT_DAYS} days ago" '+%Y-%m-%d 00:00:00' 2>/dev/null || date -u -v -${CUT_DAYS}d '+%Y-%m-%d 00:00:00' 2>/dev/null || true)
+                if [ -z "$TIMESTAMP" ]; then
+                  echo "Warning: could not compute cutoff with local date; attempting ClickHouse calculation"
+                  TIMESTAMP=$(clickhouse-client "${CH_ARGS[@]}" --query="SELECT toString(toDateTime(toStartOfDay(now() - INTERVAL ${CUT_DAYS} DAY)))" 2>/dev/null | tr -d '\r' || true)
+                fi
+                if [ -z "$TIMESTAMP" ]; then
+                  echo "Error: could not determine cutoff timestamp" >&2
+                  exit 1
+                fi
+                echo "Using cutoff timestamp: $TIMESTAMP"
+
+                # Execute cleanup for each table
+                CLEANED_COUNT=0
+                FAILED_COUNT=0
+
+                for table in "${TABLES[@]}"; do
+                  if [ -n "$table" ]; then
+                    echo "Cleaning up table: $table"
+                    if clickhouse-client "${CH_ARGS[@]}" --query="DELETE FROM $table WHERE timestamp < toDateTime('$TIMESTAMP')"; then
+                      echo "Successfully cleaned up table: $table"
+                      CLEANED_COUNT=$((CLEANED_COUNT + 1))
+                    else
+                      echo "Warning: Failed to cleanup table $table (table may not exist or have timestamp column)"
+                      FAILED_COUNT=$((FAILED_COUNT + 1))
+                    fi
+                  fi
+                done
+
+                echo "ClickHouse cleanup completed: $CLEANED_COUNT tables cleaned, $FAILED_COUNT failed"
+            env:
+            - name: CLICKHOUSE_HOST
+              value: {{ include "sentry.clickhouse.host" . | quote }}
+            - name: CLICKHOUSE_PORT
+              value: {{ include "sentry.clickhouse.port" . | quote }}
+            - name: CLICKHOUSE_USER
+              value: {{ include "sentry.clickhouse.username" . | quote }}
+            - name: CLICKHOUSE_DATABASE
+              value: {{ include "sentry.clickhouse.database" . | quote }}
+            - name: CLICKHOUSE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                {{- if .Values.externalClickhouse.existingSecret }}
+                  name: {{ .Values.externalClickhouse.existingSecret | quote }}
+                  key: {{ default "clickhouse-password" .Values.externalClickhouse.existingSecretKey | quote }}
+                {{- else }}
+                  name: {{ template "sentry.fullname" . }}-clickhouse
+                  key: clickhouse-password
+                {{- end }}
+                  optional: true
+{{- if .Values.snuba.cleanup.env }}
+{{ toYaml .Values.snuba.cleanup.env | indent 12 }}
+{{- end }}
+            resources:
+{{ toYaml .Values.snuba.cleanup.resources | indent 14 }}
+{{- if .Values.snuba.cleanup.containerSecurityContext }}
+            securityContext:
+{{ toYaml .Values.snuba.cleanup.containerSecurityContext | indent 14 }}
+{{- end }}
+{{- if .Values.snuba.cleanup.sidecars }}
+{{ toYaml .Values.snuba.cleanup.sidecars | indent 10 }}
+{{- end }}
+{{- if .Values.global.sidecars }}
+{{ toYaml .Values.global.sidecars | indent 10 }}
+{{- end }}
+          restartPolicy: Never
+          {{- if or .Values.snuba.cleanup.volumes .Values.global.volumes }}
+          volumes:
+          {{- if .Values.snuba.cleanup.volumes }}
+{{ toYaml .Values.snuba.cleanup.volumes | indent 10 }}
+          {{- end }}
+          {{- if .Values.global.volumes }}
+{{ toYaml .Values.global.volumes | indent 10 }}
+          {{- end }}
+          {{- end }}
+          {{- if .Values.snuba.cleanup.priorityClassName }}
+          priorityClassName: "{{ .Values.snuba.cleanup.priorityClassName }}"
+          {{- end }}
+          {{- if .Values.serviceAccount.enabled }}
+          serviceAccountName: {{ .Values.serviceAccount.name }}-clickhouse-cleanup
+          {{- end }}
+{{- end }}

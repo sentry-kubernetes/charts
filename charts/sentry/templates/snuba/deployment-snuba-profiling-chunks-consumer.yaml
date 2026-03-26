@@ -1,0 +1,185 @@
+{{- if has "feature-complete" .Values.profiles }}
+{{- if .Values.sentry.features.enableProfiling }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "sentry.fullname" . }}-snuba-profiling-chunks-consumer
+  labels:
+    app: {{ template "sentry.fullname" . }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
+    release: "{{ .Release.Name }}"
+    heritage: "{{ .Release.Service }}"
+    {{- include "sentry.component.labels" (dict "component" "snuba-profiling-chunks-consumer" "ctx" .) | nindent 4 }}
+  {{- if .Values.asHook }}
+  {{- /* Add the Helm annotations so that deployment after asHook from true to false works */}}
+  annotations:
+    meta.helm.sh/release-name: "{{ .Release.Name }}"
+    meta.helm.sh/release-namespace: "{{ .Release.Namespace }}"
+    "helm.sh/hook": "post-install,post-upgrade"
+    "helm.sh/hook-weight": "12"
+  {{- end }}
+spec:
+  revisionHistoryLimit: {{ .Values.revisionHistoryLimit }}
+  selector:
+    matchLabels:
+      app: {{ template "sentry.fullname" . }}
+      release: "{{ .Release.Name }}"
+      role: snuba-profiling-chunks-consumer
+  replicas: {{ .Values.snuba.profilingChunksConsumer.replicas }}
+  template:
+    metadata:
+      annotations:
+        checksum/snubaSettingsPy: {{ .Values.config.snubaSettingsPy | sha256sum }}
+        checksum/config.yaml: {{ include "sentry.snuba.config" . | sha256sum }}
+        {{- if .Values.snuba.profilingChunksConsumer.annotations }}
+{{ toYaml .Values.snuba.profilingChunksConsumer.annotations | indent 8 }}
+        {{- end }}
+      labels:
+        app: {{ template "sentry.fullname" . }}
+        release: "{{ .Release.Name }}"
+        role: snuba-profiling-chunks-consumer
+        {{- include "sentry.component.labels" (dict "component" "snuba-profiling-chunks-consumer" "ctx" .) | nindent 8 }}
+        {{- if .Values.snuba.profilingChunksConsumer.podLabels }}
+{{ toYaml .Values.snuba.profilingChunksConsumer.podLabels | indent 8 }}
+        {{- end }}
+    spec:
+      affinity:
+      {{- if .Values.snuba.profilingChunksConsumer.affinity }}
+{{ toYaml .Values.snuba.profilingChunksConsumer.affinity | indent 8 }}
+      {{- end }}
+      {{- if .Values.snuba.profilingChunksConsumer.nodeSelector }}
+      nodeSelector:
+{{ toYaml .Values.snuba.profilingChunksConsumer.nodeSelector | indent 8 }}
+      {{- else if .Values.global.nodeSelector }}
+      nodeSelector:
+{{ toYaml .Values.global.nodeSelector | indent 8 }}
+      {{- end }}
+      {{- if .Values.snuba.profilingChunksConsumer.tolerations }}
+      tolerations:
+{{ toYaml .Values.snuba.profilingChunksConsumer.tolerations | indent 8 }}
+      {{- else if .Values.global.tolerations }}
+      tolerations:
+{{ toYaml .Values.global.tolerations | indent 8 }}
+      {{- end }}
+      {{- if .Values.snuba.profilingChunksConsumer.topologySpreadConstraints }}
+      topologySpreadConstraints:
+{{ toYaml .Values.snuba.profilingChunksConsumer.topologySpreadConstraints | indent 8 }}
+      {{- end }}
+      {{- if .Values.images.snuba.imagePullSecrets }}
+      imagePullSecrets:
+{{ toYaml .Values.images.snuba.imagePullSecrets | indent 8 }}
+      {{- end }}
+      {{- if .Values.dnsPolicy }}
+      dnsPolicy: {{ .Values.dnsPolicy | quote }}
+      {{- end }}
+      {{- if .Values.dnsConfig }}
+      dnsConfig:
+{{ toYaml .Values.dnsConfig | indent 8 }}
+      {{- end }}
+      {{- if .Values.snuba.profilingChunksConsumer.securityContext }}
+      securityContext:
+{{ toYaml .Values.snuba.profilingChunksConsumer.securityContext | indent 8 }}
+      {{- end }}
+      containers:
+      - name: {{ .Chart.Name }}-snuba
+        image: "{{ template "snuba.image" . }}"
+        imagePullPolicy: {{ default "IfNotPresent" .Values.images.snuba.pullPolicy }}
+        command:
+          - "snuba"
+          - {{ if .Values.snuba.rustConsumer -}}"rust-consumer"{{- else -}}"consumer"{{- end }}
+          - "--storage"
+          - "profile_chunks"
+          - "--consumer-group"
+          - "snuba-consumers"
+          {{- if .Values.snuba.profilingChunksConsumer.autoOffsetReset }}
+          - "--auto-offset-reset"
+          - "{{ .Values.snuba.profilingChunksConsumer.autoOffsetReset }}"
+          {{- end }}
+          {{- if .Values.snuba.profilingChunksConsumer.maxBatchSize }}
+          - "--max-batch-size"
+          - "{{ .Values.snuba.profilingChunksConsumer.maxBatchSize }}"
+          {{- end }}
+          {{- if .Values.snuba.profilingChunksConsumer.processes }}
+          - "--processes"
+          - "{{ .Values.snuba.profilingChunksConsumer.processes }}"
+          {{- end }}
+          {{- if .Values.snuba.profilingChunksConsumer.inputBlockSize }}
+          - "--input-block-size"
+          - "{{ .Values.snuba.profilingChunksConsumer.inputBlockSize }}"
+          {{- end }}
+          {{- if .Values.snuba.profilingChunksConsumer.outputBlockSize }}
+          - "--output-block-size"
+          - "{{ .Values.snuba.profilingChunksConsumer.outputBlockSize }}"
+          {{- end }}
+          {{- if .Values.snuba.profilingChunksConsumer.maxBatchTimeMs }}
+          - "--max-batch-time-ms"
+          - "{{ .Values.snuba.profilingChunksConsumer.maxBatchTimeMs }}"
+          {{- end }}
+          {{- if .Values.snuba.profilingChunksConsumer.queuedMaxMessagesKbytes }}
+          - "--queued-max-messages-kbytes"
+          - "{{ .Values.snuba.profilingChunksConsumer.queuedMaxMessagesKbytes }}"
+          {{- end }}
+          {{- if .Values.snuba.profilingChunksConsumer.queuedMinMessages }}
+          - "--queued-min-messages"
+          - "{{ .Values.snuba.profilingChunksConsumer.queuedMinMessages }}"
+          {{- end }}
+          {{- if .Values.snuba.profilingChunksConsumer.noStrictOffsetReset }}
+          - "--no-strict-offset-reset"
+          {{- end }}
+          {{- if .Values.snuba.profilingChunksConsumer.livenessProbe.enabled }}
+          - "--health-check-file"
+          - "/tmp/health.txt"
+          {{- end }}
+        {{- if .Values.snuba.profilingChunksConsumer.livenessProbe.enabled }}
+        livenessProbe:
+          exec:
+            command:
+              - rm
+              - /tmp/health.txt
+          initialDelaySeconds: {{ .Values.snuba.profilingChunksConsumer.livenessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.snuba.profilingChunksConsumer.livenessProbe.periodSeconds }}
+        {{- end }}
+        ports:
+        - containerPort: {{ template "snuba.port" }}
+        env:
+{{ include "sentry.snuba.env" . | indent 8 }}
+{{- if .Values.snuba.profilingChunksConsumer.env }}
+{{ toYaml .Values.snuba.profilingChunksConsumer.env | indent 8 }}
+{{- end }}
+        envFrom:
+        - secretRef:
+            name: {{ template "sentry.fullname" . }}-snuba-env
+        volumeMounts:
+        - mountPath: /etc/snuba
+          name: config
+          readOnly: true
+{{- if .Values.snuba.profilingChunksConsumer.volumeMounts }}
+{{ toYaml .Values.snuba.profilingChunksConsumer.volumeMounts | indent 8 }}
+{{- end }}
+        resources:
+{{ toYaml .Values.snuba.profilingChunksConsumer.resources | indent 12 }}
+{{- if .Values.snuba.profilingChunksConsumer.containerSecurityContext }}
+        securityContext:
+{{ toYaml .Values.snuba.profilingChunksConsumer.containerSecurityContext | indent 12 }}
+{{- end }}
+{{- if .Values.snuba.profilingChunksConsumer.sidecars }}
+{{ toYaml .Values.snuba.profilingChunksConsumer.sidecars | indent 6 }}
+{{- end }}
+{{- if .Values.global.sidecars }}
+{{ toYaml .Values.global.sidecars | indent 6 }}
+{{- end }}
+      {{- if .Values.serviceAccount.enabled }}
+      serviceAccountName: {{ .Values.serviceAccount.name }}-snuba
+      {{- end }}
+      volumes:
+        - name: config
+          configMap:
+            name: {{ template "sentry.fullname" . }}-snuba
+{{- if .Values.snuba.profilingChunksConsumer.volumes }}
+{{ toYaml .Values.snuba.profilingChunksConsumer.volumes | indent 8 }}
+{{- end }}
+{{- if .Values.global.volumes }}
+{{ toYaml .Values.global.volumes | indent 8 }}
+{{- end }}
+{{- end }}
+{{- end }}

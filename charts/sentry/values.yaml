@@ -13,6 +13,13 @@ global:
   sidecars: []
   volumes: []
 
+# Profiles correspond to COMPOSE_PROFILES in the original self-hosted docker-compose.yml.
+# https://github.com/getsentry/self-hosted/blob/master/docker-compose.yml
+# When set to errors-only, the chart only deploys components related to processing errors.
+# For more, read https://develop.sentry.dev/self-hosted/experimental/errors-only/.
+profiles:
+  - feature-complete
+
 user:
   create: true
   email: admin@sentry.local
@@ -56,6 +63,11 @@ images:
     # tag: Chart.AppVersion
     # pullPolicy: IfNotPresent
     imagePullSecrets: []
+  uptimeChecker:
+    # repository: getsentry/uptime-checker
+    # tag: Chart.AppVersion
+    # pullPolicy: IfNotPresent
+    imagePullSecrets: []
 
 serviceAccount:
   # serviceAccount.annotations -- Additional Service Account annotations.
@@ -90,12 +102,47 @@ vroom:
     annotations: {}
   # tolerations: []
   # podLabels: {}
+  persistence:
+    enabled: true  # Set true for using PersistentVolumeClaim, false for emptyDir
+    ## If 'lookupVolumeName' is set to true, Helm will attempt to retrieve
+    ## the current value of 'spec.volumeName' and incorporate it into the template.
+    lookupVolumeName: true
+    accessModes:
+      - ReadWriteOnce
+    # storageClassName: standard
+    size: "10Gi"
 
   autoscaling:
     enabled: false
     minReplicas: 2
     maxReplicas: 5
     targetCPUUtilizationPercentage: 50
+    # Only available with autoscaling/v2
+    behavior: {}
+  sidecars: []
+  # topologySpreadConstraints: []
+  volumes: []
+  volumeMounts: []
+
+uptimeChecker:
+  # annotations: {}
+  # args: []
+  replicas: 1
+  env: []
+  resources: {}
+  #  requests:
+  #    cpu: 100m
+  #    memory: 700Mi
+  affinity: {}
+  nodeSelector: {}
+  securityContext: {}
+  containerSecurityContext: {}
+  # priorityClassName: ""
+  service:
+    annotations: {}
+  # tolerations: []
+  # podLabels: {}
+
   sidecars: []
   # topologySpreadConstraints: []
   volumes: []
@@ -137,6 +184,8 @@ relay:
     minReplicas: 2
     maxReplicas: 5
     targetCPUUtilizationPercentage: 50
+    # Only available with autoscaling/v2
+    behavior: {}
   sidecars: []
   topologySpreadConstraints: []
   volumes: []
@@ -175,6 +224,7 @@ geodata:
   accountID: ""
   licenseKey: ""
   editionIDs: ""
+  annotations: {}
   persistence:
     ## If defined, storageClassName: <storageClass>
     ## If undefined (the default) or set to null, no storageClassName spec is
@@ -182,6 +232,10 @@ geodata:
     ##   GKE, AWS & OpenStack)
     # storageClass: "" # for example: csi-s3
     size: 1Gi
+    accessModes: ["ReadWriteMany"]
+    ## If 'lookupVolumeName' is set to true, Helm will attempt to retrieve
+    ## the current value of 'spec.volumeName' and incorporate it into the template.
+    lookupVolumeName: true
   volumeName: ""  # for example: data-sentry-geoip
   # mountPath of the volume containing the database
   mountPath: ""  # for example: /usr/share/GeoIP
@@ -232,6 +286,8 @@ sentry:
       minReplicas: 2
       maxReplicas: 5
       targetCPUUtilizationPercentage: 50
+      # Only available with autoscaling/v2
+      behavior: {}
     sidecars: []
     topologySpreadConstraints: []
     volumes: []
@@ -240,11 +296,11 @@ sentry:
 
   features:
     orgSubdomains: false
-    vstsLimitedScopes: true
     enableProfiling: false
     enableSessionReplay: true
     enableFeedback: false
     enableSpan: false
+    enableUptime: false
 
   # example customFeature to enable Metrics(beta) https://docs.sentry.io/product/metrics/
   # customFeatures:
@@ -279,6 +335,8 @@ sentry:
       minReplicas: 2
       maxReplicas: 5
       targetCPUUtilizationPercentage: 50
+      # Only available with autoscaling/v2
+      behavior: {}
     livenessProbe:
       enabled: true
       periodSeconds: 60
@@ -317,6 +375,8 @@ sentry:
       minReplicas: 2
       maxReplicas: 5
       targetCPUUtilizationPercentage: 50
+      # Only available with autoscaling/v2
+      behavior: {}
     livenessProbe:
       enabled: false
       periodSeconds: 60
@@ -353,6 +413,8 @@ sentry:
       minReplicas: 2
       maxReplicas: 5
       targetCPUUtilizationPercentage: 50
+      # Only available with autoscaling/v2
+      behavior: {}
     livenessProbe:
       enabled: false
       periodSeconds: 60
@@ -392,6 +454,8 @@ sentry:
       minReplicas: 1
       maxReplicas: 3
       targetCPUUtilizationPercentage: 50
+      # Only available with autoscaling/v2
+      behavior: {}
     sidecars: []
     topologySpreadConstraints: []
     volumes: []
@@ -432,6 +496,8 @@ sentry:
       minReplicas: 1
       maxReplicas: 3
       targetCPUUtilizationPercentage: 50
+      # Only available with autoscaling/v2
+      behavior: {}
     sidecars: []
     topologySpreadConstraints: []
     volumes: []
@@ -472,6 +538,8 @@ sentry:
       minReplicas: 1
       maxReplicas: 3
       targetCPUUtilizationPercentage: 50
+      # Only available with autoscaling/v2
+      behavior: {}
     sidecars: []
     topologySpreadConstraints: []
     volumes: []
@@ -497,6 +565,7 @@ sentry:
     nodeSelector: {}
     securityContext: {}
     containerSecurityContext: {}
+    # maxPollIntervalMs: 30000
     # tolerations: []
     # podLabels: {}
     # it's better to use prometheus adapter and scale based on
@@ -629,6 +698,7 @@ sentry:
     nodeSelector: {}
     securityContext: {}
     containerSecurityContext: {}
+    # maxPollIntervalMs: 30000
     # tolerations: []
     # podLabels: {}
     # it's better to use prometheus adapter and scale based on
@@ -638,6 +708,68 @@ sentry:
       minReplicas: 1
       maxReplicas: 3
       targetCPUUtilizationPercentage: 50
+    sidecars: []
+    topologySpreadConstraints: []
+    volumes: []
+    livenessProbe:
+      enabled: true
+      initialDelaySeconds: 5
+      periodSeconds: 320
+    # volumeMounts:
+    #   - mountPath: /dev/shm
+    #     name: dshm
+    # autoOffsetReset: "earliest"
+    # noStrictOffsetReset: false
+
+  monitorsClockTasks:
+    enabled: false
+    replicas: 1
+    env: []
+    resources: {}
+    #  requests:
+    #    cpu: 100m
+    #    memory: 250Mi
+    affinity: {}
+    nodeSelector: {}
+    securityContext: {}
+    containerSecurityContext: {}
+    # tolerations: []
+    # podLabels: {}
+    # it's better to use prometheus adapter and scale based on
+    # the size of the rabbitmq queue
+    autoscaling:
+      enabled: false
+    sidecars: []
+    topologySpreadConstraints: []
+    volumes: []
+    livenessProbe:
+      enabled: true
+      initialDelaySeconds: 5
+      periodSeconds: 320
+    # volumeMounts:
+    #   - mountPath: /dev/shm
+    #     name: dshm
+    # autoOffsetReset: "earliest"
+    # noStrictOffsetReset: false
+
+  monitorsClockTick:
+    enabled: false
+    replicas: 1
+    env: []
+    resources: {}
+    #  requests:
+    #    cpu: 100m
+    #    memory: 250Mi
+    affinity: {}
+    nodeSelector: {}
+    securityContext: {}
+    containerSecurityContext: {}
+    # tolerations: []
+    # podLabels: {}
+    # it's better to use prometheus adapter and scale based on
+    # the size of the rabbitmq queue
+    autoscaling:
+      enabled: false
     sidecars: []
     topologySpreadConstraints: []
     volumes: []
@@ -775,6 +907,27 @@ sentry:
     # logLevel: "WARNING" # DEBUG|INFO|WARNING|ERROR|CRITICAL|FATAL
     # logFormat: "machine" # human|machine
 
+  subscriptionConsumerResultsEapItems:
+    enabled: true
+    replicas: 1
+    env: []
+    resources: {}
+    affinity: {}
+    nodeSelector: {}
+    securityContext: {}
+    topologySpreadConstraints: []
+    containerSecurityContext: {}
+    # tolerations: []
+    # podLabels: {}
+    livenessProbe:
+      enabled: true
+      initialDelaySeconds: 5
+      periodSeconds: 320
+    # volumes: []
+    # volumeMounts: []
+    # autoOffsetReset: "earliest"
+    # noStrictOffsetReset: false
+
   subscriptionConsumerEvents:
     enabled: true
     replicas: 1
@@ -800,10 +953,14 @@ sentry:
     # noStrictOffsetReset: false
     # volumeMounts: []
 
-  subscriptionConsumerSessions:
+  subscriptionConsumerTransactions:
+    enabled: true
     replicas: 1
     env: []
     resources: {}
+    #  requests:
+    #    cpu: 200m
+    #    memory: 500Mi
     affinity: {}
     nodeSelector: {}
     securityContext: {}
@@ -813,11 +970,15 @@ sentry:
     sidecars: []
     topologySpreadConstraints: []
     volumes: []
+    livenessProbe:
+      enabled: true
+      initialDelaySeconds: 5
+      periodSeconds: 320
     # autoOffsetReset: "earliest"
     # noStrictOffsetReset: false
     # volumeMounts: []
 
-  subscriptionConsumerTransactions:
+  uptimeResults:
     enabled: true
     replicas: 1
     env: []
@@ -900,6 +1061,56 @@ sentry:
     resources: {}
     #  requests:
     #    cpu: 300m
+    #    memory: 500Mi
+    affinity: {}
+    nodeSelector: {}
+    securityContext: {}
+    containerSecurityContext: {}
+    # tolerations: []
+    # podLabels: {}
+    sidecars: []
+    topologySpreadConstraints: []
+    volumes: []
+    # volumeMounts: []
+    livenessProbe:
+      enabled: true
+      initialDelaySeconds: 5
+      periodSeconds: 320
+    # autoOffsetReset: "earliest"
+    # noStrictOffsetReset: false
+
+  processSegments:
+    enabled: true
+    replicas: 1
+    env: []
+    resources: {}
+    #  requests:
+    #    cpu: 150m
+    #    memory: 500Mi
+    affinity: {}
+    nodeSelector: {}
+    securityContext: {}
+    containerSecurityContext: {}
+    # tolerations: []
+    # podLabels: {}
+    sidecars: []
+    topologySpreadConstraints: []
+    volumes: []
+    # volumeMounts: []
+    livenessProbe:
+      enabled: true
+      initialDelaySeconds: 5
+      periodSeconds: 320
+    # autoOffsetReset: "earliest"
+    # noStrictOffsetReset: false
+
+  processSpans:
+    enabled: true
+    replicas: 1
+    env: []
+    resources: {}
+    #  requests:
+    #    cpu: 150m
     #    memory: 500Mi
     affinity: {}
     nodeSelector: {}
@@ -1032,6 +1243,8 @@ snuba:
       minReplicas: 2
       maxReplicas: 5
       targetCPUUtilizationPercentage: 50
+      # Only available with autoscaling/v2
+      behavior: {}
     sidecars: []
     topologySpreadConstraints: []
     volumes: []
@@ -1062,6 +1275,39 @@ snuba:
     maxBatchTimeMs: 750
     # queuedMaxMessagesKbytes: ""
     # queuedMinMessages: ""
+    # volumeMounts:
+    #   - mountPath: /dev/shm
+    #     name: dshm
+    # volumes:
+    #   - name: dshm
+    #     emptyDir:
+    #       medium: Memory
+
+  eapItemsConsumer:
+    enabled: true
+    replicas: 1
+    env: []
+    resources: {}
+    affinity: {}
+    nodeSelector: {}
+    securityContext: {}
+    topologySpreadConstraints: []
+    containerSecurityContext: {}
+    # tolerations: []
+    # podLabels: {}
+    # autoOffsetReset: "earliest"
+    livenessProbe:
+      enabled: true
+      initialDelaySeconds: 5
+      periodSeconds: 320
+    # maxBatchSize: ""
+    # processes: ""
+    # inputBlockSize: ""
+    # outputBlockSize: ""
+    maxBatchTimeMs: 750
+    # queuedMaxMessagesKbytes: ""
+    # queuedMinMessages: ""
+    # noStrictOffsetReset: false
     # volumeMounts:
     #   - mountPath: /dev/shm
     #     name: dshm
@@ -1113,6 +1359,7 @@ snuba:
     securityContext: {}
     topologySpreadConstraints: []
     containerSecurityContext: {}
+    # maxPollIntervalMs: 30000
     # tolerations: []
     # podLabels: {}
     # autoOffsetReset: "earliest"
@@ -1184,7 +1431,7 @@ snuba:
     # queuedMinMessages: ""
     # noStrictOffsetReset: false
 
-  subscriptionConsumerEvents:
+  subscriptionConsumerEapItems:  # should have 1 partition and only 1 consumer replica: https://github.com/getsentry/snuba/issues/5855
     enabled: true
     replicas: 1
     env: []
@@ -1203,6 +1450,139 @@ snuba:
     # volumes: []
     # volumeMounts: []
     # autoOffsetReset: "earliest"
+    # noStrictOffsetReset: false
+
+  subscriptionConsumerEvents:  # should have 1 partition and only 1 consumer replica: https://github.com/getsentry/snuba/issues/5855
+    enabled: true
+    replicas: 1
+    env: []
+    resources: {}
+    affinity: {}
+    nodeSelector: {}
+    securityContext: {}
+    topologySpreadConstraints: []
+    containerSecurityContext: {}
+    # tolerations: []
+    # podLabels: {}
+    livenessProbe:
+      enabled: true
+      initialDelaySeconds: 5
+      periodSeconds: 320
+    # volumes: []
+    # volumeMounts: []
+    # autoOffsetReset: "earliest"
+    # noStrictOffsetReset: false
+
+  subscriptionConsumerGenericMetricsDistributions:  # should have 1 partition and only 1 consumer replica: https://github.com/getsentry/snuba/issues/5855
+    enabled: true
+    replicas: 1
+    env: []
+    resources: {}
+    affinity: {}
+    nodeSelector: {}
+    securityContext: {}
+    topologySpreadConstraints: []
+    containerSecurityContext: {}
+    # tolerations: []
+    # podLabels: {}
+    livenessProbe:
+      enabled: true
+      initialDelaySeconds: 5
+      periodSeconds: 320
+    # volumes: []
+    # volumeMounts: []
+    # autoOffsetReset: "earliest"
+    # noStrictOffsetReset: false
+
+  subscriptionConsumerGenericMetricsSets:  # should have 1 partition and only 1 consumer replica: https://github.com/getsentry/snuba/issues/5855
+    enabled: true
+    replicas: 1
+    env: []
+    resources: {}
+    affinity: {}
+    nodeSelector: {}
+    securityContext: {}
+    topologySpreadConstraints: []
+    containerSecurityContext: {}
+    # tolerations: []
+    # podLabels: {}
+    livenessProbe:
+      enabled: true
+      initialDelaySeconds: 5
+      periodSeconds: 320
+    # volumes: []
+    # volumeMounts: []
+    # autoOffsetReset: "earliest"
+    # noStrictOffsetReset: false
+
+  subscriptionConsumerGenericMetricsCounters:  # should have 1 partition and only 1 consumer replica: https://github.com/getsentry/snuba/issues/5855
+    enabled: true
+    replicas: 1
+    env: []
+    resources: {}
+    affinity: {}
+    nodeSelector: {}
+    securityContext: {}
+    topologySpreadConstraints: []
+    containerSecurityContext: {}
+    # tolerations: []
+    # podLabels: {}
+    livenessProbe:
+      enabled: true
+      initialDelaySeconds: 5
+      periodSeconds: 320
+    # volumes: []
+    # volumeMounts: []
+    # autoOffsetReset: "earliest"
+    # noStrictOffsetReset: false
+
+  subscriptionConsumerGenericMetricsGauges:  # should have 1 partition and only 1 consumer replica: https://github.com/getsentry/snuba/issues/5855
+    enabled: true
+    replicas: 1
+    env: []
+    resources: {}
+    affinity: {}
+    nodeSelector: {}
+    securityContext: {}
+    topologySpreadConstraints: []
+    containerSecurityContext: {}
+    # tolerations: []
+    # podLabels: {}
+    livenessProbe:
+      enabled: true
+      initialDelaySeconds: 5
+      periodSeconds: 320
+    # volumes: []
+    # volumeMounts: []
+    # autoOffsetReset: "earliest"
+    # noStrictOffsetReset: false
+
+  genericMetricsGaugesConsumer:
+    enabled: true
+    replicas: 1
+    env: []
+    resources: {}
+    affinity: {}
+    nodeSelector: {}
+    securityContext: {}
+    topologySpreadConstraints: []
+    containerSecurityContext: {}
+    # tolerations: []
+    # podLabels: {}
+    # autoOffsetReset: "earliest"
+    livenessProbe:
+      enabled: true
+      initialDelaySeconds: 5
+      periodSeconds: 320
+    # volumes: []
+    # volumeMounts: []
+    # maxBatchSize: ""
+    # processes: ""
+    # inputBlockSize: ""
+    # outputBlockSize: ""
+    maxBatchTimeMs: 750
+    # queuedMaxMessagesKbytes: ""
+    # queuedMinMessages: ""
     # noStrictOffsetReset: false
 
   genericMetricsCountersConsumer:
@@ -1289,7 +1669,7 @@ snuba:
     # queuedMinMessages: ""
     # noStrictOffsetReset: false
 
-  subscriptionConsumerMetrics:
+  subscriptionConsumerMetrics:  # should have 1 partition and only 1 consumer replica: https://github.com/getsentry/snuba/issues/5855
     enabled: true
     replicas: 1
     env: []
@@ -1312,7 +1692,7 @@ snuba:
     # volumes: []
     # volumeMounts: []
 
-  subscriptionConsumerTransactions:
+  subscriptionConsumerTransactions:  # should have 1 partition and only 1 consumer replica: https://github.com/getsentry/snuba/issues/5855
     enabled: true
     replicas: 1
     env: []
@@ -1335,26 +1715,42 @@ snuba:
       periodSeconds: 320
     # autoOffsetReset: "earliest"
     # noStrictOffsetReset: false
-
-  subscriptionConsumerSessions:
-    replicas: 1
-    env: []
-    resources: {}
-    affinity: {}
-    nodeSelector: {}
-    securityContext: {}
-    topologySpreadConstraints: []
-    containerSecurityContext: {}
-    # tolerations: []
-    # podLabels: {}
-    # commitBatchSize: 1
-    # autoOffsetReset: "earliest"
-    sidecars: []
-    volumes: []
-    # noStrictOffsetReset: false
-    # volumeMounts: []
 
   replaysConsumer:
+    enabled: true
+    replicas: 1
+    env: []
+    resources: {}
+    affinity: {}
+    nodeSelector: {}
+    securityContext: {}
+    topologySpreadConstraints: []
+    containerSecurityContext: {}
+    # maxPollIntervalMs: 30000
+    # tolerations: []
+    # podLabels: {}
+    # autoOffsetReset: "earliest"
+    livenessProbe:
+      enabled: true
+      initialDelaySeconds: 5
+      periodSeconds: 320
+    # maxBatchSize: ""
+    # processes: ""
+    # inputBlockSize: ""
+    # outputBlockSize: ""
+    maxBatchTimeMs: 750
+    # queuedMaxMessagesKbytes: ""
+    # queuedMinMessages: ""
+    # noStrictOffsetReset: false
+    # volumeMounts:
+    #   - mountPath: /dev/shm
+    #     name: dshm
+    # volumes:
+    #   - name: dshm
+    #     emptyDir:
+    #       medium: Memory
+
+  transactionsConsumer:
     enabled: true
     replicas: 1
     env: []
@@ -1387,35 +1783,7 @@ snuba:
     #     emptyDir:
     #       medium: Memory
 
-  sessionsConsumer:
-    replicas: 1
-    env: []
-    resources: {}
-    affinity: {}
-    nodeSelector: {}
-    securityContext: {}
-    topologySpreadConstraints: []
-    containerSecurityContext: {}
-    # tolerations: []
-    # podLabels: {}
-    # autoOffsetReset: "earliest"
-    # noStrictOffsetReset: false
-    # maxBatchSize: ""
-    # processes: ""
-    # inputBlockSize: ""
-    # outputBlockSize: ""
-    # maxBatchTimeMs: ""
-    # queuedMaxMessagesKbytes: ""
-    # queuedMinMessages: ""
-    # volumeMounts:
-    #   - mountPath: /dev/shm
-    #     name: dshm
-    # volumes:
-    #   - name: dshm
-    #     emptyDir:
-    #       medium: Memory
-
-  transactionsConsumer:
+  uptimeResultsConsumer:
     enabled: true
     replicas: 1
     env: []
@@ -1483,6 +1851,39 @@ snuba:
     #       medium: Memory
 
   profilingFunctionsConsumer:
+    replicas: 1
+    env: []
+    resources: {}
+    affinity: {}
+    sidecars: []
+    nodeSelector: {}
+    securityContext: {}
+    topologySpreadConstraints: []
+    containerSecurityContext: {}
+    # tolerations: []
+    # podLabels: {}
+    # autoOffsetReset: "earliest"
+    livenessProbe:
+      enabled: true
+      initialDelaySeconds: 5
+      periodSeconds: 320
+    # maxBatchSize: ""
+    # processes: ""
+    # inputBlockSize: ""
+    # outputBlockSize: ""
+    maxBatchTimeMs: 750
+    # queuedMaxMessagesKbytes: ""
+    # queuedMinMessages: ""
+    # noStrictOffsetReset: false
+    # volumeMounts:
+    #   - mountPath: /dev/shm
+    #     name: dshm
+    # volumes:
+    #   - name: dshm
+    #     emptyDir:
+    #       medium: Memory
+
+  profilingChunksConsumer:
     replicas: 1
     env: []
     resources: {}
@@ -1626,6 +2027,72 @@ snuba:
 
   rustConsumer: false
 
+  # ClickHouse database cleanup configuration
+  cleanup:
+    # -- Enable ClickHouse database cleanup cronjob
+    enabled: false
+    image:
+      repository: clickhouse/clickhouse-server
+      tag: latest
+      pullPolicy: IfNotPresent
+    # -- Retention period in days for ClickHouse data cleanup
+    retentionDays: 30
+    # -- Cron schedule for cleanup job (daily at 2 AM by default)
+    schedule: "0 2 * * *"
+    # -- Number of successful job executions to retain
+    successfulJobsHistoryLimit: 5
+    # -- Number of failed job executions to retain
+    failedJobsHistoryLimit: 5
+    # -- Maximum time in seconds for cleanup job to run
+    activeDeadlineSeconds: 300
+    # -- Concurrency policy for cleanup job
+    concurrencyPolicy: Forbid
+    # -- Resource limits and requests for cleanup job
+    resources: {}
+    # Table discovery configuration
+    tables:
+      # -- Auto-detect tables instead of using a hardcoded list
+      autoDetect: true
+      # -- Include patterns for table names (regex patterns)
+      includePatterns:
+        - ".*_local$"
+        - ".*_raw_local$"
+      # -- Exclude patterns for table names (regex patterns)
+      excludePatterns:
+        - "^system\\."
+        - "^information_schema\\."
+        - "^INFORMATION_SCHEMA\\."
+      # -- Fallback hardcoded table list (used if autoDetect fails or is disabled)
+      fallbackList:
+        - "discover_local"
+        - "events_local"
+        - "events_ro_local"
+        - "outcomes_raw_local"
+        - "querylog_local"
+        - "sessions_raw_local"
+        - "transactions_local"
+        - "profiles_raw_local"
+        - "functions_raw_local"
+        - "replays_local"
+        - "generic_metric_sets_raw_local"
+        - "generic_metric_distributions_raw_local"
+        - "generic_metric_counters_raw_local"
+        - "spans_local"
+        - "group_attributes_raw_local"
+        - "generic_metric_gauges_raw_local"
+        - "profile_chunks_raw_local"
+    # podLabels: {}
+    # affinity: {}
+    # nodeSelector: {}
+    # tolerations: []
+    # env: []
+    # volumes: []
+    # sidecars: []
+    # containerSecurityContext: {}
+    # securityContext: {}
+    # annotations: {}
+    # volumeMounts: []
+
 hooks:
   enabled: true
   preUpgrade: false
@@ -1662,7 +2129,7 @@ hooks:
     podAnnotations: {}
     resources:
       limits:
-        memory: 2048Mi
+        memory: 2560Mi
       requests:
         cpu: 300m
         memory: 2048Mi
@@ -1726,12 +2193,18 @@ mail:
 symbolicator:
   enabled: false
   api:
+    cleaner:
+      enabled: true
+      sleepInterval: 3600
     usedeployment: true  # Set true to use Deployment, false for StatefulSet
     persistence:
       enabled: true  # Set true for using PersistentVolumeClaim, false for emptyDir
       accessModes: ["ReadWriteOnce"]
       # storageClassName: standard
       size: "10Gi"
+      ## If 'lookupVolumeName' is set to true, Helm will attempt to retrieve
+      ## the current value of 'spec.volumeName' and incorporate it into the template.
+      lookupVolumeName: true
     replicas: 1
     env: []
     probeInitialDelaySeconds: 10
@@ -1778,15 +2251,6 @@ symbolicator:
     # volumeMounts: []
     # sidecars: []
 
-  # TODO The cleanup cronjob is not yet implemented
-  cleanup:
-    enabled: false
-    # podLabels: {}
-    # affinity: {}
-    # env: []
-    # volumes: []
-    # sidecars: []
-
 auth:
   register: true
 
@@ -1827,33 +2291,42 @@ google: {}
 # google:
 #   clientId: ""
 #   clientSecret: ""
-#   existingSecret: ""
-#   existingSecretClientIdKey: "" # by default "client-id"
-#   existingSecretClientSecretKey: "" # by default "client-secret"
+#   existingSecret: "xxxxx"
+#   existingSecretClientIdKey: ""       # by default "client-id"
+#   existingSecretClientSecretKey: ""   # by default "client-secret"
 
 slack: {}
 # slack:
-#   clientId:
-#   clientSecret:
-#   signingSecret:
-#   existingSecret:
+#   clientId: ""
+#   clientSecret: ""
+#   signingSecret: ""
+#   existingSecret: "xxxxx"
+#   existingSecretClientId: ""          # by default "client-id"
+#   existingSecretClientSecret: ""      # by default "client-secret"
+#   existingSecretSigningSecret: ""     # by default "signing-secret"
 #   Reference -> https://develop.sentry.dev/integrations/slack/
 
 discord: {}
 # discord:
-#   applicationId:
-#   publicKey:
-#   clientSecret:
-#   botToken:
-#   existingSecret:
+#   applicationId: ""
+#   publicKey: ""
+#   clientSecret: ""
+#   botToken: ""
+#   existingSecret: "xxxxx"
+#   existingSecretApplicationId: ""     # by default "application-id"
+#   existingSecretPublicKey: ""         # by default "public-key"
+#   existingSecretClientSecret: ""      # by default "client-secret"
+#   existingSecretBotToken: ""          # by default "bot-token"
 #   Reference -> https://develop.sentry.dev/integrations/discord/
 
 openai: {}
 #   existingSecret: "xxxxx"
-#   existingSecretKey: ""   # by default "api-token"
+#   existingSecretKey: ""               # by default "api-token"
 
 nginx:
   enabled: true  # true, if Safari compatibility is needed
+  image:
+    repository: bitnamilegacy/nginx
   containerPort: 8080
   existingServerBlockConfigmap: '{{ template "sentry.fullname" . }}'
   resources: {}
@@ -1950,6 +2423,10 @@ filestore:
       ## be used
       existingClaim: ""
 
+      ## If 'lookupVolumeName' is set to true, Helm will attempt to retrieve
+      ## the current value of 'spec.volumeName' and incorporate it into the template.
+      lookupVolumeName: true
+
   gcs: {}
     ## Point this at a pre-configured secret containing a service account. The resulting
     ## secret will be mounted at /var/run/secrets/google
@@ -1983,9 +2460,21 @@ config:
     # No YAML relay config given
   web:
     httpKeepalive: 15
+    httpChunkedInput: true
+    workers: 3
+    memoryReport: false
     maxRequests: 100000
     maxRequestsDelta: 500
     maxWorkerLifetime: 86400
+    thunderLock: true
+    logXForwardedFor: false
+    bufferSize: 32768
+    limitPost: 209715200
+    disableLogging: true
+    reloadOnRss: 600
+    ignoreSignpipe: true
+    ignoreWriteErrors: true
+    disableWriteException: true
 
 clickhouse:
   enabled: true
@@ -2052,11 +2541,17 @@ externalClickhouse:
   ## or by executing `select * from system.clusters`
   ##
   # clusterName: test_shard_localhost
+  ## Optional: separate distributed cluster name (defaults to clusterName)
+  ## Use this when your ClickHouse distributed queries need a different cluster name
+  ##
+  # distributedClusterName: distributed_test_shard_localhost
 
 # Settings for Zookeeper.
 # See https://github.com/bitnami/charts/tree/master/bitnami/zookeeper
 zookeeper:
   enabled: true
+  image:
+    repository: bitnamilegacy/zookeeper
   nameOverride: zookeeper-clickhouse
   replicaCount: 1
   nodeSelector: {}
@@ -2069,9 +2564,12 @@ zookeeper:
 # See https://github.com/bitnami/charts/tree/master/bitnami/kafka
 kafka:
   enabled: true
+  image:
+    repository: bitnamilegacy/kafka
   provisioning:
     ## Increasing the replicationFactor enhances data reliability during Kafka pod failures by replicating data across multiple brokers.
-    # replicationFactor: 1
+    # Note that existing topics will remain with replicationFactor: 1 when updated.
+    replicationFactor: 3
     enabled: true
     # Topic list is based on files below.
     # - https://github.com/getsentry/snuba/blob/master/snuba/utils/streams/topics.py
@@ -2106,6 +2604,7 @@ kafka:
       - name: outcomes-dlq
       - name: outcomes-billing
       - name: outcomes-billing-dlq
+      - name: ingest-spans
       - name: ingest-sessions
       - name: snuba-metrics-commit-log
         config:
@@ -2129,7 +2628,6 @@ kafka:
         config:
           "message.timestamp.type": LogAppendTime
       - name: profiles-call-tree
-      - name: snuba-profile-chunks
       - name: ingest-replay-events
         config:
           "message.timestamp.type": LogAppendTime
@@ -2194,6 +2692,8 @@ kafka:
       - name: snuba-eap-spans-commit-log
       - name: scheduled-subscriptions-eap-spans
       - name: eap-spans-subscription-results
+      - name: subscription-results-eap-items
+      - name: snuba-items-commit-log
       - name: snuba-eap-mutations
       - name: snuba-lw-deletions-generic-events
       - name: shared-resources-usage
@@ -2204,6 +2704,34 @@ kafka:
       - name: uptime-results
       - name: snuba-uptime-results
       - name: task-worker
+      - name: snuba-ourlogs
+      - name: snuba-items
+      - name: taskworker
+      - name: taskworker-dlq
+      - name: taskworker-billing
+      - name: taskworker-billing-dlq
+      - name: taskworker-control
+      - name: taskworker-control-dlq
+      - name: taskworker-ingest
+      - name: taskworker-ingest-dlq
+      - name: taskworker-ingest-errors
+      - name: taskworker-ingest-errors-dlq
+      - name: taskworker-ingest-transactions
+      - name: taskworker-ingest-transactions-dlq
+      - name: taskworker-internal
+      - name: taskworker-internal-dlq
+      - name: taskworker-limited
+      - name: taskworker-limited-dlq
+      - name: taskworker-long
+      - name: taskworker-long-dlq
+      - name: taskworker-products
+      - name: taskworker-products-dlq
+      - name: taskworker-sentryapp
+      - name: taskworker-sentryapp-dlq
+      - name: taskworker-symbolication
+      - name: taskworker-symbolication-dlq
+      - name: taskworker-usage
+      - name: taskworker-usage-dlq
   listeners:
     client:
       protocol: "PLAINTEXT"
@@ -2217,12 +2745,17 @@ kafka:
     enabled: false
   kraft:
     enabled: true
+  metrics:
+    jmx:
+      image:
+        repository: bitnamilegacy/jmx-exporter
   controller:
     replicaCount: 3
     nodeSelector: {}
     # tolerations: []
     ## if the load on the kafka controller increases, resourcesPreset must be increased
-    # resourcesPreset: small # small, medium, large, xlarge, 2xlarge
+    # resourcesPreset: "small" # "small", "medium", "large", "xlarge", "2xlarge"
+    # More information: https://github.com/bitnami/charts/blob/main/bitnami/common/templates/_resources.tpl#L15
     ## if the load on the kafka controller increases, persistence.size must be increased
     # persistence:
     #   size: 8Gi
@@ -2290,6 +2823,11 @@ sourcemaps:
 
 redis:
   enabled: true
+  image:
+    repository: bitnamilegacy/redis
+  metrics:
+    image:
+      repository: bitnamilegacy/redis-exporter
   replica:
     replicaCount: 1
     nodeSelector: {}
@@ -2332,6 +2870,8 @@ externalRedis:
 
 postgresql:
   enabled: true
+  image:
+    repository: bitnamilegacy/postgresql
   nameOverride: sentry-postgresql
   auth:
     database: sentry
@@ -2383,6 +2923,8 @@ externalPostgresql:
 rabbitmq:
   ## If disabled, Redis will be used instead as the broker.
   enabled: true
+  image:
+    repository: bitnamilegacy/rabbitmq
   vhost: /
   clustering:
     forceBoot: true
@@ -2456,6 +2998,11 @@ rabbitmq:
         release: "prometheus-operator"  # helm release of kube-prometheus-stack
 
 memcached:
+  image:
+    repository: bitnamilegacy/memcached
+  metrics:
+    image:
+      repository: bitnamilegacy/memcached-exporter
   memoryLimit: "2048"
   maxItemSize: "26214400"
   args:
@@ -2523,6 +3070,7 @@ metrics:
     repository: prom/statsd-exporter
     tag: v0.17.0
     pullPolicy: IfNotPresent
+    imagePullSecrets: []
 
   # Enable this if you're using https://github.com/coreos/prometheus-operator
   serviceMonitor:
@@ -2559,7 +3107,7 @@ pgbouncer:
     user: ''
     password: ''
   image:
-    repository: "bitnami/pgbouncer"
+    repository: "bitnamilegacy/pgbouncer"
     tag: "1.23.1-debian-12-r5"
     pullPolicy: IfNotPresent
   replicas: 2

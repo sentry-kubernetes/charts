@@ -1,3 +1,4 @@
+{{- if has "feature-complete" .Values.profiles }}
 {{- if .Values.sentry.ingestConsumerTransactions.enabled }}
 apiVersion: apps/v1
 kind: Deployment
@@ -8,7 +9,7 @@ metadata:
     chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
     release: "{{ .Release.Name }}"
     heritage: "{{ .Release.Service }}"
-    app.kubernetes.io/managed-by: "Helm"
+    {{- include "sentry.component.labels" (dict "component" "ingest-consumer-transactions" "ctx" .) | nindent 4 }}
   {{- if .Values.asHook }}
   {{- /* Add the Helm annotations so that deployment after asHook from true to false works */}}
   annotations:
@@ -40,6 +41,7 @@ spec:
         app: {{ template "sentry.fullname" . }}
         release: "{{ .Release.Name }}"
         role: ingest-consumer-transactions
+        {{- include "sentry.component.labels" (dict "component" "ingest-consumer-transactions" "ctx" .) | nindent 8 }}
         {{- if .Values.sentry.ingestConsumerTransactions.podLabels }}
 {{ toYaml .Values.sentry.ingestConsumerTransactions.podLabels | indent 8 }}
         {{- end }}
@@ -162,6 +164,9 @@ spec:
 {{- if .Values.sentry.ingestConsumerTransactions.sidecars }}
 {{ toYaml .Values.sentry.ingestConsumerTransactions.sidecars | indent 6 }}
 {{- end }}
+{{- if .Values.global.sidecars }}
+{{ toYaml .Values.global.sidecars | indent 6 }}
+{{- end }}
       {{- if .Values.serviceAccount.enabled }}
       serviceAccountName: {{ .Values.serviceAccount.name }}-ingest-consumer-transactions
       {{- end }}
@@ -195,4 +200,5 @@ spec:
       {{- if .Values.sentry.ingestConsumerTransactions.priorityClassName }}
       priorityClassName: "{{ .Values.sentry.ingestConsumerTransactions.priorityClassName }}"
       {{- end }}
+{{- end }}
 {{- end }}

@@ -12,6 +12,7 @@ metadata:
     release: "{{ .Release.Name }}"
     heritage: "{{ .Release.Service }}"
     role: metrics
+    {{- include "sentry.component.labels" (dict "component" "metrics" "ctx" .) | nindent 4 }}
     {{- if .Values.metrics.service.additionalLabels }}
 {{ toYaml .Values.metrics.service.additionalLabels | indent 4 }}
     {{- end }}

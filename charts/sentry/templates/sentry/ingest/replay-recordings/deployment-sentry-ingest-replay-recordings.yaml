@@ -1,3 +1,4 @@
+{{- if has "feature-complete" .Values.profiles }}
 {{- if .Values.sentry.ingestReplayRecordings.enabled }}
 apiVersion: apps/v1
 kind: Deployment
@@ -8,7 +9,7 @@ metadata:
     chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
     release: "{{ .Release.Name }}"
     heritage: "{{ .Release.Service }}"
-    app.kubernetes.io/managed-by: "Helm"
+    {{- include "sentry.component.labels" (dict "component" "ingest-replay-recordings" "ctx" .) | nindent 4 }}
   {{- if .Values.asHook }}
   {{- /* Add the Helm annotations so that deployment after asHook from true to false works */}}
   annotations:
@@ -40,6 +41,7 @@ spec:
         app: {{ template "sentry.fullname" . }}
         release: "{{ .Release.Name }}"
         role: ingest-replay-recordings
+        {{- include "sentry.component.labels" (dict "component" "ingest-replay-recordings" "ctx" .) | nindent 8 }}
         {{- if .Values.sentry.ingestReplayRecordings.podLabels }}
 {{ toYaml .Values.sentry.ingestReplayRecordings.podLabels | indent 8 }}
         {{- end }}
@@ -103,6 +105,11 @@ spec:
           - "--healthcheck-file-path"
           - "/tmp/health.txt"
           {{- end }}
+          {{- if .Values.sentry.ingestReplayRecordings.maxPollIntervalMs }}
+          - "--max-poll-interval-ms"
+          - "{{ .Values.sentry.ingestReplayRecordings.maxPollIntervalMs }}"
+          {{- end }}
+          - "--"
         {{- if .Values.sentry.ingestReplayRecordings.livenessProbe.enabled }}
         livenessProbe:
           exec:
@@ -177,4 +184,5 @@ spec:
       {{- if .Values.sentry.ingestReplayRecordings.priorityClassName }}
       priorityClassName: "{{ .Values.sentry.ingestReplayRecordings.priorityClassName }}"
       {{- end }}
+{{- end }}
 {{- end }}

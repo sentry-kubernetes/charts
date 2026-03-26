@@ -1,0 +1,185 @@
+{{- if has "feature-complete" .Values.profiles }}
+{{- if .Values.snuba.genericMetricsGaugesConsumer.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "sentry.fullname" . }}-snuba-generic-metrics-gauges-consumer
+  labels:
+    app: {{ template "sentry.fullname" . }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
+    release: "{{ .Release.Name }}"
+    heritage: "{{ .Release.Service }}"
+    {{- include "sentry.component.labels" (dict "component" "snuba-generic-metrics-gauges-consumer" "ctx" .) | nindent 4 }}
+  {{- if .Values.asHook }}
+  {{- /* Add the Helm annotations so that deployment after asHook from true to false works */}}
+  annotations:
+    meta.helm.sh/release-name: "{{ .Release.Name }}"
+    meta.helm.sh/release-namespace: "{{ .Release.Namespace }}"
+    "helm.sh/hook": "post-install,post-upgrade"
+    "helm.sh/hook-weight": "12"
+  {{- end }}
+spec:
+  revisionHistoryLimit: {{ .Values.revisionHistoryLimit }}
+  selector:
+    matchLabels:
+      app: {{ template "sentry.fullname" . }}
+      release: "{{ .Release.Name }}"
+      role: snuba-generic-metrics-gauges-consumer
+  replicas: {{ .Values.snuba.genericMetricsGaugesConsumer.replicas }}
+  template:
+    metadata:
+      annotations:
+        checksum/snubaSettingsPy: {{ .Values.config.snubaSettingsPy | sha256sum }}
+        checksum/config.yaml: {{ include "sentry.snuba.config" . | sha256sum }}
+        {{- if .Values.snuba.genericMetricsGaugesConsumer.annotations }}
+{{ toYaml .Values.snuba.genericMetricsGaugesConsumer.annotations | indent 8 }}
+        {{- end }}
+      labels:
+        app: {{ template "sentry.fullname" . }}
+        release: "{{ .Release.Name }}"
+        role: snuba-generic-metrics-gauges-consumer
+        {{- include "sentry.component.labels" (dict "component" "snuba-generic-metrics-gauges-consumer" "ctx" .) | nindent 8 }}
+        {{- if .Values.snuba.genericMetricsGaugesConsumer.podLabels }}
+{{ toYaml .Values.snuba.genericMetricsGaugesConsumer.podLabels | indent 8 }}
+        {{- end }}
+    spec:
+      affinity:
+      {{- if .Values.snuba.genericMetricsGaugesConsumer.affinity }}
+{{ toYaml .Values.snuba.genericMetricsGaugesConsumer.affinity | indent 8 }}
+      {{- end }}
+      {{- if .Values.snuba.genericMetricsGaugesConsumer.nodeSelector }}
+      nodeSelector:
+{{ toYaml .Values.snuba.genericMetricsGaugesConsumer.nodeSelector | indent 8 }}
+      {{- else if .Values.global.nodeSelector }}
+      nodeSelector:
+{{ toYaml .Values.global.nodeSelector | indent 8 }}
+      {{- end }}
+      {{- if .Values.snuba.genericMetricsGaugesConsumer.tolerations }}
+      tolerations:
+{{ toYaml .Values.snuba.genericMetricsGaugesConsumer.tolerations | indent 8 }}
+      {{- else if .Values.global.tolerations }}
+      tolerations:
+{{ toYaml .Values.global.tolerations | indent 8 }}
+      {{- end }}
+      {{- if .Values.snuba.genericMetricsGaugesConsumer.topologySpreadConstraints }}
+      topologySpreadConstraints:
+{{ toYaml .Values.snuba.genericMetricsGaugesConsumer.topologySpreadConstraints | indent 8 }}
+      {{- end }}
+      {{- if .Values.images.snuba.imagePullSecrets }}
+      imagePullSecrets:
+{{ toYaml .Values.images.snuba.imagePullSecrets | indent 8 }}
+      {{- end }}
+      {{- if .Values.dnsPolicy }}
+      dnsPolicy: {{ .Values.dnsPolicy | quote }}
+      {{- end }}
+      {{- if .Values.dnsConfig }}
+      dnsConfig:
+{{ toYaml .Values.dnsConfig | indent 8 }}
+      {{- end }}
+      {{- if .Values.snuba.genericMetricsGaugesConsumer.securityContext }}
+      securityContext:
+{{ toYaml .Values.snuba.genericMetricsGaugesConsumer.securityContext | indent 8 }}
+      {{- end }}
+      containers:
+      - name: {{ .Chart.Name }}-snuba
+        image: "{{ template "snuba.image" . }}"
+        imagePullPolicy: {{ default "IfNotPresent" .Values.images.snuba.pullPolicy }}
+        command:
+          - "snuba"
+          - {{ if .Values.snuba.rustConsumer -}}"rust-consumer"{{- else -}}"consumer"{{- end }}
+          - "--storage"
+          - "generic_metrics_gauges_raw"
+          - "--consumer-group"
+          - "snuba-gen-metrics-gauges-consumers"
+          {{- if .Values.snuba.genericMetricsGaugesConsumer.autoOffsetReset }}
+          - "--auto-offset-reset"
+          - "{{ .Values.snuba.genericMetricsGaugesConsumer.autoOffsetReset }}"
+          {{- end }}
+          {{- if .Values.snuba.genericMetricsGaugesConsumer.maxBatchSize }}
+          - "--max-batch-size"
+          - "{{ .Values.snuba.genericMetricsGaugesConsumer.maxBatchSize }}"
+          {{- end }}
+          {{- if .Values.snuba.genericMetricsGaugesConsumer.processes }}
+          - "--processes"
+          - "{{ .Values.snuba.genericMetricsGaugesConsumer.processes }}"
+          {{- end }}
+          {{- if .Values.snuba.genericMetricsGaugesConsumer.inputBlockSize }}
+          - "--input-block-size"
+          - "{{ .Values.snuba.genericMetricsGaugesConsumer.inputBlockSize }}"
+          {{- end }}
+          {{- if .Values.snuba.genericMetricsGaugesConsumer.outputBlockSize }}
+          - "--output-block-size"
+          - "{{ .Values.snuba.genericMetricsGaugesConsumer.outputBlockSize }}"
+          {{- end }}
+          {{- if .Values.snuba.genericMetricsGaugesConsumer.maxBatchTimeMs }}
+          - "--max-batch-time-ms"
+          - "{{ .Values.snuba.genericMetricsGaugesConsumer.maxBatchTimeMs }}"
+          {{- end }}
+          {{- if .Values.snuba.genericMetricsGaugesConsumer.queuedMaxMessagesKbytes }}
+          - "--queued-max-messages-kbytes"
+          - "{{ .Values.snuba.genericMetricsGaugesConsumer.queuedMaxMessagesKbytes }}"
+          {{- end }}
+          {{- if .Values.snuba.genericMetricsGaugesConsumer.queuedMinMessages }}
+          - "--queued-min-messages"
+          - "{{ .Values.snuba.genericMetricsGaugesConsumer.queuedMinMessages }}"
+          {{- end }}
+          {{- if .Values.snuba.genericMetricsGaugesConsumer.noStrictOffsetReset }}
+          - "--no-strict-offset-reset"
+          {{- end }}
+          {{- if .Values.snuba.genericMetricsGaugesConsumer.livenessProbe.enabled }}
+          - "--health-check-file"
+          - "/tmp/health.txt"
+          {{- end }}
+        {{- if .Values.snuba.genericMetricsGaugesConsumer.livenessProbe.enabled }}
+        livenessProbe:
+          exec:
+            command:
+              - rm
+              - /tmp/health.txt
+          initialDelaySeconds: {{ .Values.snuba.genericMetricsGaugesConsumer.livenessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.snuba.genericMetricsGaugesConsumer.livenessProbe.periodSeconds }}
+        {{- end }}
+        ports:
+        - containerPort: {{ template "snuba.port" }}
+        env:
+{{ include "sentry.snuba.env" . | indent 8 }}
+{{- if .Values.snuba.genericMetricsGaugesConsumer.env }}
+{{ toYaml .Values.snuba.genericMetricsGaugesConsumer.env | indent 8 }}
+{{- end }}
+        envFrom:
+        - secretRef:
+            name: {{ template "sentry.fullname" . }}-snuba-env
+        volumeMounts:
+        - mountPath: /etc/snuba
+          name: config
+          readOnly: true
+{{- if .Values.snuba.genericMetricsGaugesConsumer.volumeMounts }}
+{{ toYaml .Values.snuba.genericMetricsGaugesConsumer.volumeMounts | indent 8 }}
+{{- end }}
+        resources:
+{{ toYaml .Values.snuba.genericMetricsGaugesConsumer.resources | indent 12 }}
+{{- if .Values.snuba.genericMetricsGaugesConsumer.containerSecurityContext }}
+        securityContext:
+{{ toYaml .Values.snuba.genericMetricsGaugesConsumer.containerSecurityContext | indent 12 }}
+{{- end }}
+{{- if .Values.snuba.genericMetricsGaugesConsumer.sidecars }}
+{{ toYaml .Values.snuba.genericMetricsGaugesConsumer.sidecars | indent 6 }}
+{{- end }}
+{{- if .Values.global.sidecars }}
+{{ toYaml .Values.global.sidecars | indent 6 }}
+{{- end }}
+      {{- if .Values.serviceAccount.enabled }}
+      serviceAccountName: {{ .Values.serviceAccount.name }}-snuba
+      {{- end }}
+      volumes:
+        - name: config
+          configMap:
+            name: {{ template "sentry.fullname" . }}-snuba
+{{- if .Values.snuba.genericMetricsGaugesConsumer.volumes }}
+{{ toYaml .Values.snuba.genericMetricsGaugesConsumer.volumes | indent 8 }}
+{{- end }}
+{{- if .Values.global.volumes }}
+{{ toYaml .Values.global.volumes | indent 8 }}
+{{- end }}
+{{- end }}
+{{- end }}

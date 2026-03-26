@@ -14,7 +14,7 @@ metadata:
     chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
     release: "{{ .Release.Name }}"
     heritage: "{{ .Release.Service }}"
-    app.kubernetes.io/managed-by: "Helm"
+    {{- include "sentry.component.labels" (dict "component" "relay" "ctx" .) | nindent 4 }}
   {{- if .Values.asHook }}
   {{- /* Add the Helm annotations so that deployment after asHook from true to false works */}}
   annotations:
@@ -45,6 +45,7 @@ spec:
         app: {{ template "sentry.fullname" . }}
         release: "{{ .Release.Name }}"
         role: relay
+        {{- include "sentry.component.labels" (dict "component" "relay" "ctx" .) | nindent 8 }}
         {{- if .Values.relay.podLabels }}
 {{ toYaml .Values.relay.podLabels | indent 8 }}
         {{- end }}
@@ -162,6 +163,7 @@ spec:
           {{- if and .Values.geodata.volumeName .Values.geodata.accountID }}
           - name: {{ .Values.geodata.volumeName }}
             mountPath: {{ .Values.geodata.mountPath }}
+            readOnly: true
           {{- end }}
 {{- if .Values.relay.volumeMounts }}
 {{ toYaml .Values.relay.volumeMounts | indent 10 }}
@@ -211,7 +213,7 @@ spec:
       {{- if and .Values.geodata.volumeName .Values.geodata.accountID }}
       - name: {{ .Values.geodata.volumeName }}
         persistentVolumeClaim:
-          claimName: {{ .Values.geodata.volumeName }}
+          claimName: data-sentry-geoip
       {{- end }}
 {{- if .Values.relay.volumes }}
 {{ toYaml .Values.relay.volumes | indent 6 }}

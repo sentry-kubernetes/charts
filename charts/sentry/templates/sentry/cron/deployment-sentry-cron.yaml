@@ -8,6 +8,7 @@ metadata:
     chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
     release: "{{ .Release.Name }}"
     heritage: "{{ .Release.Service }}"
+    {{- include "sentry.component.labels" (dict "component" "cron" "ctx" .) | nindent 4 }}
 spec:
   revisionHistoryLimit: {{ .Values.revisionHistoryLimit }}
   selector:
@@ -29,6 +30,7 @@ spec:
         app: {{ template "sentry.fullname" . }}
         release: "{{ .Release.Name }}"
         role: cron
+        {{- include "sentry.component.labels" (dict "component" "cron" "ctx" .) | nindent 8 }}
         {{- if .Values.sentry.cron.podLabels }}
 {{ toYaml .Values.sentry.cron.podLabels | indent 8 }}
         {{- end }}

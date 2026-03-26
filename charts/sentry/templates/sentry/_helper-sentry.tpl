@@ -170,6 +170,10 @@ sentry.conf.py: |-
 
   SENTRY_OPTIONS["system.event-retention-days"] = int(env('SENTRY_EVENT_RETENTION_DAYS') or {{ .Values.sentry.cleanup.days | quote }})
 
+  {{- if has "errors-only" .Values.profiles }}
+  SENTRY_SELF_HOSTED_ERRORS_ONLY = True
+  {{- end }}
+
   #########
   # Redis #
   #########
@@ -351,27 +355,27 @@ sentry.conf.py: |-
       # This is needed to prevent https://git.io/fj7Lw
       "uwsgi-socket": None,
       # Keep this between 15s-75s as that's what Relay supports
-      "http-keepalive": {{ .Values.config.web.httpKeepalive }},
-      "http-chunked-input": True,
+      "http-keepalive": {{ .Values.config.web.httpKeepalive | int }},
+      "http-chunked-input": {{ .Values.config.web.httpChunkedInput | ternary "True" "False" }},
       # the number of web workers
-      'workers': 3,
+      'workers': {{ .Values.config.web.workers | int }},
       # Turn off memory reporting
-      "memory-report": False,
+      "memory-report": {{ .Values.config.web.memoryReport | ternary "True" "False" }},
       # Some stuff so uwsgi will cycle workers sensibly
-      'max-requests': {{ .Values.config.web.maxRequests }},
-      'max-requests-delta': {{ .Values.config.web.maxRequestsDelta }},
-      'max-worker-lifetime': {{ .Values.config.web.maxWorkerLifetime }},
+      'max-requests': {{ .Values.config.web.maxRequests | int }},
+      'max-requests-delta': {{ .Values.config.web.maxRequestsDelta | int }},
+      'max-worker-lifetime': {{ .Values.config.web.maxWorkerLifetime | int }},
       # Duplicate options from sentry default just so we don't get
       # bit by sentry changing a default value that we depend on.
-      'thunder-lock': True,
-      'log-x-forwarded-for': False,
-      'buffer-size': 32768,
-      'limit-post': 209715200,
-      'disable-logging': True,
-      'reload-on-rss': 600,
-      'ignore-sigpipe': True,
-      'ignore-write-errors': True,
-      'disable-write-exception': True,
+      'thunder-lock': {{ .Values.config.web.thunderLock | ternary "True" "False" }},
+      'log-x-forwarded-for': {{ .Values.config.web.logXForwardedFor | ternary "True" "False" }},
+      'buffer-size': {{ .Values.config.web.bufferSize | int }},
+      'limit-post': {{ .Values.config.web.limitPost | int }},
+      'disable-logging': {{ .Values.config.web.disableLogging | ternary "True" "False" }},
+      'reload-on-rss': {{ .Values.config.web.reloadOnRss | int }},
+      'ignore-sigpipe': {{ .Values.config.web.ignoreSignpipe | ternary "True" "False" }},
+      'ignore-write-errors': {{ .Values.config.web.ignoreWriteErrors | ternary "True" "False" }},
+      'disable-write-exception': {{ .Values.config.web.disableWriteException | ternary "True" "False" }},
   }
 
   ###########
@@ -404,160 +408,100 @@ sentry.conf.py: |-
               {{- if not .Values.sentry.singleOrganization }}
               "organizations:create",
               {{ end -}}
-
               {{- if .Values.sentry.features.orgSubdomains }}
-              "organizations:org-subdomains",
+              "organizations:org-ingest-subdomains",
               {{ end -}}
-
-              "organizations:advanced-search",
-              "organizations:android-mappings",
-              "organizations:api-keys",
-              "organizations:boolean-search",
-              "organizations:related-events",
-              "organizations:alert-filters",
-              "organizations:custom-symbol-sources",
-              "organizations:dashboards-basic",
-              "organizations:dashboards-edit",
-              "organizations:data-forwarding",
               "organizations:discover",
-              "organizations:discover-basic",
-              "organizations:discover-query",
-              "organizations:discover-frontend-use-events-endpoint",
-              "organizations:enterprise-perf",
-              "organizations:event-attachments",
-              "organizations:events",
               "organizations:global-views",
               "organizations:incidents",
-              "organizations:metric-alert-builder-aggregate",
-              "organizations:metric-alert-gui-filters",
-              "organizations:integrations-event-hooks",
               "organizations:integrations-issue-basic",
               "organizations:integrations-issue-sync",
-              "organizations:integrations-alert-rule",
-              "organizations:integrations-chat-unfurl",
-              "organizations:integrations-incident-management",
-              "organizations:integrations-ticket-rules",
-
-              {{- if .Values.sentry.features.vstsLimitedScopes }}
-              "organizations:integrations-vsts-limited-scopes",
-              {{ end -}}
-
-              "organizations:integrations-stacktrace-link",
-              "organizations:internal-catchall",
               "organizations:invite-members",
-              "organizations:large-debug-files",
-              "organizations:monitors",
-              "organizations:onboarding",
-              "organizations:org-saved-searches",
-              "organizations:performance-view",
-              "organizations:performance-frontend-use-events-endpoint",
-              "organizations:project-detail",
-              "organizations:relay",
-              "organizations:release-performance-views",
-              "organizations:rule-page",
-              "organizations:set-grouping-config",
-              "organizations:custom-event-title",
-              "organizations:slack-migration",
               "organizations:sso-basic",
-              "organizations:sso-rippling",
               "organizations:sso-saml2",
-              "organizations:sso-migration",
-              "organizations:stacktrace-hover-preview",
-              "organizations:symbol-sources",
-              "organizations:transaction-comparison",
-              "organizations:usage-stats-graph",
-              "organizations:inbox",
-              "organizations:unhandled-issue-flag",
-              "organizations:invite-members-rate-limits",
-              "organizations:dashboards-v2",
-              "organizations:reprocessing-v2",
-              "organizations:metrics",
-              "organizations:metrics-extraction",
-              "organizations:transaction-metrics-extraction",
-
-              {{- if .Values.sentry.features.enableSessionReplay}}
-              "organizations:session-replay",
-              "organizations:session-replay-ui",
-              "organizations:session-replay-sdk",
-              "organizations:session-replay-count-query-optimize",
-              "organizations:session-replay-sdk-errors-only",
-              "organizations:session-replay-recording-scrubbing",
-              "organizations:session-replay-a11y-tab",
-              "organizations:session-replay-slack-new-issue",
-              "organizations:session-replay-issue-emails",
-              "organizations:session-replay-event-linking",
-              "organizations:session-replay-weekly-email",
-              "organizations:session-replay-trace-table",
-              "organizations:session-replay-rage-dead-selectors",
-              "organizations:session-replay-new-event-counts",
-              "organizations:session-replay-new-timeline",
-              "organizations:issue-details-replay-event",
-              {{ end -}}
-
+              "organizations:advanced-search",
               "organizations:issue-platform",
-
-              {{- if .Values.sentry.features.enableProfiling }}
-              "organizations:profiling",
-              "organizations:profiling-ui-frames",
-              "organizations:profiling-using-transactions",
-              "organizations:profiling-beta",
-              "organizations:profiling-stacktrace-links",
-              "organizations:profiling-cpu-chart",
-              "organizations:profiling-memory-chart",
-              "organizations:profiling-view",
-              {{ end -}}
-
-              {{- if .Values.sentry.features.enableFeedback }}
-              "organizations:user-feedback-ui",
-              "organizations:user-feedback-ingest",
-              "organizations:feedback-ingest",
-              "organizations:feedback-post-process-group",
-              "organizations:feedback-visible",
-              {{ end -}}
-
-              {{- if .Values.sentry.features.enableSpan }}
-              "projects:span-metrics-extraction",
-              "projects:span-metrics-extraction-addons",
-              "organizations:indexed-spans-extraction",
-              "organizations:starfish-browser-resource-module-image-view",
-              "organizations:starfish-browser-resource-module-ui",
-              "organizations:starfish-browser-webvitals",
-              "organizations:starfish-browser-webvitals-pageoverview-v2",
-              "organizations:starfish-browser-webvitals-use-backend-scores",
-              "organizations:performance-calculate-score-relay",
-              "organizations:starfish-browser-webvitals-replace-fid-with-inp",
-              "organizations:deprecate-fid-from-performance-score",
-              "organizations:performance-database-view",
-              "organizations:performance-screens-view",
-              "organizations:mobile-ttid-ttfd-contribution",
-              "organizations:starfish-mobile-appstart",
-              "organizations:standalone-span-ingestion",
-              "organizations:insights-entry-points",
-              "organizations:insights-initial-modules",
-              "organizations:insights-addon-modules",
-              {{ end -}}
-
+              "organizations:monitors",
               "organizations:dashboards-mep",
               "organizations:mep-rollout-flag",
               "organizations:dashboards-rh-widget",
-              "organizations:metrics-extraction",
-              "organizations:transaction-metrics-extraction",
-
-              "projects:alert-filters",
+              "organizations:dynamic-sampling",
               "projects:custom-inbound-filters",
               "projects:data-forwarding",
               "projects:discard-groups",
-              "projects:issue-alerts-targeting",
-              "projects:minidump",
-              "projects:rate-limits",
-              "projects:sample-events",
-              "projects:servicehooks",
-              "projects:similarity-view",
-              "projects:similarity-indexing",
-              "projects:similarity-view-v2",
-              "projects:similarity-indexing-v2",
-
               "projects:plugins",
+              "projects:rate-limits",
+              "projects:servicehooks",
+          )
+          {{- if .Values.sentry.features.enableSpan }}
+          + (
+              # Performance/Tracing/Spans related flags
+              "organizations:performance-view",
+              "organizations:visibility-explore-view",
+              "organizations:transaction-metrics-extraction",
+              "organizations:indexed-spans-extraction",
+              "organizations:insights-entry-points",
+              "organizations:insights-initial-modules",
+              "organizations:insights-addon-modules",
+              "organizations:standalone-span-ingestion",
+              "organizations:starfish-mobile-appstart",
+              "projects:span-metrics-extraction",
+              "projects:span-metrics-extraction-addons",
+              
+              # flags added in this chart
+              "organizations:trace-view-load-more",
+              "organizations:trace-tabs-ui",
+              "organizations:trace-view-linked-traces",
+              "organizations:span-stats",
+              "organizations:visibility-explore-range-high",
+          )
+          {{- end }}
+          {{- if .Values.sentry.features.enableSessionReplay}}
+          + (
+              # Session Replay related flags
+              "organizations:session-replay",
+              
+              # flags added in this chart
+              "organizations:session-replay-ui",
+              "organizations:session-replay-issue-emails",
+              "organizations:session-replay-recording-scrubbing",
+              "organizations:session-replay-slack-new-issue",
+          )
+          {{- end }}
+          {{- if .Values.sentry.features.enableFeedback }}
+          + (
+              # User Feedback related flags
+              "organizations:user-feedback-ui",
+          )
+          {{- end }}
+          {{- if .Values.sentry.features.enableProfiling }}
+          + (
+              # Profiling related flags
+              "organizations:profiling",
+              "organizations:profiling-view",
+              # Continuous Profiling related flags
+              "organizations:continuous-profiling",
+              "organizations:continuous-profiling-stats",
+          )
+          {{- end }}
+          {{- if .Values.sentry.features.enableUptime }}
+          + (
+              # Uptime Monitoring related flags
+              "organizations:uptime",
+              "organizations:uptime-create-issues",
+          )
+          {{- end }}
+          + (
+              # Flags enabled in this chart but not present in https://github.com/getsentry/self-hosted/blob/master/sentry/sentry.conf.example.py
+              "organizations:related-events",
+              "organizations:reprocessing-v2",
+              "organizations:set-grouping-config",
+              "organizations:onboarding",
+              "projects:similarity-indexing",
+              "projects:similarity-view",
+          )
+          + (
+              # Custom features from values
               {{- if .Values.sentry.customFeatures }}
               {{- range $CustomFeature := .Values.sentry.customFeatures }}
               "{{ $CustomFeature}}",
@@ -623,6 +567,12 @@ sentry.conf.py: |-
   #########
   SENTRY_RELAY_WHITELIST_PK = []
   SENTRY_RELAY_OPEN_REGISTRATION = True
+
+  #########
+  # Tasks #
+  #########
+  # Disable taskworker and continue using celery.
+  SENTRY_OPTIONS["taskworker.enabled"] = False
 
   #######################
   # OpenAi Suggestions #

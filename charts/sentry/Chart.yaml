@@ -2,8 +2,9 @@ apiVersion: v2
 name: sentry
 description: A Helm chart for Kubernetes
 type: application
-version: 26.12.0
-appVersion: 24.12.2
+version: 27.5.0
+# renovate image=ghcr.io/getsentry/sentry
+appVersion: 25.8.0
 dependencies:
   - name: memcached
     repository: oci://registry-1.docker.io/bitnamicharts
@@ -19,7 +20,7 @@ dependencies:
     condition: kafka.enabled
   - name: clickhouse
     repository: https://sentry-kubernetes.github.io/charts
-    version: 3.14.1
+    version: 4.1.0
     condition: clickhouse.enabled
   - name: zookeeper
     repository: oci://registry-1.docker.io/bitnamicharts
@@ -40,3 +41,7 @@ dependencies:
     condition: nginx.enabled
 maintainers:
   - name: sentry-kubernetes
+icon: https://raw.githubusercontent.com/sentry-kubernetes/charts/refs/heads/develop/docs/logo.png
+home: https://github.com/sentry-kubernetes/charts
+sources:
+  - https://github.com/sentry-kubernetes/charts/tree/develop/charts/sentry

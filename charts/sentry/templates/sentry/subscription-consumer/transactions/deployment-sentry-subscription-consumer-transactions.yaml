@@ -1,3 +1,4 @@
+{{- if has "feature-complete" .Values.profiles }}
 {{- if .Values.sentry.subscriptionConsumerTransactions.enabled }}
 apiVersion: apps/v1
 kind: Deployment
@@ -8,7 +9,7 @@ metadata:
     chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
     release: "{{ .Release.Name }}"
     heritage: "{{ .Release.Service }}"
-    app.kubernetes.io/managed-by: "Helm"
+    {{- include "sentry.component.labels" (dict "component" "sentry-subscription-consumer-transactions" "ctx" .) | nindent 4 }}
   {{- if .Values.asHook }}
   {{- /* Add the Helm annotations so that deployment after asHook from true to false works */}}
   annotations:
@@ -38,6 +39,7 @@ spec:
         app: sentry
         release: "{{ .Release.Name }}"
         role: sentry-subscription-consumer-transactions
+        {{- include "sentry.component.labels" (dict "component" "sentry-subscription-consumer-transactions" "ctx" .) | nindent 8 }}
         {{- if .Values.sentry.subscriptionConsumerTransactions.podLabels }}
 {{ toYaml .Values.sentry.subscriptionConsumerTransactions.podLabels | indent 8 }}
         {{- end }}
@@ -166,4 +168,5 @@ spec:
       {{- if .Values.sentry.subscriptionConsumerTransactions.priorityClassName }}
       priorityClassName: "{{ .Values.sentry.subscriptionConsumerTransactions.priorityClassName }}"
       {{- end }}
+{{- end }}
 {{- end }}

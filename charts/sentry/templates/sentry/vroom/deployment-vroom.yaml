@@ -1,3 +1,4 @@
+{{- if has "feature-complete" .Values.profiles }}
 {{- if .Values.sentry.features.enableProfiling }}
 apiVersion: apps/v1
 kind: Deployment
@@ -8,7 +9,7 @@ metadata:
     chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
     release: "{{ .Release.Name }}"
     heritage: "{{ .Release.Service }}"
-    app.kubernetes.io/managed-by: "Helm"
+    {{- include "sentry.component.labels" (dict "component" "vroom" "ctx" .) | nindent 4 }}
   {{- if .Values.asHook }}
   {{- /* Add the Helm annotations so that deployment after asHook from true to false works */}}
   annotations:
@@ -37,6 +38,7 @@ spec:
         app: {{ template "sentry.fullname" . }}
         release: "{{ .Release.Name }}"
         role: vroom
+        {{- include "sentry.component.labels" (dict "component" "vroom" "ctx" .) | nindent 8 }}
         {{- if .Values.vroom.podLabels }}
 {{ toYaml .Values.vroom.podLabels | indent 8 }}
         {{- end }}
@@ -84,12 +86,15 @@ spec:
         env:
         - name: VROOM_PORT
           value: '{{ template "vroom.port" }}'
+{{- include "vroom.env" . | nindent 8 }}
 {{- if .Values.vroom.env }}
 {{ toYaml .Values.vroom.env | indent 8 }}
 {{- end }}
-{{- if .Values.vroom.volumeMounts }}
         volumeMounts:
-{{ toYaml .Values.vroom.volumeMounts | indent 10 }}
+        - name: vroom-storage
+          mountPath: /var/vroom/sentry-profiles
+{{- if .Values.vroom.volumeMounts }}
+{{ toYaml .Values.vroom.volumeMounts | indent 8 }}
 {{- end }}
         livenessProbe:
           failureThreshold: {{ .Values.vroom.probeFailureThreshold }}
@@ -126,16 +131,23 @@ spec:
       {{- if .Values.serviceAccount.enabled }}
       serviceAccountName: {{ .Values.serviceAccount.name }}-vroom
       {{- end }}
-{{- if or .Values.vroom.volumes .Values.global.volumes }}
       volumes:
+      {{- if .Values.vroom.persistence.enabled }}
+      - name: vroom-storage
+        persistentVolumeClaim:
+          claimName: sentry-vroom-pvc
+      {{- else }}
+      - name: vroom-storage
+        emptyDir: {}
+      {{- end }}
 {{- if .Values.vroom.volumes }}
 {{ toYaml .Values.vroom.volumes | indent 6 }}
 {{- end }}
 {{- if .Values.global.volumes }}
 {{ toYaml .Values.global.volumes | indent 6 }}
 {{- end }}
-{{- end }}
       {{- if .Values.vroom.priorityClassName }}
       priorityClassName: "{{ .Values.vroom.priorityClassName }}"
       {{- end }}
+{{- end }}
 {{- end }}

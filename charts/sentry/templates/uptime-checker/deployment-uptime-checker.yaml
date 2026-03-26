@@ -1,0 +1,118 @@
+{{- if has "feature-complete" .Values.profiles }}
+{{- if .Values.sentry.features.enableUptime }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "sentry.fullname" . }}-uptime-checker
+  labels:
+    app: {{ template "sentry.fullname" . }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
+    release: "{{ .Release.Name }}"
+    heritage: "{{ .Release.Service }}"
+    {{- include "sentry.component.labels" (dict "component" "uptime-checker" "ctx" .) | nindent 4 }}
+  {{- if .Values.asHook }}
+  {{- /* Add the Helm annotations so that deployment after asHook from true to false works */}}
+  annotations:
+    meta.helm.sh/release-name: "{{ .Release.Name }}"
+    meta.helm.sh/release-namespace: "{{ .Release.Namespace }}"
+    "helm.sh/hook": "post-install,post-upgrade"
+    "helm.sh/hook-weight": "25"
+  {{- end }}
+spec:
+  selector:
+    matchLabels:
+      app: {{ template "sentry.fullname" . }}
+      release: "{{ .Release.Name }}"
+      role: uptime-checker
+  replicas: {{ .Values.uptimeChecker.replicas }}
+  revisionHistoryLimit: {{ .Values.revisionHistoryLimit }}
+  template:
+    metadata:
+      annotations:
+        {{- if .Values.uptimeChecker.annotations }}
+{{ toYaml .Values.uptimeChecker.annotations | indent 8 }}
+        {{- end }}
+      labels:
+        app: {{ template "sentry.fullname" . }}
+        release: "{{ .Release.Name }}"
+        role: uptime-checker
+        {{- include "sentry.component.labels" (dict "component" "uptime-checker" "ctx" .) | nindent 8 }}
+        {{- if .Values.uptimeChecker.podLabels }}
+{{ toYaml .Values.uptimeChecker.podLabels | indent 8 }}
+        {{- end }}
+    spec:
+      affinity:
+      {{- if .Values.uptimeChecker.affinity }}
+{{ toYaml .Values.uptimeChecker.affinity | indent 8 }}
+      {{- end }}
+      {{- if .Values.uptimeChecker.nodeSelector }}
+      nodeSelector:
+{{ toYaml .Values.uptimeChecker.nodeSelector | indent 8 }}
+      {{- else if .Values.global.nodeSelector }}
+      nodeSelector:
+{{ toYaml .Values.global.nodeSelector | indent 8 }}
+      {{- end }}
+      {{- if .Values.uptimeChecker.tolerations }}
+      tolerations:
+{{ toYaml .Values.uptimeChecker.tolerations | indent 8 }}
+      {{- else if .Values.global.tolerations }}
+      tolerations:
+{{ toYaml .Values.global.tolerations | indent 8 }}
+      {{- end }}
+      {{- if .Values.uptimeChecker.topologySpreadConstraints }}
+      topologySpreadConstraints:
+{{ toYaml .Values.uptimeChecker.topologySpreadConstraints | indent 8 }}
+      {{- end }}
+      {{- if .Values.images.uptimeChecker.imagePullSecrets }}
+      imagePullSecrets:
+{{ toYaml .Values.images.uptimeChecker.imagePullSecrets | indent 8 }}
+      {{- end }}
+      {{- if .Values.uptimeChecker.securityContext }}
+      securityContext:
+{{ toYaml .Values.uptimeChecker.securityContext | indent 8 }}
+      {{- end }}
+      containers:
+      - name: {{ .Chart.Name }}-uptime-checker
+{{- if .Values.uptimeChecker.args }}
+        args:
+{{ toYaml .Values.uptimeChecker.args | indent 10 }}
+{{- else }}
+        args: ["run"]
+{{- end }}
+        image: "{{ template "uptimeChecker.image" . }}"
+        imagePullPolicy: {{ default "IfNotPresent" .Values.images.uptimeChecker.pullPolicy }}
+        env:
+{{- include "uptimeChecker.env" . | nindent 8 }}
+{{- if .Values.uptimeChecker.env }}
+{{ toYaml .Values.uptimeChecker.env | indent 8 }}
+{{- end }}
+{{- if .Values.uptimeChecker.volumeMounts }}
+{{ toYaml .Values.uptimeChecker.volumeMounts | indent 8 }}
+{{- end }}
+        resources:
+{{ toYaml .Values.uptimeChecker.resources | indent 12 }}
+{{- if .Values.uptimeChecker.containerSecurityContext }}
+        securityContext:
+{{ toYaml .Values.uptimeChecker.containerSecurityContext | indent 12 }}
+{{- end }}
+{{- if .Values.uptimeChecker.sidecars }}
+{{ toYaml .Values.uptimeChecker.sidecars | indent 6 }}
+{{- end }}
+{{- if .Values.global.sidecars }}
+{{ toYaml .Values.global.sidecars | indent 6 }}
+{{- end }}
+      {{- if .Values.serviceAccount.enabled }}
+      serviceAccountName: {{ .Values.serviceAccount.name }}-uptime-checker
+      {{- end }}
+      volumes:
+{{- if .Values.uptimeChecker.volumes }}
+{{ toYaml .Values.uptimeChecker.volumes | indent 6 }}
+{{- end }}
+{{- if .Values.global.volumes }}
+{{ toYaml .Values.global.volumes | indent 6 }}
+{{- end }}
+      {{- if .Values.uptimeChecker.priorityClassName }}
+      priorityClassName: "{{ .Values.uptimeChecker.priorityClassName }}"
+      {{- end }}
+{{- end }}
+{{- end }}

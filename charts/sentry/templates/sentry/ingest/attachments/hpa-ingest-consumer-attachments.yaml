@@ -3,6 +3,8 @@ apiVersion: {{ template "sentry.autoscaling.apiVersion" . }}
 kind: HorizontalPodAutoscaler
 metadata:
   name: {{ template "sentry.fullname" . }}-sentry-ingest-consumer-attachments
+  labels:
+    {{- include "sentry.component.labels" (dict "component" "ingest-consumer-attachments" "ctx" .) | nindent 4 }}
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
@@ -14,20 +16,26 @@ spec:
   targetCPUUtilizationPercentage: {{ .Values.sentry.ingestConsumerAttachments.autoscaling.targetCPUUtilizationPercentage }}
   {{- else if semverCompare ">=1.27-0" .Capabilities.KubeVersion.GitVersion }}
   metrics:
-  - type: ContainerResource
-    containerResource:
-      container: {{ .Chart.Name }}-ingest-consumer-attachments
-      name: cpu
-      target:
-        type: Utilization
-        averageUtilization: {{ .Values.sentry.ingestConsumerAttachments.autoscaling.targetCPUUtilizationPercentage }}
+    - type: ContainerResource
+      containerResource:
+        container: {{ .Chart.Name }}-ingest-consumer-attachments
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: {{ .Values.sentry.ingestConsumerAttachments.autoscaling.targetCPUUtilizationPercentage }}
   {{- else }}
   metrics:
-  - type: Resource
-    resource:
-      name: cpu
-      target:
-        type: Utilization
-        averageUtilization: {{ .Values.sentry.ingestConsumerAttachments.autoscaling.targetCPUUtilizationPercentage }}
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: {{ .Values.sentry.ingestConsumerAttachments.autoscaling.targetCPUUtilizationPercentage }}
+  {{- end }}
+  {{- if eq (include "sentry.autoscaling.apiVersion" .) "autoscaling/v2" }}
+  {{- with .Values.sentry.ingestConsumerAttachments.autoscaling.behavior }}
+  behavior:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
   {{- end }}
 {{- end }}

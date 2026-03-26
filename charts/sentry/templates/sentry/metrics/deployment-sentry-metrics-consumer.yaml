@@ -1,3 +1,4 @@
+{{- if has "feature-complete" .Values.profiles }}
 {{- if .Values.sentry.metricsConsumer.enabled }}
 apiVersion: apps/v1
 kind: Deployment
@@ -8,7 +9,7 @@ metadata:
     chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
     release: "{{ .Release.Name }}"
     heritage: "{{ .Release.Service }}"
-    app.kubernetes.io/managed-by: "Helm"
+    {{- include "sentry.component.labels" (dict "component" "metrics-consumer" "ctx" .) | nindent 4 }}
   {{- if .Values.asHook }}
   {{- /* Add the Helm annotations so that deployment after asHook from true to false works */}}
   annotations:
@@ -38,6 +39,7 @@ spec:
         app: {{ template "sentry.fullname" . }}
         release: "{{ .Release.Name }}"
         role: metrics-consumer
+        {{- include "sentry.component.labels" (dict "component" "metrics-consumer" "ctx" .) | nindent 8 }}
         {{- if .Values.sentry.metricsConsumer.podLabels }}
 {{ toYaml .Values.sentry.metricsConsumer.podLabels | indent 8 }}
         {{- end }}
@@ -188,4 +190,5 @@ spec:
       {{- if .Values.sentry.metricsConsumer.priorityClassName }}
       priorityClassName: "{{ .Values.sentry.metricsConsumer.priorityClassName }}"
       {{- end }}
+{{- end }}
 {{- end }}

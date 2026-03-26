@@ -8,6 +8,7 @@ metadata:
     chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
     release: "{{ .Release.Name }}"
     heritage: "{{ .Release.Service }}"
+    {{- include "sentry.component.labels" (dict "component" "web" "ctx" .) | nindent 4 }}
 spec:
   revisionHistoryLimit: {{ .Values.revisionHistoryLimit }}
   strategy:
@@ -33,8 +34,9 @@ spec:
         app: {{ template "sentry.fullname" . }}
         release: "{{ .Release.Name }}"
         role: web
+        {{- include "sentry.component.labels" (dict "component" "web" "ctx" .) | nindent 8 }}
         {{- if .Values.sentry.web.podLabels }}
-{{ toYaml .Values.sentry.web.podLabels | indent 8 }}
+        {{ toYaml .Values.sentry.web.podLabels | nindent 8 }}
         {{- end }}
     spec:
       affinity:
@@ -119,6 +121,7 @@ spec:
         {{- if and .Values.geodata.volumeName .Values.geodata.accountID }}
         - name: {{ .Values.geodata.volumeName }}
           mountPath: {{ .Values.geodata.mountPath }}
+          readOnly: true
         {{- end }}
         {{- if and (eq .Values.filestore.backend "gcs") .Values.filestore.gcs.secretName }}
         - name: sentry-google-cloud-key
@@ -198,7 +201,7 @@ spec:
       {{- if and .Values.geodata.volumeName .Values.geodata.accountID }}
       - name: {{ .Values.geodata.volumeName }}
         persistentVolumeClaim:
-          claimName: {{ .Values.geodata.volumeName }}
+          claimName: data-sentry-geoip
       {{- end }}
 {{- if .Values.sentry.web.volumes }}
 {{ toYaml .Values.sentry.web.volumes | indent 6 }}
