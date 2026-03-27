@@ -102,8 +102,11 @@ spec:
         ports:
         - containerPort: 50051
           name: grpc
+{{- $globalTaskBrokerResources := default dict $root.Values.sentry.taskBroker.resources }}
+{{- $perBrokerResources := default dict $broker.resources }}
+{{- $taskBrokerResources := mergeOverwrite (mergeOverwrite (dict) $globalTaskBrokerResources) $perBrokerResources }}
         resources:
-{{ toYaml $root.Values.sentry.taskBroker.resources | indent 10 }}
+{{ toYaml $taskBrokerResources | indent 10 }}
 {{- if $root.Values.sentry.taskBroker.containerSecurityContext }}
         securityContext:
 {{ toYaml $root.Values.sentry.taskBroker.containerSecurityContext | indent 10 }}

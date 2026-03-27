@@ -780,6 +780,7 @@ Note: this table is incomplete, so have a look at the values.yaml in case you mi
 | sentry.subscriptionConsumerTransactions.topologySpreadConstraints | list | `[]` |  |
 | sentry.subscriptionConsumerTransactions.volumes | list | `[]` |  |
 | sentry.taskBroker.affinity | object | `{}` | |
+| sentry.taskBroker.brokers | list | (see `values.yaml`) | One broker StatefulSet per item (`name`, `topic`, `consumerGroup`, `replicas`, optional `resources` merged with `sentry.taskBroker.resources`). |
 | sentry.taskBroker.containerSecurityContext | object | `{}` | |
 | sentry.taskBroker.enabled | bool | `true` | |
 | sentry.taskBroker.env | list | `[]` | |
@@ -790,7 +791,7 @@ Note: this table is incomplete, so have a look at the values.yaml in case you mi
 | sentry.taskBroker.persistence.storageClass | string | `""` | |
 | sentry.taskBroker.priorityClassName | string | `""` | |
 | sentry.taskBroker.replicas | int | `1` | |
-| sentry.taskBroker.resources | object | `{}` | |
+| sentry.taskBroker.resources | object | `{}` | Default container resources for task broker pods; merged with each broker’s `resources` in `sentry.taskBroker.brokers`. |
 | sentry.taskBroker.securityContext | object | `{}` | |
 | sentry.taskBroker.sidecars | list | `[]` | |
 | sentry.taskBroker.tolerations | list | `[]` | |
@@ -812,13 +813,14 @@ Note: this table is incomplete, so have a look at the values.yaml in case you mi
 | sentry.taskWorker.nodeSelector | object | `{}` | |
 | sentry.taskWorker.priorityClassName | string | `""` | |
 | sentry.taskWorker.replicas | int | `1` | |
-| sentry.taskWorker.resources | object | `{}` | |
+| sentry.taskWorker.resources | object | `{}` | Default container resources for task worker pods; merged with each worker’s `resources` in `sentry.taskWorker.workers`. |
 | sentry.taskWorker.securityContext | object | `{}` | |
 | sentry.taskWorker.sidecars | list | `[]` | |
 | sentry.taskWorker.tolerations | list | `[]` | |
 | sentry.taskWorker.topologySpreadConstraints | list | `[]` | |
 | sentry.taskWorker.volumeMounts | list | `[]` | |
 | sentry.taskWorker.volumes | list | `[]` | |
+| sentry.taskWorker.workers | list | (see `values.yaml`) | One task worker Deployment per item (`name`, `brokerName`, `brokerReplicas`, `replicas`, `concurrency`, optional `resources` merged with `sentry.taskWorker.resources`, optional `autoscaling` overriding `sentry.taskWorker.autoscaling`). |
 | sentry.web.affinity | object | `{}` |  |
 | sentry.web.autoscaling.enabled | bool | `false` |  |
 | sentry.web.autoscaling.maxReplicas | int | `5` |  |

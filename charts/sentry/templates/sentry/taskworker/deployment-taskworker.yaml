@@ -114,8 +114,11 @@ spec:
 {{- if $root.Values.sentry.taskWorker.env }}
 {{ toYaml $root.Values.sentry.taskWorker.env | indent 8 }}
 {{- end }}
+{{- $globalTaskWorkerResources := default dict $root.Values.sentry.taskWorker.resources }}
+{{- $perWorkerResources := default dict $worker.resources }}
+{{- $taskWorkerResources := mergeOverwrite (mergeOverwrite (dict) $globalTaskWorkerResources) $perWorkerResources }}
         resources:
-{{ toYaml $root.Values.sentry.taskWorker.resources | indent 10 }}
+{{ toYaml $taskWorkerResources | indent 10 }}
 {{- if $root.Values.sentry.taskWorker.containerSecurityContext }}
         securityContext:
 {{ toYaml $root.Values.sentry.taskWorker.containerSecurityContext | indent 10 }}

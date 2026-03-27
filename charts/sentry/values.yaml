@@ -358,6 +358,7 @@ sentry:
       # persistentVolumeClaimRetentionPolicy:
       #   whenDeleted: Retain  # or Delete
       #   whenScaled: Retain   # or Delete
+    # brokers[].resources -- Optional per-broker container resources; merged over taskBroker.resources (broker keys win).
     brokers:
       - name: default
         topic: taskworker
@@ -420,6 +421,7 @@ sentry:
       initialDelaySeconds: 10
       periodSeconds: 10
       timeoutSeconds: 5
+    # workers[].resources -- Optional per-worker container resources; merged over taskWorker.resources (worker keys win).
     workers:
       - name: default
         brokerName: default
