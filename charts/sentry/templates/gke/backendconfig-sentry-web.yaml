@@ -19,10 +19,10 @@ spec:
       {{ toYaml .Values.sentry.web.customResponseHeaders | nindent 6 }}
   {{- end }} 
   healthCheck:
-    checkIntervalSec: {{ .Values.sentry.web.probePeriodSeconds }}
-    timeoutSec: {{ .Values.sentry.web.probeTimeoutSeconds }}
-    healthyThreshold: {{ .Values.sentry.web.probeSuccessThreshold }}
-    unhealthyThreshold: {{ .Values.sentry.web.probeFailureThreshold }}  
+    checkIntervalSec: {{ .Values.sentry.web.livenessProbe.periodSeconds }}
+    timeoutSec: {{ .Values.sentry.web.livenessProbe.timeoutSeconds }}
+    healthyThreshold: {{ .Values.sentry.web.livenessProbe.successThreshold }}
+    unhealthyThreshold: {{ .Values.sentry.web.livenessProbe.failureThreshold }}  
     type: HTTP
     requestPath: {{ template "sentry.healthCheck.requestPath" }}
     port: {{ .Values.service.externalPort }}

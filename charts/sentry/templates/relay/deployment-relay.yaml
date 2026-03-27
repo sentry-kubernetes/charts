@@ -230,25 +230,25 @@ spec:
 {{ toYaml .Values.global.volumeMounts | indent 10 }}
 {{- end }}
         livenessProbe:
-          failureThreshold: {{ .Values.relay.probeFailureThreshold }}
+          failureThreshold: {{ .Values.relay.livenessProbe.failureThreshold }}
           httpGet:
             path: {{ template "relay.healthCheck.livenessRequestPath" }}
             port: {{ template "relay.port" }}
             scheme: HTTP
-          initialDelaySeconds: {{ .Values.relay.probeInitialDelaySeconds }}
-          periodSeconds: {{ .Values.relay.probePeriodSeconds }}
-          successThreshold: {{ .Values.relay.probeSuccessThreshold }}
-          timeoutSeconds: {{ .Values.relay.probeTimeoutSeconds }}
+          initialDelaySeconds: {{ .Values.relay.livenessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.relay.livenessProbe.periodSeconds }}
+          successThreshold: {{ .Values.relay.livenessProbe.successThreshold }}
+          timeoutSeconds: {{ .Values.relay.livenessProbe.timeoutSeconds }}
         readinessProbe:
-          failureThreshold: {{ .Values.relay.probeFailureThreshold }}
+          failureThreshold: {{ .Values.relay.readinessProbe.failureThreshold }}
           httpGet:
             path: {{ template "relay.healthCheck.readinessRequestPath" }}
             port: {{ template "relay.port" }}
             scheme: HTTP
-          initialDelaySeconds: {{ .Values.relay.probeInitialDelaySeconds }}
-          periodSeconds: {{ .Values.relay.probePeriodSeconds }}
-          successThreshold: {{ .Values.relay.probeSuccessThreshold }}
-          timeoutSeconds: {{ .Values.relay.probeTimeoutSeconds }}
+          initialDelaySeconds: {{ .Values.relay.readinessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.relay.readinessProbe.periodSeconds }}
+          successThreshold: {{ .Values.relay.readinessProbe.successThreshold }}
+          timeoutSeconds: {{ .Values.relay.readinessProbe.timeoutSeconds }}
         resources:
 {{ toYaml .Values.relay.resources | indent 12 }}
 {{- if .Values.relay.containerSecurityContext }}

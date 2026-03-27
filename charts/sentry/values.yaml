@@ -93,11 +93,19 @@ vroom:
   # args: []
   replicas: 1
   env: []
-  probeFailureThreshold: 5
-  probeInitialDelaySeconds: 10
-  probePeriodSeconds: 10
-  probeSuccessThreshold: 1
-  probeTimeoutSeconds: 2
+  # HTTP probes: liveness tolerates brief blips; readiness is stricter so Service endpoints drop faster.
+  livenessProbe:
+    failureThreshold: 5
+    initialDelaySeconds: 10
+    periodSeconds: 10
+    successThreshold: 1
+    timeoutSeconds: 2
+  readinessProbe:
+    failureThreshold: 2
+    initialDelaySeconds: 10
+    periodSeconds: 3
+    successThreshold: 1
+    timeoutSeconds: 2
   resources: {}
   #  requests:
   #    cpu: 100m
@@ -176,11 +184,19 @@ relay:
   # args: []
   mode: managed
   env: []
-  probeFailureThreshold: 5
-  probeInitialDelaySeconds: 10
-  probePeriodSeconds: 10
-  probeSuccessThreshold: 1
-  probeTimeoutSeconds: 2
+  # HTTP probes: liveness tolerates brief blips; readiness is stricter so Service endpoints drop faster.
+  livenessProbe:
+    failureThreshold: 5
+    initialDelaySeconds: 10
+    periodSeconds: 10
+    successThreshold: 1
+    timeoutSeconds: 2
+  readinessProbe:
+    failureThreshold: 2
+    initialDelaySeconds: 10
+    periodSeconds: 3
+    successThreshold: 1
+    timeoutSeconds: 2
   resources: {}
   #  requests:
   #    cpu: 100m
@@ -276,11 +292,19 @@ sentry:
     replicas: 1
     env: []
     existingSecretEnv: ""
-    probeFailureThreshold: 5
-    probeInitialDelaySeconds: 10
-    probePeriodSeconds: 10
-    probeSuccessThreshold: 1
-    probeTimeoutSeconds: 2
+    # HTTP probes: liveness tolerates brief blips; readiness is stricter so Service endpoints drop faster.
+    livenessProbe:
+      failureThreshold: 5
+      initialDelaySeconds: 10
+      periodSeconds: 10
+      successThreshold: 1
+      timeoutSeconds: 2
+    readinessProbe:
+      failureThreshold: 2
+      initialDelaySeconds: 10
+      periodSeconds: 3
+      successThreshold: 1
+      timeoutSeconds: 2
     resources: {}
     #  requests:
     #    cpu: 200m
@@ -1227,10 +1251,18 @@ snuba:
     #   - snuba
     #   - api
     env: []
-    probeInitialDelaySeconds: 10
-    liveness:
+    # HTTP probes: liveness tolerates brief blips; readiness is stricter so Service endpoints drop faster.
+    livenessProbe:
+      failureThreshold: 5
+      initialDelaySeconds: 10
+      periodSeconds: 10
+      successThreshold: 1
       timeoutSeconds: 2
-    readiness:
+    readinessProbe:
+      failureThreshold: 2
+      initialDelaySeconds: 10
+      periodSeconds: 3
+      successThreshold: 1
       timeoutSeconds: 2
     resources: {}
     #  requests:
@@ -2159,7 +2191,19 @@ symbolicator:
       #   whenScaled: Retain   # or Delete
     replicas: 1
     env: []
-    probeInitialDelaySeconds: 10
+    # HTTP probes: liveness tolerates brief blips; readiness is stricter so Service endpoints drop faster.
+    livenessProbe:
+      failureThreshold: 5
+      initialDelaySeconds: 10
+      periodSeconds: 10
+      successThreshold: 1
+      timeoutSeconds: 2
+    readinessProbe:
+      failureThreshold: 2
+      initialDelaySeconds: 10
+      periodSeconds: 3
+      successThreshold: 1
+      timeoutSeconds: 2
     resources: {}
     affinity: {}
     nodeSelector: {}
@@ -3144,19 +3188,20 @@ metrics:
 
   ## Configure extra options for liveness and readiness probes
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/#configure-probes)
+  ## Readiness uses a shorter period and failure threshold so endpoints are removed quickly when /metrics fails.
   livenessProbe:
     enabled: true
     initialDelaySeconds: 30
-    periodSeconds: 5
+    periodSeconds: 3
     timeoutSeconds: 2
     failureThreshold: 3
     successThreshold: 1
   readinessProbe:
     enabled: true
     initialDelaySeconds: 30
-    periodSeconds: 5
+    periodSeconds: 3
     timeoutSeconds: 2
-    failureThreshold: 3
+    failureThreshold: 2
     successThreshold: 1
 
   ## Metrics exporter resource requests and limits

@@ -102,25 +102,25 @@ spec:
 {{ toYaml .Values.global.volumeMounts | indent 8 }}
 {{- end }}
         livenessProbe:
-          failureThreshold: 5
+          failureThreshold: {{ .Values.snuba.api.livenessProbe.failureThreshold }}
           httpGet:
             path: /health
             port: {{ template "snuba.port" }}
             scheme: HTTP
-          initialDelaySeconds: {{ .Values.snuba.api.probeInitialDelaySeconds }}
-          periodSeconds: 10
-          successThreshold: 1
-          timeoutSeconds: {{ .Values.snuba.api.liveness.timeoutSeconds }}
+          initialDelaySeconds: {{ .Values.snuba.api.livenessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.snuba.api.livenessProbe.periodSeconds }}
+          successThreshold: {{ .Values.snuba.api.livenessProbe.successThreshold }}
+          timeoutSeconds: {{ .Values.snuba.api.livenessProbe.timeoutSeconds }}
         readinessProbe:
-          failureThreshold: 10
+          failureThreshold: {{ .Values.snuba.api.readinessProbe.failureThreshold }}
           httpGet:
             path: /health
             port: {{ template "snuba.port" }}
             scheme: HTTP
-          initialDelaySeconds: {{ .Values.snuba.api.probeInitialDelaySeconds }}
-          periodSeconds: 10
-          successThreshold: 1
-          timeoutSeconds: {{ .Values.snuba.api.readiness.timeoutSeconds }}
+          initialDelaySeconds: {{ .Values.snuba.api.readinessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.snuba.api.readinessProbe.periodSeconds }}
+          successThreshold: {{ .Values.snuba.api.readinessProbe.successThreshold }}
+          timeoutSeconds: {{ .Values.snuba.api.readinessProbe.timeoutSeconds }}
         resources:
 {{ toYaml .Values.snuba.api.resources | indent 12 }}
 {{- if .Values.snuba.api.containerSecurityContext }}

@@ -107,25 +107,25 @@ spec:
 {{ toYaml .Values.global.volumeMounts | indent 8 }}
 {{- end }}
         livenessProbe:
-          failureThreshold: {{ .Values.vroom.probeFailureThreshold }}
+          failureThreshold: {{ .Values.vroom.livenessProbe.failureThreshold }}
           httpGet:
             path: /health
             port: {{ template "vroom.port" }}
             scheme: HTTP
-          initialDelaySeconds: {{ .Values.vroom.probeInitialDelaySeconds }}
-          periodSeconds: {{ .Values.vroom.probePeriodSeconds }}
-          successThreshold: {{ .Values.vroom.probeSuccessThreshold }}
-          timeoutSeconds: {{ .Values.vroom.probeTimeoutSeconds }}
+          initialDelaySeconds: {{ .Values.vroom.livenessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.vroom.livenessProbe.periodSeconds }}
+          successThreshold: {{ .Values.vroom.livenessProbe.successThreshold }}
+          timeoutSeconds: {{ .Values.vroom.livenessProbe.timeoutSeconds }}
         readinessProbe:
-          failureThreshold: {{ .Values.vroom.probeFailureThreshold }}
+          failureThreshold: {{ .Values.vroom.readinessProbe.failureThreshold }}
           httpGet:
             path: /health
             port: {{ template "vroom.port" }}
             scheme: HTTP
-          initialDelaySeconds: {{ .Values.vroom.probeInitialDelaySeconds }}
-          periodSeconds: {{ .Values.vroom.probePeriodSeconds }}
-          successThreshold: {{ .Values.vroom.probeSuccessThreshold }}
-          timeoutSeconds: {{ .Values.vroom.probeTimeoutSeconds }}
+          initialDelaySeconds: {{ .Values.vroom.readinessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.vroom.readinessProbe.periodSeconds }}
+          successThreshold: {{ .Values.vroom.readinessProbe.successThreshold }}
+          timeoutSeconds: {{ .Values.vroom.readinessProbe.timeoutSeconds }}
         resources:
 {{ toYaml .Values.vroom.resources | indent 12 }}
 {{- if .Values.vroom.containerSecurityContext }}

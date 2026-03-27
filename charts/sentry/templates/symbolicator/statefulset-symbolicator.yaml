@@ -110,25 +110,25 @@ spec:
 {{ toYaml .Values.global.volumeMounts | indent 8 }}
 {{- end }}
         livenessProbe:
-          failureThreshold: 5
+          failureThreshold: {{ .Values.symbolicator.api.livenessProbe.failureThreshold }}
           httpGet:
             path: /healthcheck
             port: {{ template "symbolicator.port" }}
             scheme: HTTP
-          initialDelaySeconds: {{ .Values.symbolicator.api.probeInitialDelaySeconds }}
-          periodSeconds: 10
-          successThreshold: 1
-          timeoutSeconds: 2
+          initialDelaySeconds: {{ .Values.symbolicator.api.livenessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.symbolicator.api.livenessProbe.periodSeconds }}
+          successThreshold: {{ .Values.symbolicator.api.livenessProbe.successThreshold }}
+          timeoutSeconds: {{ .Values.symbolicator.api.livenessProbe.timeoutSeconds }}
         readinessProbe:
-          failureThreshold: 10
+          failureThreshold: {{ .Values.symbolicator.api.readinessProbe.failureThreshold }}
           httpGet:
             path: /healthcheck
             port: {{ template "symbolicator.port" }}
             scheme: HTTP
-          initialDelaySeconds: {{ .Values.symbolicator.api.probeInitialDelaySeconds }}
-          periodSeconds: 10
-          successThreshold: 1
-          timeoutSeconds: 2
+          initialDelaySeconds: {{ .Values.symbolicator.api.readinessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.symbolicator.api.readinessProbe.periodSeconds }}
+          successThreshold: {{ .Values.symbolicator.api.readinessProbe.successThreshold }}
+          timeoutSeconds: {{ .Values.symbolicator.api.readinessProbe.timeoutSeconds }}
         resources:
 {{ toYaml .Values.symbolicator.api.resources | indent 12 }}
 {{- if .Values.symbolicator.api.containerSecurityContext }}

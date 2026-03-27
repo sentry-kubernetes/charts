@@ -19,10 +19,10 @@ spec:
       {{ toYaml .Values.relay.customResponseHeaders | nindent 6 }}
   {{- end }}      
   healthCheck:
-    checkIntervalSec: {{ .Values.relay.probePeriodSeconds }}
-    timeoutSec: {{ .Values.relay.probeTimeoutSeconds }}
-    healthyThreshold: {{ .Values.relay.probeSuccessThreshold }}
-    unhealthyThreshold: {{ .Values.relay.probeFailureThreshold }}
+    checkIntervalSec: {{ .Values.relay.livenessProbe.periodSeconds }}
+    timeoutSec: {{ .Values.relay.livenessProbe.timeoutSeconds }}
+    healthyThreshold: {{ .Values.relay.livenessProbe.successThreshold }}
+    unhealthyThreshold: {{ .Values.relay.livenessProbe.failureThreshold }}
     type: HTTP
     requestPath: {{ template "relay.healthCheck.requestPath" }}
     port: {{ template "relay.port" . }}
