@@ -19,6 +19,18 @@ helm install my-sentry sentry/sentry --wait --timeout=1000s
 Each chart has its own `README.md` in its directory with values and configuration instructions (for example `charts/sentry/README.md`).
 The changelog below refers to the main `sentry` chart only.
 
+## Upgrading to Chart 30.x.x
+
+**Breaking change:** HTTP health probe tuning for in-cluster traffic is no longer a single set of flat `probe*` values.
+
+- **relay**, **sentry.web**, **vroom**: replace `probeFailureThreshold`, `probeInitialDelaySeconds`, `probePeriodSeconds`, `probeSuccessThreshold`, and `probeTimeoutSeconds` with nested **`livenessProbe`** and **`readinessProbe`** objects (each supports the same five fields). Defaults keep liveness tolerant and use a shorter readiness interval and lower failure threshold so pods leave Service endpoints sooner when the health HTTP endpoint fails.
+- **snuba.api**: replace `probeInitialDelaySeconds`, `liveness.timeoutSeconds`, and `readiness.timeoutSeconds` with **`livenessProbe`** / **`readinessProbe`** blocks.
+- **symbolicator.api**: replace `probeInitialDelaySeconds` with **`livenessProbe`** / **`readinessProbe`** blocks.
+- **metrics**: if you relied on defaults, readiness is slightly stricter than liveness (`readinessProbe.periodSeconds` / `failureThreshold`); override under `metrics.readinessProbe` if needed.
+- **GKE** `BackendConfig` health checks for relay/web still follow **liveness** timings (`*.livenessProbe.*`), not readiness.
+
+See `charts/sentry/README.md` (Configuration) and `values.yaml` for the exact structure.
+
 ## Upgrading to Chart 29.x.x
 
 - Routing is now **opt-in**: all routing options are **disabled by default**. Choose and enable **exactly one** of `ingress.enabled`, `route.main.enabled`, `traefikIngressRoute.enabled`, or `nginx.enabled`.
