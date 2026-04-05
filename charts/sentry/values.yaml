@@ -2638,6 +2638,8 @@ nodestore:
   # Set to "s3" to enable S3-based node storage
   # When backend is empty (default), nodestore-s3 is NOT installed
   backend: ""
+  # Use init container to install nodestore-s3 package on startup. If false, you need to build a custom image with nodestore-s3 pre-installed.
+  installViaInitContainer: true
   # Optional environment variables for the init container that installs nodestore-s3
   initContainer:
     env: []

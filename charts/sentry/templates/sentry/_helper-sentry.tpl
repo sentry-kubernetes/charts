@@ -792,7 +792,7 @@ sentry.conf.py: |-
 Init container for installing sentry-nodestore-s3 package
 */}}
 {{- define "sentry.initContainer.nodestore-s3" -}}
-{{- if .Values.nodestore.backend }}
+{{- if and .Values.nodestore.backend .Values.nodestore.installViaInitContainer }}
 - name: install-nodestore-s3
   image: "{{ template "sentry.image" . }}"
   imagePullPolicy: {{ default "IfNotPresent" .Values.images.sentry.pullPolicy }}
@@ -815,7 +815,7 @@ Init container for installing sentry-nodestore-s3 package
 Volume definition for sentry plugins
 */}}
 {{- define "sentry.volume.nodestore-s3" -}}
-{{- if .Values.nodestore.backend }}
+{{- if and .Values.nodestore.backend .Values.nodestore.installViaInitContainer }}
 - name: sentry-plugins
   emptyDir: {}
 {{- end }}
@@ -825,7 +825,7 @@ Volume definition for sentry plugins
 Volume mount for sentry plugins
 */}}
 {{- define "sentry.volumeMount.nodestore-s3" -}}
-{{- if .Values.nodestore.backend }}
+{{- if and .Values.nodestore.backend .Values.nodestore.installViaInitContainer }}
 - name: sentry-plugins
   mountPath: /sentry-plugins
 {{- end }}
@@ -862,8 +862,10 @@ Environment variable for Python path to include plugins
 */}}
 {{- define "sentry.env.nodestore-s3" -}}
 {{- if .Values.nodestore.backend }}
+{{- if .Values.nodestore.installViaInitContainer }}
 - name: PYTHONPATH
   value: "/sentry-plugins"
+{{- end }}
 {{- if .Values.nodestore.s3.setAwsChecksumCalculationVar }}
 - name: AWS_REQUEST_CHECKSUM_CALCULATION
   value: when_required
