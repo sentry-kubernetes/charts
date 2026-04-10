@@ -168,13 +168,16 @@ spec:
               fi
             done
             echo "Kafka is up"
-{{- if .Values.hooks.dbCheck.volumeMounts }}
+            
+{{- if or .Values.hooks.dbCheck.volumeMounts .Values.global.volumeMounts }}
         volumeMounts:
+{{- if .Values.hooks.dbCheck.volumeMounts }}
 {{ toYaml .Values.hooks.dbCheck.volumeMounts | indent 8 }}
 {{- end }}
 {{- if .Values.global.volumeMounts }}
 {{ toYaml .Values.global.volumeMounts | indent 8 }}
 {{- end }}
+{{- end}}
         env:
 {{- if .Values.hooks.dbCheck.env }}
 {{ toYaml .Values.hooks.dbCheck.env | indent 8 }}

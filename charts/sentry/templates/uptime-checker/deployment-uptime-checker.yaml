@@ -93,11 +93,14 @@ spec:
 {{- if .Values.uptimeChecker.env }}
 {{ toYaml .Values.uptimeChecker.env | indent 8 }}
 {{- end }}
+{{- if or .Values.uptimeChecker.volumeMounts .Values.global.volumeMounts }}
+        volumeMounts:
 {{- if .Values.uptimeChecker.volumeMounts }}
 {{ toYaml .Values.uptimeChecker.volumeMounts | indent 8 }}
 {{- end }}
 {{- if .Values.global.volumeMounts }}
 {{ toYaml .Values.global.volumeMounts | indent 8 }}
+{{- end }}
 {{- end }}
         resources:
 {{ toYaml .Values.uptimeChecker.resources | indent 12 }}
@@ -114,6 +117,7 @@ spec:
       {{- if .Values.serviceAccount.enabled }}
       serviceAccountName: {{ .Values.serviceAccount.name }}-uptime-checker
       {{- end }}
+{{- if or .Values.uptimeChecker.volumes .Values.global.volumes }}
       volumes:
 {{- if .Values.uptimeChecker.volumes }}
 {{ toYaml .Values.uptimeChecker.volumes | indent 6 }}
@@ -121,6 +125,7 @@ spec:
 {{- if .Values.global.volumes }}
 {{ toYaml .Values.global.volumes | indent 6 }}
 {{- end }}
+{{- end}}
       {{- if .Values.uptimeChecker.priorityClassName }}
       priorityClassName: "{{ .Values.uptimeChecker.priorityClassName }}"
       {{- end }}
