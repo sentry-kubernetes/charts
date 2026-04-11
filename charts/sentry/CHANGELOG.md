@@ -1,5 +1,26 @@
 # Changelog
 
+## [30.0.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v29.5.1...sentry-v30.0.0) (2026-04-11)
+
+
+### ⚠ BREAKING CHANGES
+
+* separate livenessProbe & readinessProbe ([#2102](https://github.com/sentry-kubernetes/charts/issues/2102))
+
+### Features
+
+* allow to skip nodestore install via init container ([#2109](https://github.com/sentry-kubernetes/charts/issues/2109)) ([2f6a80f](https://github.com/sentry-kubernetes/charts/commit/2f6a80f9703382cda82f74e7ae7add1ea1639efc))
+* **kafka:** update existing topic partitions and configs during provisioning ([#2095](https://github.com/sentry-kubernetes/charts/issues/2095)) ([203d17e](https://github.com/sentry-kubernetes/charts/commit/203d17ed859e9f611d6ed95a1e0c826670176f38))
+* per taskbroker & taskworker resources ([#2103](https://github.com/sentry-kubernetes/charts/issues/2103)) ([3aa20fe](https://github.com/sentry-kubernetes/charts/commit/3aa20fe3252cbc1eb7ecea12fb2a02c559a78a67))
+* **sentry:** add HPA for ingest-occurrences consumer ([#2111](https://github.com/sentry-kubernetes/charts/issues/2111)) ([1319e0c](https://github.com/sentry-kubernetes/charts/commit/1319e0cfd903e77f5e5ff30b8361219a8067bf51))
+* separate livenessProbe & readinessProbe ([#2102](https://github.com/sentry-kubernetes/charts/issues/2102)) ([ebf7b93](https://github.com/sentry-kubernetes/charts/commit/ebf7b93019489f0294a1335bc6023bb5e4ccd142))
+
+
+### Bug Fixes
+
+* ensure all workloads respect global nodeSelector, tolerations, sidecars, volumeMounts, and volumes ([#2096](https://github.com/sentry-kubernetes/charts/issues/2096)) ([3493b9d](https://github.com/sentry-kubernetes/charts/commit/3493b9dca5fca98d28f556fd35ec26f8a76dd726))
+* volumeMounts on deployment-uptime-checker and db-check-job ([#2114](https://github.com/sentry-kubernetes/charts/issues/2114)) ([7500ba1](https://github.com/sentry-kubernetes/charts/commit/7500ba1454327cb188045d3952745353b8599f8a))
+
 ## [29.5.1](https://github.com/sentry-kubernetes/charts/compare/sentry-v29.5.0...sentry-v29.5.1) (2026-03-19)
 
 
