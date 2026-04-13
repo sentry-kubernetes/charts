@@ -1,5 +1,12 @@
 # Changelog
 
+## [30.0.1](https://github.com/sentry-kubernetes/charts/compare/sentry-v30.0.0...sentry-v30.0.1) (2026-04-13)
+
+
+### Bug Fixes
+
+* symbolicator defaults, to include specific user ([#2119](https://github.com/sentry-kubernetes/charts/issues/2119)) ([a64656f](https://github.com/sentry-kubernetes/charts/commit/a64656f590e551dcccca0c1fd43f855b350a9d86))
+
 ## [30.0.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v29.5.1...sentry-v30.0.0) (2026-04-11)
 
 
