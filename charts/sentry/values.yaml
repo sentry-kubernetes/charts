@@ -2209,7 +2209,10 @@ symbolicator:
     resources: {}
     affinity: {}
     nodeSelector: {}
-    securityContext: {}
+    securityContext:
+      fsGroup: 65532
+      runAsGroup: 65532
+      runAsUser: 65532
     topologySpreadConstraints: []
     containerSecurityContext: {}
     tolerations: []
