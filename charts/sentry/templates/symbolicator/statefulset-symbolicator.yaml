@@ -169,7 +169,13 @@ spec:
       - name: config
         configMap:
           name: {{ template "sentry.fullname" . }}-symbolicator
-      {{- if not .Values.symbolicator.api.persistence.enabled }}
+      {{- if .Values.symbolicator.api.persistence.enabled }}
+      {{- if .Values.symbolicator.api.persistence.existingClaim }}
+      - name: symbolicator-data
+        persistentVolumeClaim:
+          claimName: {{ .Values.symbolicator.api.persistence.existingClaim }}
+      {{- end }}
+      {{- else }}
       - name: symbolicator-data
         emptyDir: {}
       {{- end }}
@@ -187,7 +193,7 @@ spec:
       {{- if .Values.symbolicator.api.priorityClassName }}
       priorityClassName: "{{ .Values.symbolicator.api.priorityClassName }}"
       {{- end }}
-  {{- if .Values.symbolicator.api.persistence.enabled }}
+  {{- if and .Values.symbolicator.api.persistence.enabled (not .Values.symbolicator.api.persistence.existingClaim) }}
   volumeClaimTemplates:
     - apiVersion: v1
       kind: PersistentVolumeClaim

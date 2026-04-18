@@ -2191,6 +2191,10 @@ symbolicator:
       # persistentVolumeClaimRetentionPolicy:
       #   whenDeleted: Retain  # or Delete
       #   whenScaled: Retain   # or Delete
+
+      ## If existingClaim is specified, no PVC will be created and this claim will
+      ## be used
+      existingClaim: ""
     replicas: 1
     env: []
     # HTTP probes: liveness tolerates brief blips; readiness is stricter so Service endpoints drop faster.
