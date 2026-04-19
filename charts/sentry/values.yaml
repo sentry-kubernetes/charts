@@ -135,6 +135,9 @@ vroom:
       - ReadWriteOnce
     # storageClassName: standard
     size: "10Gi"
+    ## If existingClaim is specified, no PVC will be created and this claim will
+    ## be used
+    existingClaim: ""
     # this will be passed to the SENTRY_BUCKET_PROFILES env var
     # examples: file:///var/vroom/sentry-profiles, s3://my-profiles-bucket, gs://my-profiles-bucket
     bucketString: "file:///var/vroom/sentry-profiles"

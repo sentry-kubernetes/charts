@@ -186,7 +186,11 @@ spec:
           {{- if .Values.filestore.profiles.filesystem.persistence.existingClaim }}
           claimName: {{ .Values.filestore.profiles.filesystem.persistence.existingClaim }}
           {{- else if .Values.filestore.profiles.filesystem.persistence.shareWithVroom }}
+          {{- if .Values.vroom.persistence.existingClaim }}
+          claimName: {{ .Values.vroom.persistence.existingClaim }}
+          {{- else }}
           claimName: sentry-vroom-pvc
+          {{- end }}
           {{- else }}
           claimName: {{ template "sentry.fullname" . }}-profiles-data
           {{- end }}

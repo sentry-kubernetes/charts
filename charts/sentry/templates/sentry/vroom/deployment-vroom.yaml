@@ -145,7 +145,11 @@ spec:
       {{- if .Values.vroom.persistence.enabled }}
       - name: vroom-storage
         persistentVolumeClaim:
+          {{- if .Values.vroom.persistence.existingClaim }}
+          claimName: {{ .Values.vroom.persistence.existingClaim }}
+          {{- else }}
           claimName: sentry-vroom-pvc
+          {{- end }}
       {{- else }}
       - name: vroom-storage
         emptyDir: {}
