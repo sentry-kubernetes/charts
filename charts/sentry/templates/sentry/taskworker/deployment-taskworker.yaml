@@ -106,6 +106,10 @@ spec:
           - "--rpc-host={{ template "sentry.fullname" $root }}-taskbroker-{{ $worker.brokerName }}:50051"
           - "--num-brokers={{ default $root.Values.sentry.taskBroker.replicas $worker.brokerReplicas }}"
           - "--health-check-file-path=/tmp/health.txt"
+          {{- $maxChildTaskCount := default $root.Values.sentry.taskWorker.maxChildTaskCount $worker.maxChildTaskCount }}
+          {{- if $maxChildTaskCount }}
+          - "--max-child-task-count={{ $maxChildTaskCount }}"
+          {{- end }}
         env:
         - name: C_FORCE_ROOT
           value: "true"

@@ -424,6 +424,9 @@ sentry:
     enabled: true
     replicas: 1
     concurrency: 4
+    # maxChildTaskCount -- Number of tasks child processes execute before restarting.
+    # Helps prevent memory growth over time. See: https://github.com/getsentry/self-hosted/pull/4279
+    maxChildTaskCount: ~
     autoscaling:
       enabled: false
       minReplicas: 1
