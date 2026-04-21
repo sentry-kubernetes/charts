@@ -1,5 +1,17 @@
 # Changelog
 
+## [30.1.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v30.0.1...sentry-v30.1.0) (2026-04-21)
+
+
+### Features
+
+* **symbolicator:** support existing PVC name ([#2124](https://github.com/sentry-kubernetes/charts/issues/2124)) ([2e5f449](https://github.com/sentry-kubernetes/charts/commit/2e5f449c7778a90b62085177b61d9b31a787a6d4))
+
+
+### Bug Fixes
+
+* **snuba:** emit JSON booleans for ClickHouse secure/verify ([#2123](https://github.com/sentry-kubernetes/charts/issues/2123)) ([68ad867](https://github.com/sentry-kubernetes/charts/commit/68ad86721c466bc21d77179a9dc949573fb7861e))
+
 ## [30.0.1](https://github.com/sentry-kubernetes/charts/compare/sentry-v30.0.0...sentry-v30.0.1) (2026-04-13)
 
 
