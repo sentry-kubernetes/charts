@@ -448,7 +448,7 @@ sentry:
     priorityClassName: ""
     tolerations: []
     livenessProbe:
-      initialDelaySeconds: 10
+      initialDelaySeconds: 30
       periodSeconds: 10
       timeoutSeconds: 5
     # workers[].resources -- Optional per-worker container resources; merged over taskWorker.resources (worker keys win).
