@@ -1,5 +1,18 @@
 # Changelog
 
+## [30.2.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v30.1.0...sentry-v30.2.0) (2026-04-27)
+
+
+### Features
+
+* **taskworker:** add maxChildTaskCount value to limit child process memory growth ([#2126](https://github.com/sentry-kubernetes/charts/issues/2126)) ([0765bdf](https://github.com/sentry-kubernetes/charts/commit/0765bdf3d0f59577f2c7d75c96daa9a6acbf2393))
+
+
+### Bug Fixes
+
+* add topic scheduled-subscriptions-eap-items ([#2133](https://github.com/sentry-kubernetes/charts/issues/2133)) ([c8ef918](https://github.com/sentry-kubernetes/charts/commit/c8ef918aade2f47f770b87d6a5d59c0a1c477c4d))
+* **taskworker:** extend liveness probe initial delay to prevent CrashLoopBackOff ([#2128](https://github.com/sentry-kubernetes/charts/issues/2128)) ([#2131](https://github.com/sentry-kubernetes/charts/issues/2131)) ([6730fe7](https://github.com/sentry-kubernetes/charts/commit/6730fe79c39acd8f5314670c505e81d92618ccd1))
+
 ## [30.1.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v30.0.1...sentry-v30.1.0) (2026-04-21)
 
 
