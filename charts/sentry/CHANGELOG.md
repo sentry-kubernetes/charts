@@ -1,5 +1,17 @@
 # Changelog
 
+## [30.3.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v30.2.0...sentry-v30.3.0) (2026-04-29)
+
+
+### Features
+
+* **taskbroker:** inject TASKBROKER_KAFKA_SASL_* env vars when using external Kafka ([#2088](https://github.com/sentry-kubernetes/charts/issues/2088)) ([#2138](https://github.com/sentry-kubernetes/charts/issues/2138)) ([c640fe9](https://github.com/sentry-kubernetes/charts/commit/c640fe9a7570dca398a596ee57eede344f75fdc8))
+
+
+### Bug Fixes
+
+* Fix the condition to create gateway resources ([#2104](https://github.com/sentry-kubernetes/charts/issues/2104)) ([ff4f284](https://github.com/sentry-kubernetes/charts/commit/ff4f284f0f252cb38f5b33200e5e444bd626485a))
+
 ## [30.2.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v30.1.0...sentry-v30.2.0) (2026-04-27)
 
 
