@@ -96,6 +96,7 @@ spec:
         - name: TASKBROKER_KAFKA_CLUSTER
           value: {{ include "sentry.kafka.bootstrap_servers_string" $root | quote }}
 {{ include "sentry.env" $root | indent 8 }}
+{{ include "sentry.taskbroker.kafka.env" $root | indent 8 }}
 {{- if $root.Values.sentry.taskBroker.env }}
 {{ toYaml $root.Values.sentry.taskBroker.env | indent 8 }}
 {{- end }}
