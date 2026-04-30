@@ -2,8 +2,6 @@
 
 Sentry is a cross-platform crash reporting and aggregation platform.
 
-This repository aims to support Sentry >=10 and move out from the deprecated Helm charts official repo.
-
 Big thanks to the maintainers of the [deprecated chart](https://github.com/helm/charts/tree/master/stable/sentry). This work has been partly inspired by it.
 
 ## External ClickHouse Configuration
@@ -18,19 +16,17 @@ The recommended way to deploy ClickHouse on Kubernetes is using the [Altinity Cl
 
 ### Prerequisites
 
-1.  **Install Altinity ClickHouse Operator**:
-    Follow the [official installation guide](https://github.com/Altinity/clickhouse-operator#quick-start).
+**Install Altinity ClickHouse Operator**:
+```bash
+helm upgrade --install clickhouse-operator altinity/altinity-clickhouse-operator \
+  --version 0.26.0 \
+  --namespace clickhouse-operator \
+  --create-namespace \
+  --set configs.files.config.yaml.watch.namespaces='{""}' \
+  --wait
+```
 
-    **Important**: By default, the operator might only watch for resources in its own namespace. If you deploy ClickHouse in a different namespace, you must configure the operator to watch that namespace or all namespaces.
-    
-    Example `values.yaml` for the operator to watch all namespaces:
-    ```yaml
-    configs:
-      files:
-        config.yaml:
-          watch:
-            namespaces: [""]
-    ```
+**Important**: By default, the operator might only watch for resources in its own namespace. The command above configures the operator to watch all namespaces. If you deploy ClickHouse in a different namespace, ensure the operator is configured to watch that namespace or all namespaces.
 
 ### MVP Deployment with ClickHouse Keeper
 
