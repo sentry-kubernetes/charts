@@ -19,7 +19,8 @@ The recommended way to deploy ClickHouse on Kubernetes is using the [Altinity Cl
 **Install Altinity ClickHouse Operator**:
 ```bash
 helm repo add clickhouse-operator https://helm.altinity.com
-helm upgrade --install clickhouse-operator altinity/altinity-clickhouse-operator \
+helm repo update
+helm upgrade --install clickhouse-operator clickhouse-operator/altinity-clickhouse-operator \
   --version 0.26.0 \
   --namespace clickhouse-operator \
   --create-namespace \
