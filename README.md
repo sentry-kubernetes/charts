@@ -166,11 +166,20 @@ spec:
 
 Once your ClickHouse cluster is running, configure the Sentry Helm chart to use it.
 
-**Create your `values.yaml`**:
+**Find the ClickHouse service name** created by the operator:
+```bash
+kubectl -n sentry get svc -l clickhouse.altinity.com/chi=sentry-clickhouse
+```
+
+The Altinity Operator creates services following this naming convention:
+- `clickhouse-sentry-clickhouse` — main load-balanced service (recommended for single-node setups)
+- `chi-sentry-clickhouse-single-node-0-0` — per-pod service for shard 0, replica 0
+
+**Create your `values.yaml`** using the service name from the command above:
 ```bash
 cat <<'EOF' > values.yaml
 externalClickhouse:
-  host: "clickhouse-sentry-clickhouse-single-node-0-0.sentry.svc"
+  host: "chi-sentry-clickhouse-single-node-0-0.sentry.svc.cluster.local"
   tcpPort: 9000
   httpPort: 8123
   username: "default"
@@ -180,10 +189,7 @@ externalClickhouse:
 EOF
 ```
 
-**Find the actual service name** (if different from the default pattern):
-```bash
-kubectl -n sentry get svc -l clickhouse.altinity.com/chi=sentry-clickhouse
-```
+**Important**: The host value must match an actual Service name in your namespace. Run `kubectl -n sentry get svc` to verify DNS resolution. A common mistake is using a pod name instead of a service name, which results in `Name or service not known` errors in snuba pods.
 
 ### Verification
 
