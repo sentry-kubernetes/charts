@@ -51,7 +51,7 @@ Ensure the operator pod is in `Running` state before proceeding.
 ```bash
 kubectl rollout restart deployment -n clickhouse-operator -l app.kubernetes.io/name=altinity-clickhouse-operator
 ```
-The operator needs to be restarted to detect namespaces that were created after its initial deployment.
+The operator does not dynamically reload its namespace watch configuration at runtime. Namespaces created after the operator's initial deployment (or after changing the `watch.namespaces` setting) will not be monitored until the operator pod is restarted. See [Altinity/clickhouse-operator#1930](https://github.com/Altinity/clickhouse-operator/issues/1930) for details.
 
 ### MVP Deployment with ClickHouse Keeper
 
@@ -166,17 +166,18 @@ spec:
 
 Once your ClickHouse cluster is running, configure the Sentry Helm chart to use it.
 
-In your `values.yaml`:
-
-```yaml
+**Create your `values.yaml`**:
+```bash
+cat <<'EOF' > values.yaml
 externalClickhouse:
-  host: "clickhouse-sentry-clickhouse-single-node-0-0.sentry.svc" # Service name of your CHI
+  host: "clickhouse-sentry-clickhouse-single-node-0-0.sentry.svc"
   tcpPort: 9000
   httpPort: 8123
   username: "default"
   password: "" # Set if you configured a password
   database: "default"
   singleNode: true # Set to false if using a replicated cluster
+EOF
 ```
 
 **Find the actual service name** (if different from the default pattern):
@@ -193,7 +194,7 @@ After deployment, you can verify the connection by checking the logs of the `snu
 ```
 helm repo add sentry https://sentry-kubernetes.github.io/charts
 helm repo update
-helm install my-sentry sentry/sentry --wait --timeout=1000s
+helm install my-sentry sentry/sentry -f values.yaml --wait --timeout=1000s
 ```
 
 ## Values
