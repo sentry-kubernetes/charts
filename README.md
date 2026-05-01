@@ -16,25 +16,42 @@ The recommended way to deploy ClickHouse on Kubernetes is using the [Altinity Cl
 
 ### Prerequisites
 
-**Install Altinity ClickHouse Operator**:
+**Create a values file for the operator** and **install Altinity ClickHouse Operator**:
 ```bash
+cat <<'EOF' > clickhouse-operator-values.yaml
+configs:
+  files:
+    config.yaml:
+      watch:
+        namespaces:
+          - sentry
+EOF
+
 helm repo add clickhouse-operator https://helm.altinity.com
 helm repo update
 helm upgrade --install clickhouse-operator clickhouse-operator/altinity-clickhouse-operator \
   --version 0.26.0 \
   --namespace clickhouse-operator \
   --create-namespace \
-  --set 'configs.files.config.yaml.watch.namespaces={sentry}' \
+  -f clickhouse-operator-values.yaml \
   --wait
 ```
 
-**Important**: By default, the operator watches **all** namespaces (`namespaces: []`). The `--set` flag above restricts the operator to watch only the `sentry` namespace. If you want the operator to watch all namespaces, simply remove the `--set 'configs.files.config.yaml.watch.namespaces={sentry}'` line.
+**Important**: By default, the operator watches **all** namespaces (`namespaces: []`). The values file above restricts the operator to watch only the `sentry` namespace. If you want the operator to watch all namespaces, remove the `watch.namespaces` block from the values file.
+
+**Note**: Do not use `--set 'configs.files.config.yaml.watch.namespaces={sentry}'` — Helm interprets dots as nested keys, which creates a separate `config` file instead of modifying `config.yaml`, causing the operator to ignore the setting.
 
 **Verify the operator is running**:
 ```bash
 kubectl -n clickhouse-operator get pods -l app.kubernetes.io/name=altinity-clickhouse-operator
 ```
 Ensure the operator pod is in `Running` state before proceeding.
+
+**Restart the operator if the `sentry` namespace was created after the operator installation**:
+```bash
+kubectl rollout restart deployment -n clickhouse-operator -l app.kubernetes.io/name=altinity-clickhouse-operator
+```
+The operator needs to be restarted to detect namespaces that were created after its initial deployment.
 
 ### MVP Deployment with ClickHouse Keeper
 
@@ -44,7 +61,8 @@ Below is a Minimum Viable Product (MVP) configuration for a single-node ClickHou
 
 Save this as `clickhouse.yaml`. This example deploys a single-node cluster.
 
-```yaml
+```bash
+cat <<'EOF' > clickhouse.yaml
 apiVersion: clickhouse.altinity.com/v1
 kind: ClickHouseInstallation
 metadata:
@@ -70,6 +88,7 @@ spec:
   defaults:
     templates:
       podTemplate: clickhouse-single-node
+EOF
 ```
 
 **Note on Network Access**: The `users/default/networks/ip` setting is crucial. By default, ClickHouse might restrict access. Setting it to `0.0.0.0/0` allows the Sentry pods (which have dynamic IPs) to connect.
