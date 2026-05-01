@@ -1,5 +1,12 @@
 # Changelog
 
+## [30.3.1](https://github.com/sentry-kubernetes/charts/compare/sentry-v30.3.0...sentry-v30.3.1) (2026-05-01)
+
+
+### Bug Fixes
+
+* correctly capture sentry createuser exit code in user-create hook ([#2121](https://github.com/sentry-kubernetes/charts/issues/2121)) ([b69c654](https://github.com/sentry-kubernetes/charts/commit/b69c6547256eb3bf9767a629024358459408c34e))
+
 ## [30.3.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v30.2.0...sentry-v30.3.0) (2026-04-29)
 
 
