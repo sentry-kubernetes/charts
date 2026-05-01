@@ -39,8 +39,6 @@ helm upgrade --install clickhouse-operator clickhouse-operator/altinity-clickhou
   --wait
 ```
 
-**Important**: By default, the operator watches **all** namespaces (`namespaces: []`). The values file above restricts the operator to watch only the `sentry` namespace. If you want the operator to watch all namespaces, remove the `watch.namespaces` block from the values file.
-
 **Note**: Do not use `--set 'configs.files.config.yaml.watch.namespaces={sentry}'` — Helm interprets dots as nested keys, which creates a separate `config` file instead of modifying `config.yaml`, causing the operator to ignore the setting.
 
 **Verify the operator is running**:
@@ -48,12 +46,6 @@ helm upgrade --install clickhouse-operator clickhouse-operator/altinity-clickhou
 kubectl -n clickhouse-operator get pods -l app.kubernetes.io/name=altinity-clickhouse-operator
 ```
 Ensure the operator pod is in `Running` state before proceeding.
-
-**Restart the operator if the `sentry` namespace was created after the operator installation**:
-```bash
-kubectl rollout restart deployment -n clickhouse-operator -l app.kubernetes.io/name=altinity-clickhouse-operator
-```
-The operator does not dynamically reload its namespace watch configuration at runtime. Namespaces created after the operator's initial deployment (or after changing the `watch.namespaces` setting) will not be monitored until the operator pod is restarted. See [Altinity/clickhouse-operator#1930](https://github.com/Altinity/clickhouse-operator/issues/1930) for details.
 
 ### MVP Deployment with ClickHouse Keeper
 
