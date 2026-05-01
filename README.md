@@ -98,7 +98,6 @@ Wait until the `status.status` field shows `Completed` and the ClickHouse pods a
 kubectl -n sentry get pods -l clickhouse.altinity.com/chi=sentry-clickhouse
 ```
 
-
 #### 2. (Optional) Separate ClickHouse Keeper
 
 For more robust deployments, you should run ClickHouse Keeper separately.
@@ -182,8 +181,6 @@ externalClickhouse:
   singleNode: true # Set to false if using a replicated cluster
 EOF
 ```
-
-**Important**: The host value must match an actual Service name in your namespace. Run `kubectl -n sentry get svc` to verify DNS resolution. A common mistake is using a pod name instead of a service name, which results in `Name or service not known` errors in snuba pods.
 
 ### Verification
 
