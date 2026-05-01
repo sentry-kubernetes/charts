@@ -2,6 +2,8 @@
 
 Sentry is a cross-platform crash reporting and aggregation platform.
 
+This repository aims to support Sentry >=10 and move out from the deprecated Helm charts official repo.
+
 Big thanks to the maintainers of the [deprecated chart](https://github.com/helm/charts/tree/master/stable/sentry). This work has been partly inspired by it.
 
 ## External ClickHouse Configuration
