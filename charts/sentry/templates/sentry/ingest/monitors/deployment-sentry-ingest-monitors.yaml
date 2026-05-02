@@ -108,6 +108,7 @@ spec:
           - "/tmp/health.txt"
           {{- end }}
           {{- if .Values.sentry.ingestMonitors.maxPollIntervalMs }}
+          - "--"
           - "--max-poll-interval-ms"
           - "{{ .Values.sentry.ingestMonitors.maxPollIntervalMs }}"
           {{- end }}

@@ -477,9 +477,9 @@ sentry:
   ingestConsumerAttachments:
     enabled: true
     replicas: 1
-    # concurrency: 4
-    # maxBatchTimeMs: 20000
-    # maxPollIntervalMs: 30000
+    concurrency: 4
+    maxBatchTimeMs: 20000
+    maxPollIntervalMs: 30000
     env: []
     resources: {}
     #  requests:
@@ -491,7 +491,7 @@ sentry:
     containerSecurityContext: {}
     tolerations: []
     # podLabels: {}
-    # maxBatchSize: ""
+    maxBatchSize: "3"
     # logLevel: info
     # it's better to use prometheus adapter and scale based on
     # the size of the rabbitmq queue
@@ -519,7 +519,7 @@ sentry:
   ingestConsumerEvents:
     enabled: true
     replicas: 1
-    # concurrency: 4
+    concurrency: 4
     env: []
     resources: {}
     #  requests:
@@ -531,10 +531,10 @@ sentry:
     containerSecurityContext: {}
     tolerations: []
     # podLabels: {}
-    # maxBatchSize: ""
+    maxBatchSize: "1"
     # logLevel: "info"
-    # inputBlockSize: ""
-    # maxBatchTimeMs: ""
+    inputBlockSize: "1"
+    maxBatchTimeMs: "750"
 
     # it's better to use prometheus adapter and scale based on
     # the size of the rabbitmq queue
@@ -562,7 +562,7 @@ sentry:
   ingestConsumerTransactions:
     enabled: true
     replicas: 1
-    # concurrency: 4
+    concurrency: 4
     env: []
     resources: {}
     #  requests:
@@ -574,10 +574,10 @@ sentry:
     containerSecurityContext: {}
     tolerations: []
     # podLabels: {}
-    # maxBatchSize: ""
+    maxBatchSize: "1"
     # logLevel: "info"
-    # inputBlockSize: ""
-    # maxBatchTimeMs: ""
+    inputBlockSize: "1"
+    maxBatchTimeMs: "750"
 
     # it's better to use prometheus adapter and scale based on
     # the size of the rabbitmq queue
@@ -614,7 +614,7 @@ sentry:
     nodeSelector: {}
     securityContext: {}
     containerSecurityContext: {}
-    # maxPollIntervalMs: 30000
+    maxPollIntervalMs: 30000
     tolerations: []
     # podLabels: {}
     # it's better to use prometheus adapter and scale based on
@@ -747,7 +747,7 @@ sentry:
     nodeSelector: {}
     securityContext: {}
     containerSecurityContext: {}
-    # maxPollIntervalMs: 30000
+    maxPollIntervalMs: 30000
     tolerations: []
     # podLabels: {}
     # it's better to use prometheus adapter and scale based on
@@ -869,7 +869,8 @@ sentry:
   genericMetricsConsumer:
     enabled: true
     replicas: 1
-    # concurrency: 4
+    concurrency: 4
+    maxPollIntervalMs: "30000"
     env: []
     resources: {}
     #  requests:
@@ -881,7 +882,6 @@ sentry:
     containerSecurityContext: {}
     tolerations: []
     # podLabels: {}
-    # maxPollIntervalMs: ""
     # logLevel: "info"
     # it's better to use prometheus adapter and scale based on
     # the size of the rabbitmq queue
@@ -906,7 +906,8 @@ sentry:
   metricsConsumer:
     enabled: true
     replicas: 1
-    # concurrency: 4
+    concurrency: 4
+    maxPollIntervalMs: "30000"
     env: []
     resources: {}
     #  requests:
@@ -919,7 +920,6 @@ sentry:
     tolerations: []
     # podLabels: {}
     # logLevel: "info"
-    # maxPollIntervalMs: ""
     # it's better to use prometheus adapter and scale based on
     # the size of the rabbitmq queue
     autoscaling:
@@ -1064,7 +1064,7 @@ sentry:
   postProcessForwardTransactions:
     enabled: true
     replicas: 1
-    # processes: 1
+    processes: 1
     env: []
     resources: {}
     #  requests:
@@ -1165,7 +1165,8 @@ sentry:
   subscriptionConsumerGenericMetrics:
     enabled: true
     replicas: 1
-    # concurrency: 1
+    concurrency: 1
+    maxBatchSize: "3"
     env: []
     resources: {}
     #  requests:
@@ -1191,7 +1192,8 @@ sentry:
   subscriptionConsumerMetrics:
     enabled: true
     replicas: 1
-    # concurrency: 1
+    concurrency: 1
+    maxBatchSize: "3"
     env: []
     resources: {}
     #  requests:

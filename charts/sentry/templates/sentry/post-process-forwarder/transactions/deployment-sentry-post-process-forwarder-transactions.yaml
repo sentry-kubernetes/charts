@@ -111,6 +111,7 @@ spec:
           {{- if .Values.sentry.postProcessForwardTransactions.processes }}
           - "--mode"
           - "multiprocess"
+          - "--"
           - "--processes"
           - "{{ .Values.sentry.postProcessForwardTransactions.processes }}"
           {{- end }}
