@@ -870,7 +870,6 @@ sentry:
     enabled: true
     replicas: 1
     # concurrency: 4
-    maxPollIntervalMs: "30000"
     env: []
     resources: {}
     #  requests:
@@ -882,6 +881,7 @@ sentry:
     containerSecurityContext: {}
     tolerations: []
     # podLabels: {}
+    # maxPollIntervalMs: "30000"
     # logLevel: "info"
     # it's better to use prometheus adapter and scale based on
     # the size of the rabbitmq queue
