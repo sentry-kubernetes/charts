@@ -1,0 +1,134 @@
+{{- if and (not .Values.kafka.enabled) .Values.externalKafka.provisioning.enabled }}
+{{- $provisioning := .Values.externalKafka.provisioning }}
+{{- $sasl := .Values.externalKafka.sasl | default dict }}
+{{- $saslEnabled := and $sasl.mechanism (ne $sasl.mechanism "None") }}
+{{- $saslFromSecret := $sasl.existingSecret }}
+{{- $securityProtocol := .Values.externalKafka.security.protocol | default "PLAINTEXT" | upper }}
+
+{{/* Build bootstrap servers from cluster or host/port */}}
+{{- $brokers := list }}
+{{- if .Values.externalKafka.cluster }}
+{{- range .Values.externalKafka.cluster }}
+{{- $brokers = append $brokers (dict "host" .host "port" (int .port)) }}
+{{- end }}
+{{- else }}
+{{- $brokers = append $brokers (dict "host" .Values.externalKafka.host "port" (int .Values.externalKafka.port)) }}
+{{- end }}
+
+{{- $bootstrapServers := list }}
+{{- range $brokers }}
+{{- $bootstrapServers = append $bootstrapServers (printf "%s:%d" .host .port) }}
+{{- end }}
+{{- $bootstrapServersString := join "," $bootstrapServers }}
+
+{{/* Get topic list from externalKafka.provisioning.topics or fall back to kafka.provisioning.topics */}}
+{{- $topics := $provisioning.topics | default .Values.kafka.provisioning.topics }}
+{{- $replicationFactor := int ($provisioning.replicationFactor | default 1) }}
+{{- $defaultPartitions := int ($provisioning.numPartitions | default 1) }}
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-kafka-provisioning-scripts
+  labels:
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    app.kubernetes.io/name: kafka
+    app.kubernetes.io/component: kafka-provisioning
+  annotations:
+    "helm.sh/hook": "pre-install,pre-upgrade"
+    "helm.sh/hook-delete-policy": "before-hook-creation"
+    "helm.sh/hook-weight": "-5"
+data:
+  wait-for-kafka.sh: |
+    #!/bin/bash
+    set -e
+    {{- range $brokers }}
+    timeout=120; until nc -z {{ .host }} {{ .port }} 2>/dev/null; do
+      timeout=$((timeout - 2)); [ $timeout -le 0 ] && echo "Timed out waiting for {{ .host }}:{{ .port }}" && exit 1;
+      sleep 2;
+    done;
+    {{- end }}
+    echo "Kafka is available";
+
+  provision.sh: |
+    #!/bin/bash
+    set -e
+    export CLIENT_CONF="${CLIENT_CONF:-/tmp/client.properties}"
+    if [ ! -f "$CLIENT_CONF" ]; then
+      echo "security.protocol={{ $securityProtocol }}" > "$CLIENT_CONF"
+      {{- if $saslFromSecret }}
+      echo "sasl.mechanism=${KAFKA_SASL_MECHANISM}" >> "$CLIENT_CONF"
+      case "${KAFKA_SASL_MECHANISM}" in
+        PLAIN)
+          LOGIN_MODULE="org.apache.kafka.common.security.plain.PlainLoginModule"
+          ;;
+        *)
+          LOGIN_MODULE="org.apache.kafka.common.security.scram.ScramLoginModule"
+          ;;
+      esac
+      echo "sasl.jaas.config=${LOGIN_MODULE} required username=\"${KAFKA_SASL_USERNAME}\" password=\"${KAFKA_SASL_PASSWORD}\";" >> "$CLIENT_CONF"
+      {{- else if $saslEnabled }}
+      echo "sasl.mechanism={{ $sasl.mechanism }}" >> "$CLIENT_CONF"
+      {{- if and $sasl.username $sasl.password }}
+      {{- if eq $sasl.mechanism "PLAIN" }}
+      echo "sasl.jaas.config=org.apache.kafka.common.security.plain.PlainLoginModule required username=\"{{ $sasl.username }}\" password=\"{{ $sasl.password }}\";" >> "$CLIENT_CONF"
+      {{- else }}
+      echo "sasl.jaas.config=org.apache.kafka.common.security.scram.ScramLoginModule required username=\"{{ $sasl.username }}\" password=\"{{ $sasl.password }}\";" >> "$CLIENT_CONF"
+      {{- end }}
+      {{- end }}
+      {{- end }}
+    fi
+
+    kafka_provisioning_commands=(
+      {{- range $topics }}
+      "/opt/kafka/bin/kafka-topics.sh \
+        --create \
+        --if-not-exists \
+        --bootstrap-server {{ $bootstrapServersString }} \
+        --replication-factor {{ $replicationFactor }} \
+        --partitions {{ .partitions | default $defaultPartitions }} \
+        {{- range $key, $value := .config }}
+        --config {{ $key }}={{ $value }} \
+        {{- end }}
+        --command-config ${CLIENT_CONF} \
+        --topic {{ .name }}"
+      {{- end }}
+    )
+
+    echo "Starting provisioning of ${#kafka_provisioning_commands[@]} topics"
+    for ((i=0; i < ${#kafka_provisioning_commands[@]}; i++)); do
+      ${kafka_provisioning_commands[i]}
+    done
+    echo "Provisioning succeeded"
+
+    COMMON_OPTS="--bootstrap-server {{ $bootstrapServersString }} --command-config ${CLIENT_CONF}"
+
+    echo "Checking existing topic partitions and configs..."
+    {{- range $topics }}
+    {{- $partitions := .partitions | default $defaultPartitions }}
+    CURRENT_PARTITIONS=$(/opt/kafka/bin/kafka-topics.sh $COMMON_OPTS --describe --topic "{{ .name }}" 2>/dev/null | head -1 | sed -n 's/.*PartitionCount: \([0-9]*\).*/\1/p')
+    if [ -n "$CURRENT_PARTITIONS" ] && [ "{{ $partitions }}" -gt "$CURRENT_PARTITIONS" ]; then
+      echo "  [ALTER] {{ .name }}: increasing partitions from $CURRENT_PARTITIONS to {{ $partitions }}"
+      /opt/kafka/bin/kafka-topics.sh $COMMON_OPTS --alter --topic "{{ .name }}" --partitions "{{ $partitions }}"
+    fi
+    {{- if .config }}
+    CURRENT_CONFIGS=$(/opt/kafka/bin/kafka-configs.sh $COMMON_OPTS --entity-type topics --entity-name "{{ .name }}" --describe 2>/dev/null || echo "")
+    NEEDS_UPDATE=false
+    {{- range $key, $value := .config }}
+    if ! echo "$CURRENT_CONFIGS" | grep -q '{{ $key }}={{ $value }}'; then
+      NEEDS_UPDATE=true
+    fi
+    {{- end }}
+    if [ "$NEEDS_UPDATE" = true ]; then
+      echo "  [CONFIG] {{ .name }}: applying config updates"
+      {{- $scratch := dict "args" (list) }}
+      {{- range $key, $value := .config }}
+      {{- $_ := set $scratch "args" (append (index $scratch "args") (printf "%s=[%s]" $key $value)) }}
+      {{- end }}
+      /opt/kafka/bin/kafka-configs.sh $COMMON_OPTS --entity-type topics --entity-name "{{ .name }}" --alter --add-config '{{ join "," (index $scratch "args") }}' || echo "  [CONFIG] {{ .name }}: WARNING - config update failed"
+    fi
+    {{- end }}
+    {{- end }}
+    echo "Update complete"
+{{- end }}

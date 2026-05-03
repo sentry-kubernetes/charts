@@ -175,8 +175,13 @@ spec:
           name: {{ template "sentry.fullname" . }}-symbolicator
       {{- if .Values.symbolicator.api.persistence.enabled }}
       - name: symbolicator-data
+      {{- if .Values.symbolicator.api.persistence.existingClaim }}
+        persistentVolumeClaim:
+          claimName: {{ .Values.symbolicator.api.persistence.existingClaim }}
+      {{- else }}
         persistentVolumeClaim:
           claimName: sentry-symbolicator-pvc
+      {{- end }}
       {{- else }}
       - name: symbolicator-data
         emptyDir: {}
