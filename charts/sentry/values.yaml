@@ -137,6 +137,9 @@ vroom:
       - ReadWriteOnce
     # storageClassName: standard
     size: "10Gi"
+    ## If existingClaim is specified, no PVC will be created and this claim will
+    ## be used
+    existingClaim: ""
     # this will be passed to the SENTRY_BUCKET_PROFILES env var
     # examples: file:///var/vroom/sentry-profiles, s3://my-profiles-bucket, gs://my-profiles-bucket
     bucketString: "file:///var/vroom/sentry-profiles"
@@ -423,6 +426,9 @@ sentry:
     enabled: true
     replicas: 1
     concurrency: 4
+    # maxChildTaskCount -- Number of tasks child processes execute before restarting.
+    # Helps prevent memory growth over time. See: https://github.com/getsentry/self-hosted/pull/4279
+    maxChildTaskCount: 10000
     autoscaling:
       enabled: false
       minReplicas: 1
@@ -444,7 +450,7 @@ sentry:
     priorityClassName: ""
     tolerations: []
     livenessProbe:
-      initialDelaySeconds: 10
+      initialDelaySeconds: 30
       periodSeconds: 10
       timeoutSeconds: 5
     # workers[].resources -- Optional per-worker container resources; merged over taskWorker.resources (worker keys win).
@@ -2193,6 +2199,10 @@ symbolicator:
       # persistentVolumeClaimRetentionPolicy:
       #   whenDeleted: Retain  # or Delete
       #   whenScaled: Retain   # or Delete
+
+      ## If existingClaim is specified, no PVC will be created and this claim will
+      ## be used
+      existingClaim: ""
     replicas: 1
     env: []
     # HTTP probes: liveness tolerates brief blips; readiness is stricter so Service endpoints drop faster.
@@ -2905,6 +2915,7 @@ kafka:
       - name: snuba-dead-letter-generic-events
       - name: snuba-dead-letter-querylog
       - name: snuba-dead-letter-group-attributes
+      - name: snuba-dead-letter-items
       - name: ingest-attachments
       - name: ingest-attachments-dlq
       - name: ingest-transactions
@@ -2929,11 +2940,13 @@ kafka:
       - name: snuba-spans
       - name: snuba-eap-spans-commit-log
       - name: scheduled-subscriptions-eap-spans
+      - name: scheduled-subscriptions-eap-items
       - name: eap-spans-subscription-results
       - name: subscription-results-eap-items
       - name: snuba-items-commit-log
       - name: snuba-eap-mutations
       - name: snuba-lw-deletions-generic-events
+      - name: snuba-lw-deletions-eap-items
       - name: shared-resources-usage
       - name: snuba-profile-chunks
       - name: buffered-segments

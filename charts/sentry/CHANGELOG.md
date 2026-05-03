@@ -1,5 +1,56 @@
 # Changelog
 
+## [30.3.1](https://github.com/sentry-kubernetes/charts/compare/sentry-v30.3.0...sentry-v30.3.1) (2026-05-01)
+
+
+### Bug Fixes
+
+* correctly capture sentry createuser exit code in user-create hook ([#2121](https://github.com/sentry-kubernetes/charts/issues/2121)) ([b69c654](https://github.com/sentry-kubernetes/charts/commit/b69c6547256eb3bf9767a629024358459408c34e))
+
+## [30.3.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v30.2.0...sentry-v30.3.0) (2026-04-29)
+
+
+### Features
+
+* **taskbroker:** inject TASKBROKER_KAFKA_SASL_* env vars when using external Kafka ([#2088](https://github.com/sentry-kubernetes/charts/issues/2088)) ([#2138](https://github.com/sentry-kubernetes/charts/issues/2138)) ([c640fe9](https://github.com/sentry-kubernetes/charts/commit/c640fe9a7570dca398a596ee57eede344f75fdc8))
+
+
+### Bug Fixes
+
+* Fix the condition to create gateway resources ([#2104](https://github.com/sentry-kubernetes/charts/issues/2104)) ([ff4f284](https://github.com/sentry-kubernetes/charts/commit/ff4f284f0f252cb38f5b33200e5e444bd626485a))
+
+## [30.2.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v30.1.0...sentry-v30.2.0) (2026-04-27)
+
+
+### Features
+
+* **taskworker:** add maxChildTaskCount value to limit child process memory growth ([#2126](https://github.com/sentry-kubernetes/charts/issues/2126)) ([0765bdf](https://github.com/sentry-kubernetes/charts/commit/0765bdf3d0f59577f2c7d75c96daa9a6acbf2393))
+
+
+### Bug Fixes
+
+* add topic scheduled-subscriptions-eap-items ([#2133](https://github.com/sentry-kubernetes/charts/issues/2133)) ([c8ef918](https://github.com/sentry-kubernetes/charts/commit/c8ef918aade2f47f770b87d6a5d59c0a1c477c4d))
+* **taskworker:** extend liveness probe initial delay to prevent CrashLoopBackOff ([#2128](https://github.com/sentry-kubernetes/charts/issues/2128)) ([#2131](https://github.com/sentry-kubernetes/charts/issues/2131)) ([6730fe7](https://github.com/sentry-kubernetes/charts/commit/6730fe79c39acd8f5314670c505e81d92618ccd1))
+
+## [30.1.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v30.0.1...sentry-v30.1.0) (2026-04-21)
+
+
+### Features
+
+* **symbolicator:** support existing PVC name ([#2124](https://github.com/sentry-kubernetes/charts/issues/2124)) ([2e5f449](https://github.com/sentry-kubernetes/charts/commit/2e5f449c7778a90b62085177b61d9b31a787a6d4))
+
+
+### Bug Fixes
+
+* **snuba:** emit JSON booleans for ClickHouse secure/verify ([#2123](https://github.com/sentry-kubernetes/charts/issues/2123)) ([68ad867](https://github.com/sentry-kubernetes/charts/commit/68ad86721c466bc21d77179a9dc949573fb7861e))
+
+## [30.0.1](https://github.com/sentry-kubernetes/charts/compare/sentry-v30.0.0...sentry-v30.0.1) (2026-04-13)
+
+
+### Bug Fixes
+
+* symbolicator defaults, to include specific user ([#2119](https://github.com/sentry-kubernetes/charts/issues/2119)) ([a64656f](https://github.com/sentry-kubernetes/charts/commit/a64656f590e551dcccca0c1fd43f855b350a9d86))
+
 ## [30.0.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v29.5.1...sentry-v30.0.0) (2026-04-11)
 
 

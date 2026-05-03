@@ -1,7 +1,7 @@
 {{- $mainRoute := .Values.route.main -}}
 {{- $redirectRoute := .Values.route.httpRedirect -}}
 {{- $defaultApiVersion := include "sentry.route.apiVersion" . -}}
-{{- if and $mainRoute.enabled $defaultApiVersion }}
+{{- if $mainRoute.enabled }}
 {{- $fullName := include "sentry.fullname" . -}}
 {{- $relayPort := (include "relay.port" .) | int -}}
 {{- $webPort := .Values.service.externalPort | int -}}

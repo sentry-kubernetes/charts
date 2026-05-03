@@ -1,6 +1,6 @@
 {{- if .Values.symbolicator.enabled }}
 {{- if .Values.symbolicator.api.usedeployment }}
-{{- if .Values.symbolicator.api.persistence.enabled }}
+{{- if and .Values.symbolicator.api.persistence.enabled (not .Values.symbolicator.api.persistence.existingClaim) }}
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
