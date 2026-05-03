@@ -1,5 +1,13 @@
 # Changelog
 
+## [30.4.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v30.3.1...sentry-v30.4.0) (2026-05-03)
+
+
+### Features
+
+* move external kafka provisioning scripts from inline args to ConfigMap to avoid ARG_MAX limit ([#2146](https://github.com/sentry-kubernetes/charts/issues/2146)) ([3251f90](https://github.com/sentry-kubernetes/charts/commit/3251f905d336285128527cea2f273655eb37c3bf))
+* upgrade to v26.4.0 ([#2145](https://github.com/sentry-kubernetes/charts/issues/2145)) ([1f90f1f](https://github.com/sentry-kubernetes/charts/commit/1f90f1f9e14827a913036745ef0a294e1a3b15ee))
+
 ## [30.3.1](https://github.com/sentry-kubernetes/charts/compare/sentry-v30.3.0...sentry-v30.3.1) (2026-05-01)
 
 
