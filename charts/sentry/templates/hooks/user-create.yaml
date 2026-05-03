@@ -1,4 +1,7 @@
 {{- if and .Values.user.create .Values.hooks.enabled -}}
+{{- if and (not .Values.user.password) (not .Values.user.existingSecret) -}}
+{{- fail "\n\nERROR: Sentry admin password is not set.\nWhen `user.create` is true, you must set ONE of:\n  - `user.existingSecret` (recommended): name of a Kubernetes Secret containing the admin password\n  - `user.password`: plaintext password (NOT recommended for production)\nSee values.yaml under `user:` for examples.\n" -}}
+{{- end -}}
 apiVersion: batch/v1
 kind: Job
 metadata:

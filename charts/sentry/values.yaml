@@ -27,7 +27,9 @@ profiles:
 user:
   create: true
   email: admin@sentry.local
-  password: aaaa
+  ## You MUST set either `password` or `existingSecret` when `create: true`.
+  ## Setting `existingSecret` is strongly recommended for production.
+  password: ""
 
   ## set this value to an existingSecret name to create the admin user with the password in the secret
   # existingSecret: sentry-admin-password

@@ -14,10 +14,23 @@ Please refer to the [External Services Documentation](docs/external-services.md)
 helm repo add sentry https://sentry-kubernetes.github.io/charts
 ```
 
-## Without overrides
+## Quick install
+
+You must provide an admin password (or reference an existing secret). For a quick test:
 
 ```
-helm install sentry sentry/sentry --wait --timeout=1000s
+helm install sentry sentry/sentry --wait --timeout=1000s \
+  --set user.password=CHANGE_ME
+```
+
+For production, create a Kubernetes secret and reference it via `user.existingSecret`:
+
+```
+kubectl create secret generic sentry-admin-password \
+  --from-literal=admin-password='CHANGE_ME'
+
+helm install sentry sentry/sentry --wait --timeout=1000s \
+  --set user.existingSecret=sentry-admin-password
 ```
 
 ## With your own values file
@@ -1147,7 +1160,7 @@ Note: this table is incomplete, so have a look at the values.yaml in case you mi
 | system.url | string | `""` |  |
 | user.create | bool | `true` |  |
 | user.email | string | `"admin@sentry.local"` |  |
-| user.password | string | `"aaaa"` |  |
+| user.password | string | `""` | Plaintext admin password. Required if `user.create` is true and `user.existingSecret` is not set. Using `user.existingSecret` is strongly recommended for production. |
 | vroom.affinity | object | `{}` |  |
 | vroom.autoscaling.enabled | bool | `false` |  |
 | vroom.autoscaling.maxReplicas | int | `5` |  |
