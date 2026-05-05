@@ -29,6 +29,7 @@
 {{- $clusterName := $topicctl.clusterName | default "sentry-kafka" }}
 {{- $environment := $topicctl.environment | default "default" }}
 {{- $region := $topicctl.region | default "default" }}
+{{- $placementStrategy := $topicctl.placementStrategy | default "balanced-leaders" }}
 
 apiVersion: v1
 kind: ConfigMap
@@ -93,6 +94,8 @@ data:
     spec:
       partitions: {{ .partitions | default $defaultPartitions }}
       replicationFactor: {{ $replicationFactor }}
+      placement:
+        strategy: {{ .placementStrategy | default $placementStrategy }}
       {{- if .config }}
       settings:
         {{- range $key, $value := .config }}

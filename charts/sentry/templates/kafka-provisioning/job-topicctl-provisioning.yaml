@@ -105,7 +105,7 @@ spec:
             - apply
             - --skip-confirm
             - --expand-env
-            - /configs/cluster.yaml
+            - --cluster-config=/configs/cluster.yaml
             - /configs/topics.yaml
           {{- if $provisioning.resources }}
           resources:

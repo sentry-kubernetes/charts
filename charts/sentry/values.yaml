@@ -3096,6 +3096,7 @@ externalKafka:
       clusterName: "sentry-kafka"
       environment: "default"
       region: "default"
+      placementStrategy: "any"
     # topics: []  # If empty, uses kafka.provisioning.topics
     replicationFactor: 3
     numPartitions: 1
