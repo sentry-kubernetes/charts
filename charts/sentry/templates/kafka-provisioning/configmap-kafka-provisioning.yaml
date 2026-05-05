@@ -42,7 +42,7 @@ metadata:
 data:
   wait-for-kafka.sh: |
     #!/bin/bash
-    set -e
+    set -euo pipefail
     {{- range $brokers }}
     timeout=120; until nc -z {{ .host }} {{ .port }} 2>/dev/null; do
       timeout=$((timeout - 2)); [ $timeout -le 0 ] && echo "Timed out waiting for {{ .host }}:{{ .port }}" && exit 1;
@@ -53,7 +53,7 @@ data:
 
   provision.sh: |
     #!/bin/bash
-    set -e
+    set -euo pipefail
     export CLIENT_CONF="${CLIENT_CONF:-/tmp/client.properties}"
     if [ ! -f "$CLIENT_CONF" ]; then
       echo "security.protocol={{ $securityProtocol }}" > "$CLIENT_CONF"
