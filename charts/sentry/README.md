@@ -1125,7 +1125,8 @@ Note: this table is incomplete, so have a look at the values.yaml in case you mi
 | snuba.transactionsConsumer.resources | object | `{}` |  |
 | snuba.transactionsConsumer.securityContext | object | `{}` |  |
 | snuba.transactionsConsumer.topologySpreadConstraints | list | `[]` |  |
-| sourcemaps.enabled | bool | `false` |  |
+| sourcemaps.enabled | bool | `false` | DEPRECATED: use cache.enabled instead |
+| cache.enabled | bool | `false` | Enable Django CACHES (memcached) |
 | symbolicator.api.affinity | object | `{}` |  |
 | symbolicator.api.autoscaling.enabled | bool | `false` |  |
 | symbolicator.api.autoscaling.maxReplicas | int | `5` |  |
@@ -1352,10 +1353,12 @@ Its also important having `connect_to_reserved_ips: true` in the symbolicator co
 
 #### Source Maps
 
-To get javascript source map processing working, you need to activate sourcemaps, which in turn activates the memcached dependency:
+> **Deprecated:** `sourcemaps.enabled` is deprecated and will be removed in a future release. Use `cache.enabled` instead.
+
+To get javascript source map processing working, you need to enable the Django cache (memcached), which is also used by 60+ Sentry components for caching:
 
 ```yaml
-sourcemaps:
+cache:
   enabled: true
 ```
 

@@ -3090,7 +3090,12 @@ externalKafka:
     nodeSelector: {}
     tolerations: []
 
+# DEPRECATED: sourcemaps.enabled is deprecated and will be removed in a future release.
+# Use cache.enabled instead. See cache.enabled below.
 sourcemaps:
+  enabled: false
+
+cache:
   enabled: false
 
 redis:

@@ -95,7 +95,7 @@ sentry.conf.py: |-
       power = UNITS.index(unit) + 1
       return float(text[:-1])*(BYTE_MULTIPLIER**power)
 
-  {{- if .Values.sourcemaps.enabled }}
+  {{- if or .Values.cache.enabled .Values.sourcemaps.enabled }}
   CACHES = {
       "default": {
           "BACKEND": "django.core.cache.backends.memcached.PyMemcacheCache",

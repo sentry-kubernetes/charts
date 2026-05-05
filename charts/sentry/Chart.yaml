@@ -9,7 +9,7 @@ dependencies:
   - name: memcached
     repository: oci://registry-1.docker.io/cloudpirates
     version: 0.9.3
-    condition: sourcemaps.enabled
+    condition: cache.enabled,sourcemaps.enabled
   - name: redis
     repository: oci://registry-1.docker.io/bitnamicharts
     version: 17.11.3
