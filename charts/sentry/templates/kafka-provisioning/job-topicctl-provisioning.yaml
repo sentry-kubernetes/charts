@@ -1,16 +1,9 @@
-{{- if and (not .Values.kafka.enabled) .Values.externalKafka.provisioning.enabled (eq (.Values.externalKafka.provisioning.strategy | default "bash-script") "bash-script") }}
+{{- if and (not .Values.kafka.enabled) .Values.externalKafka.provisioning.enabled (eq (.Values.externalKafka.provisioning.strategy | default "bash-script") "topicctl") }}
 {{- $provisioning := .Values.externalKafka.provisioning }}
+{{- $topicctl := $provisioning.topicctl | default dict }}
+{{- $saslFromSecret := .Values.externalKafka.sasl.existingSecret }}
 
-{{- $brokers := list }}
-{{- if .Values.externalKafka.cluster }}
-{{- range .Values.externalKafka.cluster }}
-{{- $brokers = append $brokers (dict "host" .host "port" (int .port)) }}
-{{- end }}
-{{- else }}
-{{- $brokers = append $brokers (dict "host" .Values.externalKafka.host "port" (int .Values.externalKafka.port)) }}
-{{- end }}
-
-{{- $image := printf "%s:%s" ($provisioning.image.repository | default "apache/kafka") ($provisioning.image.tag | default "3.7.1") }}
+{{- $topicctlImage := printf "%s:%s" ($topicctl.image.repository | default "segment/topicctl") ($topicctl.image.tag | default "v2.0.2") }}
 
 apiVersion: batch/v1
 kind: Job
@@ -60,7 +53,7 @@ spec:
       {{- end }}
       initContainers:
         - name: wait-for-kafka
-          image: {{ $image }}
+          image: busybox:1.36
           imagePullPolicy: IfNotPresent
           securityContext:
             allowPrivilegeEscalation: false
@@ -72,7 +65,7 @@ spec:
             runAsNonRoot: true
             runAsUser: 1000
           command:
-            - /bin/bash
+            - /bin/sh
             - /scripts/wait-for-kafka.sh
           {{- if $provisioning.resources }}
           resources:
@@ -82,8 +75,8 @@ spec:
             - name: scripts
               mountPath: /scripts
       containers:
-        - name: kafka-provisioning
-          image: {{ $image }}
+        - name: topicctl-provisioning
+          image: {{ $topicctlImage }}
           imagePullPolicy: IfNotPresent
           securityContext:
             allowPrivilegeEscalation: false
@@ -94,34 +87,33 @@ spec:
             runAsGroup: 1000
             runAsNonRoot: true
             runAsUser: 1000
-          {{- if .Values.externalKafka.sasl.existingSecret }}
+          {{- if $saslFromSecret }}
           env:
-            - name: KAFKA_SASL_MECHANISM
+            - name: TOPICCTL_SASL_USERNAME
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Values.externalKafka.sasl.existingSecret }}
-                  key: {{ (.Values.externalKafka.sasl.existingSecretKeys).mechanism | default "mechanism" }}
-            - name: KAFKA_SASL_USERNAME
-              valueFrom:
-                secretKeyRef:
-                  name: {{ .Values.externalKafka.sasl.existingSecret }}
+                  name: {{ $saslFromSecret }}
                   key: {{ (.Values.externalKafka.sasl.existingSecretKeys).username | default "username" }}
-            - name: KAFKA_SASL_PASSWORD
+            - name: TOPICCTL_SASL_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Values.externalKafka.sasl.existingSecret }}
+                  name: {{ $saslFromSecret }}
                   key: {{ (.Values.externalKafka.sasl.existingSecretKeys).password | default "password" }}
           {{- end }}
           command:
-            - /bin/bash
-            - /scripts/provision.sh
+            - /bin/topicctl
+            - apply
+            - --skip-confirm
+            - --expand-env
+            - /configs/cluster.yaml
+            - /configs/topics.yaml
           {{- if $provisioning.resources }}
           resources:
 {{ toYaml $provisioning.resources | indent 12 }}
           {{- end }}
           volumeMounts:
-            - name: scripts
-              mountPath: /scripts
+            - name: configs
+              mountPath: /configs
             - name: tmp
               mountPath: /tmp
 {{- if $provisioning.volumeMounts }}
@@ -137,9 +129,12 @@ spec:
 {{ toYaml .Values.global.sidecars | indent 8 }}
 {{- end }}
       volumes:
+        - name: configs
+          configMap:
+            name: {{ .Release.Name }}-topicctl-provisioning
         - name: scripts
           configMap:
-            name: {{ .Release.Name }}-kafka-provisioning-scripts
+            name: {{ .Release.Name }}-topicctl-provisioning
             defaultMode: 0755
         - name: tmp
           emptyDir: {}

@@ -3080,9 +3080,22 @@ externalKafka:
   ## When enabled, creates a Job that provisions Kafka topics
   provisioning:
     enabled: false
+    ## Strategy for provisioning: "bash-script" (default) or "topicctl"
+    ## bash-script: uses apache/kafka image with kafka-topics.sh scripts
+    ## topicctl: uses segmentio/topicctl for declarative topic management
+    strategy: bash-script
+    ## Image settings for bash-script strategy
     image:
       repository: apache/kafka
       tag: "3.7.1"
+    ## Settings for topicctl strategy (only used when strategy=topicctl)
+    topicctl:
+      image:
+        repository: segment/topicctl
+        tag: "v2.0.2"
+      clusterName: "sentry-kafka"
+      environment: "default"
+      region: "default"
     # topics: []  # If empty, uses kafka.provisioning.topics
     replicationFactor: 3
     numPartitions: 1

@@ -1,0 +1,103 @@
+{{- if and (not .Values.kafka.enabled) .Values.externalKafka.provisioning.enabled (eq (.Values.externalKafka.provisioning.strategy | default "bash-script") "topicctl") }}
+{{- $provisioning := .Values.externalKafka.provisioning }}
+{{- $topicctl := $provisioning.topicctl | default dict }}
+{{- $sasl := .Values.externalKafka.sasl | default dict }}
+{{- $saslEnabled := and $sasl.mechanism (ne $sasl.mechanism "None") }}
+{{- $saslFromSecret := $sasl.existingSecret }}
+{{- $securityProtocol := .Values.externalKafka.security.protocol | default "PLAINTEXT" | upper }}
+
+{{/* Build bootstrap servers from cluster or host/port */}}
+{{- $brokers := list }}
+{{- if .Values.externalKafka.cluster }}
+{{- range .Values.externalKafka.cluster }}
+{{- $brokers = append $brokers (dict "host" .host "port" (int .port)) }}
+{{- end }}
+{{- else }}
+{{- $brokers = append $brokers (dict "host" .Values.externalKafka.host "port" (int .Values.externalKafka.port)) }}
+{{- end }}
+
+{{- $bootstrapServers := list }}
+{{- range $brokers }}
+{{- $bootstrapServers = append $bootstrapServers (printf "%s:%d" .host .port) }}
+{{- end }}
+
+{{/* Get topic list from externalKafka.provisioning.topics or fall back to kafka.provisioning.topics */}}
+{{- $topics := $provisioning.topics | default .Values.kafka.provisioning.topics }}
+{{- $replicationFactor := int ($provisioning.replicationFactor | default 1) }}
+{{- $defaultPartitions := int ($provisioning.numPartitions | default 1) }}
+
+{{- $clusterName := $topicctl.clusterName | default "sentry-kafka" }}
+{{- $environment := $topicctl.environment | default "default" }}
+{{- $region := $topicctl.region | default "default" }}
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-topicctl-provisioning
+  labels:
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    app.kubernetes.io/name: kafka
+    app.kubernetes.io/component: kafka-provisioning
+  annotations:
+    "helm.sh/hook": "pre-install,pre-upgrade"
+    "helm.sh/hook-delete-policy": "before-hook-creation"
+    "helm.sh/hook-weight": "-5"
+data:
+  wait-for-kafka.sh: |
+    #!/bin/sh
+    set -eu
+    {{- range $brokers }}
+    timeout=120; until nc -z {{ .host }} {{ .port }} 2>/dev/null; do
+      timeout=$((timeout - 2)); [ $timeout -le 0 ] && echo "Timed out waiting for {{ .host }}:{{ .port }}" && exit 1;
+      sleep 2;
+    done;
+    {{- end }}
+    echo "Kafka is available";
+
+  cluster.yaml: |
+    meta:
+      name: {{ $clusterName }}
+      environment: {{ $environment }}
+      region: {{ $region }}
+    spec:
+      bootstrapAddrs:
+      {{- range $bootstrapServers }}
+        - {{ . | quote }}
+      {{- end }}
+      {{- if or (eq $securityProtocol "SSL") (eq $securityProtocol "SASL_SSL") }}
+      tls:
+        enabled: true
+      {{- end }}
+      {{- if $saslEnabled }}
+      sasl:
+        enabled: true
+        mechanism: {{ $sasl.mechanism }}
+        {{- if $saslFromSecret }}
+        username: ${TOPICCTL_SASL_USERNAME}
+        password: ${TOPICCTL_SASL_PASSWORD}
+        {{- else if and $sasl.username $sasl.password }}
+        username: {{ $sasl.username | quote }}
+        password: {{ $sasl.password | quote }}
+        {{- end }}
+      {{- end }}
+
+  topics.yaml: |
+    {{- range $topics }}
+    ---
+    meta:
+      name: {{ .name }}
+      cluster: {{ $clusterName }}
+      environment: {{ $environment }}
+      region: {{ $region }}
+    spec:
+      partitions: {{ .partitions | default $defaultPartitions }}
+      replicationFactor: {{ $replicationFactor }}
+      {{- if .config }}
+      settings:
+        {{- range $key, $value := .config }}
+        {{ $key }}: {{ $value | quote }}
+        {{- end }}
+      {{- end }}
+    {{- end }}
+{{- end }}

@@ -1,4 +1,4 @@
-{{- if and (not .Values.kafka.enabled) .Values.externalKafka.provisioning.enabled }}
+{{- if and (not .Values.kafka.enabled) .Values.externalKafka.provisioning.enabled (eq (.Values.externalKafka.provisioning.strategy | default "bash-script") "bash-script") }}
 {{- $provisioning := .Values.externalKafka.provisioning }}
 {{- $sasl := .Values.externalKafka.sasl | default dict }}
 {{- $saslEnabled := and $sasl.mechanism (ne $sasl.mechanism "None") }}
