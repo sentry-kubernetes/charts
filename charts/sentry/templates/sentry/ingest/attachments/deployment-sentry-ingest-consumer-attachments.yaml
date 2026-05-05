@@ -114,6 +114,9 @@ spec:
           - "--max-poll-interval-ms"
           - "{{ .Values.sentry.ingestConsumerAttachments.maxPollIntervalMs }}"
           {{- end }}
+          {{- if or .Values.sentry.ingestConsumerAttachments.concurrency .Values.sentry.ingestConsumerAttachments.maxBatchSize .Values.sentry.ingestConsumerAttachments.maxBatchTimeMs }}
+          - "--"
+          {{- end }}
           {{- if .Values.sentry.ingestConsumerAttachments.concurrency }}
           - "--processes"
           - "{{ .Values.sentry.ingestConsumerAttachments.concurrency }}"

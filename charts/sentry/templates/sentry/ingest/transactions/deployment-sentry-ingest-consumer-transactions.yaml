@@ -111,6 +111,9 @@ spec:
           - "--log-level"
           - "{{ .Values.sentry.ingestConsumerTransactions.logLevel }}"
           {{- end }}
+          {{- if or .Values.sentry.ingestConsumerTransactions.maxBatchSize .Values.sentry.ingestConsumerTransactions.inputBlockSize .Values.sentry.ingestConsumerTransactions.maxBatchTimeMs .Values.sentry.ingestConsumerTransactions.concurrency }}
+          - "--"
+          {{- end }}
           {{- if .Values.sentry.ingestConsumerTransactions.maxBatchSize }}
           - "--max-batch-size"
           - "{{ .Values.sentry.ingestConsumerTransactions.maxBatchSize }}"

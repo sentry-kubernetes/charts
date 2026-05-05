@@ -75,7 +75,7 @@ spec:
             args:
               - "-c"
               - |
-                set -e
+                set -euo pipefail
                 echo "Starting ClickHouse cleanup with retention period of {{ .Values.snuba.cleanup.retentionDays }} days"
                 echo "Connecting to ClickHouse at $CLICKHOUSE_HOST:$CLICKHOUSE_PORT"
 

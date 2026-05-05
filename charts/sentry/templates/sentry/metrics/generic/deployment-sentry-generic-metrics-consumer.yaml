@@ -114,6 +114,7 @@ spec:
           - "{{ .Values.sentry.genericMetricsConsumer.maxPollIntervalMs }}"
           {{- end }}
           {{- if .Values.sentry.genericMetricsConsumer.concurrency }}
+          - "--"
           - "--processes"
           - "{{ .Values.sentry.genericMetricsConsumer.concurrency }}"
           {{- end }}

@@ -110,6 +110,9 @@ spec:
           - "--log-level"
           - "{{ .Values.sentry.ingestConsumerEvents.logLevel }}"
           {{- end }}
+          {{- if or .Values.sentry.ingestConsumerEvents.maxBatchSize .Values.sentry.ingestConsumerEvents.inputBlockSize .Values.sentry.ingestConsumerEvents.maxBatchTimeMs .Values.sentry.ingestConsumerEvents.concurrency }}
+          - "--"
+          {{- end }}
           {{- if .Values.sentry.ingestConsumerEvents.maxBatchSize }}
           - "--max-batch-size"
           - "{{ .Values.sentry.ingestConsumerEvents.maxBatchSize }}"
