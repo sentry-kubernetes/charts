@@ -4,6 +4,23 @@ The changelog below refers to the main `sentry` chart only.
 
 ## Upgrading to Chart 30.x.x
 
+**Breaking change:** the insecure default Sentry admin password (`user.password: aaaa`) has been removed. When `user.create` is `true` (the default), you must now set **one** of:
+
+- `user.existingSecret` (recommended): name of a Kubernetes Secret containing the admin password.
+- `user.password`: plaintext password (not recommended for production).
+
+If neither is set, `helm install` / `helm upgrade` will fail at template time with a clear error message instead of silently creating an admin account with a well-known password. Existing deployments that relied on the default must set one of the above before their next upgrade.
+
+Example using an existing Secret:
+
+```
+kubectl create secret generic sentry-admin-password \
+  --from-literal=admin-password='CHANGE_ME'
+
+helm upgrade sentry sentry/sentry \
+  --set user.existingSecret=sentry-admin-password
+```
+
 **Breaking change:** HTTP health probe tuning for in-cluster traffic is no longer a single set of flat `probe*` values.
 
 - **relay**, **sentry.web**, **vroom**: replace `probeFailureThreshold`, `probeInitialDelaySeconds`, `probePeriodSeconds`, `probeSuccessThreshold`, and `probeTimeoutSeconds` with nested **`livenessProbe`** and **`readinessProbe`** objects (each supports the same five fields). Defaults keep liveness tolerant and use a shorter readiness interval and lower failure threshold so pods leave Service endpoints sooner when the health HTTP endpoint fails.
