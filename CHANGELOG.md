@@ -2,7 +2,7 @@
 
 The changelog below refers to the main `sentry` chart only.
 
-## Upgrading to Chart 30.x.x
+## Upgrading to Chart 31.x.x
 
 **Breaking change:** the insecure default Sentry admin password (`user.password: aaaa`) has been removed. When `user.create` is `true` (the default), you must now set **one** of:
 
@@ -20,6 +20,8 @@ kubectl create secret generic sentry-admin-password \
 helm upgrade sentry sentry/sentry \
   --set user.existingSecret=sentry-admin-password
 ```
+
+## Upgrading to Chart 30.x.x
 
 **Breaking change:** HTTP health probe tuning for in-cluster traffic is no longer a single set of flat `probe*` values.
 
