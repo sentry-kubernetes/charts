@@ -2,6 +2,35 @@
 
 The changelog below refers to the main `sentry` chart only.
 
+## Upgrading to Chart 31.x.x
+
+**Breaking change:** bash-script Kafka topic provisioning for external Kafka has been replaced with `segmentio/topicctl` ([#2157](https://github.com/sentry-kubernetes/charts/pull/2157)).
+
+The `externalKafka.provisioning.image` block has been removed and replaced with `externalKafka.provisioning.topicctl`. Users who were using external Kafka provisioning must update their `values.yaml`:
+
+**Before:**
+```yaml
+externalKafka:
+  provisioning:
+    image:
+      repository: apache/kafka
+      tag: "latest"
+```
+
+**After:**
+```yaml
+externalKafka:
+  provisioning:
+    topicctl:
+      image:
+        repository: segment/topicctl
+        tag: "v2.0.2"
+      clusterName: "sentry-kafka"
+      environment: "default"
+      region: "default"
+      placementStrategy: "any"
+```
+
 ## Upgrading to Chart 30.x.x
 
 **Breaking change:** the insecure default Sentry admin password (`user.password: aaaa`) has been removed. When `user.create` is `true` (the default), you must now set **one** of:
