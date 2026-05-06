@@ -8,8 +8,3 @@
 WARNING: sourcemaps.enabled is deprecated and will be removed in a future release.
          Use cache.enabled instead.
 {{- end }}
-
-{{- if and .Values.externalKafka.provisioning.enabled (eq .Values.externalKafka.provisioning.strategy "bash-script") }}
-WARNING: Default bash-script strategy for Kafka topic provisioning is deprecated and will be removed in future releases.
-         Please switch to "topicctl" strategy by setting externalKafka.provisioning.strategy to "topicctl".
-{{- end }}

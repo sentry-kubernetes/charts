@@ -1,4 +1,4 @@
-{{- if and (not .Values.kafka.enabled) .Values.externalKafka.provisioning.enabled (eq (.Values.externalKafka.provisioning.strategy | default "bash-script") "topicctl") }}
+{{- if and (not .Values.kafka.enabled) .Values.externalKafka.provisioning.enabled }}
 {{- $provisioning := .Values.externalKafka.provisioning }}
 {{- $topicctl := $provisioning.topicctl | default dict }}
 {{- $sasl := .Values.externalKafka.sasl | default dict }}
