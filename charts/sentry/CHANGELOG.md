@@ -1,5 +1,24 @@
 # Changelog
 
+## [31.0.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v30.4.0...sentry-v31.0.0) (2026-05-06)
+
+
+### ⚠ BREAKING CHANGES
+
+* require admin password and remove insecure default ([#2151](https://github.com/sentry-kubernetes/charts/issues/2151))
+
+### Features
+
+* add support topicctl for external kafka ([#2157](https://github.com/sentry-kubernetes/charts/issues/2157)) ([9ae8784](https://github.com/sentry-kubernetes/charts/commit/9ae878467a6ab49367dd452e3ca15e8c2ea3aa08))
+* **cache:** add cache.enabled flag, deprecate sourcemaps.enabled ([#2156](https://github.com/sentry-kubernetes/charts/issues/2156)) ([0dc0ff7](https://github.com/sentry-kubernetes/charts/commit/0dc0ff76f612617986eb6410607faf9f4cbe6561))
+
+
+### Bug Fixes
+
+* add missing -- separator before consumer CLI options to prevent pod crashloops ([#2149](https://github.com/sentry-kubernetes/charts/issues/2149)) ([579ab05](https://github.com/sentry-kubernetes/charts/commit/579ab05d435246803ec9d49af9e1a47cf9aa1fed))
+* harden shell scripts with set -euo pipefail ([#2155](https://github.com/sentry-kubernetes/charts/issues/2155)) ([d34dd65](https://github.com/sentry-kubernetes/charts/commit/d34dd65d1dfd2394b65422bf84bc286acdfef433))
+* require admin password and remove insecure default ([#2151](https://github.com/sentry-kubernetes/charts/issues/2151)) ([c14b1bf](https://github.com/sentry-kubernetes/charts/commit/c14b1bf3b875fa4cfd59d179d55086ffbc17aa68))
+
 ## [30.4.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v30.3.1...sentry-v30.4.0) (2026-05-03)
 
 
