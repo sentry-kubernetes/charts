@@ -105,6 +105,21 @@ spec:
           - "--healthcheck-file-path"
           - "/tmp/health.txt"
           {{- end }}
+          {{- if or .Values.sentry.processSpans.concurrency .Values.sentry.processSpans.maxBatchSize .Values.sentry.processSpans.maxBatchTimeMs }}
+          - "--"
+          {{- end }}
+          {{- if .Values.sentry.processSpans.concurrency }}
+          - "--processes"
+          - "{{ .Values.sentry.processSpans.concurrency }}"
+          {{- end }}
+          {{- if .Values.sentry.processSpans.maxBatchSize }}
+          - "--max-batch-size"
+          - "{{ .Values.sentry.processSpans.maxBatchSize }}"
+          {{- end }}
+          {{- if .Values.sentry.processSpans.maxBatchTimeMs }}
+          - "--max-batch-time-ms"
+          - "{{ .Values.sentry.processSpans.maxBatchTimeMs }}"
+          {{- end }}
         {{- if .Values.sentry.processSpans.livenessProbe.enabled }}
         livenessProbe:
           exec:

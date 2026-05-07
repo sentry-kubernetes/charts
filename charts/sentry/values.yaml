@@ -1117,6 +1117,7 @@ sentry:
   processSegments:
     enabled: true
     replicas: 1
+    # concurrency: 4
     env: []
     resources: {}
     #  requests:
@@ -1138,10 +1139,13 @@ sentry:
       periodSeconds: 320
     # autoOffsetReset: "earliest"
     # noStrictOffsetReset: false
+    # maxBatchSize: "500"
+    # maxBatchTimeMs: "1000"
 
   processSpans:
     enabled: true
     replicas: 1
+    # concurrency: 4
     env: []
     resources: {}
     #  requests:
@@ -1163,6 +1167,8 @@ sentry:
       periodSeconds: 320
     # autoOffsetReset: "earliest"
     # noStrictOffsetReset: false
+    # maxBatchSize: "500"
+    # maxBatchTimeMs: "1000"
 
   subscriptionConsumerGenericMetrics:
     enabled: true
