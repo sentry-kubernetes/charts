@@ -4,6 +4,10 @@ The changelog below refers to the main `sentry` chart only.
 
 ## Upgrading to Chart 31.x.x
 
+> [!CAUTION]
+> `31.0.0` has issues with Snuba migration, please skip this release and upgrade
+> straight to `31.1.0` instead.
+
 **Breaking change:** the insecure default Sentry admin password (`user.password: aaaa`) has been removed. When `user.create` is `true` (the default), you must now set **one** of:
 
 - `user.existingSecret` (recommended): name of a Kubernetes Secret containing the admin password.
@@ -49,6 +53,10 @@ externalKafka:
 ```
 
 ## Upgrading to Chart 30.x.x
+
+> [!CAUTION]
+> `30.4.0` has issues with Snuba migration, please skip this release and upgrade
+> straight to `31.1.0` instead.
 
 **Breaking change:** HTTP health probe tuning for in-cluster traffic is no longer a single set of flat `probe*` values.
 

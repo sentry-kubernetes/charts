@@ -3,6 +3,15 @@
 ## [31.0.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v30.4.0...sentry-v31.0.0) (2026-05-06)
 
 
+> [!CAUTION]
+> This release has issues with Snuba migration if you're upgrading from previous version,
+> see [getsentry/self-hosted #4286](https://github.com/getsentry/self-hosted/issues/4286).
+>
+> Please skip this release and upgrade straight to `31.1.0` instead.
+>
+> This release is fine if you're doing a fresh install.
+
+
 ### ⚠ BREAKING CHANGES
 
 * require admin password and remove insecure default ([#2151](https://github.com/sentry-kubernetes/charts/issues/2151))
@@ -20,6 +29,15 @@
 * require admin password and remove insecure default ([#2151](https://github.com/sentry-kubernetes/charts/issues/2151)) ([c14b1bf](https://github.com/sentry-kubernetes/charts/commit/c14b1bf3b875fa4cfd59d179d55086ffbc17aa68))
 
 ## [30.4.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v30.3.1...sentry-v30.4.0) (2026-05-03)
+
+
+> [!CAUTION]
+> This release has issues with Snuba migration if you're upgrading from previous version,
+> see [getsentry/self-hosted #4286](https://github.com/getsentry/self-hosted/issues/4286).
+>
+> Please skip this release and upgrade straight to `31.1.0` instead.
+>
+> This release is fine if you're doing a fresh install.
 
 
 ### Features
