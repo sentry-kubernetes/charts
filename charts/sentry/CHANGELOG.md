@@ -1,5 +1,13 @@
 # Changelog
 
+## [31.1.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v31.0.0...sentry-v31.1.0) (2026-05-09)
+
+
+### Features
+
+* add topicOverrides support for per-topic partition and config customization in Kafka provisioning ([#2162](https://github.com/sentry-kubernetes/charts/issues/2162)) ([257ca80](https://github.com/sentry-kubernetes/charts/commit/257ca8035c9740445358f992dd17dab71f97191a))
+* upgrade to v26.4.2 ([#2160](https://github.com/sentry-kubernetes/charts/issues/2160)) ([01014cc](https://github.com/sentry-kubernetes/charts/commit/01014cc2bbd413c809fc5bc42bed22e62bcb92ed))
+
 ## [31.0.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v30.4.0...sentry-v31.0.0) (2026-05-06)
 
 
