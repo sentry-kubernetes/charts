@@ -23,6 +23,7 @@
 
 {{/* Get topic list from externalKafka.provisioning.topics or fall back to kafka.provisioning.topics */}}
 {{- $topics := $provisioning.topics | default .Values.kafka.provisioning.topics }}
+{{- $topicOverrides := $provisioning.topicOverrides | default dict }}
 {{- $replicationFactor := int ($provisioning.replicationFactor | default 1) }}
 {{- $defaultPartitions := int ($provisioning.numPartitions | default 1) }}
 
@@ -85,20 +86,28 @@ data:
 
   topics.yaml: |
     {{- range $topics }}
+    {{- $topicName := .name }}
+    {{- $override := index $topicOverrides $topicName | default dict }}
+    {{- $partitions := $override.partitions | default .partitions | default $defaultPartitions }}
+    {{- $topicPlacementStrategy := $override.placementStrategy | default .placementStrategy | default $placementStrategy }}
+    {{- $config := .config | default dict }}
+    {{- if $override.config }}
+    {{-   $config = mustMergeOverwrite (dict) $config $override.config }}
+    {{- end }}
     ---
     meta:
-      name: {{ .name }}
+      name: {{ $topicName }}
       cluster: {{ $clusterName }}
       environment: {{ $environment }}
       region: {{ $region }}
     spec:
-      partitions: {{ .partitions | default $defaultPartitions }}
+      partitions: {{ $partitions }}
       replicationFactor: {{ $replicationFactor }}
       placement:
-        strategy: {{ .placementStrategy | default $placementStrategy }}
-      {{- if .config }}
+        strategy: {{ $topicPlacementStrategy }}
+      {{- if $config }}
       settings:
-        {{- range $key, $value := .config }}
+        {{- range $key, $value := $config }}
         {{ $key }}: {{ $value | quote }}
         {{- end }}
       {{- end }}

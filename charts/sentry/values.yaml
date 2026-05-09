@@ -3090,6 +3090,19 @@ externalKafka:
       region: "default"
       placementStrategy: "any"
     # topics: []  # If empty, uses kafka.provisioning.topics
+    # topicOverrides allows overriding partitions/config for specific topics without re-declaring all topics.
+    # Keys must match topic names from kafka.provisioning.topics (or externalKafka.provisioning.topics if set).
+    # Any field omitted here falls back to the topic's own value, then to provisioning defaults (numPartitions, placementStrategy).
+    # topicOverrides:
+    #   ingest-events:
+    #     partitions: 12
+    #   events:
+    #     partitions: 6
+    #   snuba-commit-log:
+    #     partitions: 3
+    #     config:
+    #       "cleanup.policy": "compact,delete"
+    #       "min.compaction.lag.ms": "3600000"
     replicationFactor: 3
     numPartitions: 1
     resources: {}
