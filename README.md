@@ -6,6 +6,26 @@ This repository aims to support Sentry >=10 and move out from the deprecated Hel
 
 Big thanks to the maintainers of the [deprecated chart](https://github.com/helm/charts/tree/master/stable/sentry). This work has been partly inspired by it.
 
+## Sentry Admin Secret
+
+Before installing Sentry, you must create a secret for the admin password:
+
+1. Create the secret:
+
+```bash
+kubectl create namespace sentry
+kubectl create secret generic sentry-admin-password \
+  --from-literal=admin-password='YourStrongPassword123!' \
+  --namespace sentry
+```
+
+2. Set in `values.yaml`:
+
+```yaml
+user:
+  existingSecret: sentry-admin-password
+```
+
 ## External ClickHouse Configuration
 
 ### Background
