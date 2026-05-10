@@ -46,13 +46,13 @@ configs:
     config.yaml:
       watch:
         namespaces:
-          - sentry
+          - clickhouse
 EOF
 
 helm repo add clickhouse-operator https://helm.altinity.com
 helm repo update
 helm upgrade --install clickhouse-operator clickhouse-operator/altinity-clickhouse-operator \
-  --version 0.26.0 \
+  --version 0.27.0 \
   --namespace clickhouse-operator \
   --create-namespace \
   -f clickhouse-operator-values.yaml \
@@ -81,14 +81,11 @@ apiVersion: clickhouse.altinity.com/v1
 kind: ClickHouseInstallation
 metadata:
   name: sentry-clickhouse
-  namespace: sentry # Replace with your namespace
+  namespace: clickhouse # Replace with your namespace
 spec:
   configuration:
     clusters:
       - name: single-node
-        layout:
-          shardsCount: 1
-          replicasCount: 1
     users:
       default/networks/ip:
         - "0.0.0.0/0" # Required for Sentry pods to connect
@@ -109,13 +106,13 @@ EOF
 
 Apply the manifest and wait for ClickHouse to become ready:
 ```bash
-kubectl create ns sentry
+kubectl create ns clickhouse
 kubectl apply -f clickhouse.yaml
-kubectl -n sentry get chi sentry-clickhouse -w
+kubectl -n clickhouse get chi sentry-clickhouse -w
 ```
 Wait until the `status.status` field shows `Completed` and the ClickHouse pods are `Running`:
 ```bash
-kubectl -n sentry get pods -l clickhouse.altinity.com/chi=sentry-clickhouse
+kubectl -n clickhouse get pods -l clickhouse.altinity.com/chi=sentry-clickhouse
 ```
 
 #### 2. (Optional) Separate ClickHouse Keeper
@@ -124,11 +121,12 @@ For more robust deployments, you should run ClickHouse Keeper separately.
 
 **Keeper Manifest (`keeper.yaml`)**:
 ```yaml
+cat <<'EOF' > clickhouse.yaml
 apiVersion: clickhouse-keeper.altinity.com/v1
 kind: ClickHouseKeeperInstallation
 metadata:
   name: clickhouse-keeper
-  namespace: sentry
+  namespace: clickhouse
 spec:
   configuration:
     clusters:
@@ -162,6 +160,7 @@ spec:
           resources:
             requests:
               storage: 10Gi
+EOF
 ```
 
 If using a separate Keeper, update your `ClickHouseInstallation` config to reference it:
@@ -171,8 +170,40 @@ spec:
   configuration:
     zookeeper:
       nodes:
-        - host: keeper-clickhouse-keeper.sentry.svc.cluster.local
+        - host: keeper-clickhouse-keeper.clickhouse.svc.cluster.local
           port: 2181
+```
+
+```yaml
+apiVersion: clickhouse.altinity.com/v1
+kind: ClickHouseInstallation
+metadata:
+  name: sentry-clickhouse
+  namespace: clickhouse
+spec:
+  configuration:
+    clusters:
+      - name: cluster-node
+        layout:
+          shardsCount: 1
+          replicasCount: 3
+    users:
+      default/networks/ip:
+        - "0.0.0.0/0" # Required for Sentry pods to connect
+    zookeeper:
+      keeper:
+        name: clickhouse-keeper
+        namespace: clickhouse
+  templates:
+    podTemplates:
+      - name: clickhouse-single-node
+        spec:
+          containers:
+            - name: clickhouse
+              image: altinity/clickhouse-server:25.3.6.10034.altinitystable
+  defaults:
+    templates:
+      podTemplate: clickhouse-single-node
 ```
 
 ### Configuring Sentry Chart
@@ -181,7 +212,7 @@ Once your ClickHouse cluster is running, configure the Sentry Helm chart to use 
 
 **Find the ClickHouse service name** created by the operator:
 ```bash
-kubectl -n sentry get svc -l clickhouse.altinity.com/chi=sentry-clickhouse
+kubectl -n clickhouse get svc -l clickhouse.altinity.com/chi=sentry-clickhouse
 ```
 
 The Altinity Operator creates services following this naming convention:
@@ -192,7 +223,7 @@ The Altinity Operator creates services following this naming convention:
 ```bash
 cat <<'EOF' > values.yaml
 externalClickhouse:
-  host: "chi-sentry-clickhouse-single-node-0-0.sentry.svc.cluster.local"
+  host: "clickhouse-sentry-clickhouse.clickhouse.svc.cluster.local"
   tcpPort: 9000
   httpPort: 8123
   username: "default"

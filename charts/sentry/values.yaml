@@ -2796,7 +2796,7 @@ externalClickhouse:
   ## External ClickHouse configuration (required).
   ## Hostname or ip address of external clickhouse
   ##
-  host: "clickhouse"
+  host: "clickhouse-sentry-clickhouse.clickhouse.svc.cluster.local"
   tcpPort: 9000
   httpPort: 8123
   username: default
