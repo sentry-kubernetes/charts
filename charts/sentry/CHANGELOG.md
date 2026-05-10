@@ -1,5 +1,12 @@
 # Changelog
 
+## [31.2.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v31.1.0...sentry-v31.2.0) (2026-05-10)
+
+
+### Features
+
+* add concurrency, maxBatchSize, maxBatchTimeMs support for process-spans and process-segments consumers ([#2159](https://github.com/sentry-kubernetes/charts/issues/2159)) ([cbff2c9](https://github.com/sentry-kubernetes/charts/commit/cbff2c968ff0df8935102ccf45bedcc9ff409fcb))
+
 ## [31.1.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v31.0.0...sentry-v31.1.0) (2026-05-09)
 
 
