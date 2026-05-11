@@ -121,7 +121,7 @@ For more robust deployments, you should run ClickHouse Keeper separately.
 
 **Keeper Manifest (`keeper.yaml`)**:
 ```yaml
-cat <<'EOF' > clickhouse.yaml
+cat <<'EOF' > clickhouse-keeper.yaml
 apiVersion: clickhouse-keeper.altinity.com/v1
 kind: ClickHouseKeeperInstallation
 metadata:
@@ -175,6 +175,7 @@ spec:
 ```
 
 ```yaml
+cat <<'EOF' > clickhouse.yaml
 apiVersion: clickhouse.altinity.com/v1
 kind: ClickHouseInstallation
 metadata:
@@ -204,6 +205,7 @@ spec:
   defaults:
     templates:
       podTemplate: clickhouse-single-node
+EOF
 ```
 
 ### Configuring Sentry Chart
