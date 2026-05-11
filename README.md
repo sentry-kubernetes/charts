@@ -71,19 +71,20 @@ Ensure the operator pod is in `Running` state before proceeding.
 
 Below is a Minimum Viable Product (MVP) configuration for a single-node ClickHouse instance suitable for testing or small-scale deployments. For production, we recommend a high-availability setup with at least 3 Keeper nodes and 2 ClickHouse replicas.
 
-#### 1. Create ClickHouse Operator Secret
+#### 1. Create ClickHouse Secrets
 
-Create a secret for the `clickhouse_operator` user that the Altinity Operator uses to manage the ClickHouse cluster:
+Create a secret with credentials for both the `clickhouse_operator` user (used by the Altinity Operator to manage the cluster) and the `sentry` user (used by Sentry to access ClickHouse):
 
 ```bash
-kubectl -n clickhouse create secret generic clickhouse-operator-secret \
-  --from-literal=username=clickhouse_operator \
-  --from-literal=password='YourStrongOperatorPassword!'
+kubectl create ns clickhouse
+kubectl -n clickhouse create secret generic clickhouse-secret \
+  --from-literal=operator-password='YourStrongOperatorPassword!' \
+  --from-literal=sentry-password='YourStrongSentryPassword!'
 ```
 
 #### 2. ClickHouse Installation Manifest
 
-Save this as `clickhouse.yaml`. This example deploys a single-node cluster. The operator password is loaded from the secret created above.
+Save this as `clickhouse.yaml`. This example deploys a single-node cluster. Passwords for both the operator and Sentry are loaded from the secret created above.
 
 ```bash
 cat <<'EOF' > clickhouse.yaml
@@ -100,8 +101,9 @@ spec:
       clickhouse_operator/password: ""
       clickhouse_operator/networks/ip:
         - "0.0.0.0/0"
-      default/networks/ip:
-        - "0.0.0.0/0" # Required for Sentry pods to connect
+      sentry/password: ""
+      sentry/networks/ip:
+        - "0.0.0.0/0"
     files:
       config.d/secret.xml:
         <clickhouse>
@@ -109,6 +111,9 @@ spec:
             <clickhouse_operator>
               <password from_env="OPERATOR_PASSWORD" />
             </clickhouse_operator>
+            <sentry>
+              <password from_env="SENTRY_PASSWORD" />
+            </sentry>
           </users>
         </clickhouse>
   templates:
@@ -122,15 +127,20 @@ spec:
                 - name: OPERATOR_PASSWORD
                   valueFrom:
                     secretKeyRef:
-                      name: clickhouse-operator-secret
-                      key: password
+                      name: clickhouse-secret
+                      key: operator-password
+                - name: SENTRY_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: clickhouse-secret
+                      key: sentry-password
   defaults:
     templates:
       podTemplate: clickhouse-single-node
 EOF
 ```
 
-**Note on Network Access**: The `users/default/networks/ip` setting is crucial. By default, ClickHouse might restrict access. Setting it to `0.0.0.0/0` allows the Sentry pods (which have dynamic IPs) to connect.
+**Note on Network Access**: The `users/sentry/networks/ip` and `users/default/networks/ip` settings are crucial. By default, ClickHouse might restrict access. Setting them to `0.0.0.0/0` allows the Sentry pods (which have dynamic IPs) to connect.
 
 Apply the manifest and wait for ClickHouse to become ready:
 ```bash
@@ -191,15 +201,15 @@ spec:
 EOF
 ```
 
-If using a separate Keeper, update your `ClickHouseInstallation` config to reference it:
+Apply the Keeper manifest and wait for it to become ready:
+```bash
+kubectl apply -f clickhouse-keeper.yaml
+kubectl -n clickhouse get chk clickhouse-keeper -w
+```
 
-```yaml
-spec:
-  configuration:
-    zookeeper:
-      nodes:
-        - host: keeper-clickhouse-keeper.clickhouse.svc.cluster.local
-          port: 2181
+Wait until all Keeper pods are `Running`:
+```bash
+kubectl -n clickhouse get pods -l clickhouse-keeper.altinity.com/chk=clickhouse-keeper
 ```
 
 ```yaml
@@ -220,8 +230,9 @@ spec:
       clickhouse_operator/password: ""
       clickhouse_operator/networks/ip:
         - "0.0.0.0/0"
-      default/networks/ip:
-        - "0.0.0.0/0" # Required for Sentry pods to connect
+      sentry/password: ""
+      sentry/networks/ip:
+        - "0.0.0.0/0"
     zookeeper:
       keeper:
         name: clickhouse-keeper
@@ -233,6 +244,9 @@ spec:
             <clickhouse_operator>
               <password from_env="OPERATOR_PASSWORD" />
             </clickhouse_operator>
+            <sentry>
+              <password from_env="SENTRY_PASSWORD" />
+            </sentry>
           </users>
         </clickhouse>
   templates:
@@ -246,12 +260,28 @@ spec:
                 - name: OPERATOR_PASSWORD
                   valueFrom:
                     secretKeyRef:
-                      name: clickhouse-operator-secret
-                      key: password
+                      name: clickhouse-secret
+                      key: operator-password
+                - name: SENTRY_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: clickhouse-secret
+                      key: sentry-password
   defaults:
     templates:
       podTemplate: clickhouse-single-node
 EOF
+```
+
+Apply the manifests and wait for ClickHouse to become ready:
+```bash
+kubectl apply -f clickhouse.yaml
+kubectl -n clickhouse get chi sentry-clickhouse -w
+```
+
+Wait until the `status.status` field shows `Completed` and the ClickHouse pods are `Running`:
+```bash
+kubectl -n clickhouse get pods -l clickhouse.altinity.com/chi=sentry-clickhouse
 ```
 
 ### Configuring Sentry Chart
@@ -274,8 +304,9 @@ externalClickhouse:
   host: "clickhouse-sentry-clickhouse.clickhouse.svc.cluster.local"
   tcpPort: 9000
   httpPort: 8123
-  username: "default"
-  password: "" # Set if you configured a password
+  username: "sentry"
+  existingSecret: "clickhouse-secret"
+  existingSecretKey: "sentry-password"
   database: "default"
   singleNode: true # Set to false if using a replicated cluster
 EOF
