@@ -32,7 +32,7 @@ user:
   password: ""
 
   ## set this value to an existingSecret name to create the admin user with the password in the secret
-  # existingSecret: sentry-admin-password
+  existingSecret: sentry-admin-password
 
   ## set this value to an existingSecretKey which holds the password to be used for sentry admin user default key is `admin-password`
   # existingSecretKey: admin-password
@@ -2799,18 +2799,16 @@ externalClickhouse:
   host: "clickhouse-sentry-clickhouse.clickhouse.svc.cluster.local"
   tcpPort: 9000
   httpPort: 8123
-  username: default
-  password: ""
+  username: sentry
+  existingSecret: "clickhouse-secret"
+  existingSecretKey: "sentry-password"
   database: default
-  singleNode: true
-  # existingSecret: secret-name
-  ## set existingSecretKey if key name inside existingSecret is different from 'postgres-password'
-  # existingSecretKey: secret-key-name
+  singleNode: false
   ## Cluster name, can be found in config
   ## (https://clickhouse.tech/docs/en/operations/server-configuration-parameters/settings/#server-settings-remote-servers)
   ## or by executing `select * from system.clusters`
   ##
-  # clusterName: test_shard_localhost
+  clusterName: cluster-node
   ## Optional: separate distributed cluster name (defaults to clusterName)
   ## Use this when your ClickHouse distributed queries need a different cluster name
   ##

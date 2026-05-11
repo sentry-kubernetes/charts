@@ -294,8 +294,8 @@ kubectl -n clickhouse get svc -l clickhouse.altinity.com/chi=sentry-clickhouse
 ```
 
 The Altinity Operator creates services following this naming convention:
-- `clickhouse-sentry-clickhouse` — main load-balanced service (recommended for single-node setups)
-- `chi-sentry-clickhouse-single-node-0-0` — per-pod service for shard 0, replica 0
+- `clickhouse-sentry-clickhouse` — main load-balanced service
+- `chi-sentry-clickhouse-cluster-node-0-0` — per-pod service for shard 0, replica 0
 
 **Create your `values.yaml`** using the service name from the command above:
 ```bash
@@ -308,7 +308,8 @@ externalClickhouse:
   existingSecret: "clickhouse-secret"
   existingSecretKey: "sentry-password"
   database: "default"
-  singleNode: true # Set to false if using a replicated cluster
+  singleNode: false
+  clusterName: cluster-node
 EOF
 ```
 
