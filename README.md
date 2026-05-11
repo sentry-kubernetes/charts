@@ -73,18 +73,17 @@ Below is a Minimum Viable Product (MVP) configuration for a single-node ClickHou
 
 #### 1. Create ClickHouse Secrets
 
-Create a secret with credentials for both the `clickhouse_operator` user (used by the Altinity Operator to manage the cluster) and the `sentry` user (used by Sentry to access ClickHouse):
+Create a secret with credentials for the `sentry` user (used by Sentry to access ClickHouse):
 
 ```bash
 kubectl create ns clickhouse
 kubectl -n clickhouse create secret generic clickhouse-secret \
-  --from-literal=operator-password='YourStrongOperatorPassword!' \
   --from-literal=sentry-password='YourStrongSentryPassword!'
 ```
 
 #### 2. ClickHouse Installation Manifest
 
-Save this as `clickhouse.yaml`. This example deploys a single-node cluster. Passwords for both the operator and Sentry are loaded from the secret created above.
+Save this as `clickhouse.yaml`. This example deploys a single-node cluster. The Sentry user password is loaded from the secret created above. The operator manages its own `clickhouse_operator` user automatically — do not define it in `users.d/secret.xml`.
 
 ```bash
 cat <<'EOF' > clickhouse.yaml
@@ -98,21 +97,17 @@ spec:
     clusters:
       - name: single-node
     users:
-      clickhouse_operator/password: ""
       clickhouse_operator/networks/ip:
-        - "0.0.0.0/0"
-      sentry/password: ""
-      sentry/networks/ip:
         - "0.0.0.0/0"
     files:
       users.d/secret.xml:
         <clickhouse>
           <users>
-            <clickhouse_operator>
-              <password from_env="OPERATOR_PASSWORD" />
-            </clickhouse_operator>
             <sentry>
               <password from_env="SENTRY_PASSWORD" />
+              <networks>
+                <ip>0.0.0.0/0</ip>
+              </networks>
             </sentry>
           </users>
         </clickhouse>
@@ -124,11 +119,6 @@ spec:
             - name: clickhouse
               image: altinity/clickhouse-server:25.3.6.10034.altinitystable
               env:
-                - name: OPERATOR_PASSWORD
-                  valueFrom:
-                    secretKeyRef:
-                      name: clickhouse-secret
-                      key: operator-password
                 - name: SENTRY_PASSWORD
                   valueFrom:
                     secretKeyRef:
@@ -140,7 +130,7 @@ spec:
 EOF
 ```
 
-**Note on Network Access**: The `users/sentry/networks/ip` and `users/default/networks/ip` settings are crucial. By default, ClickHouse might restrict access. Setting them to `0.0.0.0/0` allows the Sentry pods (which have dynamic IPs) to connect.
+**Note on Network Access**: The `sentry/networks/ip` setting is crucial. By default, ClickHouse might restrict access. Setting it to `0.0.0.0/0` allows the Sentry pods (which have dynamic IPs) to connect. Do not define the `clickhouse_operator` user in `users.d/secret.xml` — the Altinity Operator manages it automatically.
 
 Apply the manifest and wait for ClickHouse to become ready:
 ```bash
@@ -226,11 +216,7 @@ spec:
           shardsCount: 1
           replicasCount: 3
     users:
-      clickhouse_operator/password: ""
       clickhouse_operator/networks/ip:
-        - "0.0.0.0/0"
-      sentry/password: ""
-      sentry/networks/ip:
         - "0.0.0.0/0"
     zookeeper:
       keeper:
@@ -240,11 +226,11 @@ spec:
       users.d/secret.xml:
         <clickhouse>
           <users>
-            <clickhouse_operator>
-              <password from_env="OPERATOR_PASSWORD" />
-            </clickhouse_operator>
             <sentry>
               <password from_env="SENTRY_PASSWORD" />
+              <networks>
+                <ip>0.0.0.0/0</ip>
+              </networks>
             </sentry>
           </users>
         </clickhouse>
@@ -256,11 +242,6 @@ spec:
             - name: clickhouse
               image: altinity/clickhouse-server:25.3.6.10034.altinitystable
               env:
-                - name: OPERATOR_PASSWORD
-                  valueFrom:
-                    secretKeyRef:
-                      name: clickhouse-secret
-                      key: operator-password
                 - name: SENTRY_PASSWORD
                   valueFrom:
                     secretKeyRef:
