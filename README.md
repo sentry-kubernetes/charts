@@ -288,6 +288,15 @@ kubectl -n clickhouse get pods -l clickhouse.altinity.com/chi=sentry-clickhouse
 
 Once your ClickHouse cluster is running, configure the Sentry Helm chart to use it.
 
+**Create the ClickHouse secret in the Sentry namespace** (Kubernetes secrets are namespace-scoped, so the secret must exist in the same namespace as the Sentry pods).
+
+**Important**: The `sentry-password` value must match the one used in the `clickhouse-secret` in the `clickhouse` namespace (created in step 1), as this is the actual password for the `sentry` user in ClickHouse.
+
+```bash
+kubectl -n sentry create secret generic clickhouse-secret \
+  --from-literal=sentry-password='YourStrongSentryPassword!'
+```
+
 **Find the ClickHouse service name** created by the operator:
 ```bash
 kubectl -n clickhouse get svc -l clickhouse.altinity.com/chi=sentry-clickhouse
