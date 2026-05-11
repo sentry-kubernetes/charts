@@ -105,7 +105,7 @@ spec:
       sentry/networks/ip:
         - "0.0.0.0/0"
     files:
-      config.d/secret.xml:
+      users.d/secret.xml:
         <clickhouse>
           <users>
             <clickhouse_operator>
@@ -238,7 +238,7 @@ spec:
         name: clickhouse-keeper
         namespace: clickhouse
     files:
-      config.d/secret.xml:
+      users.d/secret.xml:
         <clickhouse>
           <users>
             <clickhouse_operator>
