@@ -178,11 +178,10 @@ spec:
   templates:
     podTemplates:
       - name: keeper-pod
-        metadata:
+        spec:
           containers:
             - name: clickhouse-keeper
               image: altinity/clickhouse-keeper:25.3.6.10034.altinitystable
-        spec:
           affinity:
             podAntiAffinity:
               requiredDuringSchedulingIgnoredDuringExecution:
@@ -212,7 +211,7 @@ Wait until all Keeper pods are `Running`:
 kubectl -n clickhouse get pods -l clickhouse-keeper.altinity.com/chk=clickhouse-keeper
 ```
 
-```yaml
+```bash
 cat <<'EOF' > clickhouse.yaml
 apiVersion: clickhouse.altinity.com/v1
 kind: ClickHouseInstallation
