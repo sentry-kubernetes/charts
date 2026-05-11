@@ -71,9 +71,19 @@ Ensure the operator pod is in `Running` state before proceeding.
 
 Below is a Minimum Viable Product (MVP) configuration for a single-node ClickHouse instance suitable for testing or small-scale deployments. For production, we recommend a high-availability setup with at least 3 Keeper nodes and 2 ClickHouse replicas.
 
-#### 1. ClickHouse Installation Manifest
+#### 1. Create ClickHouse Operator Secret
 
-Save this as `clickhouse.yaml`. This example deploys a single-node cluster.
+Create a secret for the `clickhouse_operator` user that the Altinity Operator uses to manage the ClickHouse cluster:
+
+```bash
+kubectl -n clickhouse create secret generic clickhouse-operator-secret \
+  --from-literal=username=clickhouse_operator \
+  --from-literal=password='YourStrongOperatorPassword!'
+```
+
+#### 2. ClickHouse Installation Manifest
+
+Save this as `clickhouse.yaml`. This example deploys a single-node cluster. The operator password is loaded from the secret created above.
 
 ```bash
 cat <<'EOF' > clickhouse.yaml
@@ -87,8 +97,20 @@ spec:
     clusters:
       - name: single-node
     users:
+      clickhouse_operator/password: ""
+      clickhouse_operator/networks/ip:
+        - "0.0.0.0/0"
       default/networks/ip:
         - "0.0.0.0/0" # Required for Sentry pods to connect
+    files:
+      config.d/secret.xml:
+        <clickhouse>
+          <users>
+            <clickhouse_operator>
+              <password from_env="OPERATOR_PASSWORD" />
+            </clickhouse_operator>
+          </users>
+        </clickhouse>
   templates:
     podTemplates:
       - name: clickhouse-single-node
@@ -96,6 +118,12 @@ spec:
           containers:
             - name: clickhouse
               image: altinity/clickhouse-server:25.3.6.10034.altinitystable
+              env:
+                - name: OPERATOR_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: clickhouse-operator-secret
+                      key: password
   defaults:
     templates:
       podTemplate: clickhouse-single-node
@@ -115,7 +143,7 @@ Wait until the `status.status` field shows `Completed` and the ClickHouse pods a
 kubectl -n clickhouse get pods -l clickhouse.altinity.com/chi=sentry-clickhouse
 ```
 
-#### 2. (Optional) Separate ClickHouse Keeper
+#### 3. (Optional) Separate ClickHouse Keeper
 
 For more robust deployments, you should run ClickHouse Keeper separately.
 
@@ -189,12 +217,24 @@ spec:
           shardsCount: 1
           replicasCount: 3
     users:
+      clickhouse_operator/password: ""
+      clickhouse_operator/networks/ip:
+        - "0.0.0.0/0"
       default/networks/ip:
         - "0.0.0.0/0" # Required for Sentry pods to connect
     zookeeper:
       keeper:
         name: clickhouse-keeper
         namespace: clickhouse
+    files:
+      config.d/secret.xml:
+        <clickhouse>
+          <users>
+            <clickhouse_operator>
+              <password from_env="OPERATOR_PASSWORD" />
+            </clickhouse_operator>
+          </users>
+        </clickhouse>
   templates:
     podTemplates:
       - name: clickhouse-single-node
@@ -202,6 +242,12 @@ spec:
           containers:
             - name: clickhouse
               image: altinity/clickhouse-server:25.3.6.10034.altinitystable
+              env:
+                - name: OPERATOR_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: clickhouse-operator-secret
+                      key: password
   defaults:
     templates:
       podTemplate: clickhouse-single-node
