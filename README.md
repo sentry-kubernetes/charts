@@ -142,17 +142,16 @@ spec:
   templates:
     podTemplates:
       - name: keeper-pod
-        metadata:
+        spec:
           containers:
             - name: clickhouse-keeper
               image: altinity/clickhouse-keeper:25.3.6.10034.altinitystable
-        spec:
           affinity:
             podAntiAffinity:
               requiredDuringSchedulingIgnoredDuringExecution:
                 - labelSelector:
                     matchLabels:
-                      app: clickhouse-keeper
+                      clickhouse-keeper.altinity.com/chk: clickhouse-keeper
                   topologyKey: kubernetes.io/hostname
     volumeClaimTemplates:
       - name: keeper-storage
@@ -164,16 +163,73 @@ spec:
               storage: 10Gi
 ```
 
+Wait for all 3 Keeper pods to be ready:
+```bash
+kubectl -n sentry get pods -l clickhouse-keeper.altinity.com/chk=clickhouse-keeper
+```
+
 If using a separate Keeper, update your `ClickHouseInstallation` config to reference it:
 
 ```yaml
+apiVersion: clickhouse.altinity.com/v1
+kind: ClickHouseInstallation
+metadata:
+  name: sentry-clickhouse
+  namespace: sentry
 spec:
   configuration:
+    users:
+      default/networks/ip:
+        - "0.0.0.0/0"
+      clickhouse_operator/password: "clickhouse_operator_password"
+      clickhouse_operator/networks/ip:
+        - "0.0.0.0/0"
+    clusters:
+      - name: sentry-cluster
+        layout:
+          shardsCount: 1
+          replicasCount: 3
+        templates:
+          podTemplate: clickhouse
+          volumeClaimTemplate: data-volume
     zookeeper:
       nodes:
-        - host: keeper-clickhouse-keeper.sentry.svc.cluster.local
+        - host: chk-clickhouse-keeper-keeper-cluster-0-0.sentry.svc.cluster.local
           port: 2181
+        - host: chk-clickhouse-keeper-keeper-cluster-0-1.sentry.svc.cluster.local
+          port: 2181
+        - host: chk-clickhouse-keeper-keeper-cluster-0-2.sentry.svc.cluster.local
+          port: 2181
+  templates:
+    podTemplates:
+      - name: clickhouse
+        spec:
+          containers:
+            - name: clickhouse
+              image: altinity/clickhouse-server:25.3.6.10034.altinitystable
+          affinity:
+            podAntiAffinity:
+              requiredDuringSchedulingIgnoredDuringExecution:
+                - labelSelector:
+                    matchLabels:
+                      clickhouse.altinity.com/chi: sentry-clickhouse
+                  topologyKey: kubernetes.io/hostname
+    volumeClaimTemplates:
+      - name: data-volume
+        spec:
+          accessModes:
+            - ReadWriteOnce
+          resources:
+            requests:
+              storage: 20Gi
+  defaults:
+    replicasUseFQDN: "true"
+    templates:
+      podTemplate: clickhouse
+      dataVolumeClaimTemplate: data-volume
 ```
+
+**Note**: The `clusterName` in your Sentry `values.yaml` must match the cluster name in the manifest above (`sentry-cluster`).
 
 ### Configuring Sentry Chart
 
@@ -192,13 +248,14 @@ The Altinity Operator creates services following this naming convention:
 ```bash
 cat <<'EOF' > values.yaml
 externalClickhouse:
-  host: "chi-sentry-clickhouse-single-node-0-0.sentry.svc.cluster.local"
+  host: "clickhouse-sentry-clickhouse.sentry.svc.cluster.local"
   tcpPort: 9000
   httpPort: 8123
   username: "default"
   password: "" # Set if you configured a password
   database: "default"
-  singleNode: true # Set to false if using a replicated cluster
+  singleNode: false # Set to false if using a replicated cluster
+  clusterName: "sentry-cluster" 
 EOF
 ```
 
