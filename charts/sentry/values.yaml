@@ -1246,7 +1246,7 @@ sentry:
     # podLabels: {}
     # affinity: {}
     # nodeSelector: {}
-    # tolerations: {}
+    tolerations: []
 
   # Sentry settings of connections to Kafka
   kafka:
@@ -2749,7 +2749,7 @@ cleanerfs:
 # podLabels: {}
 # affinity: {}
 # nodeSelector: {}
-# tolerations: {}
+tolerations: []
 
 config:
   # No YAML Extension Config Given
