@@ -2,10 +2,6 @@
 
 Sentry is a cross-platform crash reporting and aggregation platform.
 
-This repository aims to support Sentry >=10 and move out from the deprecated Helm charts official repo.
-
-Big thanks to the maintainers of the [deprecated chart](https://github.com/helm/charts/tree/master/stable/sentry). This work has been partly inspired by it.
-
 ## Sentry Admin Secret
 
 Before installing Sentry, you must create a secret for the admin password:
@@ -287,12 +283,3 @@ To avoid issues when upgrade this chart, provide `postgresql.postgresqlPassword`
 This chart is capable of mounting the sentry-data PV in the Sentry worker and cron pods. This feature is disabled by default, but is needed for some advanced features such as private sourcemaps.
 
 You may enable mounting of the sentry-data PV across worker and cron pods by changing filestore.filesystem.persistence.persistentWorkers to true. If you plan on deploying Sentry containers across multiple nodes, you may need to change your PVC's access mode to ReadWriteMany and check that your PV supports mounting across multiple nodes.
-
-## Roadmap
-
-- [x] Lint in Pull requests
-- [x] Public availability through Github Pages
-- [x] Automatic deployment through Github Actions
-- [ ] Symbolicator deployment
-- [x] Testing the chart in a production environment
-- [ ] Improving the README
