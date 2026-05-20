@@ -26,6 +26,7 @@
 {{- $topicOverrides := $provisioning.topicOverrides | default dict }}
 {{- $replicationFactor := int ($provisioning.replicationFactor | default 1) }}
 {{- $defaultPartitions := int ($provisioning.numPartitions | default 1) }}
+{{- $minInsyncReplicas := $provisioning.minInsyncReplicas | default "" }}
 
 {{- $clusterName := $topicctl.clusterName | default "sentry-kafka" }}
 {{- $environment := $topicctl.environment | default "default" }}
@@ -93,6 +94,9 @@ data:
     {{- $config := .config | default dict }}
     {{- if $override.config }}
     {{-   $config = mustMergeOverwrite (dict) $config $override.config }}
+    {{- end }}
+    {{- if and $minInsyncReplicas (not (hasKey $config "min.insync.replicas")) }}
+    {{-   $config = merge $config (dict "min.insync.replicas" ($minInsyncReplicas | toString)) }}
     {{- end }}
     ---
     meta:

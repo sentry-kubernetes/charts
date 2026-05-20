@@ -3109,7 +3109,12 @@ externalKafka:
     #     config:
     #       "cleanup.policy": "compact,delete"
     #       "min.compaction.lag.ms": "3600000"
+    #       "min.insync.replicas": "2"
     replicationFactor: 3
+    # min.insync.replicas setting for provisioned topics.
+    # When set, adds "min.insync.replicas" to every topic's settings.
+    # Can be overridden per-topic via topicOverrides[].config["min.insync.replicas"].
+    # minInsyncReplicas: 1
     numPartitions: 1
     resources: {}
     nodeSelector: {}
