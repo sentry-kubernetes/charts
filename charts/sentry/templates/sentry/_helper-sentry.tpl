@@ -338,6 +338,7 @@ sentry.conf.py: |-
       "http-chunked-input": {{ .Values.config.web.httpChunkedInput | ternary "True" "False" }},
       # the number of web workers
       'workers': {{ .Values.config.web.workers | int }},
+      'threads': {{ .Values.config.web.threads | int }},
       # Turn off memory reporting
       "memory-report": {{ .Values.config.web.memoryReport | ternary "True" "False" }},
       # Some stuff so uwsgi will cycle workers sensibly

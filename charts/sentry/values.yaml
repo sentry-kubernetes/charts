@@ -2778,6 +2778,7 @@ config:
     httpKeepalive: 15
     httpChunkedInput: true
     workers: 3
+    threads: 4
     memoryReport: false
     maxRequests: 100000
     maxRequestsDelta: 500
