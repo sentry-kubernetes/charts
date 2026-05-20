@@ -1,5 +1,17 @@
 # Changelog
 
+## [31.3.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v31.2.0...sentry-v31.3.0) (2026-05-20)
+
+
+### Features
+
+* add minInsyncReplicas support for external Kafka topic provisioning ([#2172](https://github.com/sentry-kubernetes/charts/issues/2172)) ([c795a25](https://github.com/sentry-kubernetes/charts/commit/c795a25f11b0ba6fe0736bb436d32f61d006fb6f))
+
+
+### Bug Fixes
+
+* uncomment tolerations and fix type from {} to [] for snuba cleanup and cleanerfs ([#2170](https://github.com/sentry-kubernetes/charts/issues/2170)) ([c1b612f](https://github.com/sentry-kubernetes/charts/commit/c1b612f5ff7a58f9ddb17f808c48f21ddaa72d62))
+
 ## [31.2.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v31.1.0...sentry-v31.2.0) (2026-05-10)
 
 
