@@ -117,7 +117,7 @@ vroom:
   securityContext: {}
   containerSecurityContext: {}
   # priorityClassName: ""
-  # topologySpreadConstraints: []
+  topologySpreadConstraints: []
   service:
     annotations: {}
   tolerations: []
@@ -153,7 +153,7 @@ vroom:
     # Only available with autoscaling/v2
     behavior: {}
   sidecars: []
-  # topologySpreadConstraints: []
+  topologySpreadConstraints: []
   volumes: []
   volumeMounts: []
 
@@ -177,7 +177,7 @@ uptimeChecker:
   # podLabels: {}
 
   sidecars: []
-  # topologySpreadConstraints: []
+  topologySpreadConstraints: []
   volumes: []
   volumeMounts: []
 
@@ -237,7 +237,7 @@ relay:
     resources: {}
     # additionalArgs: []
     # credentialsSubcommand: ""
-    # env: []
+    env: []
     volumes: []
     volumeMounts: []
   # cache:
@@ -2082,9 +2082,9 @@ snuba:
     # affinity: {}
     # nodeSelector: {}
     tolerations: []
-    # env: []
+    env: []
     volumes: []
-    # sidecars: []
+    sidecars: []
     # containerSecurityContext: {}
     # securityContext: {}
     annotations: {}
@@ -2269,7 +2269,7 @@ symbolicator:
 
     volumes: []
     volumeMounts: []
-    # sidecars: []
+    sidecars: []
 
 auth:
   register: true
