@@ -1,5 +1,13 @@
 # Changelog
 
+## [31.3.1](https://github.com/sentry-kubernetes/charts/compare/sentry-v31.3.0...sentry-v31.3.1) (2026-05-21)
+
+
+### Bug Fixes
+
+* increase hooks.activeDeadlineSeconds to 1200 ([#2176](https://github.com/sentry-kubernetes/charts/issues/2176)) ([65c7993](https://github.com/sentry-kubernetes/charts/commit/65c799322990bc1625c6f7c7b1f86a5a6eda52b8))
+* set worker threads explicitly ([#2173](https://github.com/sentry-kubernetes/charts/issues/2173)) ([94a5ce5](https://github.com/sentry-kubernetes/charts/commit/94a5ce510d70add8073d4ecc9bedfb93b5609b1e))
+
 ## [31.3.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v31.2.0...sentry-v31.3.0) (2026-05-20)
 
 
