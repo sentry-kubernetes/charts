@@ -264,7 +264,7 @@ After deployment, you can verify the connection by checking the logs of the `snu
 ```
 helm repo add sentry https://sentry-kubernetes.github.io/charts
 helm repo update
-helm install my-sentry sentry/sentry -f values.yaml --wait --timeout=1000s
+helm install -n sentry my-sentry sentry/sentry -f values.yaml --wait --timeout=1500s
 ```
 
 ## Values
