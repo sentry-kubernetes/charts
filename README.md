@@ -2,26 +2,6 @@
 
 Sentry is a cross-platform crash reporting and aggregation platform.
 
-## Sentry Admin Secret
-
-Before installing Sentry, you must create a secret for the admin password:
-
-1. Create the secret:
-
-```bash
-kubectl create namespace sentry
-kubectl create secret generic sentry-admin-password \
-  --from-literal=admin-password='YourStrongPassword123!' \
-  --namespace sentry
-```
-
-2. Set in `values.yaml`:
-
-```yaml
-user:
-  existingSecret: sentry-admin-password
-```
-
 ## External ClickHouse Configuration
 
 ### Background
@@ -32,9 +12,8 @@ It is strongly recommended to use an externally managed ClickHouse deployment. T
 
 The recommended way to deploy ClickHouse on Kubernetes is using the [Altinity ClickHouse Operator](https://github.com/Altinity/clickhouse-operator).
 
-### Prerequisites
+### Step 1: Install Altinity ClickHouse Operator
 
-**Create a values file for the operator** and **install Altinity ClickHouse Operator**:
 ```bash
 cat <<'EOF' > clickhouse-operator-values.yaml
 configs:
@@ -57,66 +36,14 @@ helm upgrade --install clickhouse-operator clickhouse-operator/altinity-clickhou
 
 **Note**: Do not use `--set 'configs.files.config.yaml.watch.namespaces={sentry}'` — Helm interprets dots as nested keys, which creates a separate `config` file instead of modifying `config.yaml`, causing the operator to ignore the setting.
 
-**Verify the operator is running**:
+Verify the operator is running:
 ```bash
 kubectl -n clickhouse-operator get pods -l app.kubernetes.io/name=altinity-clickhouse-operator
 ```
-Ensure the operator pod is in `Running` state before proceeding.
 
-### MVP Deployment with ClickHouse Keeper
+### Step 2: Install ClickHouse Keeper
 
-Below is a Minimum Viable Product (MVP) configuration for a single-node ClickHouse instance suitable for testing or small-scale deployments. For production, we recommend a high-availability setup with at least 3 Keeper nodes and 2 ClickHouse replicas.
-
-#### 1. ClickHouse Installation Manifest
-
-Save this as `clickhouse.yaml`. This example deploys a single-node cluster.
-
-```bash
-cat <<'EOF' > clickhouse.yaml
-apiVersion: clickhouse.altinity.com/v1
-kind: ClickHouseInstallation
-metadata:
-  name: sentry-clickhouse
-  namespace: sentry # Replace with your namespace
-spec:
-  configuration:
-    clusters:
-      - name: single-node
-        layout:
-          shardsCount: 1
-          replicasCount: 1
-    users:
-      default/networks/ip:
-        - "0.0.0.0/0" # Required for Sentry pods to connect
-  templates:
-    podTemplates:
-      - name: clickhouse-single-node
-        spec:
-          containers:
-            - name: clickhouse
-              image: altinity/clickhouse-server:25.3.6.10034.altinitystable
-  defaults:
-    templates:
-      podTemplate: clickhouse-single-node
-EOF
-```
-
-**Note on Network Access**: The `users/default/networks/ip` setting is crucial. By default, ClickHouse might restrict access. Setting it to `0.0.0.0/0` allows the Sentry pods (which have dynamic IPs) to connect.
-
-Apply the manifest and wait for ClickHouse to become ready:
-```bash
-kubectl create ns sentry
-kubectl apply -f clickhouse.yaml
-kubectl -n sentry get chi sentry-clickhouse -w
-```
-Wait until the `status.status` field shows `Completed` and the ClickHouse pods are `Running`:
-```bash
-kubectl -n sentry get pods -l clickhouse.altinity.com/chi=sentry-clickhouse
-```
-
-#### 2. (Optional) Separate ClickHouse Keeper
-
-For more robust deployments, you should run ClickHouse Keeper separately.
+For production environments, deploy a high-availability cluster with 3 ClickHouse replicas and 3 ClickHouse Keeper nodes. For single-node testing, see [clickhouse-single-install.md](clickhouse-single-install.md).
 
 **Keeper Manifest (`keeper.yaml`)**:
 ```yaml
@@ -130,7 +57,7 @@ spec:
     clusters:
       - name: keeper-cluster
         layout:
-          replicasCount: 3 # Recommended for consensus
+          replicasCount: 3
   defaults:
     templates:
       podTemplate: keeper-pod
@@ -159,13 +86,16 @@ spec:
               storage: 10Gi
 ```
 
-Wait for all 3 Keeper pods to be ready:
+Apply and wait for all 3 Keeper pods to be ready:
 ```bash
-kubectl -n sentry get pods -l clickhouse-keeper.altinity.com/chk=clickhouse-keeper
+kubectl create ns sentry
+kubectl apply -f keeper.yaml
+kubectl -n sentry get pods -l clickhouse-keeper.altinity.com/chk=clickhouse-keeper -w
 ```
 
-If using a separate Keeper, update your `ClickHouseInstallation` config to reference it:
+### Step 3: Install ClickHouse
 
+**ClickHouse Manifest (`clickhouse.yaml`)**:
 ```yaml
 apiVersion: clickhouse.altinity.com/v1
 kind: ClickHouseInstallation
@@ -225,13 +155,28 @@ spec:
       dataVolumeClaimTemplate: data-volume
 ```
 
-**Note**: The `clusterName` in your Sentry `values.yaml` must match the cluster name in the manifest above (`sentry-cluster`).
+Apply and wait until the `status.status` field shows `Completed` and all ClickHouse pods are `Running`:
+```bash
+kubectl apply -f clickhouse.yaml
+kubectl -n sentry get chi sentry-clickhouse -w
+```
 
-### Configuring Sentry Chart
+Verify:
+```bash
+kubectl -n sentry get pods -l clickhouse.altinity.com/chi=sentry-clickhouse
+```
 
-Once your ClickHouse cluster is running, configure the Sentry Helm chart to use it.
+### Step 4: Create Sentry Admin Secret
 
-**Find the ClickHouse service name** created by the operator:
+```bash
+kubectl create secret generic sentry-admin-password \
+  --from-literal=admin-password='YourStrongPassword123!' \
+  --namespace sentry
+```
+
+### Step 5: Configure and Install Sentry
+
+Find the ClickHouse service name created by the operator:
 ```bash
 kubectl -n sentry get svc -l clickhouse.altinity.com/chi=sentry-clickhouse
 ```
@@ -240,9 +185,11 @@ The Altinity Operator creates services following this naming convention:
 - `clickhouse-sentry-clickhouse` — main load-balanced service (recommended for single-node setups)
 - `chi-sentry-clickhouse-single-node-0-0` — per-pod service for shard 0, replica 0
 
-**Create your `values.yaml`** using the service name from the command above:
+Create your `values.yaml` using the service name from the command above:
 ```bash
 cat <<'EOF' > values.yaml
+user:
+  existingSecret: sentry-admin-password
 externalClickhouse:
   host: "clickhouse-sentry-clickhouse.sentry.svc.cluster.local"
   tcpPort: 9000
@@ -250,21 +197,18 @@ externalClickhouse:
   username: "default"
   password: "" # Set if you configured a password
   database: "default"
-  singleNode: false # Set to false if using a replicated cluster
-  clusterName: "sentry-cluster" 
+  singleNode: false
+  clusterName: "sentry-cluster"
 EOF
 ```
 
-### Verification
+**Note**: The `clusterName` in your Sentry `values.yaml` must match the cluster name in the ClickHouse manifest above (`sentry-cluster`).
 
-After deployment, you can verify the connection by checking the logs of the `snuba-api` or `snuba-consumer` pods, or by ensuring that Sentry is processing events correctly.
-
-## How this chart works
-
-```
+Install Sentry:
+```bash
 helm repo add sentry https://sentry-kubernetes.github.io/charts
 helm repo update
-helm install -n sentry my-sentry sentry/sentry -f values.yaml --wait --timeout=1500s
+helm install -n sentry my-sentry sentry/sentry -f values.yaml --wait --timeout=2400s
 ```
 
 ## Values
