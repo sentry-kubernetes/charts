@@ -238,8 +238,8 @@ relay:
     # additionalArgs: []
     # credentialsSubcommand: ""
     # env: []
-    # volumes: []
-    # volumeMounts: []
+    volumes: []
+    volumeMounts: []
   # cache:
   #   envelopeBufferSize: 1000
   # logging:
@@ -958,8 +958,8 @@ sentry:
       enabled: true
       initialDelaySeconds: 5
       periodSeconds: 320
-    # volumes: []
-    # volumeMounts: []
+    volumes: []
+    volumeMounts: []
     # autoOffsetReset: "earliest"
     # noStrictOffsetReset: false
 
@@ -986,7 +986,7 @@ sentry:
       periodSeconds: 320
     # autoOffsetReset: "earliest"
     # noStrictOffsetReset: false
-    # volumeMounts: []
+    volumeMounts: []
 
   subscriptionConsumerTransactions:
     enabled: true
@@ -1011,7 +1011,7 @@ sentry:
       periodSeconds: 320
     # autoOffsetReset: "earliest"
     # noStrictOffsetReset: false
-    # volumeMounts: []
+    volumeMounts: []
 
   uptimeResults:
     enabled: true
@@ -1036,7 +1036,7 @@ sentry:
       periodSeconds: 320
     # autoOffsetReset: "earliest"
     # noStrictOffsetReset: false
-    # volumeMounts: []
+    volumeMounts: []
 
   postProcessForwardErrors:
     enabled: true
@@ -1055,7 +1055,7 @@ sentry:
     sidecars: []
     topologySpreadConstraints: []
     volumes: []
-    # volumeMounts: []
+    volumeMounts: []
     livenessProbe:
       enabled: true
       initialDelaySeconds: 5
@@ -1085,7 +1085,7 @@ sentry:
       enabled: true
       initialDelaySeconds: 5
       periodSeconds: 320
-    # volumeMounts: []
+    volumeMounts: []
     # autoOffsetReset: "earliest"
     # noStrictOffsetReset: false
 
@@ -1106,7 +1106,7 @@ sentry:
     sidecars: []
     topologySpreadConstraints: []
     volumes: []
-    # volumeMounts: []
+    volumeMounts: []
     livenessProbe:
       enabled: true
       initialDelaySeconds: 5
@@ -1132,7 +1132,7 @@ sentry:
     sidecars: []
     topologySpreadConstraints: []
     volumes: []
-    # volumeMounts: []
+    volumeMounts: []
     livenessProbe:
       enabled: true
       initialDelaySeconds: 5
@@ -1160,7 +1160,7 @@ sentry:
     sidecars: []
     topologySpreadConstraints: []
     volumes: []
-    # volumeMounts: []
+    volumeMounts: []
     livenessProbe:
       enabled: true
       initialDelaySeconds: 5
@@ -1189,7 +1189,7 @@ sentry:
     sidecars: []
     topologySpreadConstraints: []
     volumes: []
-    # volumeMounts: []
+    volumeMounts: []
     livenessProbe:
       enabled: true
       initialDelaySeconds: 5
@@ -1216,7 +1216,7 @@ sentry:
     sidecars: []
     topologySpreadConstraints: []
     volumes: []
-    # volumeMounts: []
+    volumeMounts: []
     livenessProbe:
       enabled: true
       initialDelaySeconds: 5
@@ -1239,7 +1239,7 @@ sentry:
     # containerSecurityContext: {}
     sidecars: []
     volumes: []
-    # volumeMounts: []
+    volumeMounts: []
     serviceAccount: {}
     # priorityClassName: ""
     annotations: {}
@@ -1306,7 +1306,7 @@ snuba:
     sidecars: []
     topologySpreadConstraints: []
     volumes: []
-    # volumeMounts: []
+    volumeMounts: []
 
   consumer:
     enabled: true
@@ -1457,8 +1457,8 @@ snuba:
     # maxBatchTimeMs: ""
     # queuedMaxMessagesKbytes: ""
     # queuedMinMessages: ""
-    # volumes: []
-    # volumeMounts: []
+    volumes: []
+    volumeMounts: []
     # noStrictOffsetReset: false
 
   metricsConsumer:
@@ -1478,8 +1478,8 @@ snuba:
       enabled: true
       initialDelaySeconds: 5
       periodSeconds: 320
-    # volumes: []
-    # volumeMounts: []
+    volumes: []
+    volumeMounts: []
     # maxBatchSize: ""
     # processes: ""
     # inputBlockSize: ""
@@ -1505,8 +1505,8 @@ snuba:
       enabled: true
       initialDelaySeconds: 5
       periodSeconds: 320
-    # volumes: []
-    # volumeMounts: []
+    volumes: []
+    volumeMounts: []
     # autoOffsetReset: "earliest"
     # noStrictOffsetReset: false
 
@@ -1526,8 +1526,8 @@ snuba:
       enabled: true
       initialDelaySeconds: 5
       periodSeconds: 320
-    # volumes: []
-    # volumeMounts: []
+    volumes: []
+    volumeMounts: []
     # autoOffsetReset: "earliest"
     # noStrictOffsetReset: false
 
@@ -1547,8 +1547,8 @@ snuba:
       enabled: true
       initialDelaySeconds: 5
       periodSeconds: 320
-    # volumes: []
-    # volumeMounts: []
+    volumes: []
+    volumeMounts: []
     # autoOffsetReset: "earliest"
     # noStrictOffsetReset: false
 
@@ -1568,8 +1568,8 @@ snuba:
       enabled: true
       initialDelaySeconds: 5
       periodSeconds: 320
-    # volumes: []
-    # volumeMounts: []
+    volumes: []
+    volumeMounts: []
     # autoOffsetReset: "earliest"
     # noStrictOffsetReset: false
 
@@ -1589,8 +1589,8 @@ snuba:
       enabled: true
       initialDelaySeconds: 5
       periodSeconds: 320
-    # volumes: []
-    # volumeMounts: []
+    volumes: []
+    volumeMounts: []
     # autoOffsetReset: "earliest"
     # noStrictOffsetReset: false
 
@@ -1610,8 +1610,8 @@ snuba:
       enabled: true
       initialDelaySeconds: 5
       periodSeconds: 320
-    # volumes: []
-    # volumeMounts: []
+    volumes: []
+    volumeMounts: []
     # autoOffsetReset: "earliest"
     # noStrictOffsetReset: false
 
@@ -1632,8 +1632,8 @@ snuba:
       enabled: true
       initialDelaySeconds: 5
       periodSeconds: 320
-    # volumes: []
-    # volumeMounts: []
+    volumes: []
+    volumeMounts: []
     # maxBatchSize: ""
     # processes: ""
     # inputBlockSize: ""
@@ -1660,8 +1660,8 @@ snuba:
       enabled: true
       initialDelaySeconds: 5
       periodSeconds: 320
-    # volumes: []
-    # volumeMounts: []
+    volumes: []
+    volumeMounts: []
     # maxBatchSize: ""
     # processes: ""
     # inputBlockSize: ""
@@ -1688,8 +1688,8 @@ snuba:
       enabled: true
       initialDelaySeconds: 5
       periodSeconds: 320
-    # volumes: []
-    # volumeMounts: []
+    volumes: []
+    volumeMounts: []
     # maxBatchSize: ""
     # processes: ""
     # inputBlockSize: ""
@@ -1716,8 +1716,8 @@ snuba:
       enabled: true
       initialDelaySeconds: 5
       periodSeconds: 320
-    # volumes: []
-    # volumeMounts: []
+    volumes: []
+    volumeMounts: []
     # maxBatchSize: ""
     # processes: ""
     # inputBlockSize: ""
@@ -1747,8 +1747,8 @@ snuba:
       enabled: true
       initialDelaySeconds: 5
       periodSeconds: 320
-    # volumes: []
-    # volumeMounts: []
+    volumes: []
+    volumeMounts: []
 
   subscriptionConsumerTransactions:  # should have 1 partition and only 1 consumer replica: https://github.com/getsentry/snuba/issues/5855
     enabled: true
@@ -1765,8 +1765,8 @@ snuba:
     containerSecurityContext: {}
     tolerations: []
     # podLabels: {}
-    # volumes: []
-    # volumeMounts: []
+    volumes: []
+    volumeMounts: []
     livenessProbe:
       enabled: true
       initialDelaySeconds: 5
@@ -2083,12 +2083,12 @@ snuba:
     # nodeSelector: {}
     tolerations: []
     # env: []
-    # volumes: []
+    volumes: []
     # sidecars: []
     # containerSecurityContext: {}
     # securityContext: {}
     annotations: {}
-    # volumeMounts: []
+    volumeMounts: []
 
 hooks:
   enabled: true
@@ -2117,8 +2117,8 @@ hooks:
     securityContext: {}
     containerSecurityContext: {}
     tolerations: []
-    # volumes: []
-    # volumeMounts: []
+    volumes: []
+    volumeMounts: []
   dbInit:
     enabled: true
     env: []
@@ -2135,8 +2135,7 @@ hooks:
     affinity: {}
     nodeSelector: {}
     tolerations: []
-    # volumes: []
-    # volumeMounts: []
+    volumeMounts: []
   snubaInit:
     enabled: true
     # As snubaInit doesn't support configuring partition and replication factor, you can disable snubaInit's kafka topic creation by setting `kafka.enabled` to `false`,
@@ -2156,13 +2155,13 @@ hooks:
     affinity: {}
     nodeSelector: {}
     tolerations: []
-    # volumes: []
-    # volumeMounts: []
+    volumes: []
+    volumeMounts: []
   snubaMigrate:
     enabled: true
     # podLabels: {}
-    # volumes: []
-    # volumeMounts: []
+    volumes: []
+    volumeMounts: []
 
 system:
   ## be sure to include the scheme on the url, for example: "https://sentry.example.com"
@@ -2268,8 +2267,8 @@ symbolicator:
       maxReplicas: 5
       targetCPUUtilizationPercentage: 50
 
-    # volumes: []
-    # volumeMounts: []
+    volumes: []
+    volumeMounts: []
     # sidecars: []
 
 auth:
