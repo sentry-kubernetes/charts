@@ -2833,9 +2833,9 @@ kafka:
   ## These values are passed directly to the bitnami/kafka chart as `config`.
   ## Ref: https://github.com/bitnami/charts/tree/main/bitnami/kafka#kafka-broker-configuration
   ## replica.fetch.max.bytes should always be >= message.max.bytes.
-  config:
-    message.max.bytes: "50000000"
-    replica.fetch.max.bytes: "50000000"
+  config: |
+    message.max.bytes=50000000
+    replica.fetch.max.bytes=50000000
   provisioning:
     ## Increasing the replicationFactor enhances data reliability during Kafka pod failures by replicating data across multiple brokers.
     # Note that existing topics will remain with replicationFactor: 1 when updated.
