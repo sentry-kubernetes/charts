@@ -1,5 +1,4 @@
 {{- if .Values.sentry.cleanup.enabled }}
-{{- $batchApiIsStable := eq (include "sentry.batch.isStable" .) "true" -}}
 apiVersion: {{ include "sentry.batch.apiVersion" . }}
 kind: CronJob
 metadata:
