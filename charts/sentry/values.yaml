@@ -2801,13 +2801,13 @@ cleanerfs:
   concurrencyPolicy: Allow
   schedule: "0 1 * * *"
   days: 90
-# securityContext: {}
-# containerSecurityContext: {}
+  # securityContext: {}
+  # containerSecurityContext: {}
   annotations: {}
-podLabels: {}
-# affinity: {}
-# nodeSelector: {}
-tolerations: []
+  podLabels: {}
+  # affinity: {}
+  # nodeSelector: {}
+  tolerations: []
 
 config:
   # No YAML Extension Config Given
