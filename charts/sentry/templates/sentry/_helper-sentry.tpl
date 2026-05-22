@@ -732,6 +732,13 @@ sentry.conf.py: |-
   if OPENAI_API_KEY:
     SENTRY_FEATURES["organizations:open-ai-suggestion"] = True
 
+  ########################
+  # JS SDK Loader Script #
+  ########################
+  {{- if .Values.sentry.jsSdk.setupAssets }}
+  JS_SDK_LOADER_DEFAULT_SDK_URL = {{ .Values.sentry.jsSdk.defaultSdkUrl | quote }}
+  {{- end }}
+
 {{- if .Values.metrics.enabled }}
   SENTRY_METRICS_BACKEND = 'sentry.metrics.statsd.StatsdMetricsBackend'
   SENTRY_METRICS_OPTIONS = {

@@ -361,6 +361,14 @@ sentry:
   # - organizations:derive-code-mappings
   # other feature here https://github.com/getsentry/sentry/blob/24.11.2/src/sentry/features/temporary.py
 
+  jsSdk:
+    # Enable local hosting of JS SDK bundles instead of loading from browser.sentry-cdn.com
+    # When enabled, Sentry will download and serve JS SDK bundles locally
+    setupAssets: false
+    # URL template for JS SDK bundles (used when setupAssets is true)
+    # %s will be replaced with SDK version and bundle variant
+    defaultSdkUrl: "https://browser.sentry-cdn.com/%s/bundle%s.min.js"
+
   taskBroker:
     enabled: true
     replicas: 1

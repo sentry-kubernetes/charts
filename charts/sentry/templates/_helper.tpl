@@ -1158,6 +1158,14 @@ Set openai api
       name: {{ .Values.openai.existingSecret }}
       key: {{ default "api-token" .Values.openai.existingSecretKey }}
 {{- end }}
+
+{{/*
+Set JS SDK Loader assets setup
+*/}}
+{{- if .Values.sentry.jsSdk.setupAssets }}
+- name: SETUP_JS_SDK_ASSETS
+  value: "1"
+{{- end }}
 {{- end -}}
 
 {{- define "sentry.autoscaling.apiVersion" -}}
