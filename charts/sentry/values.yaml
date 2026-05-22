@@ -679,6 +679,7 @@ sentry:
   ingestOccurrences:
     enabled: true
     replicas: 1
+    # concurrency: 4
     env: []
     resources: {}
     #  requests:
@@ -709,6 +710,9 @@ sentry:
     #     name: dshm
     # autoOffsetReset: "earliest"
     # noStrictOffsetReset: false
+    # inputBlockSize: "1"
+    # maxBatchSize: "500"
+    # maxBatchTimeMs: "1000"
 
   ingestFeedback:
     enabled: true

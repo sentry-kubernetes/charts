@@ -107,6 +107,25 @@ spec:
           - "--healthcheck-file-path"
           - "/tmp/health.txt"
           {{- end }}
+          {{- if or .Values.sentry.ingestOccurrences.concurrency .Values.sentry.ingestOccurrences.inputBlockSize .Values.sentry.ingestOccurrences.maxBatchSize .Values.sentry.ingestOccurrences.maxBatchTimeMs }}
+          - "--"
+          {{- end }}
+          {{- if .Values.sentry.ingestOccurrences.concurrency }}
+          - "--processes"
+          - "{{ .Values.sentry.ingestOccurrences.concurrency }}"
+          {{- end }}
+          {{- if .Values.sentry.ingestOccurrences.inputBlockSize }}
+          - "--input-block-size"
+          - "{{ .Values.sentry.ingestOccurrences.inputBlockSize }}"
+          {{- end }}
+          {{- if .Values.sentry.ingestOccurrences.maxBatchSize }}
+          - "--max-batch-size"
+          - "{{ .Values.sentry.ingestOccurrences.maxBatchSize }}"
+          {{- end }}
+          {{- if .Values.sentry.ingestOccurrences.maxBatchTimeMs }}
+          - "--max-batch-time-ms"
+          - "{{ .Values.sentry.ingestOccurrences.maxBatchTimeMs }}"
+          {{- end }}
         {{- if .Values.sentry.ingestOccurrences.livenessProbe.enabled }}
         livenessProbe:
           exec:
