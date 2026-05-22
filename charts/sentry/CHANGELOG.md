@@ -1,5 +1,13 @@
 # Changelog
 
+## [31.4.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v31.3.1...sentry-v31.4.0) (2026-05-22)
+
+
+### Features
+
+* bump Sentry appVersion to 26.5.0 ([#2179](https://github.com/sentry-kubernetes/charts/issues/2179)) ([a02bba8](https://github.com/sentry-kubernetes/charts/commit/a02bba850d4f38f67b1e1a6874473def8fe8bf45))
+* support local JS SDK Loader asset hosting ([#2183](https://github.com/sentry-kubernetes/charts/issues/2183)) ([2999e18](https://github.com/sentry-kubernetes/charts/commit/2999e18489dfa6028882525458133eaaa4c587b0))
+
 ## [31.3.1](https://github.com/sentry-kubernetes/charts/compare/sentry-v31.3.0...sentry-v31.3.1) (2026-05-21)
 
 
