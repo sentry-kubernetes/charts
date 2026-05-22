@@ -494,8 +494,6 @@ sentry:
     # podLabels: {}
     # maxBatchSize: "3"
     # logLevel: info
-    # it's better to use prometheus adapter and scale based on
-    # the size of the rabbitmq queue
     autoscaling:
       enabled: false
       minReplicas: 1
@@ -537,8 +535,6 @@ sentry:
     # inputBlockSize: "1"
     # maxBatchTimeMs: "750"
 
-    # it's better to use prometheus adapter and scale based on
-    # the size of the rabbitmq queue
     autoscaling:
       enabled: false
       minReplicas: 1
@@ -580,8 +576,6 @@ sentry:
     # inputBlockSize: "1"
     # maxBatchTimeMs: "750"
 
-    # it's better to use prometheus adapter and scale based on
-    # the size of the rabbitmq queue
     autoscaling:
       enabled: false
       minReplicas: 1
@@ -618,8 +612,6 @@ sentry:
     # maxPollIntervalMs: 30000
     tolerations: []
     # podLabels: {}
-    # it's better to use prometheus adapter and scale based on
-    # the size of the rabbitmq queue
     autoscaling:
       enabled: false
       minReplicas: 1
@@ -648,8 +640,6 @@ sentry:
     containerSecurityContext: {}
     tolerations: []
     # podLabels: {}
-    # it's better to use prometheus adapter and scale based on
-    # the size of the rabbitmq queue
     autoscaling:
       enabled: false
       minReplicas: 1
@@ -682,8 +672,6 @@ sentry:
     containerSecurityContext: {}
     tolerations: []
     # podLabels: {}
-    # it's better to use prometheus adapter and scale based on
-    # the size of the rabbitmq queue
     autoscaling:
       enabled: false
       minReplicas: 1
@@ -716,8 +704,6 @@ sentry:
     containerSecurityContext: {}
     tolerations: []
     # podLabels: {}
-    # it's better to use prometheus adapter and scale based on
-    # the size of the rabbitmq queue
     autoscaling:
       enabled: false
       minReplicas: 1
@@ -751,8 +737,6 @@ sentry:
     # maxPollIntervalMs: 30000
     tolerations: []
     # podLabels: {}
-    # it's better to use prometheus adapter and scale based on
-    # the size of the rabbitmq queue
     autoscaling:
       enabled: false
       minReplicas: 1
@@ -785,8 +769,6 @@ sentry:
     containerSecurityContext: {}
     tolerations: []
     # podLabels: {}
-    # it's better to use prometheus adapter and scale based on
-    # the size of the rabbitmq queue
     autoscaling:
       enabled: false
     sidecars: []
@@ -816,8 +798,6 @@ sentry:
     containerSecurityContext: {}
     tolerations: []
     # podLabels: {}
-    # it's better to use prometheus adapter and scale based on
-    # the size of the rabbitmq queue
     autoscaling:
       enabled: false
     sidecars: []
@@ -847,8 +827,6 @@ sentry:
     containerSecurityContext: {}
     tolerations: []
     # podLabels: {}
-    # it's better to use prometheus adapter and scale based on
-    # the size of the rabbitmq queue
     autoscaling:
       enabled: false
       minReplicas: 1
@@ -884,8 +862,6 @@ sentry:
     # podLabels: {}
     # maxPollIntervalMs: "30000"
     # logLevel: "info"
-    # it's better to use prometheus adapter and scale based on
-    # the size of the rabbitmq queue
     autoscaling:
       enabled: false
       minReplicas: 1
@@ -921,8 +897,6 @@ sentry:
     # podLabels: {}
     # logLevel: "info"
     # maxPollIntervalMs: "30000"
-    # it's better to use prometheus adapter and scale based on
-    # the size of the rabbitmq queue
     autoscaling:
       enabled: false
       minReplicas: 1
