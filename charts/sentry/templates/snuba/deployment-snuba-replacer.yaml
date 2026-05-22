@@ -106,9 +106,6 @@ spec:
           {{- if .Values.snuba.replacer.queuedMinMessages }}
           - "--queued-min-messages"
           - "{{ .Values.snuba.replacer.queuedMinMessages }}"
-          {{- if .Values.snuba.replacer.noStrictOffsetReset }}
-          - "--no-strict-offset-reset"
-          {{- end }}
         {{- end }}
         ports:
         - containerPort: {{ template "snuba.port" }}
