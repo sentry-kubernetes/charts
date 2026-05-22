@@ -98,12 +98,12 @@ sentry.conf.py: |-
   {{- if or .Values.cache.enabled .Values.sourcemaps.enabled }}
   CACHES = {
       "default": {
-          "BACKEND": "django.core.cache.backends.memcached.PyMemcacheCache",
+          "BACKEND": "sentry.cache.backends.reconnectingmemcache.ReconnectingMemcache",
           "LOCATION": [
               "{{ template "sentry.fullname" . }}-memcached:11211"
           ],
           "TIMEOUT": 3600,
-          "OPTIONS": {"ignore_exc": True}
+          "OPTIONS": {"ignore_exc": True, "reconnect_age": 300}
       }
   }
   {{- end }}
