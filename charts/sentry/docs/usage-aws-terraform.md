@@ -13,9 +13,6 @@ user:
 nginx:
   enabled: false
 
-rabbitmq:
-  enabled: false
-
 sentry:
   web:
     service:

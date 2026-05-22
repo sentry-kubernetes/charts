@@ -401,27 +401,6 @@ Note: this table is incomplete, so have a look at the values.yaml in case you mi
 | postgresql.replication.readReplicas | int | `2` |  |
 | postgresql.replication.synchronousCommit | string | `"on"` |  |
 | prefix | string | `nil` |  |
-| rabbitmq.auth.erlangCookie | string | `"pHgpy3Q6adTskzAT6bLHCFqFTF7lMxhA"` |  |
-| rabbitmq.auth.password | string | `"guest"` |  |
-| rabbitmq.auth.username | string | `"guest"` |  |
-| rabbitmq.clustering.forceBoot | bool | `true` |  |
-| rabbitmq.clustering.rebalance | bool | `true` |  |
-| rabbitmq.enabled | bool | `true` |  |
-| rabbitmq.extraConfiguration | string | `"load_definitions = /app/load_definition.json\n"` |  |
-| rabbitmq.extraSecrets.load-definition."load_definition.json" | string | `"{\n  \"users\": [\n    {\n      \"name\": \"{{ .Values.auth.username }}\",\n      \"password\": \"{{ .Values.auth.password }}\",\n      \"tags\": \"administrator\"\n    }\n  ],\n  \"permissions\": [{\n    \"user\": \"{{ .Values.auth.username }}\",\n    \"vhost\": \"/\",\n    \"configure\": \".*\",\n    \"write\": \".*\",\n    \"read\": \".*\"\n  }],\n  \"policies\": [\n    {\n      \"name\": \"ha-all\",\n      \"pattern\": \".*\",\n      \"vhost\": \"/\",\n      \"definition\": {\n        \"ha-mode\": \"all\",\n        \"ha-sync-mode\": \"automatic\",\n        \"ha-sync-batch-size\": 1\n      }\n    }\n  ],\n  \"vhosts\": [\n    {\n      \"name\": \"/\"\n    }\n  ]\n}\n"` |  |
-| rabbitmq.loadDefinition.enabled | bool | `true` |  |
-| rabbitmq.loadDefinition.existingSecret | string | `"load-definition"` |  |
-| rabbitmq.memoryHighWatermark | object | `{}` |  |
-| rabbitmq.metrics.enabled | bool | `false` |  |
-| rabbitmq.metrics.serviceMonitor.enabled | bool | `false` |  |
-| rabbitmq.metrics.serviceMonitor.labels.release | string | `"prometheus-operator"` |  |
-| rabbitmq.metrics.serviceMonitor.path | string | `"/metrics/per-object"` |  |
-| rabbitmq.nameOverride | string | `""` |  |
-| rabbitmq.pdb.create | bool | `true` |  |
-| rabbitmq.persistence.enabled | bool | `true` |  |
-| rabbitmq.replicaCount | int | `1` |  |
-| rabbitmq.resources | object | `{}` |  |
-| rabbitmq.vhost | string | `"/"` |  |
 | redis.auth.enabled | bool | `false` |  |
 | redis.auth.sentinel | bool | `false` |  |
 | redis.enabled | bool | `true` |  |
