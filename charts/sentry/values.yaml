@@ -519,6 +519,7 @@ sentry:
       enabled: true
       initialDelaySeconds: 5
       periodSeconds: 320
+      timeoutSeconds: 3
     # volumeMounts:
     #   - mountPath: /dev/shm
     #     name: dshm
@@ -562,6 +563,7 @@ sentry:
       enabled: true
       initialDelaySeconds: 5
       periodSeconds: 320
+      timeoutSeconds: 3
     # volumeMounts:
     #   - mountPath: /dev/shm
     #     name: dshm
@@ -605,6 +607,7 @@ sentry:
       enabled: true
       initialDelaySeconds: 5
       periodSeconds: 320
+      timeoutSeconds: 3
     # volumeMounts:
     #   - mountPath: /dev/shm
     #     name: dshm
@@ -640,6 +643,7 @@ sentry:
       enabled: true
       initialDelaySeconds: 5
       periodSeconds: 320
+      timeoutSeconds: 3
     # volumeMounts:
     #   - mountPath: /dev/shm
     #     name: dshm
@@ -670,6 +674,7 @@ sentry:
       enabled: true
       initialDelaySeconds: 5
       periodSeconds: 320
+      timeoutSeconds: 3
     # volumeMounts:
     #   - mountPath: /dev/shm
     #     name: dshm
@@ -704,6 +709,7 @@ sentry:
       enabled: true
       initialDelaySeconds: 5
       periodSeconds: 320
+      timeoutSeconds: 3
     # volumeMounts:
     #   - mountPath: /dev/shm
     #     name: dshm
@@ -738,6 +744,7 @@ sentry:
       enabled: true
       initialDelaySeconds: 5
       periodSeconds: 320
+      timeoutSeconds: 3
     # volumeMounts:
     #   - mountPath: /dev/shm
     #     name: dshm
@@ -773,6 +780,7 @@ sentry:
       enabled: true
       initialDelaySeconds: 5
       periodSeconds: 320
+      timeoutSeconds: 3
     # volumeMounts:
     #   - mountPath: /dev/shm
     #     name: dshm
@@ -804,6 +812,7 @@ sentry:
       enabled: true
       initialDelaySeconds: 5
       periodSeconds: 320
+      timeoutSeconds: 3
     # volumeMounts:
     #   - mountPath: /dev/shm
     #     name: dshm
@@ -835,6 +844,7 @@ sentry:
       enabled: true
       initialDelaySeconds: 5
       periodSeconds: 320
+      timeoutSeconds: 3
     # volumeMounts:
     #   - mountPath: /dev/shm
     #     name: dshm
@@ -869,6 +879,7 @@ sentry:
       enabled: true
       initialDelaySeconds: 5
       periodSeconds: 320
+      timeoutSeconds: 3
     # volumeMounts:
     #   - mountPath: /dev/shm
     #     name: dshm
@@ -906,6 +917,7 @@ sentry:
       enabled: true
       initialDelaySeconds: 5
       periodSeconds: 320
+      timeoutSeconds: 3
     # volumeMounts:
     #   - mountPath: /dev/shm
     #     name: dshm
@@ -943,6 +955,7 @@ sentry:
       enabled: true
       initialDelaySeconds: 5
       periodSeconds: 320
+      timeoutSeconds: 3
     # volumeMounts:
     #   - mountPath: /dev/shm
     #     name: dshm
@@ -965,6 +978,7 @@ sentry:
       enabled: true
       initialDelaySeconds: 5
       periodSeconds: 320
+      timeoutSeconds: 3
     volumes: []
     volumeMounts: []
     # autoOffsetReset: "earliest"
@@ -991,6 +1005,7 @@ sentry:
       enabled: true
       initialDelaySeconds: 5
       periodSeconds: 320
+      timeoutSeconds: 3
     # autoOffsetReset: "earliest"
     # noStrictOffsetReset: false
     volumeMounts: []
@@ -1016,6 +1031,7 @@ sentry:
       enabled: true
       initialDelaySeconds: 5
       periodSeconds: 320
+      timeoutSeconds: 3
     # autoOffsetReset: "earliest"
     # noStrictOffsetReset: false
     volumeMounts: []
@@ -1041,6 +1057,7 @@ sentry:
       enabled: true
       initialDelaySeconds: 5
       periodSeconds: 320
+      timeoutSeconds: 3
     # autoOffsetReset: "earliest"
     # noStrictOffsetReset: false
     volumeMounts: []
@@ -1067,6 +1084,7 @@ sentry:
       enabled: true
       initialDelaySeconds: 5
       periodSeconds: 320
+      timeoutSeconds: 3
     # autoOffsetReset: "earliest"
     # noStrictOffsetReset: false
 
@@ -1092,6 +1110,7 @@ sentry:
       enabled: true
       initialDelaySeconds: 5
       periodSeconds: 320
+      timeoutSeconds: 3
     volumeMounts: []
     # autoOffsetReset: "earliest"
     # noStrictOffsetReset: false
@@ -1118,6 +1137,7 @@ sentry:
       enabled: true
       initialDelaySeconds: 5
       periodSeconds: 320
+      timeoutSeconds: 3
     # autoOffsetReset: "earliest"
     # noStrictOffsetReset: false
 
@@ -1144,6 +1164,7 @@ sentry:
       enabled: true
       initialDelaySeconds: 5
       periodSeconds: 320
+      timeoutSeconds: 3
     # autoOffsetReset: "earliest"
     # noStrictOffsetReset: false
     # maxBatchSize: "500"
@@ -1172,6 +1193,7 @@ sentry:
       enabled: true
       initialDelaySeconds: 5
       periodSeconds: 320
+      timeoutSeconds: 3
     # autoOffsetReset: "earliest"
     # noStrictOffsetReset: false
     # maxBatchSize: "500"
@@ -1201,6 +1223,7 @@ sentry:
       enabled: true
       initialDelaySeconds: 5
       periodSeconds: 320
+      timeoutSeconds: 3
     # autoOffsetReset: "earliest"
     # noStrictOffsetReset: false
 
@@ -1228,6 +1251,7 @@ sentry:
       enabled: true
       initialDelaySeconds: 5
       periodSeconds: 320
+      timeoutSeconds: 3
     # autoOffsetReset: "earliest"
     # noStrictOffsetReset: false
 
@@ -1332,6 +1356,7 @@ snuba:
       enabled: true
       initialDelaySeconds: 5
       periodSeconds: 320
+      timeoutSeconds: 3
     # noStrictOffsetReset: false
     # maxBatchSize: ""
     # processes: ""
@@ -1365,6 +1390,7 @@ snuba:
       enabled: true
       initialDelaySeconds: 5
       periodSeconds: 320
+      timeoutSeconds: 3
     # maxBatchSize: ""
     # processes: ""
     # inputBlockSize: ""
@@ -1400,6 +1426,7 @@ snuba:
       enabled: true
       initialDelaySeconds: 5
       periodSeconds: 320
+      timeoutSeconds: 3
     # processes: ""
     # inputBlockSize: ""
     # outputBlockSize: ""
@@ -1434,6 +1461,7 @@ snuba:
       enabled: true
       initialDelaySeconds: 5
       periodSeconds: 320
+      timeoutSeconds: 3
     # processes: ""
     # inputBlockSize: ""
     # outputBlockSize: ""
@@ -1485,6 +1513,7 @@ snuba:
       enabled: true
       initialDelaySeconds: 5
       periodSeconds: 320
+      timeoutSeconds: 3
     volumes: []
     volumeMounts: []
     # maxBatchSize: ""
@@ -1512,6 +1541,7 @@ snuba:
       enabled: true
       initialDelaySeconds: 5
       periodSeconds: 320
+      timeoutSeconds: 3
     volumes: []
     volumeMounts: []
     # autoOffsetReset: "earliest"
@@ -1533,6 +1563,7 @@ snuba:
       enabled: true
       initialDelaySeconds: 5
       periodSeconds: 320
+      timeoutSeconds: 3
     volumes: []
     volumeMounts: []
     # autoOffsetReset: "earliest"
@@ -1554,6 +1585,7 @@ snuba:
       enabled: true
       initialDelaySeconds: 5
       periodSeconds: 320
+      timeoutSeconds: 3
     volumes: []
     volumeMounts: []
     # autoOffsetReset: "earliest"
@@ -1575,6 +1607,7 @@ snuba:
       enabled: true
       initialDelaySeconds: 5
       periodSeconds: 320
+      timeoutSeconds: 3
     volumes: []
     volumeMounts: []
     # autoOffsetReset: "earliest"
@@ -1596,6 +1629,7 @@ snuba:
       enabled: true
       initialDelaySeconds: 5
       periodSeconds: 320
+      timeoutSeconds: 3
     volumes: []
     volumeMounts: []
     # autoOffsetReset: "earliest"
@@ -1617,6 +1651,7 @@ snuba:
       enabled: true
       initialDelaySeconds: 5
       periodSeconds: 320
+      timeoutSeconds: 3
     volumes: []
     volumeMounts: []
     # autoOffsetReset: "earliest"
@@ -1639,6 +1674,7 @@ snuba:
       enabled: true
       initialDelaySeconds: 5
       periodSeconds: 320
+      timeoutSeconds: 3
     volumes: []
     volumeMounts: []
     # maxBatchSize: ""
@@ -1667,6 +1703,7 @@ snuba:
       enabled: true
       initialDelaySeconds: 5
       periodSeconds: 320
+      timeoutSeconds: 3
     volumes: []
     volumeMounts: []
     # maxBatchSize: ""
@@ -1695,6 +1732,7 @@ snuba:
       enabled: true
       initialDelaySeconds: 5
       periodSeconds: 320
+      timeoutSeconds: 3
     volumes: []
     volumeMounts: []
     # maxBatchSize: ""
@@ -1723,6 +1761,7 @@ snuba:
       enabled: true
       initialDelaySeconds: 5
       periodSeconds: 320
+      timeoutSeconds: 3
     volumes: []
     volumeMounts: []
     # maxBatchSize: ""
@@ -1754,6 +1793,7 @@ snuba:
       enabled: true
       initialDelaySeconds: 5
       periodSeconds: 320
+      timeoutSeconds: 3
     volumes: []
     volumeMounts: []
 
@@ -1778,6 +1818,7 @@ snuba:
       enabled: true
       initialDelaySeconds: 5
       periodSeconds: 320
+      timeoutSeconds: 3
     # autoOffsetReset: "earliest"
     # noStrictOffsetReset: false
 
@@ -1799,6 +1840,7 @@ snuba:
       enabled: true
       initialDelaySeconds: 5
       periodSeconds: 320
+      timeoutSeconds: 3
     # maxBatchSize: ""
     # processes: ""
     # inputBlockSize: ""
@@ -1832,6 +1874,7 @@ snuba:
       enabled: true
       initialDelaySeconds: 5
       periodSeconds: 320
+      timeoutSeconds: 3
     # maxBatchSize: ""
     # processes: ""
     # inputBlockSize: ""
@@ -1865,6 +1908,7 @@ snuba:
       enabled: true
       initialDelaySeconds: 5
       periodSeconds: 320
+      timeoutSeconds: 3
     # maxBatchSize: ""
     # processes: ""
     # inputBlockSize: ""
@@ -1899,6 +1943,7 @@ snuba:
       enabled: true
       initialDelaySeconds: 5
       periodSeconds: 320
+      timeoutSeconds: 3
     # maxBatchSize: ""
     # processes: ""
     # inputBlockSize: ""
@@ -1932,6 +1977,7 @@ snuba:
       enabled: true
       initialDelaySeconds: 5
       periodSeconds: 320
+      timeoutSeconds: 3
     # maxBatchSize: ""
     # processes: ""
     # inputBlockSize: ""
@@ -1965,6 +2011,7 @@ snuba:
       enabled: true
       initialDelaySeconds: 5
       periodSeconds: 320
+      timeoutSeconds: 3
     # maxBatchSize: ""
     # processes: ""
     # inputBlockSize: ""
@@ -1998,6 +2045,7 @@ snuba:
       enabled: true
       initialDelaySeconds: 5
       periodSeconds: 320
+      timeoutSeconds: 3
     # maxBatchSize: ""
     # processes: ""
     # inputBlockSize: ""

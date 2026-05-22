@@ -128,6 +128,7 @@ spec:
               - /tmp/health.txt
           initialDelaySeconds: {{ .Values.sentry.processSegments.livenessProbe.initialDelaySeconds }}
           periodSeconds: {{ .Values.sentry.processSegments.livenessProbe.periodSeconds }}
+          timeoutSeconds: {{ .Values.sentry.processSegments.livenessProbe.timeoutSeconds }}
         {{- end }}
         env:
 {{ include "sentry.env" . | indent 8 }}

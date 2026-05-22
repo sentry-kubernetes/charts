@@ -138,6 +138,7 @@ spec:
               - /tmp/health.txt
           initialDelaySeconds: {{ .Values.snuba.genericMetricsSetsConsumer.livenessProbe.initialDelaySeconds }}
           periodSeconds: {{ .Values.snuba.genericMetricsSetsConsumer.livenessProbe.periodSeconds }}
+          timeoutSeconds: {{ .Values.snuba.genericMetricsSetsConsumer.livenessProbe.timeoutSeconds }}
         {{- end }}
         ports:
         - containerPort: {{ template "snuba.port" }}

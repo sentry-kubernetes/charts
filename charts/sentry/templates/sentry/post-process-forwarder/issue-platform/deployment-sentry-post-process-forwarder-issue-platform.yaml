@@ -116,6 +116,7 @@ spec:
               - /tmp/health.txt
           initialDelaySeconds: {{ .Values.sentry.postProcessForwardIssuePlatform.livenessProbe.initialDelaySeconds }}
           periodSeconds: {{ .Values.sentry.postProcessForwardIssuePlatform.livenessProbe.periodSeconds }}
+          timeoutSeconds: {{ .Values.sentry.postProcessForwardIssuePlatform.livenessProbe.timeoutSeconds }}
         {{- end }}
         env:
 {{ include "sentry.env" . | indent 8 }}

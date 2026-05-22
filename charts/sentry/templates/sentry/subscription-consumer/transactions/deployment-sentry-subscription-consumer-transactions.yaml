@@ -106,6 +106,7 @@ spec:
               - /tmp/health.txt
           initialDelaySeconds: {{ .Values.sentry.subscriptionConsumerTransactions.livenessProbe.initialDelaySeconds }}
           periodSeconds: {{ .Values.sentry.subscriptionConsumerTransactions.livenessProbe.periodSeconds }}
+          timeoutSeconds: {{ .Values.sentry.subscriptionConsumerTransactions.livenessProbe.timeoutSeconds }}
         {{- end }}
         env:
 {{ include "sentry.env" . | indent 8 }}

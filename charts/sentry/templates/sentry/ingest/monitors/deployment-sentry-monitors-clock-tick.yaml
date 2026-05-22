@@ -114,6 +114,7 @@ spec:
               - /tmp/health.txt
           initialDelaySeconds: {{ .Values.sentry.monitorsClockTick.livenessProbe.initialDelaySeconds }}
           periodSeconds: {{ .Values.sentry.monitorsClockTick.livenessProbe.periodSeconds }}
+          timeoutSeconds: {{ .Values.sentry.monitorsClockTick.livenessProbe.timeoutSeconds }}
         {{- end }}
         env:
         - name: C_FORCE_ROOT
