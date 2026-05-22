@@ -1,5 +1,18 @@
 # Changelog
 
+## [31.5.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v31.4.0...sentry-v31.5.0) (2026-05-22)
+
+
+### Features
+
+* add concurrency, inputBlockSize, maxBatchSize, maxBatchTimeMs support for ingest-occurences consumer ([#2191](https://github.com/sentry-kubernetes/charts/issues/2191)) ([e14ff97](https://github.com/sentry-kubernetes/charts/commit/e14ff97433b47507ae57abb0a29d309c0851bfee))
+
+
+### Bug Fixes
+
+* add timeoutSeconds to exec livenessProbe in consumer deployments ([#2187](https://github.com/sentry-kubernetes/charts/issues/2187)) ([3e0cc34](https://github.com/sentry-kubernetes/charts/commit/3e0cc341dff8e5e05c52065bc89f670a5ac7c249))
+* use reconnecting memcache backend ([#2189](https://github.com/sentry-kubernetes/charts/issues/2189)) ([021e279](https://github.com/sentry-kubernetes/charts/commit/021e2794d7d90f49329bfeac71711697a9d9915b))
+
 ## [31.4.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v31.3.1...sentry-v31.4.0) (2026-05-22)
 
 
