@@ -185,21 +185,6 @@ sentry.conf.py: |-
     }
   }
 
-  #########
-  # Cache #
-  #########
-
-  # Sentry currently utilizes two separate mechanisms. While CACHES is not a
-  # requirement, it will optimize several high throughput patterns.
-
-  # CACHES = {
-  #     "default": {
-  #         "BACKEND": "django.core.cache.backends.memcached.MemcachedCache",
-  #         "LOCATION": ["memcached:11211"],
-  #         "TIMEOUT": 3600,
-  #     }
-  # }
-
   # A primary cache is required for things such as processing events
   SENTRY_CACHE = "sentry.cache.redis.RedisCache"
 
