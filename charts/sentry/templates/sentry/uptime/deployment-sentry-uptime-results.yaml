@@ -152,7 +152,7 @@ spec:
 {{ toYaml .Values.global.sidecars | indent 6 }}
 {{- end }}
       {{- if .Values.serviceAccount.enabled }}
-      serviceAccountName: {{ .Values.serviceAccount.name }}-uptime-results
+      serviceAccountName: {{ if .Values.serviceAccount.shared }}{{ .Values.serviceAccount.name }}{{ else }}{{ .Values.serviceAccount.name }}-uptime-results{{ end }}
       {{- end }}
       volumes:
       - name: config

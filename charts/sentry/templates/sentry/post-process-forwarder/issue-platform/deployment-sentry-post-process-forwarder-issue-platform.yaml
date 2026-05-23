@@ -155,7 +155,7 @@ spec:
 {{ toYaml .Values.global.sidecars | indent 6 }}
 {{- end }}
       {{- if .Values.serviceAccount.enabled }}
-      serviceAccountName: {{ .Values.serviceAccount.name }}-post-process-forwarder-issue-platform
+      serviceAccountName: {{ if .Values.serviceAccount.shared }}{{ .Values.serviceAccount.name }}{{ else }}{{ .Values.serviceAccount.name }}-post-process-forwarder-issue-platform{{ end }}
       {{- end }}
       volumes:
       - name: config
