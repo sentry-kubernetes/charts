@@ -3068,8 +3068,6 @@ kafka:
       protocol: "PLAINTEXT"
     external:
       protocol: "PLAINTEXT"
-  zookeeper:
-    enabled: false
   kraft:
     enabled: true
   metrics:
@@ -3090,12 +3088,6 @@ kafka:
   # serviceAccount:
   #   create: false
   #   name: kafka
-
-  ## Use this to enable an extra service account
-  # zookeeper:
-  #   serviceAccount:
-  #     create: false
-  #     name: zookeeper
 
   # sasl:
   #  ## Credentials for client communications.

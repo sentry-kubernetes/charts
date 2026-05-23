@@ -305,7 +305,6 @@ Note: this table is incomplete, so have a look at the values.yaml in case you mi
 | kafka.sasl.client.users | list | `[]` | List of usernames for client communications when SASL is enabled, first user will be used if enabled |
 | kafka.sasl.client.passwords | list | `[]` | List of passwords for client communications when SASL is enabled, must match the number of client.users, first password will be used if enabled |
 | kafka.sasl.enabledMechanisms | string | `"PLAIN,SCRAM-SHA-256,SCRAM-SHA-512"` | Comma-separated list of allowed SASL mechanisms when SASL listeners are configured |
-| kafka.zookeeper.enabled | bool | `false` |  |
 | mail.backend | string | `"dummy"` |  |
 | mail.from | string | `""` |  |
 | mail.host | string | `""` |  |

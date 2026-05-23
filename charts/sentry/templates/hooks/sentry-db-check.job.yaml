@@ -105,27 +105,6 @@ spec:
               KAFKA_STATUS=1
               {{- if .Values.kafka.enabled }}
 
-              {{- if .Values.kafka.zookeeper.enabled }}
-              KAFKA_REPLICAS={{ .Values.kafka.broker.replicaCount | default 3 }}
-              echo "Kafka Zookeeper is enabled, checking if kafka brokers are up"
-              KZ_STATUS=0
-              while [ $KZ_STATUS -eq 0 ]; do
-                KZ_STATUS=1
-                i=0; while [ $i -lt $KAFKA_REPLICAS ]; do
-                  KZ_HOST={{ $kafkaHost }}-broker-$i.{{ $kafkaHost }}-broker-headless
-                  if ! nc -z "$KZ_HOST" {{ $kafkaPort }}; then
-                    KZ_STATUS=0
-                    echo "$KZ_HOST is not available yet"
-                  fi
-                  i=$((i+1))
-                done
-                if [ "$KZ_STATUS" -eq 0 ]; then
-                  echo "Kafka not ready. Sleeping for 10s before trying again"
-                  sleep 10;
-                fi
-              done
-              echo "Zookeeper is up"
-              {{- end }}
               {{- if .Values.kafka.kraft.enabled }}
               KAFKA_REPLICAS={{ .Values.kafka.controller.replicaCount | default 3 }}
               echo "Kafka Kraft is enabled, checking if Kraft controllers are up"
