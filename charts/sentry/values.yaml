@@ -1268,8 +1268,8 @@ sentry:
     days: 90
     # logLevel: INFO
     logLevel: ''
-    # securityContext: {}
-    # containerSecurityContext: {}
+    securityContext: {}
+    containerSecurityContext: {}
     sidecars: []
     volumes: []
     volumeMounts: []
@@ -1277,8 +1277,8 @@ sentry:
     # priorityClassName: ""
     annotations: {}
     podLabels: {}
-    # affinity: {}
-    # nodeSelector: {}
+    affinity: {}
+    nodeSelector: {}
     tolerations: []
 
   # Sentry settings of connections to Kafka
@@ -2136,14 +2136,14 @@ snuba:
         - "generic_metric_gauges_raw_local"
         - "profile_chunks_raw_local"
     podLabels: {}
-    # affinity: {}
-    # nodeSelector: {}
+    affinity: {}
+    nodeSelector: {}
     tolerations: []
     env: []
     volumes: []
     sidecars: []
-    # containerSecurityContext: {}
-    # securityContext: {}
+    containerSecurityContext: {}
+    securityContext: {}
     annotations: {}
     volumeMounts: []
 
@@ -2799,12 +2799,12 @@ cleanerfs:
   concurrencyPolicy: Allow
   schedule: "0 1 * * *"
   days: 90
-  # securityContext: {}
-  # containerSecurityContext: {}
+  securityContext: {}
+  containerSecurityContext: {}
   annotations: {}
   podLabels: {}
-  # affinity: {}
-  # nodeSelector: {}
+  affinity: {}
+  nodeSelector: {}
   tolerations: []
 
 config:
