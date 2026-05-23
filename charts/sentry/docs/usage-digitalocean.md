@@ -45,8 +45,6 @@ doctl compute certificate list
 
 `values.yaml`
 ```yaml
-prefix:
-
 # Required only when installing
 user:
   create: true

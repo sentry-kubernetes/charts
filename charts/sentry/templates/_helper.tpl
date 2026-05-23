@@ -1,12 +1,5 @@
 {{/* vim: set filetype=mustache: */}}
 
-{{- define "sentry.prefix" -}}
-    {{- if .Values.prefix -}}
-        {{.Values.prefix}}-
-    {{- else -}}
-    {{- end -}}
-{{- end -}}
-
 {{- define "relay.port" -}}{{ default 3000 .Values.relay.service.port }}{{- end -}}
 {{- define "relay.healthCheck.readinessRequestPath" -}}/api/relay/healthcheck/ready/{{- end -}}
 {{- define "relay.healthCheck.livenessRequestPath" -}}/api/relay/healthcheck/live/{{- end -}}

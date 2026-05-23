@@ -400,7 +400,6 @@ Note: this table is incomplete, so have a look at the values.yaml in case you mi
 | postgresql.replication.numSynchronousReplicas | int | `1` |  |
 | postgresql.replication.readReplicas | int | `2` |  |
 | postgresql.replication.synchronousCommit | string | `"on"` |  |
-| prefix | string | `nil` |  |
 | redis.auth.enabled | bool | `false` |  |
 | redis.auth.sentinel | bool | `false` |  |
 | redis.enabled | bool | `true` |  |

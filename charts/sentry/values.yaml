@@ -1,5 +1,3 @@
-prefix:
-
 # Set this to true to support IPV6 networks
 ipv6: false
 
@@ -2863,10 +2861,10 @@ externalClickhouse:
   database: default
   singleNode: true
   # existingSecret: secret-name
-  ## set existingSecretKey if key name inside existingSecret is different from 'postgres-password'
+  ## set existingSecretKey if key name inside existingSecret is different from 'clickhouse-password'
   # existingSecretKey: secret-key-name
   ## Cluster name, can be found in config
-  ## (https://clickhouse.tech/docs/en/operations/server-configuration-parameters/settings/#server-settings-remote-servers)
+  ## (https://clickhouse.com/docs/en/operations/server-configuration-parameters/settings/#server-settings-remote-servers)
   ## or by executing `select * from system.clusters`
   ##
   # clusterName: test_shard_localhost

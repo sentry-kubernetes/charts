@@ -3,8 +3,6 @@
 `./templates/sentry_values.yaml` file
 
 ```yaml
-prefix: ${module_prefix}
-
 user:
   create: true
   email: ${sentry_email}
@@ -68,7 +66,6 @@ resource "helm_release" "sentry" {
     templatefile(
       "${path.module}/templates/sentry_values.yaml",
       {
-        module_prefix   = "${var.module_prefix}",
         sentry_email    = "${var.sentry_email}",
         sentry_password = "${var.sentry_password}",
 
