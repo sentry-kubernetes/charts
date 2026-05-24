@@ -97,13 +97,6 @@ Get KubeVersion removing pre-release information.
 {{- end -}}
 
 {{/*
-Return the appropriate apiVersion for ingress.
-*/}}
-{{- define "sentry.ingress.apiVersion" -}}
-  {{- print "networking.k8s.io/v1" -}}
-{{- end -}}
-
-{{/*
 Resolve ingress controller style for path rules.
 */}}
 {{- define "sentry.ingress.controller" -}}
@@ -130,14 +123,6 @@ Resolve ingress controller style for path rules.
   {{- else -}}
     {{- print "nginx" -}}
   {{- end -}}
-{{- end -}}
-
-{{/*
-Return the appropriate batch apiVersion for cronjobs.
-batch/v1 is available since Kubernetes 1.21, batch/v1beta1 was removed in 1.25.
-*/}}
-{{- define "sentry.batch.apiVersion" -}}
-  {{- print "batch/v1" -}}
 {{- end -}}
 
 {{/*

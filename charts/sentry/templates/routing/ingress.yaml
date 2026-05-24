@@ -3,7 +3,7 @@
 {{- $pathRulesByStyle := .Values.ingress.pathRules | default dict -}}
 {{- $ingressController := include "sentry.ingress.controller" . -}}
 {{- $pathRules := get $pathRulesByStyle $ingressController | default (get $pathRulesByStyle "nginx") | default list -}}
-apiVersion: {{ include "sentry.ingress.apiVersion" . }}
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: {{ template "sentry.fullname" . }}
