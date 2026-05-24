@@ -981,6 +981,7 @@ sentry:
       initialDelaySeconds: 5
       periodSeconds: 320
       timeoutSeconds: 3
+    sidecars: []
     volumes: []
     volumeMounts: []
     # autoOffsetReset: "earliest"
@@ -1353,6 +1354,7 @@ snuba:
     containerSecurityContext: {}
     tolerations: []
     podLabels: {}
+    sidecars: []
     # autoOffsetReset: "earliest"
     livenessProbe:
       enabled: true
@@ -1387,6 +1389,7 @@ snuba:
     containerSecurityContext: {}
     tolerations: []
     podLabels: {}
+    sidecars: []
     # autoOffsetReset: "earliest"
     livenessProbe:
       enabled: true
@@ -1421,6 +1424,7 @@ snuba:
     containerSecurityContext: {}
     tolerations: []
     podLabels: {}
+    sidecars: []
     # autoOffsetReset: "earliest"
     # noStrictOffsetReset: false
     maxBatchSize: "3"
@@ -1456,6 +1460,7 @@ snuba:
     # maxPollIntervalMs: 30000
     tolerations: []
     podLabels: {}
+    sidecars: []
     # autoOffsetReset: "earliest"
     # noStrictOffsetReset: false
     maxBatchSize: "3"
@@ -1490,6 +1495,7 @@ snuba:
     containerSecurityContext: {}
     tolerations: []
     podLabels: {}
+    sidecars: []
     # autoOffsetReset: "earliest"
     # maxBatchTimeMs: ""
     # queuedMaxMessagesKbytes: ""
@@ -1510,6 +1516,7 @@ snuba:
     containerSecurityContext: {}
     tolerations: []
     podLabels: {}
+    sidecars: []
     # autoOffsetReset: "earliest"
     livenessProbe:
       enabled: true
@@ -1539,6 +1546,7 @@ snuba:
     containerSecurityContext: {}
     tolerations: []
     podLabels: {}
+    sidecars: []
     livenessProbe:
       enabled: true
       initialDelaySeconds: 5
@@ -1561,6 +1569,7 @@ snuba:
     containerSecurityContext: {}
     tolerations: []
     podLabels: {}
+    sidecars: []
     livenessProbe:
       enabled: true
       initialDelaySeconds: 5
@@ -1583,6 +1592,7 @@ snuba:
     containerSecurityContext: {}
     tolerations: []
     podLabels: {}
+    sidecars: []
     livenessProbe:
       enabled: true
       initialDelaySeconds: 5
@@ -1605,6 +1615,7 @@ snuba:
     containerSecurityContext: {}
     tolerations: []
     podLabels: {}
+    sidecars: []
     livenessProbe:
       enabled: true
       initialDelaySeconds: 5
@@ -1627,6 +1638,7 @@ snuba:
     containerSecurityContext: {}
     tolerations: []
     podLabels: {}
+    sidecars: []
     livenessProbe:
       enabled: true
       initialDelaySeconds: 5
@@ -1649,6 +1661,7 @@ snuba:
     containerSecurityContext: {}
     tolerations: []
     podLabels: {}
+    sidecars: []
     livenessProbe:
       enabled: true
       initialDelaySeconds: 5
@@ -1671,6 +1684,7 @@ snuba:
     containerSecurityContext: {}
     tolerations: []
     podLabels: {}
+    sidecars: []
     # autoOffsetReset: "earliest"
     livenessProbe:
       enabled: true
@@ -1700,6 +1714,7 @@ snuba:
     containerSecurityContext: {}
     tolerations: []
     podLabels: {}
+    sidecars: []
     # autoOffsetReset: "earliest"
     livenessProbe:
       enabled: true
@@ -1729,6 +1744,7 @@ snuba:
     containerSecurityContext: {}
     tolerations: []
     podLabels: {}
+    sidecars: []
     # autoOffsetReset: "earliest"
     livenessProbe:
       enabled: true
@@ -1758,6 +1774,7 @@ snuba:
     containerSecurityContext: {}
     tolerations: []
     podLabels: {}
+    sidecars: []
     # autoOffsetReset: "earliest"
     livenessProbe:
       enabled: true
@@ -1790,6 +1807,7 @@ snuba:
     containerSecurityContext: {}
     tolerations: []
     podLabels: {}
+    sidecars: []
     # autoOffsetReset: "earliest"
     livenessProbe:
       enabled: true
@@ -1814,6 +1832,7 @@ snuba:
     containerSecurityContext: {}
     tolerations: []
     podLabels: {}
+    sidecars: []
     volumes: []
     volumeMounts: []
     livenessProbe:
@@ -1837,6 +1856,7 @@ snuba:
     # maxPollIntervalMs: 30000
     tolerations: []
     podLabels: {}
+    sidecars: []
     # autoOffsetReset: "earliest"
     livenessProbe:
       enabled: true
@@ -1871,6 +1891,7 @@ snuba:
     containerSecurityContext: {}
     tolerations: []
     podLabels: {}
+    sidecars: []
     # autoOffsetReset: "earliest"
     livenessProbe:
       enabled: true
@@ -2008,6 +2029,7 @@ snuba:
     containerSecurityContext: {}
     tolerations: []
     podLabels: {}
+    sidecars: []
     # autoOffsetReset: "earliest"
     livenessProbe:
       enabled: true
@@ -2042,6 +2064,7 @@ snuba:
     containerSecurityContext: {}
     tolerations: []
     podLabels: {}
+    sidecars: []
     # autoOffsetReset: "earliest"
     livenessProbe:
       enabled: true
@@ -2174,6 +2197,7 @@ hooks:
     securityContext: {}
     containerSecurityContext: {}
     tolerations: []
+    sidecars: []
     volumes: []
     volumeMounts: []
   dbInit:
@@ -2212,11 +2236,13 @@ hooks:
     affinity: {}
     nodeSelector: {}
     tolerations: []
+    sidecars: []
     volumes: []
     volumeMounts: []
   snubaMigrate:
     enabled: true
     podLabels: {}
+    sidecars: []
     volumes: []
     volumeMounts: []
 
