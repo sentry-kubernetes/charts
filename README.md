@@ -4,13 +4,7 @@ Sentry is a cross-platform crash reporting and aggregation platform.
 
 ## External ClickHouse Configuration
 
-### Background
-
-Due to changes in the Bitnami chart catalog and container image policies (see [Issue #1828](https://github.com/sentry-kubernetes/charts/issues/1828)), the bundled ClickHouse chart dependencies are considered legacy and may receive limited updates.
-
-It is strongly recommended to use an externally managed ClickHouse deployment. This ensures you have control over updates, backups, and high availability configurations independent of the Sentry chart.
-
-The recommended way to deploy ClickHouse on Kubernetes is using the [Altinity ClickHouse Operator](https://github.com/Altinity/clickhouse-operator).
+Bundled ClickHouse chart dependencies are legacy and may receive limited updates. It is recommended to use an externally managed ClickHouse deployment, such as [Altinity ClickHouse Operator](https://github.com/Altinity/clickhouse-operator).
 
 ### Step 1: Install Altinity ClickHouse Operator
 
@@ -182,7 +176,7 @@ kubectl -n sentry get svc -l clickhouse.altinity.com/chi=sentry-clickhouse
 ```
 
 The Altinity Operator creates services following this naming convention:
-- `clickhouse-sentry-clickhouse` — main load-balanced service (recommended for single-node setups)
+- `clickhouse-sentry-clickhouse` — main load-balanced service
 - `chi-sentry-clickhouse-single-node-0-0` — per-pod service for shard 0, replica 0
 
 Create your `values.yaml` using the service name from the command above:
