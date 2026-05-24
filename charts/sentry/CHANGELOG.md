@@ -1,5 +1,14 @@
 # Changelog
 
+## [31.5.1](https://github.com/sentry-kubernetes/charts/compare/sentry-v31.5.0...sentry-v31.5.1) (2026-05-24)
+
+
+### Bug Fixes
+
+* **cleanerfs:** fix indentation in cleanerfs configuration ([#2194](https://github.com/sentry-kubernetes/charts/issues/2194)) ([ac293e3](https://github.com/sentry-kubernetes/charts/commit/ac293e35249aa60329605a601f807ebf255547bb))
+* correct ingestFeedback serviceAccount condition and remove obsolete snuba-replacer option ([#2195](https://github.com/sentry-kubernetes/charts/issues/2195)) ([682f2a0](https://github.com/sentry-kubernetes/charts/commit/682f2a0d48e22cf5bd9b3153bb333d289e854189))
+* remove dead code prefix and fix incorrect comments in externalClickhouse ([#2197](https://github.com/sentry-kubernetes/charts/issues/2197)) ([6e3f8a1](https://github.com/sentry-kubernetes/charts/commit/6e3f8a1cae53c4441106d00e66b25102db86abd3))
+
 ## [31.5.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v31.4.0...sentry-v31.5.0) (2026-05-22)
 
 
