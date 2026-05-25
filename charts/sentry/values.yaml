@@ -2242,6 +2242,19 @@ hooks:
   snubaMigrate:
     enabled: true
     podLabels: {}
+    podAnnotations: {}
+    resources:
+      limits:
+        cpu: 2000m
+        memory: 1Gi
+      requests:
+        cpu: 700m
+        memory: 1Gi
+    affinity: {}
+    nodeSelector: {}
+    tolerations: []
+    securityContext: {}
+    containerSecurityContext: {}
     sidecars: []
     volumes: []
     volumeMounts: []

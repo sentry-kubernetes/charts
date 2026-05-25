@@ -28,8 +28,8 @@ spec:
         {{- if .Values.snuba.annotations }}
 {{ toYaml .Values.snuba.annotations | indent 8 }}
         {{- end }}
-        {{- if .Values.hooks.snubaInit.podAnnotations }}
-{{ toYaml .Values.hooks.snubaInit.podAnnotations | indent 8 }}
+        {{- if .Values.hooks.snubaMigrate.podAnnotations }}
+{{ toYaml .Values.hooks.snubaMigrate.podAnnotations | indent 8 }}
         {{- end }}
       labels:
         app: sentry
@@ -41,20 +41,20 @@ spec:
 {{ toYaml .Values.hooks.snubaMigrate.podLabels | indent 8 }}
         {{- end }}
     spec:
-      {{- if .Values.hooks.snubaInit.affinity }}
+      {{- if .Values.hooks.snubaMigrate.affinity }}
       affinity:
-{{ toYaml .Values.hooks.snubaInit.affinity | indent 8 }}
+{{ toYaml .Values.hooks.snubaMigrate.affinity | indent 8 }}
       {{- end }}
-      {{- if .Values.hooks.snubaInit.nodeSelector }}
+      {{- if .Values.hooks.snubaMigrate.nodeSelector }}
       nodeSelector:
-{{ toYaml .Values.hooks.snubaInit.nodeSelector | indent 8 }}
+{{ toYaml .Values.hooks.snubaMigrate.nodeSelector | indent 8 }}
       {{- else if .Values.global.nodeSelector }}
       nodeSelector:
 {{ toYaml .Values.global.nodeSelector | indent 8 }}
       {{- end }}
-      {{- if .Values.hooks.snubaInit.tolerations }}
+      {{- if .Values.hooks.snubaMigrate.tolerations }}
       tolerations:
-{{ toYaml .Values.hooks.snubaInit.tolerations | indent 8 }}
+{{ toYaml .Values.hooks.snubaMigrate.tolerations | indent 8 }}
       {{- else if .Values.global.tolerations }}
       tolerations:
 {{ toYaml .Values.global.tolerations | indent 8 }}
@@ -98,14 +98,14 @@ spec:
         - mountPath: /etc/snuba
           name: config
           readOnly: true
-{{- if .Values.hooks.snubaInit.volumeMounts }}
-{{ toYaml .Values.hooks.snubaInit.volumeMounts | indent 8 }}
+{{- if .Values.hooks.snubaMigrate.volumeMounts }}
+{{ toYaml .Values.hooks.snubaMigrate.volumeMounts | indent 8 }}
 {{- end }}
 {{- if .Values.global.volumeMounts }}
 {{ toYaml .Values.global.volumeMounts | indent 8 }}
 {{- end }}
         resources:
-{{ toYaml .Values.hooks.snubaInit.resources | indent 10 }}
+{{ toYaml .Values.hooks.snubaMigrate.resources | indent 10 }}
 {{- if .Values.hooks.snubaMigrate.containerSecurityContext }}
         securityContext:
 {{ toYaml .Values.hooks.snubaMigrate.containerSecurityContext | indent 10 }}
@@ -120,8 +120,8 @@ spec:
       - name: config
         configMap:
           name: {{ template "sentry.fullname" . }}-snuba
-{{- if .Values.hooks.snubaInit.volumes }}
-{{ toYaml .Values.hooks.snubaInit.volumes | indent 6 }}
+{{- if .Values.hooks.snubaMigrate.volumes }}
+{{ toYaml .Values.hooks.snubaMigrate.volumes | indent 6 }}
 {{- end }}
 {{- if .Values.global.volumes }}
 {{ toYaml .Values.global.volumes | indent 6 }}
