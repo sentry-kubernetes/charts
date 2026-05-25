@@ -289,6 +289,7 @@ sentry:
   singleOrganization: true
   web:
     enabled: true
+    annotations: {}
     # if using filestore backend filesystem with RWO access, set strategyType to Recreate
     strategyType: RollingUpdate
     replicas: 1
@@ -369,6 +370,7 @@ sentry:
 
   taskBroker:
     enabled: true
+    annotations: {}
     replicas: 1
     env: []
     resources: {}
@@ -413,6 +415,7 @@ sentry:
 
   taskScheduler:
     enabled: true
+    annotations: {}
     replicas: 1
     env: []
     resources: {}
@@ -429,6 +432,7 @@ sentry:
 
   taskWorker:
     enabled: true
+    annotations: {}
     replicas: 1
     concurrency: 4
     # maxChildTaskCount -- Number of tasks child processes execute before restarting.
@@ -483,6 +487,7 @@ sentry:
 
   ingestConsumerAttachments:
     enabled: true
+    annotations: {}
     replicas: 1
     # concurrency: 4
     # maxBatchTimeMs: 20000
@@ -526,6 +531,7 @@ sentry:
 
   ingestConsumerEvents:
     enabled: true
+    annotations: {}
     replicas: 1
     # concurrency: 4
     env: []
@@ -570,6 +576,7 @@ sentry:
 
   ingestConsumerTransactions:
     enabled: true
+    annotations: {}
     replicas: 1
     # concurrency: 4
     env: []
@@ -614,6 +621,7 @@ sentry:
 
   ingestReplayRecordings:
     enabled: true
+    annotations: {}
     replicas: 1
     env: []
     resources: {}
@@ -649,6 +657,7 @@ sentry:
     # noStrictOffsetReset: false
 
   ingestProfiles:
+    annotations: {}
     replicas: 1
     env: []
     resources: {}
@@ -681,6 +690,7 @@ sentry:
 
   ingestOccurrences:
     enabled: true
+    annotations: {}
     replicas: 1
     # concurrency: 4
     env: []
@@ -720,6 +730,7 @@ sentry:
 
   ingestFeedback:
     enabled: true
+    annotations: {}
     replicas: 1
     env: []
     resources: {}
@@ -755,6 +766,7 @@ sentry:
 
   ingestMonitors:
     enabled: true
+    annotations: {}
     replicas: 1
     env: []
     resources: {}
@@ -791,6 +803,7 @@ sentry:
 
   monitorsClockTasks:
     enabled: true
+    annotations: {}
     replicas: 1
     env: []
     resources: {}
@@ -823,6 +836,7 @@ sentry:
 
   monitorsClockTick:
     enabled: true
+    annotations: {}
     replicas: 1
     env: []
     resources: {}
@@ -855,6 +869,7 @@ sentry:
 
   billingMetricsConsumer:
     enabled: true
+    annotations: {}
     replicas: 1
     env: []
     resources: {}
@@ -890,6 +905,7 @@ sentry:
 
   genericMetricsConsumer:
     enabled: true
+    annotations: {}
     replicas: 1
     # concurrency: 4
     env: []
@@ -928,6 +944,7 @@ sentry:
 
   metricsConsumer:
     enabled: true
+    annotations: {}
     replicas: 1
     # concurrency: 4
     env: []
@@ -966,6 +983,7 @@ sentry:
 
   subscriptionConsumerResultsEapItems:
     enabled: true
+    annotations: {}
     replicas: 1
     env: []
     resources: {}
@@ -989,6 +1007,7 @@ sentry:
 
   subscriptionConsumerEvents:
     enabled: true
+    annotations: {}
     replicas: 1
     env: []
     resources: {}
@@ -1015,6 +1034,7 @@ sentry:
 
   subscriptionConsumerTransactions:
     enabled: true
+    annotations: {}
     replicas: 1
     env: []
     resources: {}
@@ -1041,6 +1061,7 @@ sentry:
 
   uptimeResults:
     enabled: true
+    annotations: {}
     replicas: 1
     env: []
     resources: {}
@@ -1067,6 +1088,7 @@ sentry:
 
   postProcessForwardErrors:
     enabled: true
+    annotations: {}
     replicas: 1
     env: []
     resources: {}
@@ -1093,6 +1115,7 @@ sentry:
 
   postProcessForwardTransactions:
     enabled: true
+    annotations: {}
     replicas: 1
     # processes: 1
     env: []
@@ -1120,6 +1143,7 @@ sentry:
 
   postProcessForwardIssuePlatform:
     enabled: true
+    annotations: {}
     replicas: 1
     env: []
     resources: {}
@@ -1146,6 +1170,7 @@ sentry:
 
   processSegments:
     enabled: true
+    annotations: {}
     replicas: 1
     # concurrency: 4
     env: []
@@ -1175,6 +1200,7 @@ sentry:
 
   processSpans:
     enabled: true
+    annotations: {}
     replicas: 1
     # concurrency: 4
     env: []
@@ -1204,6 +1230,7 @@ sentry:
 
   subscriptionConsumerGenericMetrics:
     enabled: true
+    annotations: {}
     replicas: 1
     # concurrency: 1
     # maxBatchSize: "3"
@@ -1232,6 +1259,7 @@ sentry:
 
   subscriptionConsumerMetrics:
     enabled: true
+    annotations: {}
     replicas: 1
     # concurrency: 1
     # maxBatchSize: "3"
@@ -1294,8 +1322,10 @@ sentry:
         ms: 1000
 
 snuba:
+  annotations: {}
   api:
     enabled: true
+    annotations: {}
     replicas: 1
     # set command to ["snuba","api"] if securityContext.runAsUser > 0
     # see: https://github.com/getsentry/snuba/issues/956
@@ -1344,6 +1374,7 @@ snuba:
 
   consumer:
     enabled: true
+    annotations: {}
     replicas: 1
     env: []
     resources: {}
@@ -1379,6 +1410,7 @@ snuba:
 
   eapItemsConsumer:
     enabled: true
+    annotations: {}
     replicas: 1
     env: []
     resources: {}
@@ -1414,6 +1446,7 @@ snuba:
 
   outcomesConsumer:
     enabled: true
+    annotations: {}
     replicas: 1
     env: []
     resources: {}
@@ -1449,6 +1482,7 @@ snuba:
 
   outcomesBillingConsumer:
     enabled: true
+    annotations: {}
     replicas: 1
     env: []
     resources: {}
@@ -1485,6 +1519,7 @@ snuba:
 
   replacer:
     enabled: true
+    annotations: {}
     replicas: 1
     env: []
     resources: {}
@@ -1506,6 +1541,7 @@ snuba:
 
   metricsConsumer:
     enabled: true
+    annotations: {}
     replicas: 1
     env: []
     resources: {}
@@ -1536,6 +1572,7 @@ snuba:
 
   subscriptionConsumerEapItems:  # should have 1 partition and only 1 consumer replica: https://github.com/getsentry/snuba/issues/5855
     enabled: true
+    annotations: {}
     replicas: 1
     env: []
     resources: {}
@@ -1559,6 +1596,7 @@ snuba:
 
   subscriptionConsumerEvents:  # should have 1 partition and only 1 consumer replica: https://github.com/getsentry/snuba/issues/5855
     enabled: true
+    annotations: {}
     replicas: 1
     env: []
     resources: {}
@@ -1582,6 +1620,7 @@ snuba:
 
   subscriptionConsumerGenericMetricsDistributions:  # should have 1 partition and only 1 consumer replica: https://github.com/getsentry/snuba/issues/5855
     enabled: true
+    annotations: {}
     replicas: 1
     env: []
     resources: {}
@@ -1605,6 +1644,7 @@ snuba:
 
   subscriptionConsumerGenericMetricsSets:  # should have 1 partition and only 1 consumer replica: https://github.com/getsentry/snuba/issues/5855
     enabled: true
+    annotations: {}
     replicas: 1
     env: []
     resources: {}
@@ -1628,6 +1668,7 @@ snuba:
 
   subscriptionConsumerGenericMetricsCounters:  # should have 1 partition and only 1 consumer replica: https://github.com/getsentry/snuba/issues/5855
     enabled: true
+    annotations: {}
     replicas: 1
     env: []
     resources: {}
@@ -1651,6 +1692,7 @@ snuba:
 
   subscriptionConsumerGenericMetricsGauges:  # should have 1 partition and only 1 consumer replica: https://github.com/getsentry/snuba/issues/5855
     enabled: true
+    annotations: {}
     replicas: 1
     env: []
     resources: {}
@@ -1674,6 +1716,7 @@ snuba:
 
   genericMetricsGaugesConsumer:
     enabled: true
+    annotations: {}
     replicas: 1
     env: []
     resources: {}
@@ -1704,6 +1747,7 @@ snuba:
 
   genericMetricsCountersConsumer:
     enabled: true
+    annotations: {}
     replicas: 1
     env: []
     resources: {}
@@ -1734,6 +1778,7 @@ snuba:
 
   genericMetricsDistributionConsumer:
     enabled: true
+    annotations: {}
     replicas: 1
     env: []
     resources: {}
@@ -1764,6 +1809,7 @@ snuba:
 
   genericMetricsSetsConsumer:
     enabled: true
+    annotations: {}
     replicas: 1
     env: []
     resources: {}
@@ -1794,6 +1840,7 @@ snuba:
 
   subscriptionConsumerMetrics:  # should have 1 partition and only 1 consumer replica: https://github.com/getsentry/snuba/issues/5855
     enabled: true
+    annotations: {}
     replicas: 1
     env: []
     resources: {}
@@ -1819,6 +1866,7 @@ snuba:
 
   subscriptionConsumerTransactions:  # should have 1 partition and only 1 consumer replica: https://github.com/getsentry/snuba/issues/5855
     enabled: true
+    annotations: {}
     replicas: 1
     env: []
     resources: {}
@@ -1845,6 +1893,7 @@ snuba:
 
   replaysConsumer:
     enabled: true
+    annotations: {}
     replicas: 1
     env: []
     resources: {}
@@ -1881,6 +1930,7 @@ snuba:
 
   transactionsConsumer:
     enabled: true
+    annotations: {}
     replicas: 1
     env: []
     resources: {}
@@ -1915,6 +1965,7 @@ snuba:
     #       medium: Memory
 
   profilingProfilesConsumer:
+    annotations: {}
     replicas: 1
     env: []
     resources: {}
@@ -1950,6 +2001,7 @@ snuba:
     #       medium: Memory
 
   profilingFunctionsConsumer:
+    annotations: {}
     replicas: 1
     env: []
     resources: {}
@@ -1984,6 +2036,7 @@ snuba:
     #       medium: Memory
 
   profilingChunksConsumer:
+    annotations: {}
     replicas: 1
     env: []
     resources: {}
@@ -2019,6 +2072,7 @@ snuba:
 
   issueOccurrenceConsumer:
     enabled: true
+    annotations: {}
     replicas: 1
     env: []
     resources: {}
@@ -2054,6 +2108,7 @@ snuba:
 
   groupAttributesConsumer:
     enabled: true
+    annotations: {}
     replicas: 1
     env: []
     resources: {}
@@ -2272,6 +2327,7 @@ mail:
 symbolicator:
   enabled: false
   api:
+    annotations: {}
     cleaner:
       enabled: true
       repeat: "1h"
@@ -3373,6 +3429,7 @@ metrics:
   podLabels: {}
   service:
     type: ClusterIP
+    annotations: {}
     labels: {}
 
   image:
