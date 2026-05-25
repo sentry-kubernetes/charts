@@ -33,9 +33,9 @@
 {{- end -}}
 
 {{- define "dbCheck.image" -}}
-{{- default "subfuzion/netcat" .Values.hooks.dbCheck.image.repository -}}
+{{- default "busybox" .Values.hooks.dbCheck.image.repository -}}
 :
-{{- default "latest" .Values.hooks.dbCheck.image.tag -}}
+{{- default "1.38.0" .Values.hooks.dbCheck.image.tag -}}
 {{- end -}}
 
 {{- define "vroom.image" -}}

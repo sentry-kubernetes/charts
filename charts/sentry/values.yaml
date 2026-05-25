@@ -2179,8 +2179,8 @@ hooks:
   dbCheck:
     enabled: true
     image:
-      # repository: subfuzion/netcat
-      # tag: latest
+      # repository: busybox
+      # tag: 1.38.0
       # pullPolicy: IfNotPresent
       imagePullSecrets: []
     env: []
