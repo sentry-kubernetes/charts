@@ -90,13 +90,6 @@ If release name contains chart name it will be used as a full name.
 
 
 {{/*
-Get KubeVersion removing pre-release information.
-*/}}
-{{- define "sentry.kubeVersion" -}}
-  {{- default .Capabilities.KubeVersion.Version (regexFind "v[0-9]+\\.[0-9]+\\.[0-9]+" .Capabilities.KubeVersion.Version) -}}
-{{- end -}}
-
-{{/*
 Resolve ingress controller style for path rules.
 */}}
 {{- define "sentry.ingress.controller" -}}
@@ -169,18 +162,6 @@ Set postgres host
 {{ required "A valid .Values.externalPostgresql.host is required" .Values.externalPostgresql.host }}
 {{- end -}}
 {{- end -}}
-
-{{/*
-Set postgres secret
-*/}}
-{{- define "sentry.postgresql.secret" -}}
-{{- if .Values.postgresql.enabled -}}
-{{- template "sentry.postgresql.fullname" . -}}
-{{- else -}}
-{{- template "sentry.fullname" . -}}
-{{- end -}}
-{{- end -}}
-
 {{/*
 Set postgres port
 */}}
@@ -224,18 +205,6 @@ Set redis host
 {{ required "A valid .Values.externalRedis.host is required" .Values.externalRedis.host }}
 {{- end -}}
 {{- end -}}
-
-{{/*
-Set redis secret
-*/}}
-{{- define "sentry.redis.secret" -}}
-{{- if .Values.redis.enabled -}}
-{{- template "sentry.redis.fullname" . -}}
-{{- else -}}
-{{- template "sentry.fullname" . -}}
-{{- end -}}
-{{- end -}}
-
 {{/*
 Set redis port
 */}}
@@ -296,18 +265,6 @@ Build full Redis URI, including creds and db when available
 {{ printf "%s://:%s@%s:%s/%s" $redisProto $password $redisHost $redisPort $redisDb }}
 {{- else -}}
 {{ printf "%s://%s:%s/%s" $redisProto $redisHost $redisPort $redisDb }}
-{{- end -}}
-{{- end -}}
-
-
-{{/*
-Create the name of the service account to use
-*/}}
-{{- define "sentry.serviceAccountName" -}}
-{{- if .Values.serviceAccount.create -}}
-    {{ default (include "sentry.fullname" .) .Values.serviceAccount.name }}
-{{- else -}}
-    {{ default "default" .Values.serviceAccount.name }}
 {{- end -}}
 {{- end -}}
 
