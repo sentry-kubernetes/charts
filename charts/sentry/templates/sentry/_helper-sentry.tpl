@@ -464,6 +464,17 @@ sentry.conf.py: |-
               "organizations:ourlogs-stats",
               "organizations:ourlogs-replay-ui",
 
+              # Metrics (Trace Metrics)
+              "organizations:tracemetrics-enabled",
+              "organizations:tracemetrics-alerts",
+              "organizations:tracemetrics-ingestion",
+              "organizations:tracemetrics-equations-in-alerts",
+              "organizations:tracemetrics-equations-in-explore",
+              "organizations:tracemetrics-multi-metric-selection-in-dashboards",
+              "organizations:tracemetrics-units-ui",
+              "organizations:tracemetrics-stats-bytes-ui",
+              "organizations:tracemetrics-pii-scrubbing-ui",
+
               # Chart-only / misc
               "organizations:related-events",
               "organizations:reprocessing-v2",

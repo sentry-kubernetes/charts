@@ -2,6 +2,48 @@
 
 The changelog below refers to the main `sentry` chart only.
 
+## Upgrading to Chart 31.7.0
+
+Chart `31.7.0` adds configuration for [Sentry 26.5.0](https://github.com/getsentry/self-hosted/releases/tag/26.5.0) that was not included when `appVersion` was bumped in `31.4.0`:
+
+- **Launchpad taskworker** (default `feature-complete` profile): new `launchpad-taskworker` Deployment and `LAUNCHPAD_RPC_SHARED_SECRET` on Sentry pods.
+- **Trace Metrics**: related `organizations:tracemetrics-*` feature flags are enabled in generated `sentry.conf.py`.
+
+### Launchpad RPC shared secret
+
+When Launchpad is enabled (`launchpadTaskWorker.enabled=true`, the default with `feature-complete`), the chart needs a shared RPC secret. Choose **one** of:
+
+| Situation                                              | Action                                                                                                                                                                      |
+| ------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Fresh install**, no preference                       | Do nothing — the chart creates `<release-fullname>-launchpad-secret` via a `pre-install` hook.                                                                              |
+| **Production**                                         | Set `launchpadTaskWorker.existingSecret` to a Secret you manage (recommended).                                                                                              |
+| **Upgrade** from a chart version **without** Launchpad | Create the secret (or set `existingSecret` / `rpcSharedSecret`) **before** `helm upgrade`. The hook does not run on upgrade; `helm upgrade` fails if the secret is missing. |
+| **Upgrade** from `31.7.0+` on the same release         | Reuses the hook-created secret from the first install.                                                                                                                      |
+| **Do not need Launchpad**                              | Set `launchpadTaskWorker.enabled=false`, or use the `errors-only` profile.                                                                                                  |
+
+Example — create a secret before upgrading an existing release:
+
+```
+# Replace RELEASE-FULLNAME with your release fullname (e.g. sentry or my-release-sentry).
+# Secret name must be RELEASE-FULLNAME-launchpad-secret unless you set launchpadTaskWorker.existingSecret.
+kubectl create secret generic RELEASE-FULLNAME-launchpad-secret \
+  --from-literal=rpc-shared-secret='CHANGE_ME'
+
+helm upgrade RELEASE sentry/sentry -f values.yaml
+```
+
+Example — use your own Secret name:
+
+```
+kubectl create secret generic sentry-launchpad-rpc-secret \
+  --from-literal=rpc-shared-secret='CHANGE_ME'
+
+helm upgrade sentry sentry/sentry -f values.yaml \
+  --set launchpadTaskWorker.existingSecret=sentry-launchpad-rpc-secret
+```
+
+See `charts/sentry/README.md` (Configuration) and `values.yaml` under `launchpadTaskWorker:` for all options.
+
 ## Upgrading to Chart 31.x.x
 
 > [!CAUTION]
@@ -30,6 +72,7 @@ helm upgrade sentry sentry/sentry \
 The `externalKafka.provisioning.image` block has been removed and replaced with `externalKafka.provisioning.topicctl`. Users who were using external Kafka provisioning must update their `values.yaml`:
 
 **Before:**
+
 ```yaml
 externalKafka:
   provisioning:
@@ -39,6 +82,7 @@ externalKafka:
 ```
 
 **After:**
+
 ```yaml
 externalKafka:
   provisioning:

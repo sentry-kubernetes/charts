@@ -56,6 +56,24 @@
 {{- default .Chart.AppVersion .Values.images.taskbroker.tag -}}
 {{- end -}}
 
+{{- define "launchpad.image" -}}
+{{- default "ghcr.io/getsentry/launchpad" .Values.images.launchpad.repository -}}
+:
+{{- default .Chart.AppVersion .Values.images.launchpad.tag -}}
+{{- end -}}
+
+{{- define "launchpad.secretName" -}}
+{{- if .Values.launchpadTaskWorker.existingSecret -}}
+{{- .Values.launchpadTaskWorker.existingSecret -}}
+{{- else -}}
+{{- printf "%s-launchpad-secret" (include "sentry.fullname" .) -}}
+{{- end -}}
+{{- end -}}
+
+{{- define "launchpad.enabled" -}}
+{{- if and (has "feature-complete" .Values.profiles) .Values.launchpadTaskWorker.enabled .Values.sentry.taskBroker.enabled -}}true{{- end -}}
+{{- end -}}
+
 {{/*
 Expand the name of the chart.
 */}}
@@ -673,6 +691,31 @@ See: https://github.com/sentry-kubernetes/charts/issues/2088
 {{- end }}
 {{- end -}}
 
+{{- define "launchpadTaskWorker.env" -}}
+- name: LAUNCHPAD_WORKER_RPC_HOST
+  value: {{ printf "%s-taskbroker-default:50051" (include "sentry.fullname" .) | quote }}
+- name: LAUNCHPAD_WORKER_CONCURRENCY
+  value: {{ .Values.launchpadTaskWorker.concurrency | quote }}
+- name: LAUNCHPAD_WORKER_HEALTH_CHECK_FILE_PATH
+  value: "/tmp/health.txt"
+- name: KAFKA_BOOTSTRAP_SERVERS
+  value: {{ include "sentry.kafka.bootstrap_servers_string" . | quote }}
+- name: SENTRY_BASE_URL
+  value: {{ printf "http://%s-web:%s" (include "sentry.fullname" .) (include "sentry.port" .) | quote }}
+- name: LAUNCHPAD_ENV
+  value: "self-hosted"
+{{- if .Values.launchpadTaskWorker.rpcSharedSecret }}
+- name: LAUNCHPAD_RPC_SHARED_SECRET
+  value: {{ .Values.launchpadTaskWorker.rpcSharedSecret | quote }}
+{{- else }}
+- name: LAUNCHPAD_RPC_SHARED_SECRET
+  valueFrom:
+    secretKeyRef:
+      name: {{ include "launchpad.secretName" . }}
+      key: {{ default "rpc-shared-secret" .Values.launchpadTaskWorker.existingSecretKey }}
+{{- end }}
+{{- end -}}
+
 {{- define "uptimeChecker.env" -}}
 - name: UPTIME_CHECKER_RESULTS_KAFKA_CLUSTER
   value: {{ include "sentry.kafka.bootstrap_servers_string" . | quote }}
@@ -1075,6 +1118,22 @@ Set JS SDK Loader assets setup
 {{- if .Values.sentry.jsSdk.setupAssets }}
 - name: SETUP_JS_SDK_ASSETS
   value: "1"
+{{- end }}
+
+{{/*
+Launchpad RPC shared secret (required by Sentry web and launchpad-taskworker)
+*/}}
+{{- if eq (include "launchpad.enabled" .) "true" }}
+{{- if .Values.launchpadTaskWorker.rpcSharedSecret }}
+- name: LAUNCHPAD_RPC_SHARED_SECRET
+  value: {{ .Values.launchpadTaskWorker.rpcSharedSecret | quote }}
+{{- else }}
+- name: LAUNCHPAD_RPC_SHARED_SECRET
+  valueFrom:
+    secretKeyRef:
+      name: {{ include "launchpad.secretName" . }}
+      key: {{ default "rpc-shared-secret" .Values.launchpadTaskWorker.existingSecretKey }}
+{{- end }}
 {{- end }}
 {{- end -}}
 

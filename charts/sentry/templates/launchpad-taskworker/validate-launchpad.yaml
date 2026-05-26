@@ -1,0 +1,13 @@
+{{- if eq (include "launchpad.enabled" .) "true" }}
+{{- if .Values.launchpadTaskWorker.rpcSharedSecret }}
+{{- else if .Values.launchpadTaskWorker.existingSecret }}
+{{- else }}
+{{- $secretName := include "launchpad.secretName" . }}
+{{- $secret := lookup "v1" "Secret" .Release.Namespace $secretName }}
+{{- if not $secret }}
+{{- if not .Release.IsInstall }}
+{{- fail (printf "\n\nERROR: Launchpad RPC shared secret %q was not found in namespace %q.\nWhen upgrading to a release with Launchpad enabled, create the secret or set ONE of:\n  - launchpadTaskWorker.existingSecret (recommended)\n  - launchpadTaskWorker.rpcSharedSecret (NOT recommended for production)\nOn fresh installs the chart creates %q automatically via a pre-install hook.\nSee values.yaml under launchpadTaskWorker: and README.md.\n" $secretName .Release.Namespace $secretName) }}
+{{- end }}
+{{- end }}
+{{- end }}
+{{- end }}

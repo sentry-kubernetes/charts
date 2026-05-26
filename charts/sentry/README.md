@@ -186,6 +186,7 @@ Note: this table is incomplete, so have a look at the values.yaml in case you mi
 | images.snuba.imagePullSecrets | list | `[]` |  |
 | images.symbolicator.imagePullSecrets | list | `[]` |  |
 | images.vroom.imagePullSecrets | list | `[]` |  |
+| images.launchpad.imagePullSecrets | list | `[]` |  |
 | ingress.annotations | object | `{"nginx.ingress.kubernetes.io/use-regex":"true","nginx.ingress.kubernetes.io/proxy-buffers-number":"4","nginx.ingress.kubernetes.io/proxy-buffer-size":"128k","nginx.ingress.kubernetes.io/proxy-busy-buffers-size":"256k"}` | Default ingress annotations (override per controller) |
 | ingress.enabled | bool | `false` |  |
 | ingress.ingressClassName | string | `"nginx"` |  |
@@ -816,6 +817,23 @@ Note: this table is incomplete, so have a look at the values.yaml in case you mi
 | sentry.taskWorker.volumeMounts | list | `[]` | |
 | sentry.taskWorker.volumes | list | `[]` | |
 | sentry.taskWorker.workers | list | (see `values.yaml`) | One task worker Deployment per item (`name`, `brokerName`, `brokerReplicas`, `replicas`, `concurrency`, optional `resources` merged with `sentry.taskWorker.resources`, optional `autoscaling` overriding `sentry.taskWorker.autoscaling`). |
+| launchpadTaskWorker.enabled | bool | `true` | Deploy Launchpad taskworker (mobile build processing). Requires `feature-complete` profile and `sentry.taskBroker.enabled`. |
+| launchpadTaskWorker.replicas | int | `1` |  |
+| launchpadTaskWorker.concurrency | int | `4` | Parallel Launchpad worker processes (`LAUNCHPAD_WORKER_CONCURRENCY`). |
+| launchpadTaskWorker.rpcSharedSecret | string | `""` | Plaintext Launchpad RPC shared secret. If unset, the chart uses `launchpadTaskWorker.existingSecret` or auto-creates `<release>-launchpad-secret` on install. Not recommended for production. |
+| launchpadTaskWorker.existingSecret | string | `""` | Existing Secret name containing the Launchpad RPC shared secret (recommended for production). |
+| launchpadTaskWorker.existingSecretKey | string | `"rpc-shared-secret"` | Key in `launchpadTaskWorker.existingSecret` for the RPC shared secret. |
+| launchpadTaskWorker.env | list | `[]` | Extra environment variables for the Launchpad taskworker container. |
+| launchpadTaskWorker.resources | object | `{}` |  |
+| launchpadTaskWorker.affinity | object | `{}` |  |
+| launchpadTaskWorker.nodeSelector | object | `{}` |  |
+| launchpadTaskWorker.securityContext | object | `{}` |  |
+| launchpadTaskWorker.containerSecurityContext | object | `{}` |  |
+| launchpadTaskWorker.tolerations | list | `[]` |  |
+| launchpadTaskWorker.podLabels | object | `{}` |  |
+| launchpadTaskWorker.livenessProbe.initialDelaySeconds | int | `30` |  |
+| launchpadTaskWorker.livenessProbe.periodSeconds | int | `10` |  |
+| launchpadTaskWorker.livenessProbe.timeoutSeconds | int | `5` |  |
 | sentry.web.affinity | object | `{}` |  |
 | sentry.web.autoscaling.enabled | bool | `false` |  |
 | sentry.web.autoscaling.maxReplicas | int | `5` |  |
