@@ -86,8 +86,10 @@ spec:
       - name: launchpad-taskworker
         image: "{{ template "launchpad.image" . }}"
         imagePullPolicy: {{ default "IfNotPresent" .Values.images.launchpad.pullPolicy }}
-        command: ["worker"]
-        args: ["--verbose"]
+        command: ["launchpad"]
+        args: 
+        - worker
+        - --verbose
         env:
 {{- include "launchpadTaskWorker.env" . | nindent 8 }}
 {{- if .Values.launchpadTaskWorker.env }}
