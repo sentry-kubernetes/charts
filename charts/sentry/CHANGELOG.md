@@ -1,5 +1,18 @@
 # Changelog
 
+## [31.6.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v31.5.1...sentry-v31.6.0) (2026-05-26)
+
+
+### Features
+
+* replace netcat image with busybox for dbCheck hooks ([#2208](https://github.com/sentry-kubernetes/charts/issues/2208)) ([f07bcdc](https://github.com/sentry-kubernetes/charts/commit/f07bcdc150b4ff8392f3a9a07101bc233c913c11))
+
+
+### Bug Fixes
+
+* add missing annotations defaults to values.yaml for all components ([#2211](https://github.com/sentry-kubernetes/charts/issues/2211)) ([186e77a](https://github.com/sentry-kubernetes/charts/commit/186e77aa814cfc6436df6c313793215979aab3f0))
+* use hooks.snubaMigrate instead of hooks.snubaInit in snuba-migrate job ([#2210](https://github.com/sentry-kubernetes/charts/issues/2210)) ([01ae3d6](https://github.com/sentry-kubernetes/charts/commit/01ae3d6850e8acefd359757b07c8f8560d651875))
+
 ## [31.5.1](https://github.com/sentry-kubernetes/charts/compare/sentry-v31.5.0...sentry-v31.5.1) (2026-05-24)
 
 
