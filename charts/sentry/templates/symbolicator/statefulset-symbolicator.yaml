@@ -155,6 +155,8 @@ spec:
         - name: sentry-google-cloud-key
           mountPath: /var/run/secrets/google
         {{ end }}
+        resources:
+{{ toYaml .Values.symbolicator.api.cleaner.resources | indent 12 }}
       {{- end }}
 {{- if .Values.symbolicator.api.sidecars }}
 {{ toYaml .Values.symbolicator.api.sidecars | indent 6 }}
