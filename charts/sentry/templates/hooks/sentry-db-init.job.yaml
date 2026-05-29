@@ -23,18 +23,12 @@ spec:
       name: {{ template "sentry.fullname" . }}-db-init
       annotations:
         checksum/configmap.yaml: {{ include "sentry.config" . | sha256sum }}
-        {{- if .Values.sentry.web.annotations }}
-{{ toYaml .Values.sentry.web.annotations | indent 8 }}
-        {{- end }}
         {{- if .Values.hooks.dbInit.podAnnotations }}
 {{ toYaml .Values.hooks.dbInit.podAnnotations | indent 8 }}
         {{- end }}
       labels:
         app: sentry
         release: "{{ .Release.Name }}"
-        {{- if .Values.sentry.web.podLabels }}
-{{ toYaml .Values.sentry.web.podLabels | indent 8 }}
-        {{- end }}
         {{- if .Values.hooks.dbInit.podLabels }}
 {{ toYaml .Values.hooks.dbInit.podLabels | indent 8 }}
         {{- end }}
