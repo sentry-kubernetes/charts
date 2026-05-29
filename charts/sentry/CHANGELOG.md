@@ -1,5 +1,19 @@
 # Changelog
 
+## [31.7.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v31.6.0...sentry-v31.7.0) (2026-05-29)
+
+
+### Features
+
+* add TLS settings support for Kafka provisioning topicctl ([#2216](https://github.com/sentry-kubernetes/charts/issues/2216)) ([099d344](https://github.com/sentry-kubernetes/charts/commit/099d344892dcfe1cddc4680a07122f6d600a9016))
+* configuration changes for sentry v26.5.0 ([#2212](https://github.com/sentry-kubernetes/charts/issues/2212)) ([3631380](https://github.com/sentry-kubernetes/charts/commit/36313806aeadec0737f155204c55bfa8b7f59729))
+* enable cache (memcached) by default ([#2219](https://github.com/sentry-kubernetes/charts/issues/2219)) ([f451c66](https://github.com/sentry-kubernetes/charts/commit/f451c664e22d59185035317811b19685c7cd8866))
+
+
+### Bug Fixes
+
+* symbolicator cleaner sidecar ignores resource definitions ([#2218](https://github.com/sentry-kubernetes/charts/issues/2218)) ([ddc607b](https://github.com/sentry-kubernetes/charts/commit/ddc607b870d494818b345f76aa5f0f7ecb24e0db))
+
 ## [31.6.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v31.5.1...sentry-v31.6.0) (2026-05-26)
 
 
