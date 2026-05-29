@@ -3,8 +3,3 @@
 
 {{ template "sentry.kafka.bootstrap_servers_string" . }}
 {{ end -}}
-
-{{- if .Values.sourcemaps.enabled }}
-WARNING: sourcemaps.enabled is deprecated and will be removed in a future release.
-         Use cache.enabled instead.
-{{- end }}
