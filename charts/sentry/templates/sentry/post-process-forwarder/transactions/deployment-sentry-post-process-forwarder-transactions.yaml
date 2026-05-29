@@ -115,16 +115,7 @@ spec:
           - "--processes"
           - "{{ .Values.sentry.postProcessForwardTransactions.processes }}"
           {{- end }}
-        {{- if .Values.sentry.postProcessForwardTransactions.livenessProbe.enabled }}
-        livenessProbe:
-          exec:
-            command:
-              - rm
-              - /tmp/health.txt
-          initialDelaySeconds: {{ .Values.sentry.postProcessForwardTransactions.livenessProbe.initialDelaySeconds }}
-          periodSeconds: {{ .Values.sentry.postProcessForwardTransactions.livenessProbe.periodSeconds }}
-          timeoutSeconds: {{ .Values.sentry.postProcessForwardTransactions.livenessProbe.timeoutSeconds }}
-        {{- end }}
+        {{- include "sentry.livenessProbe.execHealthcheckFile" (dict "livenessProbe" .Values.sentry.postProcessForwardTransactions.livenessProbe "healthcheckFile" "/tmp/health.txt") | nindent 8 }}
         env:
 {{ include "sentry.env" . | indent 8 }}
 {{ include "sentry.env.nodestore-s3" . | indent 8 }}

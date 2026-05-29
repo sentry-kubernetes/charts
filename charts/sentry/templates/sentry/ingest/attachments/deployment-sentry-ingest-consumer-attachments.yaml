@@ -129,16 +129,7 @@ spec:
           - "--max-batch-time-ms"
           - "{{ .Values.sentry.ingestConsumerAttachments.maxBatchTimeMs }}"
           {{- end }}
-        {{- if .Values.sentry.ingestConsumerAttachments.livenessProbe.enabled }}
-        livenessProbe:
-          exec:
-            command:
-              - rm
-              - /tmp/health.txt
-          initialDelaySeconds: {{ .Values.sentry.ingestConsumerAttachments.livenessProbe.initialDelaySeconds }}
-          periodSeconds: {{ .Values.sentry.ingestConsumerAttachments.livenessProbe.periodSeconds }}
-          timeoutSeconds: {{ .Values.sentry.ingestConsumerAttachments.livenessProbe.timeoutSeconds }}
-        {{- end }}
+        {{- include "sentry.livenessProbe.execHealthcheckFile" (dict "livenessProbe" .Values.sentry.ingestConsumerAttachments.livenessProbe "healthcheckFile" "/tmp/health.txt") | nindent 8 }}
         env:
         - name: C_FORCE_ROOT
           value: "true"

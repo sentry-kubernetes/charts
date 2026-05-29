@@ -120,16 +120,7 @@ spec:
           - "--max-batch-time-ms"
           - "{{ .Values.sentry.processSegments.maxBatchTimeMs }}"
           {{- end }}
-        {{- if .Values.sentry.processSegments.livenessProbe.enabled }}
-        livenessProbe:
-          exec:
-            command:
-              - rm
-              - /tmp/health.txt
-          initialDelaySeconds: {{ .Values.sentry.processSegments.livenessProbe.initialDelaySeconds }}
-          periodSeconds: {{ .Values.sentry.processSegments.livenessProbe.periodSeconds }}
-          timeoutSeconds: {{ .Values.sentry.processSegments.livenessProbe.timeoutSeconds }}
-        {{- end }}
+        {{- include "sentry.livenessProbe.execHealthcheckFile" (dict "livenessProbe" .Values.sentry.processSegments.livenessProbe "healthcheckFile" "/tmp/health.txt") | nindent 8 }}
         env:
 {{ include "sentry.env" . | indent 8 }}
 {{ include "sentry.env.nodestore-s3" . | indent 8 }}

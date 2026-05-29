@@ -97,16 +97,7 @@ spec:
           - "--healthcheck-file-path"
           - "/tmp/health.txt"
           {{- end }}
-        {{- if .Values.sentry.subscriptionConsumerResultsEapItems.livenessProbe.enabled }}
-        livenessProbe:
-          exec:
-            command:
-              - rm
-              - /tmp/health.txt
-          initialDelaySeconds: {{ .Values.sentry.subscriptionConsumerResultsEapItems.livenessProbe.initialDelaySeconds }}
-          periodSeconds: {{ .Values.sentry.subscriptionConsumerResultsEapItems.livenessProbe.periodSeconds }}
-          timeoutSeconds: {{ .Values.sentry.subscriptionConsumerResultsEapItems.livenessProbe.timeoutSeconds }}
-        {{- end }}
+        {{- include "sentry.livenessProbe.execHealthcheckFile" (dict "livenessProbe" .Values.sentry.subscriptionConsumerResultsEapItems.livenessProbe "healthcheckFile" "/tmp/health.txt") | nindent 8 }}
         env:
 {{ include "sentry.env" . | indent 8 }}
 {{ include "sentry.env.nodestore-s3" . | indent 8 }}

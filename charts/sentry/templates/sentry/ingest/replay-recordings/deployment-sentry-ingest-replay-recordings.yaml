@@ -111,16 +111,7 @@ spec:
           - "--max-poll-interval-ms"
           - "{{ .Values.sentry.ingestReplayRecordings.maxPollIntervalMs }}"
           {{- end }}
-        {{- if .Values.sentry.ingestReplayRecordings.livenessProbe.enabled }}
-        livenessProbe:
-          exec:
-            command:
-              - rm
-              - /tmp/health.txt
-          initialDelaySeconds: {{ .Values.sentry.ingestReplayRecordings.livenessProbe.initialDelaySeconds }}
-          periodSeconds: {{ .Values.sentry.ingestReplayRecordings.livenessProbe.periodSeconds }}
-          timeoutSeconds: {{ .Values.sentry.ingestReplayRecordings.livenessProbe.timeoutSeconds }}
-        {{- end }}
+        {{- include "sentry.livenessProbe.execHealthcheckFile" (dict "livenessProbe" .Values.sentry.ingestReplayRecordings.livenessProbe "healthcheckFile" "/tmp/health.txt") | nindent 8 }}
         env:
         - name: C_FORCE_ROOT
           value: "true"

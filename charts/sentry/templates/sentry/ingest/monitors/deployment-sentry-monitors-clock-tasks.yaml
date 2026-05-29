@@ -106,16 +106,7 @@ spec:
           - "--healthcheck-file-path"
           - "/tmp/health.txt"
           {{- end }}
-        {{- if .Values.sentry.monitorsClockTasks.livenessProbe.enabled }}
-        livenessProbe:
-          exec:
-            command:
-              - rm
-              - /tmp/health.txt
-          initialDelaySeconds: {{ .Values.sentry.monitorsClockTasks.livenessProbe.initialDelaySeconds }}
-          periodSeconds: {{ .Values.sentry.monitorsClockTasks.livenessProbe.periodSeconds }}
-          timeoutSeconds: {{ .Values.sentry.monitorsClockTasks.livenessProbe.timeoutSeconds }}
-        {{- end }}
+        {{- include "sentry.livenessProbe.execHealthcheckFile" (dict "livenessProbe" .Values.sentry.monitorsClockTasks.livenessProbe "healthcheckFile" "/tmp/health.txt") | nindent 8 }}
         env:
         - name: C_FORCE_ROOT
           value: "true"

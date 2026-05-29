@@ -134,16 +134,7 @@ spec:
           - "--max-poll-interval-ms"
           - "{{ .Values.snuba.replaysConsumer.maxPollIntervalMs }}"
           {{- end }}
-        {{- if .Values.snuba.replaysConsumer.livenessProbe.enabled }}
-        livenessProbe:
-          exec:
-            command:
-              - rm
-              - /tmp/health.txt
-          initialDelaySeconds: {{ .Values.snuba.replaysConsumer.livenessProbe.initialDelaySeconds }}
-          periodSeconds: {{ .Values.snuba.replaysConsumer.livenessProbe.periodSeconds }}
-          timeoutSeconds: {{ .Values.snuba.replaysConsumer.livenessProbe.timeoutSeconds }}
-        {{- end }}
+        {{- include "sentry.livenessProbe.execHealthcheckFile" (dict "livenessProbe" .Values.snuba.replaysConsumer.livenessProbe "healthcheckFile" "/tmp/health.txt") | nindent 8 }}
         ports:
         - containerPort: {{ template "snuba.port" }}
         env:

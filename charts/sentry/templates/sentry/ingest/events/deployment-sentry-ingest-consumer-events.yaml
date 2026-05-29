@@ -129,16 +129,7 @@ spec:
           - "--processes"
           - "{{ .Values.sentry.ingestConsumerEvents.concurrency }}"
           {{- end }}
-        {{- if .Values.sentry.ingestConsumerEvents.livenessProbe.enabled }}
-        livenessProbe:
-          exec:
-            command:
-              - rm
-              - /tmp/health.txt
-          initialDelaySeconds: {{ .Values.sentry.ingestConsumerEvents.livenessProbe.initialDelaySeconds }}
-          periodSeconds: {{ .Values.sentry.ingestConsumerEvents.livenessProbe.periodSeconds }}
-          timeoutSeconds: {{ .Values.sentry.ingestConsumerEvents.livenessProbe.timeoutSeconds }}
-        {{- end }}
+        {{- include "sentry.livenessProbe.execHealthcheckFile" (dict "livenessProbe" .Values.sentry.ingestConsumerEvents.livenessProbe "healthcheckFile" "/tmp/health.txt") | nindent 8 }}
         env:
         - name: C_FORCE_ROOT
           value: "true"
