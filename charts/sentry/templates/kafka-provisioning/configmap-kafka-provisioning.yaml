@@ -71,6 +71,20 @@ data:
       {{- if or (eq $securityProtocol "SSL") (eq $securityProtocol "SASL_SSL") }}
       tls:
         enabled: true
+        {{- with $topicctl.tls }}
+        {{- if .caCertPath }}
+        caCertPath: {{ .caCertPath | quote }}
+        {{- end }}
+        {{- if .certPath }}
+        certPath: {{ .certPath | quote }}
+        {{- end }}
+        {{- if .keyPath }}
+        keyPath: {{ .keyPath | quote }}
+        {{- end }}
+        {{- if .skipVerify }}
+        skipVerify: true
+        {{- end }}
+        {{- end }}
       {{- end }}
       {{- if $saslEnabled }}
       sasl:

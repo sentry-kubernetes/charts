@@ -3284,6 +3284,22 @@ externalKafka:
       environment: "default"
       region: "default"
       placementStrategy: "any"
+      # TLS settings for topicctl cluster config (optional).
+      # Before using, create a ConfigMap with the CA bundle:
+      #   kubectl create configmap kafka-ca-bundle --from-file=ca-certificates.crt=./path/to/ca.crt
+      # tls:
+      #   caCertPath: /etc/ssl/custom-certs/ca-certificates.crt
+      #   # certPath: ""
+      #   # keyPath: ""
+      #   # skipVerify: false
+    # volumes:
+    #   - name: kafka-ca
+    #     configMap:
+    #       name: kafka-ca-bundle
+    # volumeMounts:
+    #   - name: kafka-ca
+    #     mountPath: /etc/ssl/custom-certs
+    #     readOnly: true
     # topics: []  # If empty, uses kafka.provisioning.topics
     # topicOverrides allows overriding partitions/config for specific topics without re-declaring all topics.
     # Keys must match topic names from kafka.provisioning.topics (or externalKafka.provisioning.topics if set).
