@@ -164,13 +164,6 @@ launchpadTaskWorker:
   annotations: {}
   replicas: 1
   concurrency: 4
-  ## Optional: set `rpcSharedSecret` or `existingSecret` to supply the RPC shared secret yourself.
-  ## If neither is set, the chart creates `<release>-launchpad-secret` on first install (pre-install hook).
-  ## Upgrades require that secret to already exist, or you must set one of the options below.
-  ## `existingSecret` is strongly recommended for production.
-  rpcSharedSecret: ""
-  # existingSecret: sentry-launchpad-rpc-secret
-  # existingSecretKey: rpc-shared-secret
   env: []
   resources: {}
   affinity: {}

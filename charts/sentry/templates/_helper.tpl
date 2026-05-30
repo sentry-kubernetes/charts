@@ -63,11 +63,7 @@
 {{- end -}}
 
 {{- define "launchpad.secretName" -}}
-{{- if .Values.launchpadTaskWorker.existingSecret -}}
-{{- .Values.launchpadTaskWorker.existingSecret -}}
-{{- else -}}
 {{- printf "%s-launchpad-secret" (include "sentry.fullname" .) -}}
-{{- end -}}
 {{- end -}}
 
 {{- define "launchpad.enabled" -}}
@@ -704,16 +700,11 @@ See: https://github.com/sentry-kubernetes/charts/issues/2088
   value: {{ printf "http://%s-web:%s" (include "sentry.fullname" .) (include "sentry.port" .) | quote }}
 - name: LAUNCHPAD_ENV
   value: "self-hosted"
-{{- if .Values.launchpadTaskWorker.rpcSharedSecret }}
-- name: LAUNCHPAD_RPC_SHARED_SECRET
-  value: {{ .Values.launchpadTaskWorker.rpcSharedSecret | quote }}
-{{- else }}
 - name: LAUNCHPAD_RPC_SHARED_SECRET
   valueFrom:
     secretKeyRef:
       name: {{ include "launchpad.secretName" . }}
-      key: {{ default "rpc-shared-secret" .Values.launchpadTaskWorker.existingSecretKey }}
-{{- end }}
+      key: rpc-shared-secret
 {{- end -}}
 
 {{- define "uptimeChecker.env" -}}
@@ -1124,16 +1115,11 @@ Set JS SDK Loader assets setup
 Launchpad RPC shared secret (required by Sentry web and launchpad-taskworker)
 */}}
 {{- if eq (include "launchpad.enabled" .) "true" }}
-{{- if .Values.launchpadTaskWorker.rpcSharedSecret }}
-- name: LAUNCHPAD_RPC_SHARED_SECRET
-  value: {{ .Values.launchpadTaskWorker.rpcSharedSecret | quote }}
-{{- else }}
 - name: LAUNCHPAD_RPC_SHARED_SECRET
   valueFrom:
     secretKeyRef:
       name: {{ include "launchpad.secretName" . }}
-      key: {{ default "rpc-shared-secret" .Values.launchpadTaskWorker.existingSecretKey }}
-{{- end }}
+      key: rpc-shared-secret
 {{- end }}
 {{- end -}}
 

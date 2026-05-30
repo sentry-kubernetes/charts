@@ -11,38 +11,9 @@ Chart `31.7.0` adds configuration for [Sentry 26.5.0](https://github.com/getsent
 
 ### Launchpad RPC shared secret
 
-When Launchpad is enabled (`launchpadTaskWorker.enabled=true`, the default with `feature-complete`), the chart needs a shared RPC secret. Choose **one** of:
+When Launchpad is enabled (`launchpadTaskWorker.enabled=true`, the default with `feature-complete`), the chart automatically creates a shared RPC secret (`<release-fullname>-launchpad-secret`) via a Helm hook on both install and upgrade. The secret is only created if it does not already exist, so existing secrets are preserved.
 
-| Situation                                              | Action                                                                                                                                                                      |
-| ------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Fresh install**, no preference                       | Do nothing — the chart creates `<release-fullname>-launchpad-secret` via a `pre-install` hook.                                                                              |
-| **Production**                                         | Set `launchpadTaskWorker.existingSecret` to a Secret you manage (recommended).                                                                                              |
-| **Upgrade** from a chart version **without** Launchpad | Create the secret (or set `existingSecret` / `rpcSharedSecret`) **before** `helm upgrade`. The hook does not run on upgrade; `helm upgrade` fails if the secret is missing. |
-| **Upgrade** from `31.7.0+` on the same release         | Reuses the hook-created secret from the first install.                                                                                                                      |
-| **Do not need Launchpad**                              | Set `launchpadTaskWorker.enabled=false`, or use the `errors-only` profile.                                                                                                  |
-
-Example — create a secret before upgrading an existing release:
-
-```
-# Replace RELEASE-FULLNAME with your release fullname (e.g. sentry or my-release-sentry).
-# Secret name must be RELEASE-FULLNAME-launchpad-secret unless you set launchpadTaskWorker.existingSecret.
-kubectl create secret generic RELEASE-FULLNAME-launchpad-secret \
-  --from-literal=rpc-shared-secret='CHANGE_ME'
-
-helm upgrade RELEASE sentry/sentry -f values.yaml
-```
-
-Example — use your own Secret name:
-
-```
-kubectl create secret generic sentry-launchpad-rpc-secret \
-  --from-literal=rpc-shared-secret='CHANGE_ME'
-
-helm upgrade sentry sentry/sentry -f values.yaml \
-  --set launchpadTaskWorker.existingSecret=sentry-launchpad-rpc-secret
-```
-
-See `charts/sentry/README.md` (Configuration) and `values.yaml` under `launchpadTaskWorker:` for all options.
+If you do not need Launchpad, set `launchpadTaskWorker.enabled=false`, or use the `errors-only` profile.
 
 ## Upgrading to Chart 31.x.x
 
