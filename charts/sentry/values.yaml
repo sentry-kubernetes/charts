@@ -553,8 +553,8 @@ sentry:
     # volumeMounts:
     #   - mountPath: /dev/shm
     #     name: dshm
-    # autoOffsetReset: "earliest"
-    # noStrictOffsetReset: false
+    autoOffsetReset: "earliest"
+    noStrictOffsetReset: true
 
   ingestConsumerEvents:
     enabled: true
@@ -598,8 +598,8 @@ sentry:
     # volumeMounts:
     #   - mountPath: /dev/shm
     #     name: dshm
-    # autoOffsetReset: "earliest"
-    # noStrictOffsetReset: false
+    autoOffsetReset: "earliest"
+    noStrictOffsetReset: true
 
   ingestConsumerTransactions:
     enabled: true
@@ -643,8 +643,8 @@ sentry:
     # volumeMounts:
     #   - mountPath: /dev/shm
     #     name: dshm
-    # autoOffsetReset: "earliest"
-    # noStrictOffsetReset: false
+    autoOffsetReset: "earliest"
+    noStrictOffsetReset: true
 
   ingestReplayRecordings:
     enabled: true
@@ -680,8 +680,8 @@ sentry:
     # volumeMounts:
     #   - mountPath: /dev/shm
     #     name: dshm
-    # autoOffsetReset: "earliest"
-    # noStrictOffsetReset: false
+    autoOffsetReset: "earliest"
+    noStrictOffsetReset: true
 
   ingestProfiles:
     annotations: {}
@@ -712,8 +712,8 @@ sentry:
     # volumeMounts:
     #   - mountPath: /dev/shm
     #     name: dshm
-    # autoOffsetReset: "earliest"
-    # noStrictOffsetReset: false
+    autoOffsetReset: "earliest"
+    noStrictOffsetReset: true
 
   ingestOccurrences:
     enabled: true
@@ -749,8 +749,8 @@ sentry:
     # volumeMounts:
     #   - mountPath: /dev/shm
     #     name: dshm
-    # autoOffsetReset: "earliest"
-    # noStrictOffsetReset: false
+    autoOffsetReset: "earliest"
+    noStrictOffsetReset: true
     # inputBlockSize: "1"
     # maxBatchSize: "500"
     # maxBatchTimeMs: "1000"
@@ -788,8 +788,8 @@ sentry:
     # volumeMounts:
     #   - mountPath: /dev/shm
     #     name: dshm
-    # autoOffsetReset: "earliest"
-    # noStrictOffsetReset: false
+    autoOffsetReset: "earliest"
+    noStrictOffsetReset: true
 
   ingestMonitors:
     enabled: true
@@ -825,8 +825,8 @@ sentry:
     # volumeMounts:
     #   - mountPath: /dev/shm
     #     name: dshm
-    # autoOffsetReset: "earliest"
-    # noStrictOffsetReset: false
+    autoOffsetReset: "earliest"
+    noStrictOffsetReset: true
 
   monitorsClockTasks:
     enabled: true
@@ -858,8 +858,8 @@ sentry:
     # volumeMounts:
     #   - mountPath: /dev/shm
     #     name: dshm
-    # autoOffsetReset: "earliest"
-    # noStrictOffsetReset: false
+    autoOffsetReset: "earliest"
+    noStrictOffsetReset: true
 
   monitorsClockTick:
     enabled: true
@@ -891,8 +891,8 @@ sentry:
     # volumeMounts:
     #   - mountPath: /dev/shm
     #     name: dshm
-    # autoOffsetReset: "earliest"
-    # noStrictOffsetReset: false
+    autoOffsetReset: "earliest"
+    noStrictOffsetReset: true
 
   billingMetricsConsumer:
     enabled: true
@@ -927,8 +927,8 @@ sentry:
     # volumeMounts:
     #   - mountPath: /dev/shm
     #     name: dshm
-    # autoOffsetReset: "earliest"
-    # noStrictOffsetReset: false
+    autoOffsetReset: "earliest"
+    noStrictOffsetReset: true
 
   genericMetricsConsumer:
     enabled: true
@@ -966,8 +966,8 @@ sentry:
     # volumeMounts:
     #   - mountPath: /dev/shm
     #     name: dshm
-    # autoOffsetReset: "earliest"
-    # noStrictOffsetReset: false
+    autoOffsetReset: "earliest"
+    noStrictOffsetReset: true
 
   metricsConsumer:
     enabled: true
@@ -1005,8 +1005,8 @@ sentry:
     # volumeMounts:
     #   - mountPath: /dev/shm
     #     name: dshm
-    # autoOffsetReset: "earliest"
-    # noStrictOffsetReset: false
+    autoOffsetReset: "earliest"
+    noStrictOffsetReset: true
 
   subscriptionConsumerResultsEapItems:
     enabled: true
@@ -1029,8 +1029,8 @@ sentry:
     sidecars: []
     volumes: []
     volumeMounts: []
-    # autoOffsetReset: "earliest"
-    # noStrictOffsetReset: false
+    autoOffsetReset: "earliest"
+    noStrictOffsetReset: true
 
   subscriptionConsumerEvents:
     enabled: true
@@ -1055,8 +1055,8 @@ sentry:
       initialDelaySeconds: 5
       periodSeconds: 320
       timeoutSeconds: 3
-    # autoOffsetReset: "earliest"
-    # noStrictOffsetReset: false
+    autoOffsetReset: "earliest"
+    noStrictOffsetReset: true
     volumeMounts: []
 
   subscriptionConsumerTransactions:
@@ -1082,8 +1082,8 @@ sentry:
       initialDelaySeconds: 5
       periodSeconds: 320
       timeoutSeconds: 3
-    # autoOffsetReset: "earliest"
-    # noStrictOffsetReset: false
+    autoOffsetReset: "earliest"
+    noStrictOffsetReset: true
     volumeMounts: []
 
   uptimeResults:
@@ -1109,8 +1109,8 @@ sentry:
       initialDelaySeconds: 5
       periodSeconds: 320
       timeoutSeconds: 3
-    # autoOffsetReset: "earliest"
-    # noStrictOffsetReset: false
+    autoOffsetReset: "earliest"
+    noStrictOffsetReset: true
     volumeMounts: []
 
   postProcessForwardErrors:
@@ -1137,8 +1137,8 @@ sentry:
       initialDelaySeconds: 5
       periodSeconds: 320
       timeoutSeconds: 3
-    # autoOffsetReset: "earliest"
-    # noStrictOffsetReset: false
+    autoOffsetReset: "earliest"
+    noStrictOffsetReset: true
 
   postProcessForwardTransactions:
     enabled: true
@@ -1165,8 +1165,8 @@ sentry:
       periodSeconds: 320
       timeoutSeconds: 3
     volumeMounts: []
-    # autoOffsetReset: "earliest"
-    # noStrictOffsetReset: false
+    autoOffsetReset: "earliest"
+    noStrictOffsetReset: true
 
   postProcessForwardIssuePlatform:
     enabled: true
@@ -1192,8 +1192,8 @@ sentry:
       initialDelaySeconds: 5
       periodSeconds: 320
       timeoutSeconds: 3
-    # autoOffsetReset: "earliest"
-    # noStrictOffsetReset: false
+    autoOffsetReset: "earliest"
+    noStrictOffsetReset: true
 
   processSegments:
     enabled: true
@@ -1220,8 +1220,8 @@ sentry:
       initialDelaySeconds: 5
       periodSeconds: 320
       timeoutSeconds: 3
-    # autoOffsetReset: "earliest"
-    # noStrictOffsetReset: false
+    autoOffsetReset: "earliest"
+    noStrictOffsetReset: true
     # maxBatchSize: "500"
     # maxBatchTimeMs: "1000"
 
@@ -1250,8 +1250,8 @@ sentry:
       initialDelaySeconds: 5
       periodSeconds: 320
       timeoutSeconds: 3
-    # autoOffsetReset: "earliest"
-    # noStrictOffsetReset: false
+    autoOffsetReset: "earliest"
+    noStrictOffsetReset: true
     # maxBatchSize: "500"
     # maxBatchTimeMs: "1000"
 
@@ -1281,8 +1281,8 @@ sentry:
       initialDelaySeconds: 5
       periodSeconds: 320
       timeoutSeconds: 3
-    # autoOffsetReset: "earliest"
-    # noStrictOffsetReset: false
+    autoOffsetReset: "earliest"
+    noStrictOffsetReset: true
 
   subscriptionConsumerMetrics:
     enabled: true
@@ -1310,8 +1310,8 @@ sentry:
       initialDelaySeconds: 5
       periodSeconds: 320
       timeoutSeconds: 3
-    # autoOffsetReset: "earliest"
-    # noStrictOffsetReset: false
+    autoOffsetReset: "earliest"
+    noStrictOffsetReset: true
 
   cleanup:
     successfulJobsHistoryLimit: 5
@@ -1413,13 +1413,13 @@ snuba:
     tolerations: []
     podLabels: {}
     sidecars: []
-    # autoOffsetReset: "earliest"
+    autoOffsetReset: "earliest"
     livenessProbe:
       enabled: true
       initialDelaySeconds: 5
       periodSeconds: 320
       timeoutSeconds: 3
-    # noStrictOffsetReset: false
+    noStrictOffsetReset: true
     # maxBatchSize: ""
     # processes: ""
     # inputBlockSize: ""
@@ -1449,7 +1449,7 @@ snuba:
     tolerations: []
     podLabels: {}
     sidecars: []
-    # autoOffsetReset: "earliest"
+    autoOffsetReset: "earliest"
     livenessProbe:
       enabled: true
       initialDelaySeconds: 5
@@ -1462,7 +1462,7 @@ snuba:
     maxBatchTimeMs: 750
     # queuedMaxMessagesKbytes: ""
     # queuedMinMessages: ""
-    # noStrictOffsetReset: false
+    noStrictOffsetReset: true
     # volumeMounts:
     #   - mountPath: /dev/shm
     #     name: dshm
@@ -1485,8 +1485,8 @@ snuba:
     tolerations: []
     podLabels: {}
     sidecars: []
-    # autoOffsetReset: "earliest"
-    # noStrictOffsetReset: false
+    autoOffsetReset: "earliest"
+    noStrictOffsetReset: true
     maxBatchSize: "3"
     livenessProbe:
       enabled: true
@@ -1522,8 +1522,8 @@ snuba:
     tolerations: []
     podLabels: {}
     sidecars: []
-    # autoOffsetReset: "earliest"
-    # noStrictOffsetReset: false
+    autoOffsetReset: "earliest"
+    noStrictOffsetReset: true
     maxBatchSize: "3"
     livenessProbe:
       enabled: true
@@ -1558,13 +1558,13 @@ snuba:
     tolerations: []
     podLabels: {}
     sidecars: []
-    # autoOffsetReset: "earliest"
+    autoOffsetReset: "earliest"
     # maxBatchTimeMs: ""
     # queuedMaxMessagesKbytes: ""
     # queuedMinMessages: ""
     volumes: []
     volumeMounts: []
-    # noStrictOffsetReset: false
+    noStrictOffsetReset: true
 
   metricsConsumer:
     enabled: true
@@ -1580,7 +1580,7 @@ snuba:
     tolerations: []
     podLabels: {}
     sidecars: []
-    # autoOffsetReset: "earliest"
+    autoOffsetReset: "earliest"
     livenessProbe:
       enabled: true
       initialDelaySeconds: 5
@@ -1595,7 +1595,7 @@ snuba:
     maxBatchTimeMs: 750
     # queuedMaxMessagesKbytes: ""
     # queuedMinMessages: ""
-    # noStrictOffsetReset: false
+    noStrictOffsetReset: true
 
   subscriptionConsumerEapItems:  # should have 1 partition and only 1 consumer replica: https://github.com/getsentry/snuba/issues/5855
     enabled: true
@@ -1618,8 +1618,8 @@ snuba:
       timeoutSeconds: 3
     volumes: []
     volumeMounts: []
-    # autoOffsetReset: "earliest"
-    # noStrictOffsetReset: false
+    autoOffsetReset: "earliest"
+    noStrictOffsetReset: true
 
   subscriptionConsumerEvents:  # should have 1 partition and only 1 consumer replica: https://github.com/getsentry/snuba/issues/5855
     enabled: true
@@ -1642,8 +1642,8 @@ snuba:
       timeoutSeconds: 3
     volumes: []
     volumeMounts: []
-    # autoOffsetReset: "earliest"
-    # noStrictOffsetReset: false
+    autoOffsetReset: "earliest"
+    noStrictOffsetReset: true
 
   subscriptionConsumerGenericMetricsDistributions:  # should have 1 partition and only 1 consumer replica: https://github.com/getsentry/snuba/issues/5855
     enabled: true
@@ -1666,8 +1666,8 @@ snuba:
       timeoutSeconds: 3
     volumes: []
     volumeMounts: []
-    # autoOffsetReset: "earliest"
-    # noStrictOffsetReset: false
+    autoOffsetReset: "earliest"
+    noStrictOffsetReset: true
 
   subscriptionConsumerGenericMetricsSets:  # should have 1 partition and only 1 consumer replica: https://github.com/getsentry/snuba/issues/5855
     enabled: true
@@ -1690,8 +1690,8 @@ snuba:
       timeoutSeconds: 3
     volumes: []
     volumeMounts: []
-    # autoOffsetReset: "earliest"
-    # noStrictOffsetReset: false
+    autoOffsetReset: "earliest"
+    noStrictOffsetReset: true
 
   subscriptionConsumerGenericMetricsCounters:  # should have 1 partition and only 1 consumer replica: https://github.com/getsentry/snuba/issues/5855
     enabled: true
@@ -1714,8 +1714,8 @@ snuba:
       timeoutSeconds: 3
     volumes: []
     volumeMounts: []
-    # autoOffsetReset: "earliest"
-    # noStrictOffsetReset: false
+    autoOffsetReset: "earliest"
+    noStrictOffsetReset: true
 
   subscriptionConsumerGenericMetricsGauges:  # should have 1 partition and only 1 consumer replica: https://github.com/getsentry/snuba/issues/5855
     enabled: true
@@ -1738,8 +1738,8 @@ snuba:
       timeoutSeconds: 3
     volumes: []
     volumeMounts: []
-    # autoOffsetReset: "earliest"
-    # noStrictOffsetReset: false
+    autoOffsetReset: "earliest"
+    noStrictOffsetReset: true
 
   genericMetricsGaugesConsumer:
     enabled: true
@@ -1755,7 +1755,7 @@ snuba:
     tolerations: []
     podLabels: {}
     sidecars: []
-    # autoOffsetReset: "earliest"
+    autoOffsetReset: "earliest"
     livenessProbe:
       enabled: true
       initialDelaySeconds: 5
@@ -1770,7 +1770,7 @@ snuba:
     maxBatchTimeMs: 750
     # queuedMaxMessagesKbytes: ""
     # queuedMinMessages: ""
-    # noStrictOffsetReset: false
+    noStrictOffsetReset: true
 
   genericMetricsCountersConsumer:
     enabled: true
@@ -1786,7 +1786,7 @@ snuba:
     tolerations: []
     podLabels: {}
     sidecars: []
-    # autoOffsetReset: "earliest"
+    autoOffsetReset: "earliest"
     livenessProbe:
       enabled: true
       initialDelaySeconds: 5
@@ -1801,7 +1801,7 @@ snuba:
     maxBatchTimeMs: 750
     # queuedMaxMessagesKbytes: ""
     # queuedMinMessages: ""
-    # noStrictOffsetReset: false
+    noStrictOffsetReset: true
 
   genericMetricsDistributionConsumer:
     enabled: true
@@ -1817,7 +1817,7 @@ snuba:
     tolerations: []
     podLabels: {}
     sidecars: []
-    # autoOffsetReset: "earliest"
+    autoOffsetReset: "earliest"
     livenessProbe:
       enabled: true
       initialDelaySeconds: 5
@@ -1832,7 +1832,7 @@ snuba:
     maxBatchTimeMs: 750
     # queuedMaxMessagesKbytes: ""
     # queuedMinMessages: ""
-    # noStrictOffsetReset: false
+    noStrictOffsetReset: true
 
   genericMetricsSetsConsumer:
     enabled: true
@@ -1848,7 +1848,7 @@ snuba:
     tolerations: []
     podLabels: {}
     sidecars: []
-    # autoOffsetReset: "earliest"
+    autoOffsetReset: "earliest"
     livenessProbe:
       enabled: true
       initialDelaySeconds: 5
@@ -1863,7 +1863,7 @@ snuba:
     maxBatchTimeMs: 750
     # queuedMaxMessagesKbytes: ""
     # queuedMinMessages: ""
-    # noStrictOffsetReset: false
+    noStrictOffsetReset: true
 
   subscriptionConsumerMetrics:  # should have 1 partition and only 1 consumer replica: https://github.com/getsentry/snuba/issues/5855
     enabled: true
@@ -1882,7 +1882,7 @@ snuba:
     tolerations: []
     podLabels: {}
     sidecars: []
-    # autoOffsetReset: "earliest"
+    autoOffsetReset: "earliest"
     livenessProbe:
       enabled: true
       initialDelaySeconds: 5
@@ -1915,8 +1915,8 @@ snuba:
       initialDelaySeconds: 5
       periodSeconds: 320
       timeoutSeconds: 3
-    # autoOffsetReset: "earliest"
-    # noStrictOffsetReset: false
+    autoOffsetReset: "earliest"
+    noStrictOffsetReset: true
 
   replaysConsumer:
     enabled: true
@@ -1933,7 +1933,7 @@ snuba:
     tolerations: []
     podLabels: {}
     sidecars: []
-    # autoOffsetReset: "earliest"
+    autoOffsetReset: "earliest"
     livenessProbe:
       enabled: true
       initialDelaySeconds: 5
@@ -1946,7 +1946,7 @@ snuba:
     maxBatchTimeMs: 750
     # queuedMaxMessagesKbytes: ""
     # queuedMinMessages: ""
-    # noStrictOffsetReset: false
+    noStrictOffsetReset: true
     # volumeMounts:
     #   - mountPath: /dev/shm
     #     name: dshm
@@ -1969,7 +1969,7 @@ snuba:
     tolerations: []
     podLabels: {}
     sidecars: []
-    # autoOffsetReset: "earliest"
+    autoOffsetReset: "earliest"
     livenessProbe:
       enabled: true
       initialDelaySeconds: 5
@@ -1982,7 +1982,7 @@ snuba:
     maxBatchTimeMs: 750
     # queuedMaxMessagesKbytes: ""
     # queuedMinMessages: ""
-    # noStrictOffsetReset: false
+    noStrictOffsetReset: true
     # volumeMounts:
     #   - mountPath: /dev/shm
     #     name: dshm
@@ -2004,7 +2004,7 @@ snuba:
     containerSecurityContext: {}
     tolerations: []
     podLabels: {}
-    # autoOffsetReset: "earliest"
+    autoOffsetReset: "earliest"
     livenessProbe:
       enabled: true
       initialDelaySeconds: 5
@@ -2017,7 +2017,7 @@ snuba:
     maxBatchTimeMs: 750
     # queuedMaxMessagesKbytes: ""
     # queuedMinMessages: ""
-    # noStrictOffsetReset: false
+    noStrictOffsetReset: true
 
     # volumeMounts:
     #   - mountPath: /dev/shm
@@ -2040,7 +2040,7 @@ snuba:
     containerSecurityContext: {}
     tolerations: []
     podLabels: {}
-    # autoOffsetReset: "earliest"
+    autoOffsetReset: "earliest"
     livenessProbe:
       enabled: true
       initialDelaySeconds: 5
@@ -2053,7 +2053,7 @@ snuba:
     maxBatchTimeMs: 750
     # queuedMaxMessagesKbytes: ""
     # queuedMinMessages: ""
-    # noStrictOffsetReset: false
+    noStrictOffsetReset: true
     # volumeMounts:
     #   - mountPath: /dev/shm
     #     name: dshm
@@ -2075,7 +2075,7 @@ snuba:
     containerSecurityContext: {}
     tolerations: []
     podLabels: {}
-    # autoOffsetReset: "earliest"
+    autoOffsetReset: "earliest"
     livenessProbe:
       enabled: true
       initialDelaySeconds: 5
@@ -2088,7 +2088,7 @@ snuba:
     maxBatchTimeMs: 750
     # queuedMaxMessagesKbytes: ""
     # queuedMinMessages: ""
-    # noStrictOffsetReset: false
+    noStrictOffsetReset: true
     # volumeMounts:
     #   - mountPath: /dev/shm
     #     name: dshm
@@ -2111,7 +2111,7 @@ snuba:
     tolerations: []
     podLabels: {}
     sidecars: []
-    # autoOffsetReset: "earliest"
+    autoOffsetReset: "earliest"
     livenessProbe:
       enabled: true
       initialDelaySeconds: 5
@@ -2124,7 +2124,7 @@ snuba:
     maxBatchTimeMs: 750
     # queuedMaxMessagesKbytes: ""
     # queuedMinMessages: ""
-    # noStrictOffsetReset: false
+    noStrictOffsetReset: true
     # volumeMounts:
     #   - mountPath: /dev/shm
     #     name: dshm
@@ -2147,7 +2147,7 @@ snuba:
     tolerations: []
     podLabels: {}
     sidecars: []
-    # autoOffsetReset: "earliest"
+    autoOffsetReset: "earliest"
     livenessProbe:
       enabled: true
       initialDelaySeconds: 5
@@ -2160,7 +2160,7 @@ snuba:
     maxBatchTimeMs: 750
     # queuedMaxMessagesKbytes: ""
     # queuedMinMessages: ""
-    # noStrictOffsetReset: false
+    noStrictOffsetReset: true
 
     # volumeMounts:
     #   - mountPath: /dev/shm
