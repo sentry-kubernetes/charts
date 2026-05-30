@@ -12,6 +12,13 @@ metadata:
     heritage: "{{ $root.Release.Service }}"
     role: taskbroker-{{ $broker.name }}
     {{- include "sentry.component.labels" (dict "component" (printf "taskbroker-%s" $broker.name) "ctx" $root) | nindent 4 }}
+  {{- if $root.Values.asHook }}
+  annotations:
+    meta.helm.sh/release-name: "{{ $root.Release.Name }}"
+    meta.helm.sh/release-namespace: "{{ $root.Release.Namespace }}"
+    "helm.sh/hook": "post-install,post-upgrade"
+    "helm.sh/hook-weight": "3"
+  {{- end }}
 spec:
   serviceName: {{ template "sentry.fullname" $root }}-taskbroker-{{ $broker.name }}
   replicas: {{ default $root.Values.sentry.taskBroker.replicas $broker.replicas }}
@@ -168,6 +175,13 @@ metadata:
     app: {{ template "sentry.fullname" $root }}
     release: "{{ $root.Release.Name }}"
     role: taskbroker-{{ $broker.name }}
+  {{- if $root.Values.asHook }}
+  annotations:
+    meta.helm.sh/release-name: "{{ $root.Release.Name }}"
+    meta.helm.sh/release-namespace: "{{ $root.Release.Namespace }}"
+    "helm.sh/hook": "post-install,post-upgrade"
+    "helm.sh/hook-weight": "3"
+  {{- end }}
 spec:
   ports:
   - port: 50051
