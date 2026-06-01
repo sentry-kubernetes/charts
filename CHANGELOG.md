@@ -6,6 +6,7 @@ The changelog below refers to the main `sentry` chart only.
 
 - **Rust Snuba consumer** is now enabled by default. Set `snuba.rustConsumer: false` to revert.
 - Removed deprecated `distutils.strtobool` from `sentry.conf.py` template — mail TLS/SSL now uses `.lower() in ("true", "1", "yes")`.
+- **Kafka consumer defaults** — `autoOffsetReset: earliest` and `noStrictOffsetReset: true` are now enabled by default for all Sentry and Snuba Kafka consumers ([#2226](https://github.com/sentry-kubernetes/charts/pull/2226)). Set `autoOffsetReset:` / `noStrictOffsetReset:` to your preferred values per-consumer to override.
 
 ## Upgrading to Chart 31.7.0
 
