@@ -422,6 +422,7 @@ sentry:
       #   whenDeleted: Retain  # or Delete
       #   whenScaled: Retain   # or Delete
     # brokers[].resources -- Optional per-broker container resources; merged over taskBroker.resources (broker keys win).
+    # brokers[].topologySpreadConstraints -- Optional per-broker container topologySpreadConstraints; merged over taskBroker.topologySpreadConstraints (broker keys win).
     brokers:
       - name: default
         topic: taskworker
@@ -490,6 +491,7 @@ sentry:
       periodSeconds: 10
       timeoutSeconds: 5
     # workers[].resources -- Optional per-worker container resources; merged over taskWorker.resources (worker keys win).
+    # workers[].topologySpreadConstraints -- Optional per-worker container topologySpreadConstraints; merged over taskWorker.topologySpreadConstraints (worker keys win).
     workers:
       - name: default
         brokerName: default
