@@ -776,7 +776,7 @@ Note: this table is incomplete, so have a look at the values.yaml in case you mi
 | sentry.subscriptionConsumerTransactions.topologySpreadConstraints | list | `[]` |  |
 | sentry.subscriptionConsumerTransactions.volumes | list | `[]` |  |
 | sentry.taskBroker.affinity | object | `{}` | |
-| sentry.taskBroker.brokers | list | (see `values.yaml`) | One broker StatefulSet per item (`name`, `topic`, `consumerGroup`, `replicas`, optional `resources` merged with `sentry.taskBroker.resources`, optional `topologySpreadConstraints` merged with `sentry.taskBroker.topologySpreadConstraints`). |
+| sentry.taskBroker.brokers | list | (see `values.yaml`) | One broker StatefulSet per item (`name`, `topic`, `consumerGroup`, `replicas`, optional `resources` merged with `sentry.taskBroker.resources`, optional `topologySpreadConstraints` supersedes `sentry.taskBroker.topologySpreadConstraints`). |
 | sentry.taskBroker.containerSecurityContext | object | `{}` | |
 | sentry.taskBroker.enabled | bool | `true` | |
 | sentry.taskBroker.env | list | `[]` | |
@@ -791,7 +791,7 @@ Note: this table is incomplete, so have a look at the values.yaml in case you mi
 | sentry.taskBroker.securityContext | object | `{}` | |
 | sentry.taskBroker.sidecars | list | `[]` | |
 | sentry.taskBroker.tolerations | list | `[]` | |
-| sentry.taskBroker.topologySpreadConstraints | list | `[]` | Default container topologySpreadConstraints for task broker pods; merged with each broker’s `topologySpreadConstraints` in `sentry.taskBroker.brokers`. |
+| sentry.taskBroker.topologySpreadConstraints | list | `[]` | Default pod topologySpreadConstraints for task broker pods; superseded by each broker’s `topologySpreadConstraints` in `sentry.taskBroker.brokers`. |
 | sentry.taskBroker.volumeMounts | list | `[]` | |
 | sentry.taskBroker.volumes | list | `[]` | |
 | sentry.taskWorker.affinity | object | `{}` | |
@@ -813,10 +813,10 @@ Note: this table is incomplete, so have a look at the values.yaml in case you mi
 | sentry.taskWorker.securityContext | object | `{}` | |
 | sentry.taskWorker.sidecars | list | `[]` | |
 | sentry.taskWorker.tolerations | list | `[]` | |
-| sentry.taskWorker.topologySpreadConstraints | list | `[]` | Default container topologySpreadConstraints for task worker pods; merged with each worker’s `topologySpreadConstraints` in `sentry.taskWorker.workers`. |
+| sentry.taskWorker.topologySpreadConstraints | list | `[]` | Default pod topologySpreadConstraints for task worker pods; superseded by each worker’s `topologySpreadConstraints` in `sentry.taskWorker.workers`. |
 | sentry.taskWorker.volumeMounts | list | `[]` | |
 | sentry.taskWorker.volumes | list | `[]` | |
-| sentry.taskWorker.workers | list | (see `values.yaml`) | One task worker Deployment per item (`name`, `brokerName`, `brokerReplicas`, `replicas`, `concurrency`, optional `resources` merged with `sentry.taskWorker.resources`, optional `autoscaling` overriding `sentry.taskWorker.autoscaling`, optional `topologySpreadConstraints` merged with `sentry.taskWorker.topologySpreadConstraints`). |
+| sentry.taskWorker.workers | list | (see `values.yaml`) | One task worker Deployment per item (`name`, `brokerName`, `brokerReplicas`, `replicas`, `concurrency`, optional `resources` merged with `sentry.taskWorker.resources`, optional `autoscaling` overriding `sentry.taskWorker.autoscaling`, optional `topologySpreadConstraints` supersedes `sentry.taskWorker.topologySpreadConstraints`). |
 | launchpadTaskWorker.enabled | bool | `true` | Deploy Launchpad taskworker (mobile build processing). Requires `feature-complete` profile and `sentry.taskBroker.enabled`. |
 | launchpadTaskWorker.replicas | int | `1` |  |
 | launchpadTaskWorker.concurrency | int | `4` | Parallel Launchpad worker processes (`LAUNCHPAD_WORKER_CONCURRENCY`). |
