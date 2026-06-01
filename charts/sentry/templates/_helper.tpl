@@ -17,16 +17,20 @@
   Arguments (dict):
     livenessProbe:   the workload's .Values.<x>.livenessProbe value
     healthcheckFile: file path (default: /tmp/health.txt)
+    freshnessSeconds: liveness treshold since last touch of healthcheckFile (default: 60)
 */}}
 {{- define "sentry.livenessProbe.execHealthcheckFile" -}}
 {{- $probe := .livenessProbe -}}
 {{- if $probe.enabled -}}
-{{- $probeConfig := omit $probe "enabled" -}}
+{{- $probeConfig := omit $probe "enabled" "freshnessSeconds" -}}
+{{- $file := default "/tmp/health.txt" .healthcheckFile -}}
+{{- $fresh := default 60 $probe.freshnessSeconds -}}
 livenessProbe:
   exec:
     command:
-      - rm
-      - {{ default "/tmp/health.txt" .healthcheckFile }}
+      - sh
+      - -c
+      - 'test $(($(date +%s) - $(stat -c %Y {{ $file }} 2>/dev/null || echo 0))) -lt {{ $fresh }}'
 {{- with $probeConfig }}
 {{- toYaml . | nindent 2 }}
 {{- end }}
