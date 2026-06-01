@@ -2,6 +2,11 @@
 
 The changelog below refers to the main `sentry` chart only.
 
+## Upgrading to Chart 32.0.0
+
+- **Rust Snuba consumer** is now enabled by default. Set `snuba.rustConsumer: false` to revert.
+- Removed deprecated `distutils.strtobool` from `sentry.conf.py` template — mail TLS/SSL now uses `.lower() in ("true", "1", "yes")`.
+
 ## Upgrading to Chart 31.7.0
 
 Chart `31.7.0` adds configuration for [Sentry 26.5.0](https://github.com/getsentry/self-hosted/releases/tag/26.5.0) that was not included when `appVersion` was bumped in `31.4.0`:

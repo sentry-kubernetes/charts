@@ -2179,7 +2179,7 @@ snuba:
   clickhouse:
     maxConnections: 100
 
-  rustConsumer: false
+  rustConsumer: true
 
   # ClickHouse database cleanup configuration
   # WARNING: NOT READY FOR PRODUCTION USE
