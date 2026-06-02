@@ -820,9 +820,6 @@ Note: this table is incomplete, so have a look at the values.yaml in case you mi
 | launchpadTaskWorker.enabled | bool | `true` | Deploy Launchpad taskworker (mobile build processing). Requires `feature-complete` profile and `sentry.taskBroker.enabled`. |
 | launchpadTaskWorker.replicas | int | `1` |  |
 | launchpadTaskWorker.concurrency | int | `4` | Parallel Launchpad worker processes (`LAUNCHPAD_WORKER_CONCURRENCY`). |
-| launchpadTaskWorker.rpcSharedSecret | string | `""` | Plaintext Launchpad RPC shared secret. If unset, the chart uses `launchpadTaskWorker.existingSecret` or auto-creates `<release>-launchpad-secret` on install. Not recommended for production. |
-| launchpadTaskWorker.existingSecret | string | `""` | Existing Secret name containing the Launchpad RPC shared secret (recommended for production). |
-| launchpadTaskWorker.existingSecretKey | string | `"rpc-shared-secret"` | Key in `launchpadTaskWorker.existingSecret` for the RPC shared secret. |
 | launchpadTaskWorker.env | list | `[]` | Extra environment variables for the Launchpad taskworker container. |
 | launchpadTaskWorker.resources | object | `{}` |  |
 | launchpadTaskWorker.affinity | object | `{}` |  |

@@ -1,5 +1,14 @@
 # Changelog
 
+## [31.7.1](https://github.com/sentry-kubernetes/charts/compare/sentry-v31.7.0...sentry-v31.7.1) (2026-05-30)
+
+
+### Bug Fixes
+
+* add hook-weight 3 to taskbroker and taskworker to prevent CrashLoopBackOff ([#2225](https://github.com/sentry-kubernetes/charts/issues/2225)) ([36afab2](https://github.com/sentry-kubernetes/charts/commit/36afab27227efc1b38cba85e22f97fd836e79605))
+* auto-generate launchpad RPC shared secret on install and upgrade ([#2224](https://github.com/sentry-kubernetes/charts/issues/2224)) ([ef7a2e4](https://github.com/sentry-kubernetes/charts/commit/ef7a2e42b2d030aba0fbb1a040f23a2fa0e5544b))
+* remove invalid annotations from hook jobs ([#2220](https://github.com/sentry-kubernetes/charts/issues/2220)) ([f128e76](https://github.com/sentry-kubernetes/charts/commit/f128e762126bc9597944beffce523fad5911d9b6))
+
 ## [31.7.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v31.6.0...sentry-v31.7.0) (2026-05-29)
 
 
