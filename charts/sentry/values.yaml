@@ -2663,6 +2663,9 @@ route:
     # -- Filters applied to requests
     filters: []
 
+    # -- Timeouts applied to requests
+    timeouts: {}
+
   # -- HTTP to HTTPS redirect route
   # Creates a separate HTTPRoute that redirects HTTP traffic to HTTPS
   httpRedirect:

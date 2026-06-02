@@ -90,6 +90,10 @@ spec:
       filters:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+      {{- with $mainRoute.timeouts }}
+      timeouts:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       backendRefs:
         - name: {{ $fullName }}-nginx
           port: {{ $nginxPort }}
@@ -100,6 +104,10 @@ spec:
             value: /api/store
       {{- with $mainRoute.filters }}
       filters:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with $mainRoute.timeouts }}
+      timeouts:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       backendRefs:
@@ -113,6 +121,10 @@ spec:
       filters:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+      {{- with $mainRoute.timeouts }}
+      timeouts:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       backendRefs:
         - name: {{ $fullName }}-relay
           port: {{ $relayPort }}
@@ -122,6 +134,10 @@ spec:
             value: /api/0
       {{- with $mainRoute.filters }}
       filters:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with $mainRoute.timeouts }}
+      timeouts:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       backendRefs:
@@ -135,6 +151,10 @@ spec:
       filters:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+      {{- with $mainRoute.timeouts }}
+      timeouts:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       backendRefs:
         - name: {{ $fullName }}-relay
           port: {{ $relayPort }}
@@ -144,6 +164,10 @@ spec:
             value: /
       {{- with $mainRoute.filters }}
       filters:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with $mainRoute.timeouts }}
+      timeouts:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       backendRefs:
