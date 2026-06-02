@@ -75,7 +75,7 @@ spec:
       tolerations:
 {{ toYaml $root.Values.global.tolerations | indent 8 }}
       {{- end }}
-{{- $taskBrokerTopologySpreadConstraints := default $root.Values.sentry.taskBroker.topologySpreadConstraints $broker.topologySpreadConstraints }}
+{{- $taskBrokerTopologySpreadConstraints := ternary $broker.topologySpreadConstraints $root.Values.sentry.taskBroker.topologySpreadConstraints (hasKey $broker "topologySpreadConstraints") }}
       topologySpreadConstraints:
 {{ toYaml $taskBrokerTopologySpreadConstraints | indent 8 }}
       {{- if $root.Values.sentry.taskBroker.securityContext }}
