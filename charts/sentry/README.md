@@ -170,6 +170,7 @@ Note: this table is incomplete, so have a look at the values.yaml in case you mi
 | hooks.enabled | bool | `true` |  |
 | hooks.preUpgrade | bool | `false` |  |
 | hooks.removeOnSuccess | bool | `true` |  |
+| hooks.restartPolicy | string | `"Never"` |  |
 | hooks.shareProcessNamespace | bool | `false` |  |
 | hooks.snubaInit.affinity | object | `{}` |  |
 | hooks.snubaInit.enabled | bool | `true` |  |

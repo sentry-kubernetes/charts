@@ -2259,6 +2259,7 @@ hooks:
   preUpgrade: false
   removeOnSuccess: true
   activeDeadlineSeconds: 1200
+  restartPolicy: Never
   shareProcessNamespace: false
   dbCheck:
     enabled: true

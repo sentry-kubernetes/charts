@@ -45,7 +45,7 @@ spec:
       nodeSelector:
 {{ toYaml .Values.global.nodeSelector | indent 8 }}
       {{- end }}
-      restartPolicy: Never
+      restartPolicy: {{ .Values.hooks.restartPolicy | default "Never" }}
       {{- if .Values.hooks.dbInit.tolerations }}
       tolerations:
 {{ toYaml .Values.hooks.dbInit.tolerations | indent 8 }}

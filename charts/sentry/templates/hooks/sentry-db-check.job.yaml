@@ -55,7 +55,7 @@ spec:
       tolerations:
 {{ toYaml .Values.global.tolerations | indent 8 }}
       {{- end }}
-      restartPolicy: Never
+      restartPolicy: {{ .Values.hooks.restartPolicy | default "Never" }}
       {{- if .Values.hooks.dbCheck.image.imagePullSecrets }}
       imagePullSecrets:
 {{ toYaml .Values.hooks.dbCheck.image.imagePullSecrets | indent 8 }}
