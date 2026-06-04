@@ -1,5 +1,23 @@
 # Changelog
 
+## [32.0.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v31.7.1...sentry-v32.0.0) (2026-06-04)
+
+
+### ⚠ BREAKING CHANGES
+
+* replace deprecated distutils.strtobool and enable rustConsumer ([#2227](https://github.com/sentry-kubernetes/charts/issues/2227))
+
+### Features
+
+* make setup-hook Job restartPolicy configurable ([#2232](https://github.com/sentry-kubernetes/charts/issues/2232)) ([bbb167e](https://github.com/sentry-kubernetes/charts/commit/bbb167e274376a7ad81a29df090d2a2eccbbde48))
+* per taskbroker & taskworker topologySpreadConstraints ([#2228](https://github.com/sentry-kubernetes/charts/issues/2228)) ([546c7b7](https://github.com/sentry-kubernetes/charts/commit/546c7b76735f5c608371f3488f6d38fe4ebc3106))
+* replace deprecated distutils.strtobool and enable rustConsumer ([#2227](https://github.com/sentry-kubernetes/charts/issues/2227)) ([21fa745](https://github.com/sentry-kubernetes/charts/commit/21fa745ca800dc2fd9e91fdcc46447fcf2d361ee))
+
+
+### Bug Fixes
+
+* mtime livenessprobe ([#2230](https://github.com/sentry-kubernetes/charts/issues/2230)) ([d7de9de](https://github.com/sentry-kubernetes/charts/commit/d7de9de267caa0977e5a45c96162d978b8eab825))
+
 ## [31.7.1](https://github.com/sentry-kubernetes/charts/compare/sentry-v31.7.0...sentry-v31.7.1) (2026-05-30)
 
 
