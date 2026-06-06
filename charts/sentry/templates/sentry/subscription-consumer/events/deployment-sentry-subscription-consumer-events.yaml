@@ -93,10 +93,9 @@ spec:
           {{- end }}
           - "--consumer-group"
           - "query-subscription-consumer"
-          {{- if .Values.sentry.subscriptionConsumerEvents.livenessProbe.enabled }}
           - "--healthcheck-file-path"
           - "/tmp/health.txt"
-          {{- end }}
+        {{- include "sentry.startupProbe.execHealthcheckFile" (dict "startupProbe" .Values.sentry.subscriptionConsumerEvents.startupProbe "healthcheckFile" "/tmp/health.txt") | nindent 8 }}
         {{- include "sentry.livenessProbe.execHealthcheckFile" (dict "livenessProbe" .Values.sentry.subscriptionConsumerEvents.livenessProbe "healthcheckFile" "/tmp/health.txt") | nindent 8 }}
         env:
 {{ include "sentry.env" . | indent 8 }}

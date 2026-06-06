@@ -101,10 +101,8 @@ spec:
           {{- end }}
           - "--consumer-group"
           - "generic-metrics-consumer"
-          {{- if .Values.sentry.genericMetricsConsumer.livenessProbe.enabled }}
           - "--healthcheck-file-path"
           - "/tmp/health.txt"
-          {{- end }}
           {{- if .Values.sentry.genericMetricsConsumer.logLevel }}
           - "--log-level"
           - "{{ .Values.sentry.genericMetricsConsumer.logLevel }}"
@@ -118,6 +116,7 @@ spec:
           - "--processes"
           - "{{ .Values.sentry.genericMetricsConsumer.concurrency }}"
           {{- end }}
+        {{- include "sentry.startupProbe.execHealthcheckFile" (dict "startupProbe" .Values.sentry.genericMetricsConsumer.startupProbe "healthcheckFile" "/tmp/health.txt") | nindent 8 }}
         {{- include "sentry.livenessProbe.execHealthcheckFile" (dict "livenessProbe" .Values.sentry.genericMetricsConsumer.livenessProbe "healthcheckFile" "/tmp/health.txt") | nindent 8 }}
         env:
         - name: C_FORCE_ROOT

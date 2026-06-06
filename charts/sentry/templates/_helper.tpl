@@ -37,6 +37,34 @@ livenessProbe:
 {{- end -}}
 {{- end -}}
 
+{{/*
+  startupProbe block for kafka-consumer / worker deployments.
+  Absorbs cold-start latency so liveness can't fire during startup.
+
+  Arguments (dict):
+    startupProbe:    the workload's .Values.<x>.startupProbe value (may be unset)
+    healthcheckFile: file path (default: /tmp/health.txt)
+*/}}
+{{- define "sentry.startupProbe.execHealthcheckFile" -}}
+{{- $probe := .startupProbe | default (dict) -}}
+{{- $enabled := true -}}
+{{- if hasKey $probe "enabled" -}}{{- $enabled = $probe.enabled -}}{{- end -}}
+{{- if $enabled -}}
+{{- $defaults := dict "periodSeconds" 5 "failureThreshold" 60 -}}
+{{- $probeConfig := omit (merge (deepCopy $probe) $defaults) "enabled" -}}
+{{- $file := default "/tmp/health.txt" .healthcheckFile -}}
+startupProbe:
+  exec:
+    command:
+      - test
+      - -f
+      - {{ $file }}
+{{- with $probeConfig }}
+{{- toYaml . | nindent 2 }}
+{{- end }}
+{{- end -}}
+{{- end -}}
+
 {{- define "relay.image" -}}
 {{- default "ghcr.io/getsentry/relay" .Values.images.relay.repository -}}
 :

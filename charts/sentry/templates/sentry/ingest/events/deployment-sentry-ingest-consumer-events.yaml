@@ -102,10 +102,8 @@ spec:
           {{- if .Values.sentry.ingestConsumerEvents.noStrictOffsetReset }}
           - "--no-strict-offset-reset"
           {{- end }}
-          {{- if .Values.sentry.ingestConsumerEvents.livenessProbe.enabled }}
           - "--healthcheck-file-path"
           - "/tmp/health.txt"
-          {{- end }}
           {{- if .Values.sentry.ingestConsumerEvents.logLevel }}
           - "--log-level"
           - "{{ .Values.sentry.ingestConsumerEvents.logLevel }}"
@@ -129,6 +127,7 @@ spec:
           - "--processes"
           - "{{ .Values.sentry.ingestConsumerEvents.concurrency }}"
           {{- end }}
+        {{- include "sentry.startupProbe.execHealthcheckFile" (dict "startupProbe" .Values.sentry.ingestConsumerEvents.startupProbe "healthcheckFile" "/tmp/health.txt") | nindent 8 }}
         {{- include "sentry.livenessProbe.execHealthcheckFile" (dict "livenessProbe" .Values.sentry.ingestConsumerEvents.livenessProbe "healthcheckFile" "/tmp/health.txt") | nindent 8 }}
         env:
         - name: C_FORCE_ROOT

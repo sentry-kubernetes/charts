@@ -549,9 +549,9 @@ sentry:
     volumes: []
     livenessProbe:
       enabled: true
-      initialDelaySeconds: 5
-      periodSeconds: 320
-      timeoutSeconds: 3
+      periodSeconds: 30
+      failureThreshold: 5
+      timeoutSeconds: 5
     # volumeMounts:
     #   - mountPath: /dev/shm
     #     name: dshm
@@ -594,9 +594,9 @@ sentry:
     volumes: []
     livenessProbe:
       enabled: true
-      initialDelaySeconds: 5
-      periodSeconds: 320
-      timeoutSeconds: 3
+      periodSeconds: 30
+      failureThreshold: 5
+      timeoutSeconds: 5
     # volumeMounts:
     #   - mountPath: /dev/shm
     #     name: dshm
@@ -639,9 +639,9 @@ sentry:
     volumes: []
     livenessProbe:
       enabled: true
-      initialDelaySeconds: 5
-      periodSeconds: 320
-      timeoutSeconds: 3
+      periodSeconds: 30
+      failureThreshold: 5
+      timeoutSeconds: 5
     # volumeMounts:
     #   - mountPath: /dev/shm
     #     name: dshm
@@ -676,9 +676,9 @@ sentry:
     volumes: []
     livenessProbe:
       enabled: true
-      initialDelaySeconds: 5
-      periodSeconds: 320
-      timeoutSeconds: 3
+      periodSeconds: 30
+      failureThreshold: 5
+      timeoutSeconds: 5
     # volumeMounts:
     #   - mountPath: /dev/shm
     #     name: dshm
@@ -708,9 +708,9 @@ sentry:
     volumes: []
     livenessProbe:
       enabled: true
-      initialDelaySeconds: 5
-      periodSeconds: 320
-      timeoutSeconds: 3
+      periodSeconds: 30
+      failureThreshold: 5
+      timeoutSeconds: 5
     # volumeMounts:
     #   - mountPath: /dev/shm
     #     name: dshm
@@ -745,9 +745,9 @@ sentry:
     volumes: []
     livenessProbe:
       enabled: true
-      initialDelaySeconds: 5
-      periodSeconds: 320
-      timeoutSeconds: 3
+      periodSeconds: 30
+      failureThreshold: 5
+      timeoutSeconds: 5
     # volumeMounts:
     #   - mountPath: /dev/shm
     #     name: dshm
@@ -784,9 +784,9 @@ sentry:
     volumes: []
     livenessProbe:
       enabled: true
-      initialDelaySeconds: 5
-      periodSeconds: 320
-      timeoutSeconds: 3
+      periodSeconds: 30
+      failureThreshold: 5
+      timeoutSeconds: 5
     # volumeMounts:
     #   - mountPath: /dev/shm
     #     name: dshm
@@ -821,9 +821,9 @@ sentry:
     volumes: []
     livenessProbe:
       enabled: true
-      initialDelaySeconds: 5
-      periodSeconds: 320
-      timeoutSeconds: 3
+      periodSeconds: 30
+      failureThreshold: 5
+      timeoutSeconds: 5
     # volumeMounts:
     #   - mountPath: /dev/shm
     #     name: dshm
@@ -854,9 +854,9 @@ sentry:
     volumes: []
     livenessProbe:
       enabled: true
-      initialDelaySeconds: 5
-      periodSeconds: 320
-      timeoutSeconds: 3
+      periodSeconds: 30
+      failureThreshold: 5
+      timeoutSeconds: 5
     # volumeMounts:
     #   - mountPath: /dev/shm
     #     name: dshm
@@ -887,9 +887,9 @@ sentry:
     volumes: []
     livenessProbe:
       enabled: true
-      initialDelaySeconds: 5
-      periodSeconds: 320
-      timeoutSeconds: 3
+      periodSeconds: 30
+      failureThreshold: 5
+      timeoutSeconds: 5
     # volumeMounts:
     #   - mountPath: /dev/shm
     #     name: dshm
@@ -923,9 +923,9 @@ sentry:
     volumes: []
     livenessProbe:
       enabled: true
-      initialDelaySeconds: 5
-      periodSeconds: 320
-      timeoutSeconds: 3
+      periodSeconds: 30
+      failureThreshold: 5
+      timeoutSeconds: 5
     # volumeMounts:
     #   - mountPath: /dev/shm
     #     name: dshm
@@ -962,9 +962,9 @@ sentry:
     volumes: []
     livenessProbe:
       enabled: true
-      initialDelaySeconds: 5
-      periodSeconds: 320
-      timeoutSeconds: 3
+      periodSeconds: 30
+      failureThreshold: 5
+      timeoutSeconds: 5
     # volumeMounts:
     #   - mountPath: /dev/shm
     #     name: dshm
@@ -1001,9 +1001,9 @@ sentry:
     volumes: []
     livenessProbe:
       enabled: true
-      initialDelaySeconds: 5
-      periodSeconds: 320
-      timeoutSeconds: 3
+      periodSeconds: 30
+      failureThreshold: 5
+      timeoutSeconds: 5
     # volumeMounts:
     #   - mountPath: /dev/shm
     #     name: dshm
@@ -1025,9 +1025,9 @@ sentry:
     podLabels: {}
     livenessProbe:
       enabled: true
-      initialDelaySeconds: 5
-      periodSeconds: 320
-      timeoutSeconds: 3
+      periodSeconds: 30
+      failureThreshold: 5
+      timeoutSeconds: 5
     sidecars: []
     volumes: []
     volumeMounts: []
@@ -1054,9 +1054,9 @@ sentry:
     volumes: []
     livenessProbe:
       enabled: true
-      initialDelaySeconds: 5
-      periodSeconds: 320
-      timeoutSeconds: 3
+      periodSeconds: 30
+      failureThreshold: 5
+      timeoutSeconds: 5
     # autoOffsetReset: "earliest"
     # noStrictOffsetReset: false
     volumeMounts: []
@@ -1081,9 +1081,9 @@ sentry:
     volumes: []
     livenessProbe:
       enabled: true
-      initialDelaySeconds: 5
-      periodSeconds: 320
-      timeoutSeconds: 3
+      periodSeconds: 30
+      failureThreshold: 5
+      timeoutSeconds: 5
     # autoOffsetReset: "earliest"
     # noStrictOffsetReset: false
     volumeMounts: []
@@ -1108,9 +1108,9 @@ sentry:
     volumes: []
     livenessProbe:
       enabled: true
-      initialDelaySeconds: 5
-      periodSeconds: 320
-      timeoutSeconds: 3
+      periodSeconds: 30
+      failureThreshold: 5
+      timeoutSeconds: 5
     # autoOffsetReset: "earliest"
     # noStrictOffsetReset: false
     volumeMounts: []
@@ -1136,9 +1136,9 @@ sentry:
     volumeMounts: []
     livenessProbe:
       enabled: true
-      initialDelaySeconds: 5
-      periodSeconds: 320
-      timeoutSeconds: 3
+      periodSeconds: 30
+      failureThreshold: 5
+      timeoutSeconds: 5
     # autoOffsetReset: "earliest"
     # noStrictOffsetReset: false
 
@@ -1163,9 +1163,9 @@ sentry:
     volumes: []
     livenessProbe:
       enabled: true
-      initialDelaySeconds: 5
-      periodSeconds: 320
-      timeoutSeconds: 3
+      periodSeconds: 30
+      failureThreshold: 5
+      timeoutSeconds: 5
     volumeMounts: []
     # autoOffsetReset: "earliest"
     # noStrictOffsetReset: false
@@ -1191,9 +1191,9 @@ sentry:
     volumeMounts: []
     livenessProbe:
       enabled: true
-      initialDelaySeconds: 5
-      periodSeconds: 320
-      timeoutSeconds: 3
+      periodSeconds: 30
+      failureThreshold: 5
+      timeoutSeconds: 5
     # autoOffsetReset: "earliest"
     # noStrictOffsetReset: false
 
@@ -1219,9 +1219,9 @@ sentry:
     volumeMounts: []
     livenessProbe:
       enabled: true
-      initialDelaySeconds: 5
-      periodSeconds: 320
-      timeoutSeconds: 3
+      periodSeconds: 30
+      failureThreshold: 5
+      timeoutSeconds: 5
     # autoOffsetReset: "earliest"
     # noStrictOffsetReset: false
     # maxBatchSize: "500"
@@ -1249,9 +1249,9 @@ sentry:
     volumeMounts: []
     livenessProbe:
       enabled: true
-      initialDelaySeconds: 5
-      periodSeconds: 320
-      timeoutSeconds: 3
+      periodSeconds: 30
+      failureThreshold: 5
+      timeoutSeconds: 5
     # autoOffsetReset: "earliest"
     # noStrictOffsetReset: false
     # maxBatchSize: "500"
@@ -1280,9 +1280,9 @@ sentry:
     volumeMounts: []
     livenessProbe:
       enabled: true
-      initialDelaySeconds: 5
-      periodSeconds: 320
-      timeoutSeconds: 3
+      periodSeconds: 30
+      failureThreshold: 5
+      timeoutSeconds: 5
     # autoOffsetReset: "earliest"
     # noStrictOffsetReset: false
 
@@ -1309,9 +1309,9 @@ sentry:
     volumeMounts: []
     livenessProbe:
       enabled: true
-      initialDelaySeconds: 5
-      periodSeconds: 320
-      timeoutSeconds: 3
+      periodSeconds: 30
+      failureThreshold: 5
+      timeoutSeconds: 5
     # autoOffsetReset: "earliest"
     # noStrictOffsetReset: false
 
@@ -1418,9 +1418,9 @@ snuba:
     # autoOffsetReset: "earliest"
     livenessProbe:
       enabled: true
-      initialDelaySeconds: 5
-      periodSeconds: 320
-      timeoutSeconds: 3
+      periodSeconds: 30
+      failureThreshold: 5
+      timeoutSeconds: 5
     # noStrictOffsetReset: false
     # maxBatchSize: ""
     # processes: ""
@@ -1454,9 +1454,9 @@ snuba:
     # autoOffsetReset: "earliest"
     livenessProbe:
       enabled: true
-      initialDelaySeconds: 5
-      periodSeconds: 320
-      timeoutSeconds: 3
+      periodSeconds: 30
+      failureThreshold: 5
+      timeoutSeconds: 5
     # maxBatchSize: ""
     # processes: ""
     # inputBlockSize: ""
@@ -1492,9 +1492,9 @@ snuba:
     maxBatchSize: "3"
     livenessProbe:
       enabled: true
-      initialDelaySeconds: 5
-      periodSeconds: 320
-      timeoutSeconds: 3
+      periodSeconds: 30
+      failureThreshold: 5
+      timeoutSeconds: 5
     # processes: ""
     # inputBlockSize: ""
     # outputBlockSize: ""
@@ -1529,9 +1529,9 @@ snuba:
     maxBatchSize: "3"
     livenessProbe:
       enabled: true
-      initialDelaySeconds: 5
-      periodSeconds: 320
-      timeoutSeconds: 3
+      periodSeconds: 30
+      failureThreshold: 5
+      timeoutSeconds: 5
     # processes: ""
     # inputBlockSize: ""
     # outputBlockSize: ""
@@ -1585,9 +1585,9 @@ snuba:
     # autoOffsetReset: "earliest"
     livenessProbe:
       enabled: true
-      initialDelaySeconds: 5
-      periodSeconds: 320
-      timeoutSeconds: 3
+      periodSeconds: 30
+      failureThreshold: 5
+      timeoutSeconds: 5
     volumes: []
     volumeMounts: []
     # maxBatchSize: ""
@@ -1615,9 +1615,9 @@ snuba:
     sidecars: []
     livenessProbe:
       enabled: true
-      initialDelaySeconds: 5
-      periodSeconds: 320
-      timeoutSeconds: 3
+      periodSeconds: 30
+      failureThreshold: 5
+      timeoutSeconds: 5
     volumes: []
     volumeMounts: []
     # autoOffsetReset: "earliest"
@@ -1639,9 +1639,9 @@ snuba:
     sidecars: []
     livenessProbe:
       enabled: true
-      initialDelaySeconds: 5
-      periodSeconds: 320
-      timeoutSeconds: 3
+      periodSeconds: 30
+      failureThreshold: 5
+      timeoutSeconds: 5
     volumes: []
     volumeMounts: []
     # autoOffsetReset: "earliest"
@@ -1663,9 +1663,9 @@ snuba:
     sidecars: []
     livenessProbe:
       enabled: true
-      initialDelaySeconds: 5
-      periodSeconds: 320
-      timeoutSeconds: 3
+      periodSeconds: 30
+      failureThreshold: 5
+      timeoutSeconds: 5
     volumes: []
     volumeMounts: []
     # autoOffsetReset: "earliest"
@@ -1687,9 +1687,9 @@ snuba:
     sidecars: []
     livenessProbe:
       enabled: true
-      initialDelaySeconds: 5
-      periodSeconds: 320
-      timeoutSeconds: 3
+      periodSeconds: 30
+      failureThreshold: 5
+      timeoutSeconds: 5
     volumes: []
     volumeMounts: []
     # autoOffsetReset: "earliest"
@@ -1711,9 +1711,9 @@ snuba:
     sidecars: []
     livenessProbe:
       enabled: true
-      initialDelaySeconds: 5
-      periodSeconds: 320
-      timeoutSeconds: 3
+      periodSeconds: 30
+      failureThreshold: 5
+      timeoutSeconds: 5
     volumes: []
     volumeMounts: []
     # autoOffsetReset: "earliest"
@@ -1735,9 +1735,9 @@ snuba:
     sidecars: []
     livenessProbe:
       enabled: true
-      initialDelaySeconds: 5
-      periodSeconds: 320
-      timeoutSeconds: 3
+      periodSeconds: 30
+      failureThreshold: 5
+      timeoutSeconds: 5
     volumes: []
     volumeMounts: []
     # autoOffsetReset: "earliest"
@@ -1760,9 +1760,9 @@ snuba:
     # autoOffsetReset: "earliest"
     livenessProbe:
       enabled: true
-      initialDelaySeconds: 5
-      periodSeconds: 320
-      timeoutSeconds: 3
+      periodSeconds: 30
+      failureThreshold: 5
+      timeoutSeconds: 5
     volumes: []
     volumeMounts: []
     # maxBatchSize: ""
@@ -1791,9 +1791,9 @@ snuba:
     # autoOffsetReset: "earliest"
     livenessProbe:
       enabled: true
-      initialDelaySeconds: 5
-      periodSeconds: 320
-      timeoutSeconds: 3
+      periodSeconds: 30
+      failureThreshold: 5
+      timeoutSeconds: 5
     volumes: []
     volumeMounts: []
     # maxBatchSize: ""
@@ -1822,9 +1822,9 @@ snuba:
     # autoOffsetReset: "earliest"
     livenessProbe:
       enabled: true
-      initialDelaySeconds: 5
-      periodSeconds: 320
-      timeoutSeconds: 3
+      periodSeconds: 30
+      failureThreshold: 5
+      timeoutSeconds: 5
     volumes: []
     volumeMounts: []
     # maxBatchSize: ""
@@ -1853,9 +1853,9 @@ snuba:
     # autoOffsetReset: "earliest"
     livenessProbe:
       enabled: true
-      initialDelaySeconds: 5
-      periodSeconds: 320
-      timeoutSeconds: 3
+      periodSeconds: 30
+      failureThreshold: 5
+      timeoutSeconds: 5
     volumes: []
     volumeMounts: []
     # maxBatchSize: ""
@@ -1887,9 +1887,9 @@ snuba:
     # autoOffsetReset: "earliest"
     livenessProbe:
       enabled: true
-      initialDelaySeconds: 5
-      periodSeconds: 320
-      timeoutSeconds: 3
+      periodSeconds: 30
+      failureThreshold: 5
+      timeoutSeconds: 5
     volumes: []
     volumeMounts: []
 
@@ -1914,9 +1914,9 @@ snuba:
     volumeMounts: []
     livenessProbe:
       enabled: true
-      initialDelaySeconds: 5
-      periodSeconds: 320
-      timeoutSeconds: 3
+      periodSeconds: 30
+      failureThreshold: 5
+      timeoutSeconds: 5
     # autoOffsetReset: "earliest"
     # noStrictOffsetReset: false
 
@@ -1938,9 +1938,9 @@ snuba:
     # autoOffsetReset: "earliest"
     livenessProbe:
       enabled: true
-      initialDelaySeconds: 5
-      periodSeconds: 320
-      timeoutSeconds: 3
+      periodSeconds: 30
+      failureThreshold: 5
+      timeoutSeconds: 5
     # maxBatchSize: ""
     # processes: ""
     # inputBlockSize: ""
@@ -1974,9 +1974,9 @@ snuba:
     # autoOffsetReset: "earliest"
     livenessProbe:
       enabled: true
-      initialDelaySeconds: 5
-      periodSeconds: 320
-      timeoutSeconds: 3
+      periodSeconds: 30
+      failureThreshold: 5
+      timeoutSeconds: 5
     # maxBatchSize: ""
     # processes: ""
     # inputBlockSize: ""
@@ -2009,9 +2009,9 @@ snuba:
     # autoOffsetReset: "earliest"
     livenessProbe:
       enabled: true
-      initialDelaySeconds: 5
-      periodSeconds: 320
-      timeoutSeconds: 3
+      periodSeconds: 30
+      failureThreshold: 5
+      timeoutSeconds: 5
     # maxBatchSize: ""
     # processes: ""
     # inputBlockSize: ""
@@ -2045,9 +2045,9 @@ snuba:
     # autoOffsetReset: "earliest"
     livenessProbe:
       enabled: true
-      initialDelaySeconds: 5
-      periodSeconds: 320
-      timeoutSeconds: 3
+      periodSeconds: 30
+      failureThreshold: 5
+      timeoutSeconds: 5
     # maxBatchSize: ""
     # processes: ""
     # inputBlockSize: ""
@@ -2080,9 +2080,9 @@ snuba:
     # autoOffsetReset: "earliest"
     livenessProbe:
       enabled: true
-      initialDelaySeconds: 5
-      periodSeconds: 320
-      timeoutSeconds: 3
+      periodSeconds: 30
+      failureThreshold: 5
+      timeoutSeconds: 5
     # maxBatchSize: ""
     # processes: ""
     # inputBlockSize: ""
@@ -2116,9 +2116,9 @@ snuba:
     # autoOffsetReset: "earliest"
     livenessProbe:
       enabled: true
-      initialDelaySeconds: 5
-      periodSeconds: 320
-      timeoutSeconds: 3
+      periodSeconds: 30
+      failureThreshold: 5
+      timeoutSeconds: 5
     # maxBatchSize: ""
     # processes: ""
     # inputBlockSize: ""
@@ -2152,9 +2152,9 @@ snuba:
     # autoOffsetReset: "earliest"
     livenessProbe:
       enabled: true
-      initialDelaySeconds: 5
-      periodSeconds: 320
-      timeoutSeconds: 3
+      periodSeconds: 30
+      failureThreshold: 5
+      timeoutSeconds: 5
     # maxBatchSize: ""
     # processes: ""
     # inputBlockSize: ""

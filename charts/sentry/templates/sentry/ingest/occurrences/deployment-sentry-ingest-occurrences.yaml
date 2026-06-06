@@ -103,10 +103,8 @@ spec:
           {{- if .Values.sentry.ingestOccurrences.noStrictOffsetReset }}
           - "--no-strict-offset-reset"
           {{- end }}
-          {{- if .Values.sentry.ingestOccurrences.livenessProbe.enabled }}
           - "--healthcheck-file-path"
           - "/tmp/health.txt"
-          {{- end }}
           {{- if or .Values.sentry.ingestOccurrences.concurrency .Values.sentry.ingestOccurrences.inputBlockSize .Values.sentry.ingestOccurrences.maxBatchSize .Values.sentry.ingestOccurrences.maxBatchTimeMs }}
           - "--"
           {{- end }}
@@ -126,6 +124,7 @@ spec:
           - "--max-batch-time-ms"
           - "{{ .Values.sentry.ingestOccurrences.maxBatchTimeMs }}"
           {{- end }}
+        {{- include "sentry.startupProbe.execHealthcheckFile" (dict "startupProbe" .Values.sentry.ingestOccurrences.startupProbe "healthcheckFile" "/tmp/health.txt") | nindent 8 }}
         {{- include "sentry.livenessProbe.execHealthcheckFile" (dict "livenessProbe" .Values.sentry.ingestOccurrences.livenessProbe "healthcheckFile" "/tmp/health.txt") | nindent 8 }}
         env:
         - name: C_FORCE_ROOT

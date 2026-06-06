@@ -101,10 +101,8 @@ spec:
           {{- if .Values.sentry.subscriptionConsumerGenericMetrics.noStrictOffsetReset }}
           - "--no-strict-offset-reset"
           {{- end }}
-          {{- if .Values.sentry.subscriptionConsumerGenericMetrics.livenessProbe.enabled }}
           - "--healthcheck-file-path"
           - "/tmp/health.txt"
-          {{- end }}
           {{- if or .Values.sentry.subscriptionConsumerGenericMetrics.maxBatchSize .Values.sentry.subscriptionConsumerGenericMetrics.concurrency }}
           - "--"
           {{- end }}
@@ -116,6 +114,7 @@ spec:
           - "--processes"
           - "{{ .Values.sentry.subscriptionConsumerGenericMetrics.concurrency }}"
           {{- end }}
+        {{- include "sentry.startupProbe.execHealthcheckFile" (dict "startupProbe" .Values.sentry.subscriptionConsumerGenericMetrics.startupProbe "healthcheckFile" "/tmp/health.txt") | nindent 8 }}
         {{- include "sentry.livenessProbe.execHealthcheckFile" (dict "livenessProbe" .Values.sentry.subscriptionConsumerGenericMetrics.livenessProbe "healthcheckFile" "/tmp/health.txt") | nindent 8 }}
         env:
         - name: C_FORCE_ROOT

@@ -94,10 +94,9 @@ spec:
           {{- if .Values.sentry.subscriptionConsumerTransactions.noStrictOffsetReset }}
           - "--no-strict-offset-reset"
           {{- end }}
-          {{- if .Values.sentry.subscriptionConsumerTransactions.livenessProbe.enabled }}
           - "--healthcheck-file-path"
           - "/tmp/health.txt"
-          {{- end }}
+        {{- include "sentry.startupProbe.execHealthcheckFile" (dict "startupProbe" .Values.sentry.subscriptionConsumerTransactions.startupProbe "healthcheckFile" "/tmp/health.txt") | nindent 8 }}
         {{- include "sentry.livenessProbe.execHealthcheckFile" (dict "livenessProbe" .Values.sentry.subscriptionConsumerTransactions.livenessProbe "healthcheckFile" "/tmp/health.txt") | nindent 8 }}
         env:
 {{ include "sentry.env" . | indent 8 }}

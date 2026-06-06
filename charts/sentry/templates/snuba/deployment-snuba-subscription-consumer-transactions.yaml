@@ -100,10 +100,9 @@ spec:
           - "--followed-consumer-group=transactions_group"
           - "--schedule-ttl=60"
           - "--stale-threshold-seconds=900"
-          {{- if .Values.snuba.subscriptionConsumerTransactions.livenessProbe.enabled }}
           - "--health-check-file"
           - "/tmp/health.txt"
-          {{- end }}
+        {{- include "sentry.startupProbe.execHealthcheckFile" (dict "startupProbe" .Values.snuba.subscriptionConsumerTransactions.startupProbe "healthcheckFile" "/tmp/health.txt") | nindent 8 }}
         {{- include "sentry.livenessProbe.execHealthcheckFile" (dict "livenessProbe" .Values.snuba.subscriptionConsumerTransactions.livenessProbe "healthcheckFile" "/tmp/health.txt") | nindent 8 }}
         ports:
         - containerPort: {{ template "snuba.port" }}

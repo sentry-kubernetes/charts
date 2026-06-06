@@ -93,10 +93,9 @@ spec:
           {{- end }}
           - "--consumer-group"
           - "subscription-results-eap-items"
-          {{- if .Values.sentry.subscriptionConsumerResultsEapItems.livenessProbe.enabled }}
           - "--healthcheck-file-path"
           - "/tmp/health.txt"
-          {{- end }}
+        {{- include "sentry.startupProbe.execHealthcheckFile" (dict "startupProbe" .Values.sentry.subscriptionConsumerResultsEapItems.startupProbe "healthcheckFile" "/tmp/health.txt") | nindent 8 }}
         {{- include "sentry.livenessProbe.execHealthcheckFile" (dict "livenessProbe" .Values.sentry.subscriptionConsumerResultsEapItems.livenessProbe "healthcheckFile" "/tmp/health.txt") | nindent 8 }}
         env:
 {{ include "sentry.env" . | indent 8 }}
