@@ -65,6 +65,7 @@ settings.py: |
           "generic_metrics_counters",
           "spans",
           "events_analytics_platform",
+          "events_analytics_platform_ro",
           "group_attributes",
           "generic_metrics_gauges",
           "metrics_summaries",
