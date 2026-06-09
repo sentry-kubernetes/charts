@@ -1,5 +1,17 @@
 # Changelog
 
+## [32.1.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v32.0.0...sentry-v32.1.0) (2026-06-09)
+
+
+### Features
+
+* add startup probe for kafka consumer workloads; tighten liveness timing ([#2233](https://github.com/sentry-kubernetes/charts/issues/2233)) ([9e4d85c](https://github.com/sentry-kubernetes/charts/commit/9e4d85cc00ff91dedf582012021c2feb5978e34f))
+
+
+### Bug Fixes
+
+* crash on sentry 26.5.2 due to snuba 26.5.2 ([#2236](https://github.com/sentry-kubernetes/charts/issues/2236)) ([dab6caf](https://github.com/sentry-kubernetes/charts/commit/dab6caf55be9561aae1b3811d423f57df7678524))
+
 ## [32.0.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v31.7.1...sentry-v32.0.0) (2026-06-04)
 
 
