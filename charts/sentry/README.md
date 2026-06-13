@@ -1652,8 +1652,6 @@ externalPostgresql:
   database: sentry
 ```
 
-> ⚠️ `.Values.externalPostgresql.existingSecretKey` is deprecated, `.Values.externalPostgresql.existingSecretKeys.password` should be used instead.
-
 # Usage
 
 - [AWS + Terraform](docs/usage-aws-terraform.md)

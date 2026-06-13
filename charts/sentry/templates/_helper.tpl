@@ -843,7 +843,7 @@ Set external Postgresql password from existingSecret
   valueFrom:
     secretKeyRef:
       name: {{ .Values.externalPostgresql.existingSecret }}
-      key: {{ or .Values.externalPostgresql.existingSecretKeys.password .Values.externalPostgresql.existingSecretKey "postgresql-password" }}
+      key: {{ default "postgresql-password" .Values.externalPostgresql.existingSecretKeys.password }}
 {{- end }}
 
 {{/*
@@ -1235,7 +1235,7 @@ Pgbouncer environment variables
   valueFrom:
     secretKeyRef:
       name: {{ .Values.externalPostgresql.existingSecret }}
-      key: {{ or .Values.externalPostgresql.existingSecretKeys.password .Values.externalPostgresql.existingSecretKey "postgresql-password" }}
+      key: {{ default "postgresql-password" .Values.externalPostgresql.existingSecretKeys.password }}
 {{- end }}
 {{- if and .Values.externalPostgresql.existingSecret .Values.externalPostgresql.existingSecretKeys.username }}
 - name: POSTGRESQL_USERNAME

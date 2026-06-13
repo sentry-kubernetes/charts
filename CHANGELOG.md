@@ -2,6 +2,27 @@
 
 The changelog below refers to the main `sentry` chart only.
 
+## Upgrading to Chart 32.2.0
+
+**Breaking change:** the deprecated singular `externalPostgresql.existingSecretKey` has been removed. Use `externalPostgresql.existingSecretKeys.password` instead.
+
+Before:
+
+```yaml
+externalPostgresql:
+  existingSecret: my-pg-secret
+  existingSecretKey: my-password-key
+```
+
+After:
+
+```yaml
+externalPostgresql:
+  existingSecret: my-pg-secret
+  existingSecretKeys:
+    password: my-password-key
+```
+
 ## Upgrading to Chart 32.0.0
 
 - **Rust Snuba consumer** is now enabled by default. Set `snuba.rustConsumer: false` to revert.
