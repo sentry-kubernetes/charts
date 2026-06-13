@@ -2,7 +2,7 @@
 
 The changelog below refers to the main `sentry` chart only.
 
-## Upgrading to Chart 32.2.0
+## Upgrading to Chart 33.0.0
 
 **Breaking change:** the deprecated singular `externalPostgresql.existingSecretKey` has been removed. Use `externalPostgresql.existingSecretKeys.password` instead.
 
