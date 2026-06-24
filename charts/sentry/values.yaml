@@ -162,6 +162,11 @@ vroom:
 launchpadTaskWorker:
   enabled: true
   annotations: {}
+  # existingSecret - Name of an externally-managed Secret holding the launchpad RPC shared secret.
+  # If unset, the chart generates and manages this Secret itself.
+  existingSecret: ""
+  # existingSecretKey - Key within existingSecret (or the chart-managed Secret) holding the RPC shared secret value.
+  existingSecretKey: "rpc-shared-secret"
   replicas: 1
   concurrency: 4
   env: []
