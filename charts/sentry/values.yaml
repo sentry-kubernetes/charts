@@ -3522,12 +3522,13 @@ extraManifests: []
 
 pgbouncer:
   enabled: false
+  # env - Extra env vars for the pgbouncer container. edoburu/pgbouncer maps almost every
+  # pgbouncer.ini setting to an env var (see https://github.com/edoburu/docker-pgbouncer)
+  # use this to set any of them that aren't already exposed as a dedicated value below.
   env: []
-  # additional parameters as `key: value`
-  extraParameters: {}
   image:
-    repository: "ghcr.io/icoretech/pgbouncer-docker"
-    tag: "1.24.1"
+    repository: "edoburu/pgbouncer"
+    tag: "v1.24.1-p1"
     pullPolicy: IfNotPresent
   replicas: 2
   podDisruptionBudget:
