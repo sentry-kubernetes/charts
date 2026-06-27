@@ -1,5 +1,12 @@
 # Changelog
 
+## [32.2.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v32.1.0...sentry-v32.2.0) (2026-06-11)
+
+
+### Features
+
+* charts/sentry: route: Add support for HTTPRoute timeouts ([#2231](https://github.com/sentry-kubernetes/charts/issues/2231)) ([7c713cc](https://github.com/sentry-kubernetes/charts/commit/7c713cc306aacf9c313d599261a34543f7bb9d84))
+
 ## [32.1.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v32.0.0...sentry-v32.1.0) (2026-06-09)
 
 
