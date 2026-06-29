@@ -118,7 +118,11 @@ startupProbe:
 {{- end -}}
 
 {{- define "launchpad.secretName" -}}
+{{- if .Values.launchpadTaskWorker.existingSecret -}}
+{{- .Values.launchpadTaskWorker.existingSecret -}}
+{{- else -}}
 {{- printf "%s-launchpad-secret" (include "sentry.fullname" .) -}}
+{{- end -}}
 {{- end -}}
 
 {{- define "launchpad.enabled" -}}

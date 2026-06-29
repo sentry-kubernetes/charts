@@ -161,6 +161,7 @@ vroom:
 
 launchpadTaskWorker:
   enabled: true
+  existingSecret: ""
   annotations: {}
   replicas: 1
   concurrency: 4
