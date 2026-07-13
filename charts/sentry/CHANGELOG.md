@@ -1,5 +1,20 @@
 # Changelog
 
+## [32.3.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v32.2.0...sentry-v32.3.0) (2026-07-13)
+
+
+### Features
+
+* charts/sentry: add configurable PagerDuty integration ([#2252](https://github.com/sentry-kubernetes/charts/issues/2252)) ([45ef34b](https://github.com/sentry-kubernetes/charts/commit/45ef34ba393bf371281402df38e6e335ac64766b))
+
+
+### Bug Fixes
+
+* add relay.asHook for rolling updates ([#2256](https://github.com/sentry-kubernetes/charts/issues/2256)) ([4f027e7](https://github.com/sentry-kubernetes/charts/commit/4f027e761ebf7b714d5b23bd63625a2310c36ef3))
+* charts/sentry: render volumeMounts key for global.volumeMounts ([#2253](https://github.com/sentry-kubernetes/charts/issues/2253)) ([6338bc7](https://github.com/sentry-kubernetes/charts/commit/6338bc71339a5273ed2caf5031023066eda8bfd4))
+* make relay config-render initContainer image configurable ([#2242](https://github.com/sentry-kubernetes/charts/issues/2242)) ([#2255](https://github.com/sentry-kubernetes/charts/issues/2255)) ([855caa6](https://github.com/sentry-kubernetes/charts/commit/855caa64766a309813c8501fe40eec2ce273166d))
+* make S3 access_key/secret_key conditional for IRSA/Pod Identity support ([#2062](https://github.com/sentry-kubernetes/charts/issues/2062)) ([dcae06f](https://github.com/sentry-kubernetes/charts/commit/dcae06f0859486cdd65a5ad3c6502adb9484ee4d))
+
 ## [32.2.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v32.1.0...sentry-v32.2.0) (2026-06-11)
 
 
