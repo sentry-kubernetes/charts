@@ -1442,7 +1442,7 @@ snuba:
     sidecars: []
     # autoOffsetReset: "earliest"
     # noStrictOffsetReset: false
-    maxBatchSize: "3"
+    # maxBatchSize: "3"
     livenessProbe:
       enabled: true
       periodSeconds: 30
@@ -1452,6 +1452,44 @@ snuba:
     # inputBlockSize: ""
     # outputBlockSize: ""
     # maxBatchTimeMs: ""
+    # queuedMaxMessagesKbytes: ""
+    # queuedMinMessages: ""
+    # volumeMounts:
+    #   - mountPath: /dev/shm
+    #     name: dshm
+    # volumes:
+    #   - name: dshm
+    #     emptyDir:
+    #       medium: Memory
+
+  outcomesAcceptedConsumer:
+    # Default --max-poll-interval-ms (self-hosted SENTRY_KAFKA_MAX_POLL_INTERVAL_MS). Set null to disable.
+    maxPollIntervalMs: 300000
+    enabled: true
+    annotations: {}
+    replicas: 1
+    env: []
+    resources: {}
+    affinity: {}
+    nodeSelector: {}
+    securityContext: {}
+    topologySpreadConstraints: []
+    containerSecurityContext: {}
+    tolerations: []
+    podLabels: {}
+    sidecars: []
+    # autoOffsetReset: "earliest"
+    # noStrictOffsetReset: false
+    # maxBatchSize: "3"
+    # consumerGroup: accepted_outcomes
+    # outcomesAcceptedTopic: outcomes-billing
+    # bucketInterval: 60
+    # rawTopic: ""  # defaults to the eap_items storage topic (snuba-items)
+    # No liveness/startup probe: accepted-outcomes-consumer does not write --health-check-file yet.
+    # processes: ""
+    # inputBlockSize: ""
+    # outputBlockSize: ""
+    maxBatchTimeMs: 750
     # queuedMaxMessagesKbytes: ""
     # queuedMinMessages: ""
     # volumeMounts:
@@ -1479,7 +1517,7 @@ snuba:
     sidecars: []
     # autoOffsetReset: "earliest"
     # noStrictOffsetReset: false
-    maxBatchSize: "3"
+    # maxBatchSize: "3"
     livenessProbe:
       enabled: true
       periodSeconds: 30

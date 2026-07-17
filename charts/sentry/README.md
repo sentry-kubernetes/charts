@@ -952,6 +952,17 @@ Note: this table is incomplete, so have a look at the values.yaml in case you mi
 | snuba.metricsConsumer.securityContext | object | `{}` |  |
 | snuba.metricsConsumer.topologySpreadConstraints | list | `[]` |  |
 | snuba.migrateJob.env | list | `[]` |  |
+| snuba.outcomesAcceptedConsumer.affinity | object | `{}` |  |
+| snuba.outcomesAcceptedConsumer.containerSecurityContext | object | `{}` |  |
+| snuba.outcomesAcceptedConsumer.enabled | bool | `true` |  |
+| snuba.outcomesAcceptedConsumer.env | list | `[]` |  |
+| snuba.outcomesAcceptedConsumer.maxBatchTimeMs | int | `750` |  |
+| snuba.outcomesAcceptedConsumer.maxPollIntervalMs | int | `300000` | Kafka `--max-poll-interval-ms` (self-hosted `SENTRY_KAFKA_MAX_POLL_INTERVAL_MS`). Set `null` to omit the flag. |
+| snuba.outcomesAcceptedConsumer.nodeSelector | object | `{}` |  |
+| snuba.outcomesAcceptedConsumer.replicas | int | `1` |  |
+| snuba.outcomesAcceptedConsumer.resources | object | `{}` |  |
+| snuba.outcomesAcceptedConsumer.securityContext | object | `{}` |  |
+| snuba.outcomesAcceptedConsumer.topologySpreadConstraints | list | `[]` |  |
 | snuba.outcomesBillingConsumer.affinity | object | `{}` |  |
 | snuba.outcomesBillingConsumer.containerSecurityContext | object | `{}` |  |
 | snuba.outcomesBillingConsumer.enabled | bool | `true` |  |
