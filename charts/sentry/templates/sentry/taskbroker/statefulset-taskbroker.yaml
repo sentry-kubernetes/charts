@@ -42,6 +42,7 @@ spec:
         checksum/configYml: {{ $root.Values.config.configYml | toYaml | toString | sha256sum }}
         checksum/sentryConfPy: {{ $root.Values.config.sentryConfPy | sha256sum }}
         checksum/config.yaml: {{ include "sentry.config" $root | sha256sum }}
+        checksum/taskbrokerConfig: {{ include "sentry.taskbroker.configYml" (dict "broker" $broker) | sha256sum }}
       {{- if $root.Values.sentry.taskBroker.annotations }}
 {{ toYaml $root.Values.sentry.taskBroker.annotations | indent 8 }}
       {{- end }}
@@ -92,15 +93,13 @@ spec:
       - name: taskbroker
         image: "{{ template "taskbroker.image" $root }}"
         imagePullPolicy: {{ default "IfNotPresent" $root.Values.images.taskbroker.pullPolicy }}
+        command:
+          - /opt/taskbroker
+          - -c
+          - /etc/taskbroker/config.yml
         env:
-        - name: TASKBROKER_KAFKA_TOPIC
-          value: {{ $broker.topic }}
-        - name: TASKBROKER_KAFKA_CONSUMER_GROUP
-          value: {{ $broker.consumerGroup }}
         - name: TASKBROKER_DB_PATH
           value: /opt/sqlite/taskbroker-activations.sqlite
-        - name: TASKBROKER_KAFKA_CLUSTER
-          value: {{ include "sentry.kafka.bootstrap_servers_string" $root | quote }}
 {{ include "sentry.env" $root | indent 8 }}
 {{ include "sentry.taskbroker.kafka.env" $root | indent 8 }}
 {{- if $root.Values.sentry.taskBroker.env }}
@@ -119,6 +118,9 @@ spec:
         volumeMounts:
         - name: data
           mountPath: /opt/sqlite
+        - name: taskbroker-config
+          mountPath: /etc/taskbroker
+          readOnly: true
         - mountPath: /etc/sentry
           name: config
           readOnly: true
@@ -138,6 +140,9 @@ spec:
       - name: config
         configMap:
           name: {{ template "sentry.fullname" $root }}-sentry
+      - name: taskbroker-config
+        configMap:
+          name: {{ template "sentry.fullname" $root }}-taskbroker-{{ $broker.name }}-config
       {{- if not $root.Values.sentry.taskBroker.persistence.enabled }}
       - name: data
         emptyDir: {}

@@ -103,6 +103,11 @@ spec:
           {{- end }}
           - "--healthcheck-file-path"
           - "/tmp/health.txt"
+          {{- $maxPollIntervalMs := .Values.sentry.processSpans.maxPollIntervalMs }}
+          {{- if $maxPollIntervalMs }}
+          - "--max-poll-interval-ms"
+          - "{{ $maxPollIntervalMs }}"
+          {{- end }}
           {{- if or .Values.sentry.processSpans.concurrency .Values.sentry.processSpans.maxBatchSize .Values.sentry.processSpans.maxBatchTimeMs }}
           - "--"
           {{- end }}

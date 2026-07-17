@@ -108,9 +108,10 @@ spec:
           - "--log-level"
           - "{{ .Values.sentry.ingestConsumerAttachments.logLevel }}"
           {{- end }}
-          {{- if .Values.sentry.ingestConsumerAttachments.maxPollIntervalMs }}
+          {{- $maxPollIntervalMs := .Values.sentry.ingestConsumerAttachments.maxPollIntervalMs }}
+          {{- if $maxPollIntervalMs }}
           - "--max-poll-interval-ms"
-          - "{{ .Values.sentry.ingestConsumerAttachments.maxPollIntervalMs }}"
+          - "{{ $maxPollIntervalMs }}"
           {{- end }}
           {{- if or .Values.sentry.ingestConsumerAttachments.concurrency .Values.sentry.ingestConsumerAttachments.maxBatchSize .Values.sentry.ingestConsumerAttachments.maxBatchTimeMs }}
           - "--"

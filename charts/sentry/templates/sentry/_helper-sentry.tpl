@@ -369,7 +369,6 @@ sentry.conf.py: |-
   SENTRY_FEATURES = {
     "auth:register": {{ .Values.auth.register | ternary "True" "False" }}
   }
-  SENTRY_FEATURES["projects:sample-events"] = False
   SENTRY_FEATURES.update(
       {
           feature: True
@@ -380,8 +379,6 @@ sentry.conf.py: |-
               {{- if .Values.sentry.features.orgSubdomains }}
               "organizations:org-ingest-subdomains",
               {{- end }}
-              "organizations:discover",
-              "organizations:global-views",
               "organizations:issue-views",
               "organizations:incidents",
               "organizations:integrations-issue-basic",
@@ -390,14 +387,13 @@ sentry.conf.py: |-
               "organizations:sso-basic",
               "organizations:sso-saml2",
               "organizations:advanced-search",
-              "organizations:issue-platform",
-              "organizations:monitors",
-              "organizations:dashboards-mep",
-              "organizations:mep-rollout-flag",
-              "organizations:dashboards-rh-widget",
               "organizations:dynamic-sampling",
+              "organizations:workflow-engine-ui",
+              "organizations:workflow-engine-rule-serializers",
+              "organizations:discover-saved-queries-deprecation",
+              "organizations:expose-migrated-discover-queries",
+              "organizations:performance-transaction-deprecation-banner",
               "projects:custom-inbound-filters",
-              "projects:data-forwarding",
               "projects:discard-groups",
               "projects:plugins",
               "projects:rate-limits",
@@ -412,19 +408,10 @@ sentry.conf.py: |-
               "organizations:visibility-explore-range-high",
               "organizations:transaction-metrics-extraction",
               "organizations:indexed-spans-extraction",
-              "organizations:insights-entry-points",
-              "organizations:insights-initial-modules",
-              "organizations:insights-addon-modules",
               "organizations:insights-modules-use-eap",
-              "organizations:starfish-mobile-appstart",
               "organizations:on-demand-metrics-extraction",
               "projects:span-metrics-extraction",
               "projects:span-metrics-extraction-addons",
-
-              # extra trace UI flags from chart
-              "organizations:trace-view-load-more",
-              "organizations:trace-tabs-ui",
-              "organizations:trace-view-linked-traces",
           )
           {{- end }}
           {{- if .Values.sentry.features.enableSessionReplay }}
@@ -432,15 +419,7 @@ sentry.conf.py: |-
               # Session Replay
               "organizations:session-replay",
               "organizations:session-replay-ui",
-              "organizations:session-replay-issue-emails",
               "organizations:session-replay-recording-scrubbing",
-              "organizations:session-replay-slack-new-issue",
-          )
-          {{- end }}
-          {{- if .Values.sentry.features.enableFeedback }}
-          + (
-              # User Feedback
-              "organizations:user-feedback-ui",
           )
           {{- end }}
           {{- if .Values.sentry.features.enableProfiling }}
@@ -458,19 +437,15 @@ sentry.conf.py: |-
           + (
               # Uptime Monitoring
               "organizations:uptime",
-              "organizations:uptime-create-issues",
           )
           {{- end }}
           + (
               # Logs (OurLogs)
               "organizations:ourlogs-enabled",
               "organizations:ourlogs-ingestion",
-              "organizations:ourlogs-stats",
-              "organizations:ourlogs-replay-ui",
 
               # Metrics (Trace Metrics)
               "organizations:tracemetrics-enabled",
-              "organizations:tracemetrics-alerts",
               "organizations:tracemetrics-ingestion",
               "organizations:tracemetrics-equations-in-alerts",
               "organizations:tracemetrics-equations-in-explore",
@@ -479,9 +454,7 @@ sentry.conf.py: |-
               "organizations:tracemetrics-stats-bytes-ui",
               "organizations:tracemetrics-pii-scrubbing-ui",
 
-              # Chart-only / misc
-              "organizations:related-events",
-              "organizations:reprocessing-v2",
+              # Misc
               "organizations:set-grouping-config",
               "organizations:onboarding",
               "projects:similarity-indexing",
@@ -745,8 +718,6 @@ sentry.conf.py: |-
   #######################
 
   OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "")
-  if OPENAI_API_KEY:
-    SENTRY_FEATURES["organizations:open-ai-suggestion"] = True
 
   ########################
   # JS SDK Loader Script #

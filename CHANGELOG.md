@@ -2,6 +2,48 @@
 
 The changelog below refers to the main `sentry` chart only.
 
+## Upgrading to Chart 33.0.0
+
+Chart `33.0.0` targets [Sentry 26.7.0](https://github.com/getsentry/self-hosted/releases/tag/26.7.0).
+
+### Breaking: TaskBroker Kafka config
+
+TaskBroker no longer uses legacy `TASKBROKER_KAFKA_TOPIC` / `TASKBROKER_KAFKA_CONSUMER_GROUP` env vars. Each `sentry.taskBroker.brokers[]` entry must provide `kafkaDeadletterTopic`, `kafkaRetryTopic`, and `kafkaTopics` (YAML config mounted into the broker). Cluster address/auth use `TASKBROKER_KAFKA_CLUSTERS__DEFAULT__*`.
+
+**Before:**
+
+```yaml
+sentry:
+  taskBroker:
+    brokers:
+      - name: default
+        topic: taskworker
+        consumerGroup: taskworker
+```
+
+**After:** see default `values.yaml` (`kafkaTopics`, including optional `raw` blocks for subscription results and profiles).
+
+Hyphenated topic names require the YAML config file; they cannot be set via env vars. See the [taskbroker Kafka config migration guide](https://github.com/getsentry/taskbroker/blob/main/docs/kafka-config-migration.md).
+
+### Breaking: Removed Sentry consumers (moved to TaskBroker raw mode)
+
+These Deployments and related values keys are **removed**. Work is consumed by TaskBroker `raw` topics (products broker for subscription results; ingest broker for `profiles`):
+
+- `sentry.subscriptionConsumerEvents`
+- `sentry.subscriptionConsumerTransactions`
+- `sentry.subscriptionConsumerMetrics`
+- `sentry.subscriptionConsumerGenericMetrics`
+- `sentry.subscriptionConsumerResultsEapItems`
+- `sentry.ingestProfiles`
+
+Remove any overrides for these keys from your values. Snuba subscription scheduler/executor Deployments (`snuba.subscriptionConsumer*`) are unchanged.
+
+### Other
+
+- Feature flags: workflow-engine UI and transactions→spans migration banners
+- Kafka consumers default `maxPollIntervalMs: 300000` (parity with self-hosted `SENTRY_KAFKA_MAX_POLL_INTERVAL_MS`); set a consumer's `maxPollIntervalMs: null` to omit `--max-poll-interval-ms`
+- When using ingress-nginx, set `nginx.ingress.kubernetes.io/proxy-read-timeout: "90"` (self-hosted nginx `proxy_read_timeout` bump)
+
 ## Upgrading to Chart 32.0.0
 
 - **Rust Snuba consumer** is now enabled by default. Set `snuba.rustConsumer: false` to revert.
