@@ -899,6 +899,10 @@ sentry:
     # Default --max-poll-interval-ms (self-hosted SENTRY_KAFKA_MAX_POLL_INTERVAL_MS). Set null to disable.
     maxPollIntervalMs: 300000
     enabled: true
+    # Deployment strategy. Single-partition consumer: keep Recreate, a
+    # RollingUpdate surge pod can never get a partition assignment and the
+    # rollout deadlocks (see sentry-kubernetes/charts#2238).
+    strategyType: Recreate
     annotations: {}
     replicas: 1
     env: []
@@ -934,6 +938,10 @@ sentry:
     # Default --max-poll-interval-ms (self-hosted SENTRY_KAFKA_MAX_POLL_INTERVAL_MS). Set null to disable.
     maxPollIntervalMs: 300000
     enabled: true
+    # Deployment strategy. Single-partition consumer: keep Recreate, a
+    # RollingUpdate surge pod can never get a partition assignment and the
+    # rollout deadlocks (see sentry-kubernetes/charts#2238).
+    strategyType: Recreate
     annotations: {}
     replicas: 1
     env: []
@@ -1595,6 +1603,10 @@ snuba:
 
   subscriptionConsumerEapItems:  # should have 1 partition and only 1 consumer replica: https://github.com/getsentry/snuba/issues/5855
     enabled: true
+    # Deployment strategy. Single-partition consumer: keep Recreate, a
+    # RollingUpdate surge pod can never get a partition assignment and the
+    # rollout deadlocks (see sentry-kubernetes/charts#2238).
+    strategyType: Recreate
     annotations: {}
     replicas: 1
     env: []
@@ -1619,6 +1631,10 @@ snuba:
 
   subscriptionConsumerEvents:  # should have 1 partition and only 1 consumer replica: https://github.com/getsentry/snuba/issues/5855
     enabled: true
+    # Deployment strategy. Single-partition consumer: keep Recreate, a
+    # RollingUpdate surge pod can never get a partition assignment and the
+    # rollout deadlocks (see sentry-kubernetes/charts#2238).
+    strategyType: Recreate
     annotations: {}
     replicas: 1
     env: []
@@ -1643,6 +1659,10 @@ snuba:
 
   subscriptionConsumerGenericMetricsDistributions:  # should have 1 partition and only 1 consumer replica: https://github.com/getsentry/snuba/issues/5855
     enabled: true
+    # Deployment strategy. Single-partition consumer: keep Recreate, a
+    # RollingUpdate surge pod can never get a partition assignment and the
+    # rollout deadlocks (see sentry-kubernetes/charts#2238).
+    strategyType: Recreate
     annotations: {}
     replicas: 1
     env: []
@@ -1667,6 +1687,10 @@ snuba:
 
   subscriptionConsumerGenericMetricsSets:  # should have 1 partition and only 1 consumer replica: https://github.com/getsentry/snuba/issues/5855
     enabled: true
+    # Deployment strategy. Single-partition consumer: keep Recreate, a
+    # RollingUpdate surge pod can never get a partition assignment and the
+    # rollout deadlocks (see sentry-kubernetes/charts#2238).
+    strategyType: Recreate
     annotations: {}
     replicas: 1
     env: []
@@ -1691,6 +1715,10 @@ snuba:
 
   subscriptionConsumerGenericMetricsCounters:  # should have 1 partition and only 1 consumer replica: https://github.com/getsentry/snuba/issues/5855
     enabled: true
+    # Deployment strategy. Single-partition consumer: keep Recreate, a
+    # RollingUpdate surge pod can never get a partition assignment and the
+    # rollout deadlocks (see sentry-kubernetes/charts#2238).
+    strategyType: Recreate
     annotations: {}
     replicas: 1
     env: []
@@ -1715,6 +1743,10 @@ snuba:
 
   subscriptionConsumerGenericMetricsGauges:  # should have 1 partition and only 1 consumer replica: https://github.com/getsentry/snuba/issues/5855
     enabled: true
+    # Deployment strategy. Single-partition consumer: keep Recreate, a
+    # RollingUpdate surge pod can never get a partition assignment and the
+    # rollout deadlocks (see sentry-kubernetes/charts#2238).
+    strategyType: Recreate
     annotations: {}
     replicas: 1
     env: []
@@ -1871,6 +1903,10 @@ snuba:
 
   subscriptionConsumerMetrics:  # should have 1 partition and only 1 consumer replica: https://github.com/getsentry/snuba/issues/5855
     enabled: true
+    # Deployment strategy. Single-partition consumer: keep Recreate, a
+    # RollingUpdate surge pod can never get a partition assignment and the
+    # rollout deadlocks (see sentry-kubernetes/charts#2238).
+    strategyType: Recreate
     annotations: {}
     replicas: 1
     env: []
@@ -1897,6 +1933,10 @@ snuba:
 
   subscriptionConsumerTransactions:  # should have 1 partition and only 1 consumer replica: https://github.com/getsentry/snuba/issues/5855
     enabled: true
+    # Deployment strategy. Single-partition consumer: keep Recreate, a
+    # RollingUpdate surge pod can never get a partition assignment and the
+    # rollout deadlocks (see sentry-kubernetes/charts#2238).
+    strategyType: Recreate
     annotations: {}
     replicas: 1
     env: []
