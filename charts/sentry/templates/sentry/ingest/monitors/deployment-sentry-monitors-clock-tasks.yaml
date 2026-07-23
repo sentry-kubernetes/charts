@@ -19,11 +19,8 @@ metadata:
   {{- end }}
 spec:
   revisionHistoryLimit: {{ .Values.revisionHistoryLimit }}
-  {{- /* Single-partition consumer: a RollingUpdate surge pod can never get a
-  partition assignment, so it fails its healthcheck-file probes and the rollout
-  deadlocks. Recreate stops the old consumer first so the new one can take over. */}}
   strategy:
-    type: {{ .Values.sentry.monitorsClockTasks.strategyType | default "Recreate" }}
+    type: {{ include "sentry.kafkaConsumer.strategyType" (dict "strategyType" .Values.sentry.monitorsClockTasks.strategyType "replicas" .Values.sentry.monitorsClockTasks.replicas "autoscaling" .Values.sentry.monitorsClockTasks.autoscaling) }}
   selector:
     matchLabels:
       app: {{ template "sentry.fullname" . }}

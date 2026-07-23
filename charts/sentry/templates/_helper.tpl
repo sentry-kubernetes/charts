@@ -38,6 +38,22 @@ livenessProbe:
 {{- end -}}
 
 {{/*
+  Recreate when replicas=1 (single-partition consumer, sentry-kubernetes/charts#2238),
+  else RollingUpdate. Explicit strategyType always wins.
+  Args: strategyType, replicas, autoscaling (all from .Values.<x>).
+*/}}
+{{- define "sentry.kafkaConsumer.strategyType" -}}
+{{- $autoscaling := .autoscaling | default dict -}}
+{{- if .strategyType -}}
+{{- .strategyType -}}
+{{- else if and (eq (.replicas | int) 1) (not $autoscaling.enabled) -}}
+Recreate
+{{- else -}}
+RollingUpdate
+{{- end -}}
+{{- end -}}
+
+{{/*
   startupProbe block for kafka-consumer / worker deployments.
   Absorbs cold-start latency so liveness can't fire during startup.
 

@@ -1056,7 +1056,7 @@ Note: this table is incomplete, so have a look at the values.yaml in case you mi
 | snuba.subscriptionConsumerEvents.replicas | int | `1` |  |
 | snuba.subscriptionConsumerEvents.resources | object | `{}` |  |
 | snuba.subscriptionConsumerEvents.securityContext | object | `{}` |  |
-| snuba.subscriptionConsumerEvents.strategyType | string | `"Recreate"` | single-partition consumer: RollingUpdate surge pods deadlock the rollout |
+| snuba.subscriptionConsumerEvents.strategyType | string | `nil` | Recreate if replicas=1, else RollingUpdate |
 | snuba.subscriptionConsumerEvents.topologySpreadConstraints | list | `[]` |  |
 | snuba.subscriptionConsumerMetrics.affinity | object | `{}` |  |
 | snuba.subscriptionConsumerMetrics.containerSecurityContext | object | `{}` |  |
@@ -1069,7 +1069,7 @@ Note: this table is incomplete, so have a look at the values.yaml in case you mi
 | snuba.subscriptionConsumerMetrics.replicas | int | `1` |  |
 | snuba.subscriptionConsumerMetrics.resources | object | `{}` |  |
 | snuba.subscriptionConsumerMetrics.securityContext | object | `{}` |  |
-| snuba.subscriptionConsumerMetrics.strategyType | string | `"Recreate"` | single-partition consumer: RollingUpdate surge pods deadlock the rollout |
+| snuba.subscriptionConsumerMetrics.strategyType | string | `nil` | Recreate if replicas=1, else RollingUpdate |
 | snuba.subscriptionConsumerMetrics.topologySpreadConstraints | list | `[]` |  |
 | snuba.subscriptionConsumerTransactions.affinity | object | `{}` |  |
 | snuba.subscriptionConsumerTransactions.containerSecurityContext | object | `{}` |  |
@@ -1082,7 +1082,7 @@ Note: this table is incomplete, so have a look at the values.yaml in case you mi
 | snuba.subscriptionConsumerTransactions.replicas | int | `1` |  |
 | snuba.subscriptionConsumerTransactions.resources | object | `{}` |  |
 | snuba.subscriptionConsumerTransactions.securityContext | object | `{}` |  |
-| snuba.subscriptionConsumerTransactions.strategyType | string | `"Recreate"` | single-partition consumer: RollingUpdate surge pods deadlock the rollout |
+| snuba.subscriptionConsumerTransactions.strategyType | string | `nil` | Recreate if replicas=1, else RollingUpdate |
 | snuba.subscriptionConsumerTransactions.topologySpreadConstraints | list | `[]` |  |
 | snuba.transactionsConsumer.affinity | object | `{}` |  |
 | snuba.transactionsConsumer.containerSecurityContext | object | `{}` |  |
