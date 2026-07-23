@@ -1,5 +1,17 @@
 # Changelog
 
+## [33.0.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v32.3.0...sentry-v33.0.0) (2026-07-23)
+
+
+### ⚠ BREAKING CHANGES
+
+* upgrade sentry to v26.7.0 ([#2257](https://github.com/sentry-kubernetes/charts/issues/2257))
+
+### Features
+
+* charts/sentry: add maxPollIntervalMs for snuba eapItemsConsumer ([#2259](https://github.com/sentry-kubernetes/charts/issues/2259)) ([bdbbb72](https://github.com/sentry-kubernetes/charts/commit/bdbbb729cd3c1a2d8772605727c1a2b812ca5c72))
+* upgrade sentry to v26.7.0 ([#2257](https://github.com/sentry-kubernetes/charts/issues/2257)) ([4743524](https://github.com/sentry-kubernetes/charts/commit/47435240145991bf7c4d85df554c875cdad9619c))
+
 ## [32.3.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v32.2.0...sentry-v32.3.0) (2026-07-13)
 
 
