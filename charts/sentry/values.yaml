@@ -1454,6 +1454,7 @@ snuba:
     securityContext: {}
     topologySpreadConstraints: []
     containerSecurityContext: {}
+    # maxPollIntervalMs: 30000
     tolerations: []
     podLabels: {}
     sidecars: []
