@@ -104,10 +104,9 @@ spec:
           {{- end }}
           - "--healthcheck-file-path"
           - "/tmp/health.txt"
-          {{- $maxPollIntervalMs := .Values.sentry.monitorsClockTick.maxPollIntervalMs }}
-          {{- if $maxPollIntervalMs }}
+          {{- if .Values.sentry.monitorsClockTick.maxPollIntervalMs }}
           - "--max-poll-interval-ms"
-          - "{{ $maxPollIntervalMs }}"
+          - "{{ .Values.sentry.monitorsClockTick.maxPollIntervalMs }}"
           {{- end }}
         {{- include "sentry.startupProbe.execHealthcheckFile" (dict "startupProbe" .Values.sentry.monitorsClockTick.startupProbe "healthcheckFile" "/tmp/health.txt") | nindent 8 }}
         {{- include "sentry.livenessProbe.execHealthcheckFile" (dict "livenessProbe" .Values.sentry.monitorsClockTick.livenessProbe "healthcheckFile" "/tmp/health.txt") | nindent 8 }}

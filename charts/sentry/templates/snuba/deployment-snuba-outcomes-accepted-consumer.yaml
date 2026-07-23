@@ -124,10 +124,9 @@ spec:
           - "--no-strict-offset-reset"
           {{- end }}
           {{- /* No file healthcheck: accepted-outcomes-consumer accepts --health-check-file but does not write it yet. */}}
-          {{- $maxPollIntervalMs := .Values.snuba.outcomesAcceptedConsumer.maxPollIntervalMs }}
-          {{- if $maxPollIntervalMs }}
+          {{- if .Values.snuba.outcomesAcceptedConsumer.maxPollIntervalMs }}
           - "--max-poll-interval-ms"
-          - "{{ $maxPollIntervalMs }}"
+          - "{{ .Values.snuba.outcomesAcceptedConsumer.maxPollIntervalMs }}"
           {{- end }}
         ports:
         - containerPort: {{ template "snuba.port" }}

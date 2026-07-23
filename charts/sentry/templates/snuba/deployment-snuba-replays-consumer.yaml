@@ -128,10 +128,9 @@ spec:
           {{- end }}
           - "--health-check-file"
           - "/tmp/health.txt"
-          {{- $maxPollIntervalMs := .Values.snuba.replaysConsumer.maxPollIntervalMs }}
-          {{- if $maxPollIntervalMs }}
+          {{- if .Values.snuba.replaysConsumer.maxPollIntervalMs }}
           - "--max-poll-interval-ms"
-          - "{{ $maxPollIntervalMs }}"
+          - "{{ .Values.snuba.replaysConsumer.maxPollIntervalMs }}"
           {{- end }}
         {{- include "sentry.startupProbe.execHealthcheckFile" (dict "startupProbe" .Values.snuba.replaysConsumer.startupProbe "healthcheckFile" "/tmp/health.txt") | nindent 8 }}
         {{- include "sentry.livenessProbe.execHealthcheckFile" (dict "livenessProbe" .Values.snuba.replaysConsumer.livenessProbe "healthcheckFile" "/tmp/health.txt") | nindent 8 }}

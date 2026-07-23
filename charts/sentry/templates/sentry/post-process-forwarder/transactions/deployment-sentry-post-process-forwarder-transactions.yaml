@@ -106,10 +106,9 @@ spec:
           {{- end }}
           - "--healthcheck-file-path"
           - "/tmp/health.txt"
-          {{- $maxPollIntervalMs := .Values.sentry.postProcessForwardTransactions.maxPollIntervalMs }}
-          {{- if $maxPollIntervalMs }}
+          {{- if .Values.sentry.postProcessForwardTransactions.maxPollIntervalMs }}
           - "--max-poll-interval-ms"
-          - "{{ $maxPollIntervalMs }}"
+          - "{{ .Values.sentry.postProcessForwardTransactions.maxPollIntervalMs }}"
           {{- end }}
           {{- if .Values.sentry.postProcessForwardTransactions.processes }}
           - "--"

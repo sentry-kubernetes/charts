@@ -107,10 +107,9 @@ spec:
           - "--log-level"
           - "{{ .Values.sentry.metricsConsumer.logLevel }}"
           {{- end }}
-          {{- $maxPollIntervalMs := .Values.sentry.metricsConsumer.maxPollIntervalMs }}
-          {{- if $maxPollIntervalMs }}
+          {{- if .Values.sentry.metricsConsumer.maxPollIntervalMs }}
           - "--max-poll-interval-ms"
-          - "{{ $maxPollIntervalMs }}"
+          - "{{ .Values.sentry.metricsConsumer.maxPollIntervalMs }}"
           {{- end }}
           {{- if .Values.sentry.metricsConsumer.concurrency }}
           - "--"
