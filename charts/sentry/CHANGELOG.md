@@ -1,5 +1,17 @@
 # Changelog
 
+## [33.1.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v33.0.0...sentry-v33.1.0) (2026-07-26)
+
+
+### Features
+
+* upgrade sentry to v26.7.1 ([#2263](https://github.com/sentry-kubernetes/charts/issues/2263)) ([d02cfb5](https://github.com/sentry-kubernetes/charts/commit/d02cfb51bac385935082a0cc458cbe83bca8fd02))
+
+
+### Bug Fixes
+
+* use Recreate strategy for single-partition Kafka consumers ([#2258](https://github.com/sentry-kubernetes/charts/issues/2258)) ([c261d9f](https://github.com/sentry-kubernetes/charts/commit/c261d9fe5d6d12279a49a863b4e5265d387a2cae))
+
 ## [33.0.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v32.3.0...sentry-v33.0.0) (2026-07-23)
 
 
