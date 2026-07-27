@@ -33,6 +33,7 @@ jobs:
           helm repo add sentry-kubernetes https://sentry-kubernetes.github.io/charts
           helm repo add bitnami https://charts.bitnami.com/bitnami
           helm repo add altinity https://helm.altinity.com
+          helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
           helm repo update
 
       - name: Run chart-testing (list-changed)
