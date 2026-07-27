@@ -6,6 +6,11 @@ version: 33.0.0
 # renovate image=ghcr.io/getsentry/sentry
 appVersion: 26.7.1
 dependencies:
+  - name: prometheus-kafka-exporter
+    alias: kafkaExporter
+    repository: https://prometheus-community.github.io/helm-charts
+    version: 3.1.0
+    condition: kafkaExporter.enabled
   - name: memcached
     repository: oci://registry-1.docker.io/cloudpirates
     version: 0.9.3

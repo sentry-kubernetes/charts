@@ -9,8 +9,12 @@
 {{- else if hasKey $globalAutoscaling "enabled" }}
   {{- $enabled = $globalAutoscaling.enabled }}
 {{- end }}
+{{- $autoscaler := default "hpa" $globalAutoscaling.autoscaler }}
+{{- if hasKey $workerAutoscaling "autoscaler" }}
+  {{- $autoscaler = $workerAutoscaling.autoscaler }}
+{{- end }}
 
-{{- if $enabled }}
+{{- if and $enabled (eq $autoscaler "hpa") }}
 {{- $minReplicas := default $globalAutoscaling.minReplicas $workerAutoscaling.minReplicas }}
 {{- $maxReplicas := default $globalAutoscaling.maxReplicas $workerAutoscaling.maxReplicas }}
 {{- $targetCPU := default $globalAutoscaling.targetCPUUtilizationPercentage $workerAutoscaling.targetCPUUtilizationPercentage }}
@@ -83,4 +87,3 @@ spec:
 {{- end }}
 {{- end }}
 {{- end }}
-

@@ -1,0 +1,27 @@
+{{ include "sentry.autoscaling.forDeployment" (dict "root" . "enabled" .Values.relay.enabled "values" .Values.relay "name" "relay" "targetName" "relay" "component" "relay" "valuePath" "relay" "hook" .Values.relay.asHook) }}
+{{ include "sentry.autoscaling.forDeployment" (dict "root" . "enabled" .Values.sentry.web.enabled "values" .Values.sentry.web "name" "sentry-web" "targetName" "web" "component" "web" "valuePath" "sentry.web" "hook" false) }}
+{{- if has "feature-complete" .Values.profiles }}
+{{ include "sentry.autoscaling.forDeployment" (dict "root" . "enabled" true "values" .Values.vroom "name" "vroom" "targetName" "vroom" "component" "vroom" "valuePath" "vroom" "hook" false) }}
+{{- end }}
+
+{{- if .Values.sentry.taskWorker.enabled }}
+{{- $root := . }}
+{{- $taskWorkerAutoscaling := default dict .Values.sentry.taskWorker.autoscaling }}
+{{- range $worker := .Values.sentry.taskWorker.workers }}
+{{- $workerAutoscaling := default dict $worker.autoscaling }}
+{{- $autoscaling := mergeOverwrite (deepCopy $taskWorkerAutoscaling) (deepCopy $workerAutoscaling) }}
+{{- $brokerName := default $worker.name $worker.brokerName }}
+{{- $defaultTopic := ternary "taskworker" (printf "taskworker-%s" $brokerName) (eq $brokerName "default") }}
+{{- $workerKafka := default dict $worker.kafka }}
+{{- $topic := default $defaultTopic $workerKafka.topic }}
+{{- $consumerGroup := default $defaultTopic $workerKafka.consumerGroup }}
+{{ include "sentry.autoscaling.forDeployment" (dict "root" $root "enabled" true "values" (dict "autoscaling" $autoscaling) "name" (printf "taskworker-%s" $worker.name) "targetName" (printf "taskworker-%s" $worker.name) "component" (printf "taskworker-%s" $worker.name) "valuePath" (printf "sentry.taskWorker.workers[%s]" $worker.name) "kafkaTopic" $topic "kafkaConsumerGroup" $consumerGroup "hook" $root.Values.asHook) }}
+{{- end }}
+{{- end }}
+{{ include "sentry.autoscaling.forDeployment" (dict "root" . "enabled" .Values.snuba.api.enabled "values" .Values.snuba.api "name" "snuba-api" "targetName" "snuba-api" "component" "snuba-api" "valuePath" "snuba.api" "hook" false) }}
+{{ include "sentry.autoscaling.forDeployment" (dict "root" . "enabled" .Values.sentry.ingestConsumerAttachments.enabled "values" .Values.sentry.ingestConsumerAttachments "name" "sentry-ingest-consumer-attachments" "targetName" "ingest-consumer-attachments" "component" "ingest-consumer-attachments" "valuePath" "sentry.ingestConsumerAttachments" "kafkaTopic" "ingest-attachments" "kafkaConsumerGroup" "ingest-consumer" "hook" .Values.asHook) }}
+{{ include "sentry.autoscaling.forDeployment" (dict "root" . "enabled" .Values.sentry.ingestConsumerEvents.enabled "values" .Values.sentry.ingestConsumerEvents "name" "sentry-ingest-consumer-events" "targetName" "ingest-consumer-events" "component" "ingest-consumer-events" "valuePath" "sentry.ingestConsumerEvents" "kafkaTopic" "ingest-events" "kafkaConsumerGroup" "ingest-consumer" "hook" .Values.asHook) }}
+{{- if has "feature-complete" .Values.profiles }}
+{{ include "sentry.autoscaling.forDeployment" (dict "root" . "enabled" .Values.sentry.ingestConsumerTransactions.enabled "values" .Values.sentry.ingestConsumerTransactions "name" "sentry-ingest-consumer-transactions" "targetName" "ingest-consumer-transactions" "component" "ingest-consumer-transactions" "valuePath" "sentry.ingestConsumerTransactions" "kafkaTopic" "ingest-transactions" "kafkaConsumerGroup" "ingest-consumer" "hook" .Values.asHook) }}
+{{ include "sentry.autoscaling.forDeployment" (dict "root" . "enabled" .Values.sentry.ingestOccurrences.enabled "values" .Values.sentry.ingestOccurrences "name" "sentry-ingest-occurrences" "targetName" "ingest-occurrences" "component" "ingest-occurrences" "valuePath" "sentry.ingestOccurrences" "kafkaTopic" "ingest-occurrences" "kafkaConsumerGroup" "ingest-occurrences" "hook" .Values.asHook) }}
+{{- end }}

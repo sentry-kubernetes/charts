@@ -1,0 +1,347 @@
+{{- if and .Values.hooks.enabled .Values.externalClickhouse.prepare.enabled -}}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ template "sentry.fullname" . }}-clickhouse-prepare
+  labels:
+    app: sentry
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
+    release: "{{ .Release.Name }}"
+    heritage: "{{ .Release.Service }}"
+  annotations:
+    "helm.sh/hook": "pre-install,pre-upgrade"
+    "helm.sh/hook-delete-policy": "{{ if .Values.hooks.removeOnSuccess }}hook-succeeded,{{ end }}before-hook-creation"
+    "helm.sh/hook-weight": "0"
+spec:
+  backoffLimit: {{ .Values.externalClickhouse.prepare.backoffLimit }}
+  {{- if .Values.externalClickhouse.prepare.activeDeadlineSeconds }}
+  activeDeadlineSeconds: {{ .Values.externalClickhouse.prepare.activeDeadlineSeconds }}
+  {{- end }}
+  {{- if .Values.externalClickhouse.prepare.ttlSecondsAfterFinished }}
+  ttlSecondsAfterFinished: {{ .Values.externalClickhouse.prepare.ttlSecondsAfterFinished }}
+  {{- end }}
+  template:
+    metadata:
+      name: {{ template "sentry.fullname" . }}-clickhouse-prepare
+      {{- if .Values.externalClickhouse.prepare.podAnnotations }}
+      annotations:
+{{ toYaml .Values.externalClickhouse.prepare.podAnnotations | indent 8 }}
+      {{- end }}
+      labels:
+        app: sentry
+        release: "{{ .Release.Name }}"
+        {{- if .Values.externalClickhouse.prepare.podLabels }}
+{{ toYaml .Values.externalClickhouse.prepare.podLabels | indent 8 }}
+        {{- end }}
+    spec:
+      restartPolicy: {{ .Values.hooks.restartPolicy | default "Never" }}
+      {{- if .Values.externalClickhouse.prepare.affinity }}
+      affinity:
+{{ toYaml .Values.externalClickhouse.prepare.affinity | indent 8 }}
+      {{- end }}
+      {{- if .Values.externalClickhouse.prepare.nodeSelector }}
+      nodeSelector:
+{{ toYaml .Values.externalClickhouse.prepare.nodeSelector | indent 8 }}
+      {{- else if .Values.global.nodeSelector }}
+      nodeSelector:
+{{ toYaml .Values.global.nodeSelector | indent 8 }}
+      {{- end }}
+      {{- if .Values.externalClickhouse.prepare.tolerations }}
+      tolerations:
+{{ toYaml .Values.externalClickhouse.prepare.tolerations | indent 8 }}
+      {{- else if .Values.global.tolerations }}
+      tolerations:
+{{ toYaml .Values.global.tolerations | indent 8 }}
+      {{- end }}
+      {{- if .Values.dnsPolicy }}
+      dnsPolicy: {{ .Values.dnsPolicy | quote }}
+      {{- end }}
+      {{- if .Values.dnsConfig }}
+      dnsConfig:
+{{ toYaml .Values.dnsConfig | indent 8 }}
+      {{- end }}
+      {{- if .Values.images.snuba.imagePullSecrets }}
+      imagePullSecrets:
+{{ toYaml .Values.images.snuba.imagePullSecrets | indent 8 }}
+      {{- end }}
+      {{- if .Values.externalClickhouse.prepare.securityContext }}
+      securityContext:
+{{ toYaml .Values.externalClickhouse.prepare.securityContext | indent 8 }}
+      {{- else if .Values.hooks.securityContext }}
+      securityContext:
+{{ toYaml .Values.hooks.securityContext | indent 8 }}
+      {{- end }}
+      containers:
+      - name: clickhouse-prepare
+        image: {{ .Values.externalClickhouse.prepare.image.repository }}:{{ .Values.externalClickhouse.prepare.image.tag }}
+        imagePullPolicy: {{ .Values.externalClickhouse.prepare.image.pullPolicy }}
+        command: ["/bin/bash"]
+        args:
+          - "-c"
+          - |
+            set -euo pipefail
+
+            log() {
+              echo "[$(date -Iseconds)] $*"
+            }
+
+            query() {
+              clickhouse-client "${ADMIN_CH_ARGS[@]}" --query="$1"
+            }
+
+            test_query() {
+              clickhouse-client "${RUNTIME_CH_ARGS[@]}" --query="$1"
+            }
+
+            query_value() {
+              query "$1" | tr -d '\r'
+            }
+
+            test_query_value() {
+              test_query "$1" | tr -d '\r'
+            }
+
+            quote_ident() {
+              local value="$1"
+              value="${value//\`/\`\`}"
+              printf '`%s`' "$value"
+            }
+
+            quote_string() {
+              local value="$1"
+              local escaped
+              escaped="$(printf "%s" "$value" | sed "s/'/''/g")"
+              printf "'%s'" "$escaped"
+            }
+
+            ADMIN_CH_ARGS=(
+              --host="$CLICKHOUSE_HOST"
+              --port="$CLICKHOUSE_PORT"
+              --user="$CLICKHOUSE_ADMIN_USER"
+              --database="$CLICKHOUSE_DATABASE"
+            )
+            if [ -n "${CLICKHOUSE_ADMIN_PASSWORD:-}" ]; then
+              ADMIN_CH_ARGS+=(--password="$CLICKHOUSE_ADMIN_PASSWORD")
+            fi
+
+            RUNTIME_CH_ARGS=(
+              --host="$CLICKHOUSE_HOST"
+              --port="$CLICKHOUSE_PORT"
+              --user="$CLICKHOUSE_RUNTIME_USER"
+              --database="$CLICKHOUSE_DATABASE"
+            )
+            if [ -n "${CLICKHOUSE_RUNTIME_PASSWORD:-}" ]; then
+              RUNTIME_CH_ARGS+=(--password="$CLICKHOUSE_RUNTIME_PASSWORD")
+            fi
+
+            DB_IDENT="$(quote_ident "$CLICKHOUSE_DATABASE")"
+            RUNTIME_USER_IDENT="$(quote_ident "$CLICKHOUSE_RUNTIME_USER")"
+            RUNTIME_PASSWORD_LITERAL="$(quote_string "${CLICKHOUSE_RUNTIME_PASSWORD:-}")"
+            LOCAL_TABLE="sentry_clickhouse_prepare_local"
+            DIST_TABLE="sentry_clickhouse_prepare_dist"
+            LOCAL_IDENT="$(quote_ident "$LOCAL_TABLE")"
+            DIST_IDENT="$(quote_ident "$DIST_TABLE")"
+
+            log "Preparing ClickHouse for Snuba: host=${CLICKHOUSE_HOST}:${CLICKHOUSE_PORT} database=${CLICKHOUSE_DATABASE} cluster=${CLICKHOUSE_CLUSTER_NAME} distributed_cluster=${CLICKHOUSE_DISTRIBUTED_CLUSTER_NAME}"
+            query "SELECT 1" >/dev/null
+
+            log "Checking ClickHouse cluster topology"
+            ACTUAL_SHARDS="$(query_value "SELECT countDistinct(shard_num) FROM system.clusters WHERE cluster = '${CLICKHOUSE_CLUSTER_NAME}'")"
+            ACTUAL_REPLICAS="$(query_value "SELECT count() FROM system.clusters WHERE cluster = '${CLICKHOUSE_CLUSTER_NAME}'")"
+            EXPECTED_REPLICAS=$((EXPECTED_SHARDS * EXPECTED_REPLICAS_PER_SHARD))
+
+            if [ "$ACTUAL_SHARDS" != "$EXPECTED_SHARDS" ]; then
+              echo "Unexpected shard count for cluster ${CLICKHOUSE_CLUSTER_NAME}: expected ${EXPECTED_SHARDS}, got ${ACTUAL_SHARDS}" >&2
+              exit 1
+            fi
+
+            if [ "$ACTUAL_REPLICAS" != "$EXPECTED_REPLICAS" ]; then
+              echo "Unexpected replica count for cluster ${CLICKHOUSE_CLUSTER_NAME}: expected ${EXPECTED_REPLICAS}, got ${ACTUAL_REPLICAS}" >&2
+              exit 1
+            fi
+
+            BAD_SHARDS="$(query_value "SELECT count() FROM (SELECT shard_num, count() AS replicas FROM system.clusters WHERE cluster = '${CLICKHOUSE_CLUSTER_NAME}' GROUP BY shard_num HAVING replicas != ${EXPECTED_REPLICAS_PER_SHARD})")"
+            if [ "$BAD_SHARDS" != "0" ]; then
+              echo "Cluster ${CLICKHOUSE_CLUSTER_NAME} has shards with unexpected replica counts" >&2
+              query "SELECT shard_num, count() AS replicas FROM system.clusters WHERE cluster = '${CLICKHOUSE_CLUSTER_NAME}' GROUP BY shard_num ORDER BY shard_num" >&2
+              exit 1
+            fi
+
+            log "Cluster topology is valid: ${ACTUAL_SHARDS} shards, ${ACTUAL_REPLICAS} replicas"
+
+            query "CREATE DATABASE IF NOT EXISTS ${DB_IDENT}"
+
+            {{- if .Values.externalClickhouse.prepare.runtimeUser.enabled }}
+            log "Creating or updating ClickHouse runtime user ${CLICKHOUSE_RUNTIME_USER}"
+            if [ -n "${CLICKHOUSE_RUNTIME_PASSWORD:-}" ]; then
+              query "CREATE USER IF NOT EXISTS ${RUNTIME_USER_IDENT} ON CLUSTER '${CLICKHOUSE_CLUSTER_NAME}' IDENTIFIED WITH plaintext_password BY ${RUNTIME_PASSWORD_LITERAL}"
+              query "ALTER USER ${RUNTIME_USER_IDENT} ON CLUSTER '${CLICKHOUSE_CLUSTER_NAME}' IDENTIFIED WITH plaintext_password BY ${RUNTIME_PASSWORD_LITERAL}"
+            else
+              query "CREATE USER IF NOT EXISTS ${RUNTIME_USER_IDENT} ON CLUSTER '${CLICKHOUSE_CLUSTER_NAME}' IDENTIFIED WITH no_password"
+              query "ALTER USER ${RUNTIME_USER_IDENT} ON CLUSTER '${CLICKHOUSE_CLUSTER_NAME}' IDENTIFIED WITH no_password"
+            fi
+            {{- if .Values.externalClickhouse.prepare.runtimeUser.grantAll }}
+            query "GRANT ON CLUSTER '${CLICKHOUSE_CLUSTER_NAME}' ALL ON *.* TO ${RUNTIME_USER_IDENT}{{ if .Values.externalClickhouse.prepare.runtimeUser.grantOption }} WITH GRANT OPTION{{ end }}"
+            {{- else }}
+            query "GRANT ON CLUSTER '${CLICKHOUSE_CLUSTER_NAME}' ${CLICKHOUSE_RUNTIME_GRANTS} ON ${DB_IDENT}.* TO ${RUNTIME_USER_IDENT}"
+            {{- if .Values.externalClickhouse.prepare.runtimeUser.clusterGrants }}
+            query "GRANT ON CLUSTER '${CLICKHOUSE_CLUSTER_NAME}' ${CLICKHOUSE_RUNTIME_CLUSTER_GRANTS} ON *.* TO ${RUNTIME_USER_IDENT}"
+            {{- end }}
+            {{- end }}
+            {{- end }}
+
+            {{- if .Values.externalClickhouse.prepare.settings.apply }}
+            log "Applying required ClickHouse settings to runtime user ${CLICKHOUSE_RUNTIME_USER}"
+            query "ALTER USER ${RUNTIME_USER_IDENT} ON CLUSTER '${CLICKHOUSE_CLUSTER_NAME}' SETTINGS insert_distributed_one_random_shard = {{ index .Values.externalClickhouse.prepare.settings.values "insert_distributed_one_random_shard" }}, distributed_foreground_insert = {{ index .Values.externalClickhouse.prepare.settings.values "distributed_foreground_insert" }}, skip_unavailable_shards = {{ index .Values.externalClickhouse.prepare.settings.values "skip_unavailable_shards" }}, load_balancing = '{{ index .Values.externalClickhouse.prepare.settings.values "load_balancing" }}'"
+            {{- end }}
+
+            {{- if .Values.externalClickhouse.prepare.settings.verify }}
+            log "Verifying ClickHouse settings for prepare session"
+            check_setting() {
+              local name="$1"
+              local expected="$2"
+              local actual
+              actual="$(test_query_value "SELECT value FROM system.settings WHERE name = '${name}'")"
+              if [ "$actual" != "$expected" ]; then
+                echo "Unexpected setting ${name}: expected ${expected}, got ${actual}" >&2
+                exit 1
+              fi
+            }
+            check_setting "insert_distributed_one_random_shard" "{{ index .Values.externalClickhouse.prepare.settings.values "insert_distributed_one_random_shard" }}"
+            check_setting "distributed_foreground_insert" "{{ index .Values.externalClickhouse.prepare.settings.values "distributed_foreground_insert" }}"
+            check_setting "skip_unavailable_shards" "{{ index .Values.externalClickhouse.prepare.settings.values "skip_unavailable_shards" }}"
+            check_setting "load_balancing" "{{ index .Values.externalClickhouse.prepare.settings.values "load_balancing" }}"
+            {{- end }}
+
+            {{- if .Values.externalClickhouse.prepare.distributedInsertTest.enabled }}
+            log "Running Distributed INSERT smoke test with explicit sharding key"
+            cleanup() {
+              set +e
+              clickhouse-client "${RUNTIME_CH_ARGS[@]}" --query="DROP TABLE IF EXISTS ${DB_IDENT}.${DIST_IDENT} ON CLUSTER '${CLICKHOUSE_DISTRIBUTED_CLUSTER_NAME}' SYNC" >/dev/null 2>&1
+              clickhouse-client "${RUNTIME_CH_ARGS[@]}" --query="DROP TABLE IF EXISTS ${DB_IDENT}.${LOCAL_IDENT} ON CLUSTER '${CLICKHOUSE_CLUSTER_NAME}' SYNC" >/dev/null 2>&1
+            }
+            trap cleanup EXIT
+            cleanup
+
+            test_query "CREATE TABLE ${DB_IDENT}.${LOCAL_IDENT} ON CLUSTER '${CLICKHOUSE_CLUSTER_NAME}' (id UInt64, marker String, created_at DateTime DEFAULT now()) ENGINE = ReplicatedMergeTree('/clickhouse/tables/{shard}/sentry_clickhouse_prepare_local', '{replica}') ORDER BY id"
+            test_query "CREATE TABLE ${DB_IDENT}.${DIST_IDENT} ON CLUSTER '${CLICKHOUSE_DISTRIBUTED_CLUSTER_NAME}' AS ${DB_IDENT}.${LOCAL_IDENT} ENGINE = Distributed('${CLICKHOUSE_DISTRIBUTED_CLUSTER_NAME}', '${CLICKHOUSE_DATABASE}', '${LOCAL_TABLE}', id)"
+
+            TOTAL_ROWS=0
+            ACTIVE_SHARDS=0
+            BATCH=0
+            while [ "$BATCH" -lt "$MAX_INSERT_BATCHES" ]; do
+              VALUES=()
+              ROW=0
+              while [ "$ROW" -lt "$ROWS_PER_BATCH" ]; do
+                ID=$((BATCH * ROWS_PER_BATCH + ROW + 1))
+                VALUES+=("(${ID}, 'sentry-clickhouse-prepare')")
+                ROW=$((ROW + 1))
+              done
+              IFS=,
+              test_query "INSERT INTO ${DB_IDENT}.${DIST_IDENT} (id, marker) VALUES ${VALUES[*]}"
+              unset IFS
+              TOTAL_ROWS=$((TOTAL_ROWS + ROWS_PER_BATCH))
+
+              ACTIVE_SHARDS="$(test_query_value "SELECT count() FROM (SELECT shardNum() AS shard, count() AS rows FROM cluster('${CLICKHOUSE_DISTRIBUTED_CLUSTER_NAME}', '${CLICKHOUSE_DATABASE}', '${LOCAL_TABLE}') WHERE marker = 'sentry-clickhouse-prepare' GROUP BY shard HAVING rows > 0)")"
+              if [ "$ACTIVE_SHARDS" = "$EXPECTED_SHARDS" ]; then
+                break
+              fi
+              BATCH=$((BATCH + 1))
+            done
+
+            ACTUAL_ROWS="$(test_query_value "SELECT count() FROM ${DB_IDENT}.${DIST_IDENT} WHERE marker = 'sentry-clickhouse-prepare'")"
+            if [ "$ACTUAL_ROWS" != "$TOTAL_ROWS" ]; then
+              echo "Distributed INSERT row count mismatch: expected ${TOTAL_ROWS}, got ${ACTUAL_ROWS}" >&2
+              exit 1
+            fi
+
+            if [ "$ACTIVE_SHARDS" != "$EXPECTED_SHARDS" ]; then
+              echo "Distributed INSERT did not reach every shard: expected ${EXPECTED_SHARDS}, got ${ACTIVE_SHARDS}" >&2
+              test_query "SELECT shardNum() AS shard, count() AS rows FROM cluster('${CLICKHOUSE_DISTRIBUTED_CLUSTER_NAME}', '${CLICKHOUSE_DATABASE}', '${LOCAL_TABLE}') WHERE marker = 'sentry-clickhouse-prepare' GROUP BY shard ORDER BY shard" >&2
+              exit 1
+            fi
+
+            log "Distributed INSERT smoke test passed: rows=${ACTUAL_ROWS}, active_shards=${ACTIVE_SHARDS}"
+            {{- end }}
+
+            log "ClickHouse prepare completed successfully"
+        env:
+        - name: CLICKHOUSE_HOST
+          value: {{ include "sentry.clickhouse.host" . | quote }}
+        - name: CLICKHOUSE_PORT
+          value: {{ include "sentry.clickhouse.port" . | quote }}
+        - name: CLICKHOUSE_DATABASE
+          value: {{ include "sentry.clickhouse.database" . | quote }}
+        - name: CLICKHOUSE_ADMIN_USER
+          value: {{ include "sentry.clickhouse.username" . | quote }}
+        - name: CLICKHOUSE_RUNTIME_USER
+          value: {{ include "sentry.clickhouse.username" . | quote }}
+        - name: CLICKHOUSE_RUNTIME_GRANTS
+          value: {{ join ", " .Values.externalClickhouse.prepare.runtimeUser.grants | quote }}
+        - name: CLICKHOUSE_RUNTIME_CLUSTER_GRANTS
+          value: {{ join ", " .Values.externalClickhouse.prepare.runtimeUser.clusterGrants | quote }}
+        - name: CLICKHOUSE_CLUSTER_NAME
+          value: {{ include "sentry.clickhouse.cluster.name" . | quote }}
+        - name: CLICKHOUSE_DISTRIBUTED_CLUSTER_NAME
+          value: {{ include "sentry.clickhouse.distributed.cluster.name" . | quote }}
+        - name: EXPECTED_SHARDS
+          value: {{ .Values.externalClickhouse.prepare.expectedShards | quote }}
+        - name: EXPECTED_REPLICAS_PER_SHARD
+          value: {{ .Values.externalClickhouse.prepare.expectedReplicasPerShard | quote }}
+        - name: MAX_INSERT_BATCHES
+          value: {{ .Values.externalClickhouse.prepare.distributedInsertTest.maxBatches | quote }}
+        - name: ROWS_PER_BATCH
+          value: {{ .Values.externalClickhouse.prepare.distributedInsertTest.rowsPerBatch | quote }}
+        - name: CLICKHOUSE_ADMIN_PASSWORD
+          {{- if .Values.externalClickhouse.existingSecret }}
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.externalClickhouse.existingSecret | quote }}
+              key: {{ default "clickhouse-password" .Values.externalClickhouse.existingSecretKey | quote }}
+          {{- else }}
+          value: {{ include "sentry.clickhouse.password" . | quote }}
+          {{- end }}
+        {{- if .Values.externalClickhouse.existingSecret }}
+        - name: CLICKHOUSE_RUNTIME_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.externalClickhouse.existingSecret | quote }}
+              key: {{ default "clickhouse-password" .Values.externalClickhouse.existingSecretKey | quote }}
+        {{- else if .Values.externalClickhouse.password }}
+        - name: CLICKHOUSE_RUNTIME_PASSWORD
+          value: {{ include "sentry.clickhouse.password" . | quote }}
+        {{- end }}
+{{- if .Values.externalClickhouse.prepare.env }}
+{{ toYaml .Values.externalClickhouse.prepare.env | indent 8 }}
+{{- end }}
+{{- if or .Values.externalClickhouse.prepare.volumeMounts .Values.global.volumeMounts }}
+        volumeMounts:
+{{- end }}
+{{- if .Values.externalClickhouse.prepare.volumeMounts }}
+{{ toYaml .Values.externalClickhouse.prepare.volumeMounts | indent 8 }}
+{{- end }}
+{{- if .Values.global.volumeMounts }}
+{{ toYaml .Values.global.volumeMounts | indent 8 }}
+{{- end }}
+        resources:
+{{ toYaml .Values.externalClickhouse.prepare.resources | indent 10 }}
+{{- if .Values.externalClickhouse.prepare.containerSecurityContext }}
+        securityContext:
+{{ toYaml .Values.externalClickhouse.prepare.containerSecurityContext | indent 10 }}
+{{- end }}
+{{- if .Values.externalClickhouse.prepare.sidecars }}
+{{ toYaml .Values.externalClickhouse.prepare.sidecars | indent 6 }}
+{{- end }}
+{{- if .Values.global.sidecars }}
+{{ toYaml .Values.global.sidecars | indent 6 }}
+{{- end }}
+{{- if or .Values.externalClickhouse.prepare.volumes .Values.global.volumes }}
+      volumes:
+{{- end }}
+{{- if .Values.externalClickhouse.prepare.volumes }}
+{{ toYaml .Values.externalClickhouse.prepare.volumes | indent 6 }}
+{{- end }}
+{{- if .Values.global.volumes }}
+{{ toYaml .Values.global.volumes | indent 6 }}
+{{- end }}
+{{- end }}

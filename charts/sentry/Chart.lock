@@ -1,4 +1,7 @@
 dependencies:
+- name: prometheus-kafka-exporter
+  repository: https://prometheus-community.github.io/helm-charts
+  version: 3.1.0
 - name: memcached
   repository: oci://registry-1.docker.io/cloudpirates
   version: 0.9.3
@@ -14,5 +17,5 @@ dependencies:
 - name: nginx
   repository: oci://registry-1.docker.io/cloudpirates
   version: 0.7.0
-digest: sha256:11613581288338b8b94759d4438866780bcd3adbcbb815d9dee7132753ffb2da
-generated: "2026-05-29T12:27:53.995591111+06:00"
+digest: sha256:bc75c3813176d446ac8101610aa7710e16cdef4a14848361ddddb0e124a1a5de
+generated: "2026-07-27T10:06:43.041761+03:00"

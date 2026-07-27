@@ -1,5 +1,5 @@
 {{- if has "feature-complete" .Values.profiles }}
-{{- if and .Values.sentry.ingestOccurrences.enabled .Values.sentry.ingestOccurrences.autoscaling.enabled }}
+{{- if and .Values.sentry.ingestOccurrences.enabled (include "sentry.autoscaling.isHpa" (dict "autoscaling" .Values.sentry.ingestOccurrences.autoscaling)) }}
 apiVersion: {{ template "sentry.autoscaling.apiVersion" . }}
 kind: HorizontalPodAutoscaler
 metadata:

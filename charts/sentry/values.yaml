@@ -16,6 +16,37 @@ global:
   volumeMounts: []
   volumes: []
 
+  # Shared KEDA defaults. Workload-level autoscaling values override these.
+  autoscaling:
+    pollingInterval: 30
+    cooldownPeriod: 300
+    triggers:
+      kafka:
+        # bootstrapServers defaults to the chart Kafka configuration.
+        lagThreshold: "1000"
+        activationLagThreshold: "0"
+        offsetResetPolicy: latest
+      # Kafka consumer lag from kafka-exporter, queried through Prometheus.
+      kafkaLag:
+        # serverAddress: http://prometheus.monitoring.svc:9090
+        metricName: kafka_consumergroup_lag
+        threshold: "1000"
+        activationThreshold: "0"
+      prometheus: {}
+
+# Optional prometheus-kafka-exporter subchart. Prometheus must scrape its
+# Service (directly or through the ServiceMonitor) before kafkaLag triggers can
+# be used by KEDA.
+kafkaExporter:
+  enabled: false
+  kafkaServer:
+    - kafka:9092
+  prometheus:
+    serviceMonitor:
+      enabled: false
+      namespace: monitoring
+      additionalLabels: {}
+
 # Profiles correspond to COMPOSE_PROFILES in the original self-hosted docker-compose.yml.
 # https://github.com/getsentry/self-hosted/blob/master/docker-compose.yml
 # When set to errors-only, the chart only deploys components related to processing errors.
@@ -150,6 +181,8 @@ vroom:
 
   autoscaling:
     enabled: false
+    # autoscaler may be "hpa" (default) or "keda".
+    autoscaler: hpa
     minReplicas: 2
     maxReplicas: 5
     targetCPUUtilizationPercentage: 50
@@ -249,6 +282,8 @@ relay:
   # priorityClassName: ""
   autoscaling:
     enabled: false
+    # autoscaler may be "hpa" (default) or "keda".
+    autoscaler: hpa
     minReplicas: 2
     maxReplicas: 5
     targetCPUUtilizationPercentage: 50
@@ -366,6 +401,8 @@ sentry:
     # logFormat: "human" # human|machine
     autoscaling:
       enabled: false
+      # autoscaler may be "hpa" (default) or "keda".
+      autoscaler: hpa
       minReplicas: 2
       maxReplicas: 5
       targetCPUUtilizationPercentage: 50
@@ -557,6 +594,11 @@ sentry:
     maxChildTaskCount: 10000
     autoscaling:
       enabled: false
+      # autoscaler may be "hpa" (default) or "keda".
+      autoscaler: hpa
+      triggers:
+        kafkaLag:
+          enabled: false
       minReplicas: 1
       maxReplicas: 5
       targetCPUUtilizationPercentage: 50
@@ -627,6 +669,11 @@ sentry:
     # the size of the queue
     autoscaling:
       enabled: false
+      # autoscaler may be "hpa" (default) or "keda".
+      autoscaler: hpa
+      triggers:
+        kafkaLag:
+          enabled: false
       minReplicas: 1
       maxReplicas: 3
       targetCPUUtilizationPercentage: 50
@@ -674,6 +721,11 @@ sentry:
     # the size of the queue
     autoscaling:
       enabled: false
+      # autoscaler may be "hpa" (default) or "keda".
+      autoscaler: hpa
+      triggers:
+        kafkaLag:
+          enabled: false
       minReplicas: 1
       maxReplicas: 3
       targetCPUUtilizationPercentage: 50
@@ -721,6 +773,11 @@ sentry:
     # the size of the queue
     autoscaling:
       enabled: false
+      # autoscaler may be "hpa" (default) or "keda".
+      autoscaler: hpa
+      triggers:
+        kafkaLag:
+          enabled: false
       minReplicas: 1
       maxReplicas: 3
       targetCPUUtilizationPercentage: 50
@@ -800,6 +857,11 @@ sentry:
     # the size of the queue
     autoscaling:
       enabled: false
+      # autoscaler may be "hpa" (default) or "keda".
+      autoscaler: hpa
+      triggers:
+        kafkaLag:
+          enabled: false
       minReplicas: 1
       maxReplicas: 3
       targetCPUUtilizationPercentage: 50
@@ -1341,6 +1403,8 @@ snuba:
 
     autoscaling:
       enabled: false
+      # autoscaler may be "hpa" (default) or "keda".
+      autoscaler: hpa
       minReplicas: 2
       maxReplicas: 5
       targetCPUUtilizationPercentage: 50
@@ -3042,6 +3106,58 @@ externalClickhouse:
   ## Use this when your ClickHouse distributed queries need a different cluster name
   ##
   # distributedClusterName: distributed_test_shard_localhost
+  prepare:
+    # Run a pre-install/pre-upgrade Job that validates the cluster, optionally
+    # provisions the Snuba runtime user, and tests Distributed INSERTs.
+    enabled: false
+    expectedShards: 1
+    expectedReplicasPerShard: 1
+    backoffLimit: 20
+    activeDeadlineSeconds: 1800
+    ttlSecondsAfterFinished: 3600
+    image:
+      repository: clickhouse/clickhouse-server
+      tag: latest
+      pullPolicy: IfNotPresent
+    runtimeUser:
+      enabled: false
+      grantAll: false
+      grantOption: false
+      grants:
+        - SELECT
+        - INSERT
+        - CREATE
+        - ALTER
+        - DROP
+        - TRUNCATE
+        - OPTIMIZE
+      clusterGrants:
+        - CLUSTER
+        - REMOTE
+    settings:
+      apply: false
+      verify: true
+      values:
+        insert_distributed_one_random_shard: "1"
+        distributed_foreground_insert: "1"
+        skip_unavailable_shards: "0"
+        load_balancing: random
+    distributedInsertTest:
+      enabled: true
+      maxBatches: 64
+      rowsPerBatch: 10
+    podLabels: {}
+    podAnnotations: {}
+    resources: {}
+    affinity: {}
+    nodeSelector: {}
+    securityContext: {}
+    containerSecurityContext: {}
+    tolerations: []
+    env: []
+    sidecars: []
+    volumes: []
+    volumeMounts: []
 
 # Settings for Kafka.
 # See https://github.com/bitnami/charts/tree/master/bitnami/kafka

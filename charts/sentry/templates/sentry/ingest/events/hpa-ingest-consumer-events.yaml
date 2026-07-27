@@ -1,4 +1,4 @@
-{{- if and .Values.sentry.ingestConsumerEvents.enabled .Values.sentry.ingestConsumerEvents.autoscaling.enabled }}
+{{- if and .Values.sentry.ingestConsumerEvents.enabled (include "sentry.autoscaling.isHpa" (dict "autoscaling" .Values.sentry.ingestConsumerEvents.autoscaling)) }}
 apiVersion: {{ template "sentry.autoscaling.apiVersion" . }}
 kind: HorizontalPodAutoscaler
 metadata:
