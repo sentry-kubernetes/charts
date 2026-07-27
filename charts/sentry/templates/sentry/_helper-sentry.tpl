@@ -235,6 +235,19 @@ sentry.conf.py: |-
   from sentry.conf.types.kafka_definition import Topic
   for topic in Topic:
     KAFKA_TOPIC_OVERRIDES[topic.value] = f"{SENTRY_CHARTS_KAFKA_TOPIC_PREFIX}{topic.value}"
+
+  # KAFKA_TOPIC_TO_CLUSTER is keyed by the DEFAULT topic names, but since Sentry 26.7.0
+  # sentry.utils.kafka_config.get_topic_definition() resolves real_topic_name through
+  # KAFKA_TOPIC_OVERRIDES and then looks THAT name up in KAFKA_TOPIC_TO_CLUSTER, with a
+  # strict [] for Topic enum members. Mirror every entry under its overridden name so
+  # those lookups keep resolving once a prefix is set.
+  KAFKA_TOPIC_TO_CLUSTER = {
+    **KAFKA_TOPIC_TO_CLUSTER,
+    **{
+      KAFKA_TOPIC_OVERRIDES.get(topic, topic): cluster
+      for topic, cluster in KAFKA_TOPIC_TO_CLUSTER.items()
+    },
+  }
   {{- end }}
 
   KAFKA_CLUSTERS["default"] = DEFAULT_KAFKA_OPTIONS
