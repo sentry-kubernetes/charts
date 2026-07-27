@@ -1,4 +1,4 @@
-{{- if and .Values.sentry.ingestConsumerAttachments.enabled (include "sentry.autoscaling.isHpa" (dict "autoscaling" .Values.sentry.ingestConsumerAttachments.autoscaling)) }}
+{{- if and .Values.sentry.ingestConsumerAttachments.enabled (include "sentry.autoscaling.isHpa" (dict "autoscaling" .Values.sentry.ingestConsumerAttachments.autoscaling "valuePath" "sentry.ingestConsumerAttachments")) }}
 apiVersion: {{ template "sentry.autoscaling.apiVersion" . }}
 kind: HorizontalPodAutoscaler
 metadata:

@@ -87,7 +87,7 @@ spec:
       priorityClassName: "{{ $root.Values.sentry.taskBroker.priorityClassName }}"
       {{- end }}
       {{- if $root.Values.serviceAccount.enabled }}
-      serviceAccountName: {{ $root.Values.serviceAccount.name }}-taskbroker
+      serviceAccountName: {{ if $root.Values.serviceAccount.shared }}{{ $root.Values.serviceAccount.name }}{{ else }}{{ $root.Values.serviceAccount.name }}-taskbroker{{ end }}
       {{- end }}
       containers:
       - name: taskbroker
@@ -174,7 +174,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ template "sentry.fullname" $root }}-taskbroker-{{ $broker.name }}
+  name: {{ include "sentry.serviceName" (dict "root" $root "suffix" (printf "taskbroker-%s" $broker.name)) }}
   labels:
     app: {{ template "sentry.fullname" $root }}
     release: "{{ $root.Release.Name }}"

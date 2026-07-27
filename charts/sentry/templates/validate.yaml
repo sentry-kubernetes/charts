@@ -1,0 +1,16 @@
+{{/* Validate Service names rendered by dependency subcharts that do not fail clearly themselves. */}}
+{{- if .Values.redis.enabled -}}
+{{- $redisBase := default (printf "%s-%s" .Release.Name (default "redis" .Values.redis.nameOverride)) .Values.redis.fullnameOverride -}}
+{{- $redisService := printf "%s-replicas" $redisBase -}}
+{{- if gt (len $redisService) 63 -}}
+{{- fail (printf "generated Redis Service name %q is %d characters; Kubernetes allows at most 63. Shorten the Helm release name or set redis.fullnameOverride" $redisService (len $redisService)) -}}
+{{- end -}}
+{{- end -}}
+
+{{- if .Values.postgresql.enabled -}}
+{{- $postgresBase := default (printf "%s-%s" .Release.Name (default "postgresql" .Values.postgresql.nameOverride)) .Values.postgresql.fullnameOverride -}}
+{{- $postgresService := printf "%s-hl" $postgresBase -}}
+{{- if gt (len $postgresService) 63 -}}
+{{- fail (printf "generated PostgreSQL Service name %q is %d characters; Kubernetes allows at most 63 and truncation can cause collisions. Shorten the Helm release name or set postgresql.fullnameOverride" $postgresService (len $postgresService)) -}}
+{{- end -}}
+{{- end -}}

@@ -73,7 +73,7 @@ spec:
       priorityClassName: "{{ .Values.launchpadTaskWorker.priorityClassName }}"
       {{- end }}
       {{- if .Values.serviceAccount.enabled }}
-      serviceAccountName: {{ .Values.serviceAccount.name }}-launchpad-taskworker
+      serviceAccountName: {{ if .Values.serviceAccount.shared }}{{ .Values.serviceAccount.name }}{{ else }}{{ .Values.serviceAccount.name }}-launchpad-taskworker{{ end }}
       {{- end }}
       {{- if .Values.dnsPolicy }}
       dnsPolicy: {{ .Values.dnsPolicy | quote }}

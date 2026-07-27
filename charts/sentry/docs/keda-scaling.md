@@ -117,3 +117,71 @@ relay:
 CPU and memory triggers are supported through `triggers.cpu` and
 `triggers.memory`. If neither Kafka nor Prometheus is enabled, the existing HPA
 CPU/memory targets are used by KEDA.
+
+At least one effective trigger is required. Helm rendering fails when KEDA is
+selected but Kafka, Kafka lag, Prometheus, CPU and memory triggers are all
+disabled. `minReplicas: 0` is preserved and can be used for scale-to-zero when
+the selected KEDA trigger supports activation from zero.
+
+The `autoscaler` value must be exactly `hpa` or `keda`. For KEDA,
+`minReplicas`, `maxReplicas`, `pollingInterval`, and `cooldownPeriod` must be
+integers. Helm also enforces `minReplicas >= 0`, `maxReplicas >= 1`,
+`minReplicas <= maxReplicas`, `pollingInterval >= 1`, and
+`cooldownPeriod >= 0`.
+
+For authenticated native Kafka scalers, reference a separately managed KEDA
+`TriggerAuthentication`:
+
+```yaml
+sentry:
+  ingestConsumerEvents:
+    autoscaling:
+      enabled: true
+      autoscaler: keda
+      minReplicas: 0
+      triggers:
+        kafka:
+          enabled: true
+          authenticationRef: sentry-kafka-auth
+```
+
+## Connecting newly added consumers
+
+KEDA support is explicit rather than automatic. When the chart gains another
+consumer, such as the uptime-results and Snuba uptime consumers proposed in
+PR #1830, adding its Deployment and values alone does not make it a KEDA scale
+target. The chart change introducing the consumer must also:
+
+1. add an `autoscaling` block with `enabled`, `autoscaler`, replica limits and
+   trigger configuration;
+2. register the values path, Deployment name, Kafka topic and consumer group
+   in `templates/_helper-keda.tpl`;
+3. suppress the static `spec.replicas` value while autoscaling is enabled;
+4. guard any workload-specific HPA with `autoscaler: hpa`;
+5. render tests for HPA, native Kafka, Prometheus Kafka lag and disabled modes.
+
+For an uptime-results consumer using topic and group `uptime-results`, the
+resulting user-facing configuration should follow this shape after that
+consumer is registered by the chart:
+
+```yaml
+sentry:
+  uptimeResults:
+    enabled: true
+    autoscaling:
+      enabled: true
+      autoscaler: keda
+      minReplicas: 1
+      maxReplicas: 10
+      triggers:
+        kafkaLag:
+          enabled: true
+          topic: uptime-results
+          consumerGroup: uptime-results
+```
+
+The corresponding Snuba consumer should use its actual Kafka topic and
+consumer group from the Deployment command. Do not copy the example values
+blindly: verify both labels in Kafka Exporter metrics first. The same
+registration rule applies to renamed consumers, because the ScaledObject's
+`scaleTargetRef.name` must exactly match the rendered Deployment name.

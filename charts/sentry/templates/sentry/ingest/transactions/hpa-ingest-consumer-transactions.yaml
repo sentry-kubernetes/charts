@@ -1,5 +1,5 @@
 {{- if has "feature-complete" .Values.profiles }}
-{{- if and .Values.sentry.ingestConsumerTransactions.enabled (include "sentry.autoscaling.isHpa" (dict "autoscaling" .Values.sentry.ingestConsumerTransactions.autoscaling)) }}
+{{- if and .Values.sentry.ingestConsumerTransactions.enabled (include "sentry.autoscaling.isHpa" (dict "autoscaling" .Values.sentry.ingestConsumerTransactions.autoscaling "valuePath" "sentry.ingestConsumerTransactions")) }}
 apiVersion: {{ template "sentry.autoscaling.apiVersion" . }}
 kind: HorizontalPodAutoscaler
 metadata:

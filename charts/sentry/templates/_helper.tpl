@@ -178,7 +178,22 @@ If release name contains chart name it will be used as a full name.
 {{- else -}}
 {{- printf "%s-%s" .Release.Name $name | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
+
 {{- end -}}
+{{- end -}}
+
+{{/*
+Build and validate a first-party Service name. Kubernetes Service names are
+DNS labels and must not exceed 63 characters.
+
+Arguments: root (chart context), suffix (component-specific suffix).
+*/}}
+{{- define "sentry.serviceName" -}}
+{{- $name := printf "%s-%s" (include "sentry.fullname" .root) .suffix -}}
+{{- if gt (len $name) 63 -}}
+{{- fail (printf "generated Service name %q is %d characters; Kubernetes allows at most 63. Shorten the Helm release name or set fullnameOverride" $name (len $name)) -}}
+{{- end -}}
+{{- $name -}}
 {{- end -}}
 
 

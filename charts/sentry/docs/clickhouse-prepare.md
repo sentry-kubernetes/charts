@@ -42,6 +42,27 @@ The Job does not have separate credentials. It uses
 `externalClickhouse.existingSecret/existingSecretKey`. Existing Secrets are
 recommended for production.
 
+The Job always uses its own `<release>-sentry-clickhouse-prepare`
+ServiceAccount. The ServiceAccount is installed as a hook with weight `-1`, so
+it exists before the weight `0` prepare Job during the first installation as
+well as upgrades. It is independent of the chart-wide dedicated/shared
+ServiceAccount mode. Add workload-identity annotations under the prepare
+configuration when required:
+
+```yaml
+externalClickhouse:
+  prepare:
+    serviceAccount:
+      automountServiceAccountToken: false
+      annotations:
+        eks.amazonaws.com/role-arn: arn:aws:iam::123456789012:role/sentry-clickhouse-prepare
+```
+
+The ServiceAccount uses the `hook-succeeded` delete policy and is removed only
+after the complete pre-install/pre-upgrade hook sequence succeeds. It remains
+available when the prepare Job fails so the failed hook can be inspected and
+is replaced before the next hook run.
+
 The Job is a `pre-install,pre-upgrade` hook. A failed topology, settings or
 distributed INSERT check stops the Helm operation. Verify `clusterName`,
 `distributedClusterName`, shard and replica counts before enabling it.

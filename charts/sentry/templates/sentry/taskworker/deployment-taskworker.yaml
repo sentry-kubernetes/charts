@@ -85,7 +85,7 @@ spec:
       priorityClassName: "{{ $root.Values.sentry.taskWorker.priorityClassName }}"
       {{- end }}
       {{- if $root.Values.serviceAccount.enabled }}
-      serviceAccountName: {{ $root.Values.serviceAccount.name }}-taskworker
+      serviceAccountName: {{ if $root.Values.serviceAccount.shared }}{{ $root.Values.serviceAccount.name }}{{ else }}{{ $root.Values.serviceAccount.name }}-taskworker{{ end }}
       {{- end }}
       {{- if $root.Values.dnsPolicy }}
       dnsPolicy: {{ $root.Values.dnsPolicy | quote }}

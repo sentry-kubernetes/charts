@@ -1,4 +1,4 @@
-{{- if and .Values.sentry.web.enabled (include "sentry.autoscaling.isHpa" (dict "autoscaling" .Values.sentry.web.autoscaling)) }}
+{{- if and .Values.sentry.web.enabled (include "sentry.autoscaling.isHpa" (dict "autoscaling" .Values.sentry.web.autoscaling "valuePath" "sentry.web")) }}
 apiVersion: {{ template "sentry.autoscaling.apiVersion" . }}
 kind: HorizontalPodAutoscaler
 metadata:

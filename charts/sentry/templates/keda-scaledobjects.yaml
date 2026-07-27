@@ -1,7 +1,7 @@
 {{ include "sentry.autoscaling.forDeployment" (dict "root" . "enabled" .Values.relay.enabled "values" .Values.relay "name" "relay" "targetName" "relay" "component" "relay" "valuePath" "relay" "hook" .Values.relay.asHook) }}
 {{ include "sentry.autoscaling.forDeployment" (dict "root" . "enabled" .Values.sentry.web.enabled "values" .Values.sentry.web "name" "sentry-web" "targetName" "web" "component" "web" "valuePath" "sentry.web" "hook" false) }}
 {{- if has "feature-complete" .Values.profiles }}
-{{ include "sentry.autoscaling.forDeployment" (dict "root" . "enabled" true "values" .Values.vroom "name" "vroom" "targetName" "vroom" "component" "vroom" "valuePath" "vroom" "hook" false) }}
+{{ include "sentry.autoscaling.forDeployment" (dict "root" . "enabled" .Values.sentry.features.enableProfiling "values" .Values.vroom "name" "vroom" "targetName" "vroom" "component" "vroom" "valuePath" "vroom" "hook" false) }}
 {{- end }}
 
 {{- if .Values.sentry.taskWorker.enabled }}

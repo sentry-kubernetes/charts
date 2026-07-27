@@ -2,7 +2,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ template "sentry.fullname" . }}-relay
+  name: {{ include "sentry.serviceName" (dict "root" . "suffix" "relay") }}
   annotations:
     {{- range $key, $value := .Values.relay.service.annotations }}
       {{ $key }}: {{ $value | quote }}

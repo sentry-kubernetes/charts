@@ -34,6 +34,7 @@ spec:
 {{ toYaml .Values.externalClickhouse.prepare.podLabels | indent 8 }}
         {{- end }}
     spec:
+      serviceAccountName: {{ template "sentry.fullname" . }}-clickhouse-prepare
       restartPolicy: {{ .Values.hooks.restartPolicy | default "Never" }}
       {{- if .Values.externalClickhouse.prepare.affinity }}
       affinity:

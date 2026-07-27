@@ -124,6 +124,10 @@ serviceAccount:
   name: "sentry"
   # serviceAccount.automountServiceAccountToken -- Automount API credentials for a Service Account.
   automountServiceAccountToken: true
+  # serviceAccount.shared -- Use one ServiceAccount named by `serviceAccount.name` for regular first-party components and hooks.
+  # The pre-install ClickHouse prepare hook and dependency subcharts keep dedicated ServiceAccounts.
+  # When `false`, component-specific suffixes such as `-web`, `-snuba`, and `-hooks` are used.
+  shared: false
 
 vroom:
   annotations: {}
@@ -3119,6 +3123,11 @@ externalClickhouse:
       repository: clickhouse/clickhouse-server
       tag: latest
       pullPolicy: IfNotPresent
+    # Dedicated pre-install/pre-upgrade hook ServiceAccount. It is created
+    # before the prepare Job and is independent of the chart-wide ServiceAccount mode.
+    serviceAccount:
+      annotations: {}
+      automountServiceAccountToken: false
     runtimeUser:
       enabled: false
       grantAll: false

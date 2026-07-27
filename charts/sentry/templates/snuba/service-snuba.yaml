@@ -2,7 +2,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ template "sentry.fullname" . }}-snuba
+  name: {{ include "sentry.serviceName" (dict "root" . "suffix" "snuba") }}
   annotations:
    {{- range $key, $value := .Values.service.annotations }}
      {{ $key }}: {{ $value | quote }}

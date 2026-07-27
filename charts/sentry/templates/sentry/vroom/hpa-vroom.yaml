@@ -1,5 +1,5 @@
 {{- if has "feature-complete" .Values.profiles }}
-{{- if include "sentry.autoscaling.isHpa" (dict "autoscaling" .Values.vroom.autoscaling) }}
+{{- if and .Values.sentry.features.enableProfiling (include "sentry.autoscaling.isHpa" (dict "autoscaling" .Values.vroom.autoscaling "valuePath" "vroom")) }}
 apiVersion: {{ template "sentry.autoscaling.apiVersion" . }}
 kind: HorizontalPodAutoscaler
 metadata:

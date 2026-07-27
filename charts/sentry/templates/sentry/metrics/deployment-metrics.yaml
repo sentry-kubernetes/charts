@@ -139,6 +139,6 @@ spec:
 {{- end }}
 
       {{- if .Values.serviceAccount.enabled }}
-      serviceAccountName: {{ .Values.serviceAccount.name }}-metrics
+      serviceAccountName: {{ if .Values.serviceAccount.shared }}{{ .Values.serviceAccount.name }}{{ else }}{{ .Values.serviceAccount.name }}-metrics{{ end }}
       {{- end }}
 {{- end }}

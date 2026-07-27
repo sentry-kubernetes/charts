@@ -37,6 +37,9 @@ spec:
 {{ toYaml .Values.hooks.dbCheck.podLabels | indent 8 }}
         {{- end }}
     spec:
+      {{- if .Values.serviceAccount.enabled }}
+      serviceAccountName: {{ if .Values.serviceAccount.shared }}{{ .Values.serviceAccount.name }}{{ else }}{{ .Values.serviceAccount.name }}-hooks{{ end }}
+      {{- end }}
       {{- if .Values.hooks.dbCheck.affinity }}
       affinity:
 {{ toYaml .Values.hooks.dbCheck.affinity | indent 8 }}

@@ -16,12 +16,46 @@ troubleshooting for:
 - selectable HPA or KEDA autoscaling;
 - Kafka consumer lag scaling through Prometheus and Kafka Exporter;
 - the optional `prometheus-kafka-exporter` subchart;
-- the ClickHouse preparation hook.
+- the ClickHouse preparation hook;
+- dedicated or shared ServiceAccounts for chart components and hooks.
 
 These features are disabled or backward-compatible by default. Existing
 installations continue to use the chart-managed HorizontalPodAutoscaler unless
 a workload explicitly selects KEDA. Kafka Exporter and ClickHouse preparation
 also require explicit enablement.
+
+## ServiceAccount modes
+
+Custom ServiceAccounts remain disabled by default. With
+`serviceAccount.enabled: true` and `serviceAccount.shared: false`, the chart
+creates component-specific accounts such as `sentry-web`, `sentry-snuba`, and
+`sentry-hooks`. Regular database and migration hooks use the hook account.
+`clickhouse-prepare` is an exception: because it runs before normal release
+resources exist, it always receives a dedicated pre-install/pre-upgrade hook
+ServiceAccount named `<release>-sentry-clickhouse-prepare`.
+
+Set `shared: true` when the regular first-party chart workloads and hooks
+should use a single account. The ClickHouse prepare hook, Kafka Exporter and
+other dependency subcharts retain their own ServiceAccount settings and are
+not redirected to the shared Sentry account.
+
+```yaml
+serviceAccount:
+  enabled: true
+  name: sentry
+  shared: true
+  automountServiceAccountToken: true
+  annotations:
+    eks.amazonaws.com/role-arn: arn:aws:iam::123456789012:role/sentry
+```
+
+In shared mode the chart renders one regular first-party ServiceAccount named
+`sentry` for this example. If ClickHouse prepare is enabled, its lifecycle-safe
+hook ServiceAccount is rendered in addition. In dedicated mode the chart
+renders only the accounts needed by enabled components, plus `sentry-hooks`
+while regular hooks are enabled.
+Switching modes changes `serviceAccountName` on workloads and can restart
+their Pods; review RBAC and cloud workload-identity bindings before rollout.
 
 ## Architecture overview
 
@@ -72,8 +106,45 @@ groups, replica limits, or activation thresholds remain workload-specific.
 | Occurrences consumer | `sentry.ingestOccurrences.autoscaling` | `<release>-sentry-ingest-occurrences` |
 | Taskworker | `sentry.taskWorker.autoscaling` and `workers[].autoscaling` | one Deployment per worker |
 
-Transactions, occurrences, and Vroom only render when the
-`feature-complete` profile is enabled.
+Transactions and occurrences only render when the `feature-complete` profile
+is enabled. Vroom additionally requires
+`sentry.features.enableProfiling: true`; its HPA or ScaledObject is suppressed
+whenever the Vroom Deployment is absent.
+
+### Adding or renaming consumer components
+
+The supported-workload table is an explicit registry, not automatic
+discovery. A new consumer Deployment must be registered in
+`templates/_helper-keda.tpl` with its values path, rendered Deployment name,
+Kafka topic and consumer group. Its template must omit static `spec.replicas`
+when autoscaling is enabled, and an HPA template must render only when
+`autoscaler: hpa` is selected.
+
+For example, when the uptime-results consumer proposed in PR #1830 is added to
+the current chart, its documented configuration should be:
+
+```yaml
+sentry:
+  uptimeResults:
+    enabled: true
+    autoscaling:
+      enabled: true
+      autoscaler: keda
+      minReplicas: 1
+      maxReplicas: 10
+      triggers:
+        kafkaLag:
+          enabled: true
+          topic: uptime-results
+          consumerGroup: uptime-results
+```
+
+This configuration becomes valid only after the component is added to the
+KEDA registry; setting it against the current unregistered component does not
+create a ScaledObject. Apply the same procedure to the Snuba uptime consumer,
+using the topic and group actually passed to its consumer command. Confirm the
+corresponding `topic` and `consumergroup` labels in Kafka Exporter before
+enabling scaling.
 
 ## KEDA prerequisites
 
@@ -178,7 +249,28 @@ They can be overridden under the workload trigger.
 Optional Kafka metadata includes `allowIdleConsumers`,
 `scaleToZeroOnInvalidOffset`, `excludePersistentLag`,
 `limitToPartitionsWithLag`, `version`, `partitionLimitation`, `sasl`,
-`tls`, and `unsafeSsl`.
+`tls`, and `unsafeSsl`. Set `authenticationRef` to reference a KEDA
+`TriggerAuthentication` for native Kafka credentials.
+
+Helm rendering fails if KEDA is selected without any effective Kafka, Kafka
+lag, Prometheus, CPU or memory trigger. `minReplicas: 0` is preserved for
+scale-to-zero rather than being replaced by the default value.
+
+Helm also rejects unknown `autoscaler` values and invalid replica/timing
+bounds. Valid KEDA settings satisfy `minReplicas >= 0`, `maxReplicas >= 1`,
+`minReplicas <= maxReplicas`, `pollingInterval >= 1`, and
+`cooldownPeriod >= 0`.
+
+### Service-name length validation
+
+First-party and enabled Redis/PostgreSQL dependency Service names are checked
+against Kubernetes' 63-character DNS label limit. Helm rendering stops with
+the generated name and its length when a Service would exceed the limit or
+dependency truncation could cause a collision. Shorten the release name or set
+an appropriate `fullnameOverride`, `redis.fullnameOverride`, or
+`postgresql.fullnameOverride`. The chart does not silently truncate
+first-party component suffixes because that could make workload references
+ambiguous.
 
 ## Kafka Exporter subchart
 
