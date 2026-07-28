@@ -819,6 +819,8 @@ Note: this table is incomplete, so have a look at the values.yaml in case you mi
 | sentry.taskWorker.volumes | list | `[]` | |
 | sentry.taskWorker.workers | list | (see `values.yaml`) | One task worker Deployment per item (`name`, `brokerName`, `brokerReplicas`, `replicas`, `concurrency`, optional `resources` merged with `sentry.taskWorker.resources`, optional `autoscaling` overriding `sentry.taskWorker.autoscaling`, optional `topologySpreadConstraints` overriding `sentry.taskWorker.topologySpreadConstraints`). |
 | launchpadTaskWorker.enabled | bool | `true` | Deploy Launchpad taskworker (mobile build processing). Requires `feature-complete` profile and `sentry.taskBroker.enabled`. |
+| launchpadTaskWorker.existingSecret | string | `""` | Name of an externally-managed Secret holding the launchpad RPC shared secret. If unset, the chart generates and manages this Secret itself. |
+| launchpadTaskWorker.existingSecretKey | string | `"rpc-shared-secret"` | Key within `existingSecret` (or the chart-managed Secret) holding the RPC shared secret value. |
 | launchpadTaskWorker.replicas | int | `1` |  |
 | launchpadTaskWorker.concurrency | int | `4` | Parallel Launchpad worker processes (`LAUNCHPAD_WORKER_CONCURRENCY`). |
 | launchpadTaskWorker.env | list | `[]` | Extra environment variables for the Launchpad taskworker container. |
@@ -1313,6 +1315,13 @@ Notes:
 If no `sentry.existingSecret` value is specified, for your security, the [`system.secret-key`](https://develop.sentry.dev/config/#general) is generated for you on the first installation and stored in a kubernetes secret.
 
 If `sentry.existingSecret` / `sentry.existingSecretKey` values are provided, those secrets will be used.
+
+
+## Launchpad RPC shared secret
+
+If no `launchpadTaskWorker.existingSecret` value is specified, the RPC shared secret used between `sentry-web` and the Launchpad taskworker is generated for you on the first installation and stored in a kubernetes secret.
+
+If `launchpadTaskWorker.existingSecret` / `launchpadTaskWorker.existingSecretKey` values are provided, that externally-managed secret will be used instead.
 
 
 ## Symbolicator and or JavaScript source maps
