@@ -3229,6 +3229,17 @@ kafka:
       - name: taskworker-symbolication-dlq
       - name: taskworker-usage
       - name: taskworker-usage-dlq
+      # Pre-consolidation topics: namespaces that used to route here directly
+      # now route through taskworker-ingest (see taskworker.route.overrides
+      # above), but these topics can still hold in-flight/retained data and
+      # aren't safe to just stop declaring.
+      - name: taskworker-buffer
+      - name: taskworker-cutover
+      - name: taskworker-email
+      - name: taskworker-ingest-attachments
+      - name: taskworker-ingest-errors-postprocess
+      - name: taskworker-ingest-profiling
+      - name: taskworker-workflows-engine
   listeners:
     client:
       protocol: "PLAINTEXT"
