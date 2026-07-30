@@ -605,6 +605,8 @@ sentry:
 
   ingestConsumerAttachments:
     enabled: true
+    # Recreate if replicas=1, else RollingUpdate (see sentry-kubernetes/charts#2238). Override to force either.
+    strategyType: null
     annotations: {}
     replicas: 1
     # concurrency: 4
@@ -651,6 +653,8 @@ sentry:
     # Default --max-poll-interval-ms (self-hosted SENTRY_KAFKA_MAX_POLL_INTERVAL_MS). Set null to disable.
     maxPollIntervalMs: 300000
     enabled: true
+    # Recreate if replicas=1, else RollingUpdate (see sentry-kubernetes/charts#2238). Override to force either.
+    strategyType: null
     annotations: {}
     replicas: 1
     # concurrency: 4
@@ -698,6 +702,8 @@ sentry:
     # Default --max-poll-interval-ms (self-hosted SENTRY_KAFKA_MAX_POLL_INTERVAL_MS). Set null to disable.
     maxPollIntervalMs: 300000
     enabled: true
+    # Recreate if replicas=1, else RollingUpdate (see sentry-kubernetes/charts#2238). Override to force either.
+    strategyType: null
     annotations: {}
     replicas: 1
     # concurrency: 4
@@ -743,6 +749,8 @@ sentry:
 
   ingestReplayRecordings:
     enabled: true
+    # Recreate if replicas=1, else RollingUpdate (see sentry-kubernetes/charts#2238). Override to force either.
+    strategyType: null
     annotations: {}
     replicas: 1
     env: []
@@ -782,6 +790,8 @@ sentry:
     # Default --max-poll-interval-ms (self-hosted SENTRY_KAFKA_MAX_POLL_INTERVAL_MS). Set null to disable.
     maxPollIntervalMs: 300000
     enabled: true
+    # Recreate if replicas=1, else RollingUpdate (see sentry-kubernetes/charts#2238). Override to force either.
+    strategyType: null
     annotations: {}
     replicas: 1
     # concurrency: 4
@@ -824,6 +834,8 @@ sentry:
     # Default --max-poll-interval-ms (self-hosted SENTRY_KAFKA_MAX_POLL_INTERVAL_MS). Set null to disable.
     maxPollIntervalMs: 300000
     enabled: true
+    # Recreate if replicas=1, else RollingUpdate (see sentry-kubernetes/charts#2238). Override to force either.
+    strategyType: null
     annotations: {}
     replicas: 1
     env: []
@@ -860,6 +872,8 @@ sentry:
 
   ingestMonitors:
     enabled: true
+    # Recreate if replicas=1, else RollingUpdate (see sentry-kubernetes/charts#2238). Override to force either.
+    strategyType: null
     annotations: {}
     replicas: 1
     env: []
@@ -973,6 +987,8 @@ sentry:
     # Default --max-poll-interval-ms (self-hosted SENTRY_KAFKA_MAX_POLL_INTERVAL_MS). Set null to disable.
     maxPollIntervalMs: 300000
     enabled: true
+    # Recreate if replicas=1, else RollingUpdate (see sentry-kubernetes/charts#2238). Override to force either.
+    strategyType: null
     annotations: {}
     replicas: 1
     env: []
@@ -1009,6 +1025,8 @@ sentry:
 
   genericMetricsConsumer:
     enabled: true
+    # Recreate if replicas=1, else RollingUpdate (see sentry-kubernetes/charts#2238). Override to force either.
+    strategyType: null
     annotations: {}
     replicas: 1
     # concurrency: 4
@@ -1048,6 +1066,8 @@ sentry:
 
   metricsConsumer:
     enabled: true
+    # Recreate if replicas=1, else RollingUpdate (see sentry-kubernetes/charts#2238). Override to force either.
+    strategyType: null
     annotations: {}
     replicas: 1
     # concurrency: 4
@@ -1089,6 +1109,8 @@ sentry:
     # Default --max-poll-interval-ms (self-hosted SENTRY_KAFKA_MAX_POLL_INTERVAL_MS). Set null to disable.
     maxPollIntervalMs: 300000
     enabled: true
+    # Recreate if replicas=1, else RollingUpdate (see sentry-kubernetes/charts#2238). Override to force either.
+    strategyType: null
     annotations: {}
     replicas: 1
     env: []
@@ -1118,6 +1140,8 @@ sentry:
     # Default --max-poll-interval-ms (self-hosted SENTRY_KAFKA_MAX_POLL_INTERVAL_MS). Set null to disable.
     maxPollIntervalMs: 300000
     enabled: true
+    # Recreate if replicas=1, else RollingUpdate (see sentry-kubernetes/charts#2238). Override to force either.
+    strategyType: null
     annotations: {}
     replicas: 1
     env: []
@@ -1147,6 +1171,8 @@ sentry:
     # Default --max-poll-interval-ms (self-hosted SENTRY_KAFKA_MAX_POLL_INTERVAL_MS). Set null to disable.
     maxPollIntervalMs: 300000
     enabled: true
+    # Recreate if replicas=1, else RollingUpdate (see sentry-kubernetes/charts#2238). Override to force either.
+    strategyType: null
     annotations: {}
     replicas: 1
     # processes: 1
@@ -1177,6 +1203,8 @@ sentry:
     # Default --max-poll-interval-ms (self-hosted SENTRY_KAFKA_MAX_POLL_INTERVAL_MS). Set null to disable.
     maxPollIntervalMs: 300000
     enabled: true
+    # Recreate if replicas=1, else RollingUpdate (see sentry-kubernetes/charts#2238). Override to force either.
+    strategyType: null
     annotations: {}
     replicas: 1
     env: []
@@ -1206,6 +1234,8 @@ sentry:
     # Default --max-poll-interval-ms (self-hosted SENTRY_KAFKA_MAX_POLL_INTERVAL_MS). Set null to disable.
     maxPollIntervalMs: 300000
     enabled: true
+    # Recreate if replicas=1, else RollingUpdate (see sentry-kubernetes/charts#2238). Override to force either.
+    strategyType: null
     annotations: {}
     replicas: 1
     # concurrency: 4
@@ -1238,6 +1268,8 @@ sentry:
     # Default --max-poll-interval-ms (self-hosted SENTRY_KAFKA_MAX_POLL_INTERVAL_MS). Set null to disable.
     maxPollIntervalMs: 300000
     enabled: true
+    # Recreate if replicas=1, else RollingUpdate (see sentry-kubernetes/charts#2238). Override to force either.
+    strategyType: null
     annotations: {}
     replicas: 1
     # concurrency: 4
@@ -1356,6 +1388,8 @@ snuba:
     # Default --max-poll-interval-ms (self-hosted SENTRY_KAFKA_MAX_POLL_INTERVAL_MS). Set null to disable.
     maxPollIntervalMs: 300000
     enabled: true
+    # Recreate if replicas=1, else RollingUpdate (see sentry-kubernetes/charts#2238). Override to force either.
+    strategyType: null
     annotations: {}
     replicas: 1
     env: []
@@ -1394,6 +1428,8 @@ snuba:
     # Default --max-poll-interval-ms (self-hosted SENTRY_KAFKA_MAX_POLL_INTERVAL_MS). Set null to disable.
     maxPollIntervalMs: 300000
     enabled: true
+    # Recreate if replicas=1, else RollingUpdate (see sentry-kubernetes/charts#2238). Override to force either.
+    strategyType: null
     annotations: {}
     replicas: 1
     env: []
@@ -1433,6 +1469,8 @@ snuba:
     # Default --max-poll-interval-ms (self-hosted SENTRY_KAFKA_MAX_POLL_INTERVAL_MS). Set null to disable.
     maxPollIntervalMs: 300000
     enabled: true
+    # Recreate if replicas=1, else RollingUpdate (see sentry-kubernetes/charts#2238). Override to force either.
+    strategyType: null
     annotations: {}
     replicas: 1
     env: []
@@ -1507,6 +1545,8 @@ snuba:
 
   outcomesBillingConsumer:
     enabled: true
+    # Recreate if replicas=1, else RollingUpdate (see sentry-kubernetes/charts#2238). Override to force either.
+    strategyType: null
     annotations: {}
     replicas: 1
     env: []
@@ -1569,6 +1609,8 @@ snuba:
     # Default --max-poll-interval-ms (self-hosted SENTRY_KAFKA_MAX_POLL_INTERVAL_MS). Set null to disable.
     maxPollIntervalMs: 300000
     enabled: true
+    # Recreate if replicas=1, else RollingUpdate (see sentry-kubernetes/charts#2238). Override to force either.
+    strategyType: null
     annotations: {}
     replicas: 1
     env: []
@@ -1758,6 +1800,8 @@ snuba:
     # Default --max-poll-interval-ms (self-hosted SENTRY_KAFKA_MAX_POLL_INTERVAL_MS). Set null to disable.
     maxPollIntervalMs: 300000
     enabled: true
+    # Recreate if replicas=1, else RollingUpdate (see sentry-kubernetes/charts#2238). Override to force either.
+    strategyType: null
     annotations: {}
     replicas: 1
     env: []
@@ -1791,6 +1835,8 @@ snuba:
     # Default --max-poll-interval-ms (self-hosted SENTRY_KAFKA_MAX_POLL_INTERVAL_MS). Set null to disable.
     maxPollIntervalMs: 300000
     enabled: true
+    # Recreate if replicas=1, else RollingUpdate (see sentry-kubernetes/charts#2238). Override to force either.
+    strategyType: null
     annotations: {}
     replicas: 1
     env: []
@@ -1824,6 +1870,8 @@ snuba:
     # Default --max-poll-interval-ms (self-hosted SENTRY_KAFKA_MAX_POLL_INTERVAL_MS). Set null to disable.
     maxPollIntervalMs: 300000
     enabled: true
+    # Recreate if replicas=1, else RollingUpdate (see sentry-kubernetes/charts#2238). Override to force either.
+    strategyType: null
     annotations: {}
     replicas: 1
     env: []
@@ -1857,6 +1905,8 @@ snuba:
     # Default --max-poll-interval-ms (self-hosted SENTRY_KAFKA_MAX_POLL_INTERVAL_MS). Set null to disable.
     maxPollIntervalMs: 300000
     enabled: true
+    # Recreate if replicas=1, else RollingUpdate (see sentry-kubernetes/charts#2238). Override to force either.
+    strategyType: null
     annotations: {}
     replicas: 1
     env: []
@@ -1945,6 +1995,8 @@ snuba:
 
   replaysConsumer:
     enabled: true
+    # Recreate if replicas=1, else RollingUpdate (see sentry-kubernetes/charts#2238). Override to force either.
+    strategyType: null
     annotations: {}
     replicas: 1
     env: []
@@ -1984,6 +2036,8 @@ snuba:
     # Default --max-poll-interval-ms (self-hosted SENTRY_KAFKA_MAX_POLL_INTERVAL_MS). Set null to disable.
     maxPollIntervalMs: 300000
     enabled: true
+    # Recreate if replicas=1, else RollingUpdate (see sentry-kubernetes/charts#2238). Override to force either.
+    strategyType: null
     annotations: {}
     replicas: 1
     env: []
@@ -2019,6 +2073,8 @@ snuba:
     #       medium: Memory
 
   profilingProfilesConsumer:
+    # Recreate if replicas=1, else RollingUpdate (see sentry-kubernetes/charts#2238). Override to force either.
+    strategyType: null
     # Default --max-poll-interval-ms (self-hosted SENTRY_KAFKA_MAX_POLL_INTERVAL_MS). Set null to disable.
     maxPollIntervalMs: 300000
     annotations: {}
@@ -2057,6 +2113,8 @@ snuba:
     #       medium: Memory
 
   profilingFunctionsConsumer:
+    # Recreate if replicas=1, else RollingUpdate (see sentry-kubernetes/charts#2238). Override to force either.
+    strategyType: null
     # Default --max-poll-interval-ms (self-hosted SENTRY_KAFKA_MAX_POLL_INTERVAL_MS). Set null to disable.
     maxPollIntervalMs: 300000
     annotations: {}
@@ -2094,6 +2152,8 @@ snuba:
     #       medium: Memory
 
   profilingChunksConsumer:
+    # Recreate if replicas=1, else RollingUpdate (see sentry-kubernetes/charts#2238). Override to force either.
+    strategyType: null
     # Default --max-poll-interval-ms (self-hosted SENTRY_KAFKA_MAX_POLL_INTERVAL_MS). Set null to disable.
     maxPollIntervalMs: 300000
     annotations: {}
@@ -2134,6 +2194,8 @@ snuba:
     # Default --max-poll-interval-ms (self-hosted SENTRY_KAFKA_MAX_POLL_INTERVAL_MS). Set null to disable.
     maxPollIntervalMs: 300000
     enabled: true
+    # Recreate if replicas=1, else RollingUpdate (see sentry-kubernetes/charts#2238). Override to force either.
+    strategyType: null
     annotations: {}
     replicas: 1
     env: []
@@ -2172,6 +2234,8 @@ snuba:
     # Default --max-poll-interval-ms (self-hosted SENTRY_KAFKA_MAX_POLL_INTERVAL_MS). Set null to disable.
     maxPollIntervalMs: 300000
     enabled: true
+    # Recreate if replicas=1, else RollingUpdate (see sentry-kubernetes/charts#2238). Override to force either.
+    strategyType: null
     annotations: {}
     replicas: 1
     env: []

@@ -20,6 +20,8 @@ metadata:
   {{- end }}
 spec:
   revisionHistoryLimit: {{ .Values.revisionHistoryLimit }}
+  strategy:
+    type: {{ include "sentry.kafkaConsumer.strategyType" (dict "strategyType" .Values.sentry.postProcessForwardTransactions.strategyType "replicas" .Values.sentry.postProcessForwardTransactions.replicas) }}
   selector:
     matchLabels:
         app: sentry
