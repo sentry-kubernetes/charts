@@ -1,5 +1,18 @@
 # Changelog
 
+## [33.2.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v33.1.0...sentry-v33.2.0) (2026-07-31)
+
+
+### Features
+
+* charts/sentry: add maxPollIntervalMs for snuba replacer ([#2266](https://github.com/sentry-kubernetes/charts/issues/2266)) ([52c48ca](https://github.com/sentry-kubernetes/charts/commit/52c48cae85bd150b04e89ca6517e1147e9e55aef))
+
+
+### Bug Fixes
+
+* charts/sentry: add missing taskworker topics to default provisioning list ([#2267](https://github.com/sentry-kubernetes/charts/issues/2267)) ([7c5113e](https://github.com/sentry-kubernetes/charts/commit/7c5113e77f0559b82d4b19e1470ae74625e8a59e))
+* extend Recreate/RollingUpdate strategy to remaining Kafka consumer deployments ([#2238](https://github.com/sentry-kubernetes/charts/issues/2238)) ([#2269](https://github.com/sentry-kubernetes/charts/issues/2269)) ([e37c168](https://github.com/sentry-kubernetes/charts/commit/e37c168c55051a480a0a13df906a8db8863f4fa3))
+
 ## [33.1.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v33.0.0...sentry-v33.1.0) (2026-07-26)
 
 
