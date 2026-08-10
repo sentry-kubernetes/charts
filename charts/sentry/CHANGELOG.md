@@ -1,5 +1,17 @@
 # Changelog
 
+## [33.3.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v33.2.0...sentry-v33.3.0) (2026-08-10)
+
+
+### Features
+
+* upgrade to v26.7.2 ([#2276](https://github.com/sentry-kubernetes/charts/issues/2276)) ([4fc47a7](https://github.com/sentry-kubernetes/charts/commit/4fc47a780d22ca5e73f544298e1d85ff8cd6918c))
+
+
+### Bug Fixes
+
+* charts/sentry: support TLS in ClickHouse cleanup ([#2274](https://github.com/sentry-kubernetes/charts/issues/2274)) ([58ec7f9](https://github.com/sentry-kubernetes/charts/commit/58ec7f9b5d5318afd740a69d9441fdb7a7c1e9a4))
+
 ## [33.2.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v33.1.0...sentry-v33.2.0) (2026-07-31)
 
 
