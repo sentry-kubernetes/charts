@@ -845,38 +845,20 @@ GITHUB_APP_CLIENT_ID: {{ . | b64enc | quote }}
 GITHUB_APP_CLIENT_SECRET: {{ . | b64enc | quote }}
 {{- end }}
 {{- end }}
-{{- if not .Values.google.existingSecret }}
-{{- with .Values.google.clientId }}
-GOOGLE_AUTH_CLIENT_ID: {{ . | b64enc | quote }}
+{{- if and (not .Values.google.existingSecret) .Values.google.clientId .Values.google.clientSecret }}
+GOOGLE_AUTH_CLIENT_ID: {{ .Values.google.clientId | b64enc | quote }}
+GOOGLE_AUTH_CLIENT_SECRET: {{ .Values.google.clientSecret | b64enc | quote }}
 {{- end }}
-{{- with .Values.google.clientSecret }}
-GOOGLE_AUTH_CLIENT_SECRET: {{ . | b64enc | quote }}
+{{- if and (not .Values.slack.existingSecret) .Values.slack.clientId .Values.slack.clientSecret .Values.slack.signingSecret }}
+SLACK_CLIENT_ID: {{ .Values.slack.clientId | b64enc | quote }}
+SLACK_CLIENT_SECRET: {{ .Values.slack.clientSecret | b64enc | quote }}
+SLACK_SIGNING_SECRET: {{ .Values.slack.signingSecret | b64enc | quote }}
 {{- end }}
-{{- end }}
-{{- if not .Values.slack.existingSecret }}
-{{- with .Values.slack.clientId }}
-SLACK_CLIENT_ID: {{ . | b64enc | quote }}
-{{- end }}
-{{- with .Values.slack.clientSecret }}
-SLACK_CLIENT_SECRET: {{ . | b64enc | quote }}
-{{- end }}
-{{- with .Values.slack.signingSecret }}
-SLACK_SIGNING_SECRET: {{ . | b64enc | quote }}
-{{- end }}
-{{- end }}
-{{- if not .Values.discord.existingSecret }}
-{{- with .Values.discord.applicationId }}
-DISCORD_APPLICATION_ID: {{ . | b64enc | quote }}
-{{- end }}
-{{- with .Values.discord.publicKey }}
-DISCORD_PUBLIC_KEY: {{ . | b64enc | quote }}
-{{- end }}
-{{- with .Values.discord.clientSecret }}
-DISCORD_CLIENT_SECRET: {{ . | b64enc | quote }}
-{{- end }}
-{{- with .Values.discord.botToken }}
-DISCORD_BOT_TOKEN: {{ . | b64enc | quote }}
-{{- end }}
+{{- if and (not .Values.discord.existingSecret) .Values.discord.applicationId .Values.discord.publicKey .Values.discord.clientSecret .Values.discord.botToken }}
+DISCORD_APPLICATION_ID: {{ .Values.discord.applicationId | b64enc | quote }}
+DISCORD_PUBLIC_KEY: {{ .Values.discord.publicKey | b64enc | quote }}
+DISCORD_CLIENT_SECRET: {{ .Values.discord.clientSecret | b64enc | quote }}
+DISCORD_BOT_TOKEN: {{ .Values.discord.botToken | b64enc | quote }}
 {{- end }}
 {{- end -}}
 
