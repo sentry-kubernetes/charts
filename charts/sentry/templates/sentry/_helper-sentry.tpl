@@ -743,13 +743,13 @@ sentry.conf.py: |-
   ##########
   # Github #
   ##########
-  {{- if .Values.github.existingSecretAppIdKey }}
+  {{- if and .Values.github.existingSecret .Values.github.existingSecretAppIdKey }}
   # GitHub App ID must be an integer (Sentry 26.x+)
   _github_app_id = os.environ.get("GITHUB_APP_ID")
   if _github_app_id:
       SENTRY_OPTIONS['github-app.id'] = int(_github_app_id)
   {{- end }}
-  {{- if .Values.github.existingSecretAppNameKey }}
+  {{- if and .Values.github.existingSecret .Values.github.existingSecretAppNameKey }}
   SENTRY_OPTIONS['github-app.name'] = os.environ.get("GITHUB_APP_NAME")
   {{- end }}
   {{- if or .Values.github.existingSecret .Values.github.privateKey }}
