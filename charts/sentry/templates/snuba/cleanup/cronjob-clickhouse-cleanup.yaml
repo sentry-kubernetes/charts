@@ -80,7 +80,7 @@ spec:
 
                 # Build clickhouse-client arguments; omit --password if empty to avoid bad-arg error
                 CH_ARGS=(--host="$CLICKHOUSE_HOST" --port="$CLICKHOUSE_PORT" --user="$CLICKHOUSE_USER" --database="$CLICKHOUSE_DATABASE")
-                if [ -n "$CLICKHOUSE_PASSWORD" ]; then
+                if [ -n "${CLICKHOUSE_PASSWORD:-}" ]; then
                   CH_ARGS+=(--password="$CLICKHOUSE_PASSWORD")
                 fi
                 {{ if .Values.externalClickhouse.secure }}
@@ -218,16 +218,15 @@ spec:
             - name: CLICKHOUSE_DATABASE
               value: {{ include "sentry.clickhouse.database" . | quote }}
             - name: CLICKHOUSE_PASSWORD
+              {{- if .Values.externalClickhouse.existingSecret }}
               valueFrom:
                 secretKeyRef:
-                {{- if .Values.externalClickhouse.existingSecret }}
                   name: {{ .Values.externalClickhouse.existingSecret | quote }}
                   key: {{ default "clickhouse-password" .Values.externalClickhouse.existingSecretKey | quote }}
-                {{- else }}
-                  name: {{ template "sentry.fullname" . }}-clickhouse
-                  key: clickhouse-password
-                {{- end }}
                   optional: true
+              {{- else }}
+              value: {{ include "sentry.clickhouse.password" . | quote }}
+              {{- end }}
 {{- if .Values.snuba.cleanup.env }}
 {{ toYaml .Values.snuba.cleanup.env | indent 12 }}
 {{- end }}
