@@ -33,7 +33,7 @@ spec:
       annotations:
         checksum/configYml: {{ .Values.config.configYml | toYaml | toString | sha256sum }}
         checksum/sentryConfPy: {{ .Values.config.sentryConfPy | sha256sum }}
-        checksum/config.yaml: {{ include "sentry.config" . | sha256sum }}
+        checksum/config.yaml: {{ include "sentry.config.checksum" . }}
         {{- if .Values.sentry.processSegments.annotations }}
 {{ toYaml .Values.sentry.processSegments.annotations | indent 8 }}
         {{- end }}
@@ -132,6 +132,7 @@ spec:
 {{- if .Values.sentry.processSegments.env }}
 {{ toYaml .Values.sentry.processSegments.env | indent 8 }}
 {{- end }}
+        {{- with include "sentry.envFrom" . }}{{ . | nindent 8 }}{{- end }}
         volumeMounts:
         - mountPath: /etc/sentry
           name: config

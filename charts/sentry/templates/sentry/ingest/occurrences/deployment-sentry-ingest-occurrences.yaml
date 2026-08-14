@@ -35,7 +35,7 @@ spec:
       annotations:
         checksum/configYml: {{ .Values.config.configYml | toYaml | toString | sha256sum }}
         checksum/sentryConfPy: {{ .Values.config.sentryConfPy | sha256sum }}
-        checksum/config.yaml: {{ include "sentry.config" . | sha256sum }}
+        checksum/config.yaml: {{ include "sentry.config.checksum" . }}
         {{- if .Values.sentry.ingestOccurrences.annotations }}
 {{ toYaml .Values.sentry.ingestOccurrences.annotations | indent 8 }}
         {{- end }}
@@ -140,6 +140,7 @@ spec:
 {{- if .Values.sentry.ingestOccurrences.env }}
 {{ toYaml .Values.sentry.ingestOccurrences.env | indent 8 }}
 {{- end }}
+        {{- with include "sentry.envFrom" . }}{{ . | nindent 8 }}{{- end }}
         volumeMounts:
         - mountPath: /etc/sentry
           name: config
