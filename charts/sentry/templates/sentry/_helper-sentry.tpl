@@ -30,47 +30,18 @@ config.yml: |-
   {{- with .Values.github.appName }}
   github-app.name: {{ . | quote }}
   {{- end }}
-  {{- if not .Values.github.existingSecret }}
-    {{- with .Values.github.privateKey }}
-  github-app.private-key: {{- . | toYaml | indent 2 }}
-    {{- end }}
-    {{- with .Values.github.webhookSecret }}
-  github-app.webhook-secret: {{ . | quote }}
-    {{- end }}
-    {{- with .Values.github.clientId }}
-  github-app.client-id: {{ . | quote }}
-    {{- end }}
-    {{- with .Values.github.clientSecret }}
-  github-app.client-secret: {{ . | quote }}
-    {{- end }}
-  {{- end }}
 
   ##########
   # Google #
   ##########
-  {{- if and (.Values.google.clientId) (.Values.google.clientSecret) (not .Values.google.existingSecret) }}
-  auth-google.client-id: {{ .Values.google.clientId | quote }}
-  auth-google.client-secret: {{ .Values.google.clientSecret | quote }}
-  {{- end }}
 
   #########
   # Slack #
   #########
-  {{- if and (.Values.slack.clientId) (.Values.slack.clientSecret) (.Values.slack.signingSecret) (not .Values.slack.existingSecret) }}
-  slack.client-id: {{ .Values.slack.clientId | quote }}
-  slack.client-secret: {{ .Values.slack.clientSecret | quote }}
-  slack.signing-secret: {{ .Values.slack.signingSecret | quote }}
-  {{ end }}
 
   ###########
   # Discord #
   ###########
-  {{- if and (.Values.discord.applicationId) (.Values.discord.publicKey) (.Values.discord.clientSecret) (.Values.discord.botToken) (not .Values.discord.existingSecret) }}
-  discord.application-id: {{ .Values.discord.applicationId | quote }}
-  discord.public-key: {{ .Values.discord.publicKey | quote }}
-  discord.client-secret: {{ .Values.discord.clientSecret | quote }}
-  discord.bot-token: {{ .Values.discord.botToken | quote }}
-  {{ end }}
 
   #############
   # PagerDuty #
@@ -734,7 +705,7 @@ sentry.conf.py: |-
   }
 {{- end }}
 
-{{- if .Values.slack.existingSecret }}
+{{- if or .Values.slack.existingSecret (and .Values.slack.clientId .Values.slack.clientSecret .Values.slack.signingSecret) }}
   #########
   # SLACK #
   #########
@@ -743,7 +714,7 @@ sentry.conf.py: |-
   SENTRY_OPTIONS['slack.signing-secret'] = os.environ.get("SLACK_SIGNING_SECRET")
 {{- end }}
 
-{{- if .Values.discord.existingSecret }}
+{{- if or .Values.discord.existingSecret (and .Values.discord.applicationId .Values.discord.publicKey .Values.discord.clientSecret .Values.discord.botToken) }}
   ###########
   # DISCORD #
   ###########
@@ -760,7 +731,7 @@ sentry.conf.py: |-
   SENTRY_OPTIONS['pagerduty.app-id'] = os.environ.get("PAGERDUTY_APP_ID")
 {{- end }}
 
-{{- if .Values.google.existingSecret }}
+{{- if or .Values.google.existingSecret (and .Values.google.clientId .Values.google.clientSecret) }}
   #########
   # GOOGLE #
   #########
@@ -768,7 +739,7 @@ sentry.conf.py: |-
   SENTRY_OPTIONS['auth-google.client-secret'] = os.environ.get("GOOGLE_AUTH_CLIENT_SECRET")
 {{- end }}
 
-{{- if .Values.github.existingSecret }}
+{{- if or .Values.github.existingSecret .Values.github.privateKey .Values.github.webhookSecret .Values.github.clientId .Values.github.clientSecret }}
   ##########
   # Github #
   ##########
@@ -781,10 +752,18 @@ sentry.conf.py: |-
   {{- if .Values.github.existingSecretAppNameKey }}
   SENTRY_OPTIONS['github-app.name'] = os.environ.get("GITHUB_APP_NAME")
   {{- end }}
+  {{- if or .Values.github.existingSecret .Values.github.privateKey }}
   SENTRY_OPTIONS['github-app.private-key'] = os.environ.get("GITHUB_APP_PRIVATE_KEY")
+  {{- end }}
+  {{- if or .Values.github.existingSecret .Values.github.webhookSecret }}
   SENTRY_OPTIONS['github-app.webhook-secret'] = os.environ.get("GITHUB_APP_WEBHOOK_SECRET")
+  {{- end }}
+  {{- if or .Values.github.existingSecret .Values.github.clientId }}
   SENTRY_OPTIONS['github-app.client-id'] = os.environ.get("GITHUB_APP_CLIENT_ID")
+  {{- end }}
+  {{- if or .Values.github.existingSecret .Values.github.clientSecret }}
   SENTRY_OPTIONS['github-app.client-secret'] = os.environ.get("GITHUB_APP_CLIENT_SECRET")
+  {{- end }}
 {{- end }}
   {{ .Values.config.sentryConfPy | nindent 2 }}
 {{- end -}}
