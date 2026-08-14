@@ -872,13 +872,19 @@ reference a Secret that was not rendered.
 {{- end -}}
 
 {{/*
-envFrom entry for the chart-managed Sentry credential Secret.
+envFrom entry for the chart-managed Sentry credential Secret. The reference is
+optional because every consumer of these variables already treats them as
+absent-by-default: the SENTRY_OPTIONS guards omit the option entirely and the
+S3 reads fall back to an empty string. Tolerating an absent Secret therefore
+degrades to the same "not configured" path rather than blocking pod startup,
+which also lets pre-upgrade hooks run before the Secret is applied.
 */}}
 {{- define "sentry.envFrom" -}}
 {{- if (include "sentry.credentials.sentryEnv.enabled" .) -}}
 envFrom:
   - secretRef:
       name: {{ template "sentry.fullname" . }}-sentry-env
+      optional: true
 {{- end -}}
 {{- end -}}
 

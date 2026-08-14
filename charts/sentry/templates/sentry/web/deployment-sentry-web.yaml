@@ -121,6 +121,7 @@ spec:
 {{- if (include "sentry.credentials.sentryEnv.enabled" .) }}
           - secretRef:
               name: {{ template "sentry.fullname" . }}-sentry-env
+              optional: true
 {{- end }}
 {{- end }}
         volumeMounts:
