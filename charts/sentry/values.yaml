@@ -302,6 +302,8 @@ geodata:
   accountID: ""
   licenseKey: ""
   editionIDs: ""
+  # existingSecret -- Name of an externally-managed Secret holding the GeoIP credentials. If unset, the chart generates and manages this Secret itself. The Secret must contain the keys `GEOIPUPDATE_ACCOUNT_ID`, `GEOIPUPDATE_LICENSE_KEY` and `GEOIPUPDATE_EDITION_IDS`, which are loaded with `envFrom` and therefore cannot be renamed.
+  existingSecret: ""
   annotations: {}
   persistence:
     ## If defined, storageClassName: <storageClass>

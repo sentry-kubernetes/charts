@@ -154,6 +154,18 @@ startupProbe:
 {{- end -}}
 
 {{/*
+GeoIP credentials: the updater Job is enabled by either a plaintext accountID or an
+externally-managed Secret, and reads whichever Secret is in play via envFrom.
+*/}}
+{{- define "sentry.geodata.enabled" -}}
+{{- if or .Values.geodata.accountID .Values.geodata.existingSecret -}}true{{- end -}}
+{{- end -}}
+
+{{- define "sentry.geodata.secretName" -}}
+{{- default (printf "%s-geoip-env" (include "sentry.fullname" .)) .Values.geodata.existingSecret -}}
+{{- end -}}
+
+{{/*
 Expand the name of the chart.
 */}}
 {{- define "sentry.name" -}}
