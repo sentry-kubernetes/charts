@@ -139,7 +139,7 @@ spec:
           name: sentry-data
 {{ include "sentry.volumeMount.replay-filesystem" $root | indent 8 }}
 {{ include "sentry.volumeMount.nodestore-s3" $root | indent 8 }}
-        {{- if and $root.Values.geodata.volumeName $root.Values.geodata.accountID }}
+        {{- if and $root.Values.geodata.volumeName (include "sentry.geodata.enabled" $root) }}
         - name: {{ $root.Values.geodata.volumeName }}
           mountPath: {{ $root.Values.geodata.mountPath }}
           readOnly: true
@@ -191,7 +191,7 @@ spec:
         secret:
           secretName: {{ include "sentry.gcs.secretName" $root }}
       {{ end }}
-      {{- if and $root.Values.geodata.volumeName $root.Values.geodata.accountID }}
+      {{- if and $root.Values.geodata.volumeName (include "sentry.geodata.enabled" $root) }}
       - name: {{ $root.Values.geodata.volumeName }}
         persistentVolumeClaim:
           claimName: data-sentry-geoip

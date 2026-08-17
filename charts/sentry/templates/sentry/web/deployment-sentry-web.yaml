@@ -125,7 +125,7 @@ spec:
           name: sentry-data
 {{ include "sentry.volumeMount.replay-filesystem" . | indent 8 }}
 {{ include "sentry.volumeMount.nodestore-s3" . | indent 8 }}
-        {{- if and .Values.geodata.volumeName .Values.geodata.accountID }}
+        {{- if and .Values.geodata.volumeName (include "sentry.geodata.enabled" .) }}
         - name: {{ .Values.geodata.volumeName }}
           mountPath: {{ .Values.geodata.mountPath }}
           readOnly: true
@@ -210,7 +210,7 @@ spec:
       {{- if .Values.sentry.web.priorityClassName }}
       priorityClassName: "{{ .Values.sentry.web.priorityClassName }}"
       {{- end }}
-      {{- if and .Values.geodata.volumeName .Values.geodata.accountID }}
+      {{- if and .Values.geodata.volumeName (include "sentry.geodata.enabled" .) }}
       - name: {{ .Values.geodata.volumeName }}
         persistentVolumeClaim:
           claimName: data-sentry-geoip

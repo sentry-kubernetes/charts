@@ -219,7 +219,7 @@ spec:
             subPath: config.yml
             readOnly: true
           {{- end }}
-          {{- if and .Values.geodata.volumeName .Values.geodata.accountID }}
+          {{- if and .Values.geodata.volumeName (include "sentry.geodata.enabled" .) }}
           - name: {{ .Values.geodata.volumeName }}
             mountPath: {{ .Values.geodata.mountPath }}
             readOnly: true
@@ -276,7 +276,7 @@ spec:
       - name: rendered-config
         emptyDir: {}
       {{- end }}
-      {{- if and .Values.geodata.volumeName .Values.geodata.accountID }}
+      {{- if and .Values.geodata.volumeName (include "sentry.geodata.enabled" .) }}
       - name: {{ .Values.geodata.volumeName }}
         persistentVolumeClaim:
           claimName: data-sentry-geoip
