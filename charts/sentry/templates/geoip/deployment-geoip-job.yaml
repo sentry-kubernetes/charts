@@ -1,4 +1,4 @@
-{{- if .Values.geodata.accountID }}
+{{- if include "sentry.geodata.enabled" . }}
 apiVersion: batch/v1
 kind: Job
 metadata:
@@ -43,7 +43,7 @@ spec:
           command: ['sh', '-c', 'echo -e "AccountID $(echo $GEOIPUPDATE_ACCOUNT_ID)\nLicenseKey $(echo $GEOIPUPDATE_LICENSE_KEY)\nEditionIDs $(echo $GEOIPUPDATE_EDITION_IDS)" > /usr/share/GeoIP/GeoIP.conf']
           envFrom:
             - secretRef:
-                name: {{ template "sentry.fullname" . }}-geoip-env
+                name: {{ include "sentry.geodata.secretName" . }}
           volumeMounts:
             - name: {{ .Values.geodata.volumeName }}
               mountPath: {{ .Values.geodata.mountPath }}
@@ -52,7 +52,7 @@ spec:
           image: ghcr.io/maxmind/geoipupdate:v7.0.1
           envFrom:
             - secretRef:
-                name: {{ template "sentry.fullname" . }}-geoip-env
+                name: {{ include "sentry.geodata.secretName" . }}
           volumeMounts:
             - name: {{ .Values.geodata.volumeName }}
               mountPath: {{ .Values.geodata.mountPath }}
