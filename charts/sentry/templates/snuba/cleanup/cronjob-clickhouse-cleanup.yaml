@@ -224,8 +224,8 @@ spec:
                   name: {{ .Values.externalClickhouse.existingSecret | quote }}
                   key: {{ default "clickhouse-password" .Values.externalClickhouse.existingSecretKey | quote }}
                 {{- else }}
-                  name: {{ template "sentry.fullname" . }}-clickhouse
-                  key: clickhouse-password
+                  name: {{ template "sentry.fullname" . }}-snuba-env
+                  key: CLICKHOUSE_PASSWORD
                 {{- end }}
                   optional: true
 {{- if .Values.snuba.cleanup.env }}
