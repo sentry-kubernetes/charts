@@ -1,8 +1,10 @@
 {{/*
 Render taskbroker config.yml for a single broker.
 Expected keys on broker: kafkaDeadletterTopic, kafkaRetryTopic, kafkaTopics.
+Optional: kafkaSessionTimeoutMs (defaults to 60000).
 */}}
 {{- define "sentry.taskbroker.configYml" -}}
+kafka_session_timeout_ms: {{ default 60000 .broker.kafkaSessionTimeoutMs }}
 kafka_deadletter_topic: {{ required (printf "sentry.taskBroker.brokers[%s].kafkaDeadletterTopic is required" .broker.name) .broker.kafkaDeadletterTopic }}
 kafka_retry_topic: {{ required (printf "sentry.taskBroker.brokers[%s].kafkaRetryTopic is required" .broker.name) .broker.kafkaRetryTopic }}
 

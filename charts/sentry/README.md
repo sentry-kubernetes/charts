@@ -467,25 +467,6 @@ Note: this table is incomplete, so have a look at the values.yaml in case you mi
 | route.main.labels | object | `{}` | Labels for the HTTPRoute |
 | route.main.parentRefs | list | `[]` | Parent Gateway references (required when enabled) |
 | revisionHistoryLimit | int | `10` |  |
-| sentry.billingMetricsConsumer.affinity | object | `{}` |  |
-| sentry.billingMetricsConsumer.autoscaling.enabled | bool | `false` |  |
-| sentry.billingMetricsConsumer.autoscaling.maxReplicas | int | `3` |  |
-| sentry.billingMetricsConsumer.autoscaling.minReplicas | int | `1` |  |
-| sentry.billingMetricsConsumer.autoscaling.targetCPUUtilizationPercentage | int | `50` |  |
-| sentry.billingMetricsConsumer.containerSecurityContext | object | `{}` |  |
-| sentry.billingMetricsConsumer.enabled | bool | `true` |  |
-| sentry.billingMetricsConsumer.env | list | `[]` |  |
-| sentry.billingMetricsConsumer.livenessProbe.enabled | bool | `true` |  |
-| sentry.billingMetricsConsumer.livenessProbe.initialDelaySeconds | int | `5` |  |
-| sentry.billingMetricsConsumer.livenessProbe.periodSeconds | int | `320` |  |
-| sentry.billingMetricsConsumer.maxPollIntervalMs | int | `300000` | Kafka `--max-poll-interval-ms` (self-hosted `SENTRY_KAFKA_MAX_POLL_INTERVAL_MS`). Set `null` to omit the flag. |
-| sentry.billingMetricsConsumer.nodeSelector | object | `{}` |  |
-| sentry.billingMetricsConsumer.replicas | int | `1` |  |
-| sentry.billingMetricsConsumer.resources | object | `{}` |  |
-| sentry.billingMetricsConsumer.securityContext | object | `{}` |  |
-| sentry.billingMetricsConsumer.sidecars | list | `[]` |  |
-| sentry.billingMetricsConsumer.topologySpreadConstraints | list | `[]` |  |
-| sentry.billingMetricsConsumer.volumes | list | `[]` |  |
 | sentry.cleanup.activeDeadlineSeconds | int | `100` |  |
 | sentry.cleanup.concurrency | int | `1` |  |
 | sentry.cleanup.concurrencyPolicy | string | `"Allow"` |  |
@@ -637,25 +618,6 @@ Note: this table is incomplete, so have a look at the values.yaml in case you mi
 | sentry.ingestOccurrences.sidecars | list | `[]` |  |
 | sentry.ingestOccurrences.topologySpreadConstraints | list | `[]` |  |
 | sentry.ingestOccurrences.volumes | list | `[]` |  |
-| sentry.ingestReplayRecordings.affinity | object | `{}` |  |
-| sentry.ingestReplayRecordings.autoscaling.enabled | bool | `false` |  |
-| sentry.ingestReplayRecordings.autoscaling.maxReplicas | int | `3` |  |
-| sentry.ingestReplayRecordings.autoscaling.minReplicas | int | `1` |  |
-| sentry.ingestReplayRecordings.autoscaling.targetCPUUtilizationPercentage | int | `50` |  |
-| sentry.ingestReplayRecordings.containerSecurityContext | object | `{}` |  |
-| sentry.ingestReplayRecordings.enabled | bool | `true` |  |
-| sentry.ingestReplayRecordings.env | list | `[]` |  |
-| sentry.ingestReplayRecordings.livenessProbe.enabled | bool | `true` |  |
-| sentry.ingestReplayRecordings.livenessProbe.initialDelaySeconds | int | `5` |  |
-| sentry.ingestReplayRecordings.livenessProbe.periodSeconds | int | `320` |  |
-| sentry.ingestReplayRecordings.maxPollIntervalMs | int | `300000` | Kafka `--max-poll-interval-ms` (self-hosted `SENTRY_KAFKA_MAX_POLL_INTERVAL_MS`). Set `null` to omit the flag. |
-| sentry.ingestReplayRecordings.nodeSelector | object | `{}` |  |
-| sentry.ingestReplayRecordings.replicas | int | `1` |  |
-| sentry.ingestReplayRecordings.resources | object | `{}` |  |
-| sentry.ingestReplayRecordings.securityContext | object | `{}` |  |
-| sentry.ingestReplayRecordings.sidecars | list | `[]` |  |
-| sentry.ingestReplayRecordings.topologySpreadConstraints | list | `[]` |  |
-| sentry.ingestReplayRecordings.volumes | list | `[]` |  |
 | sentry.kafka.compression.type | string | `""` | Compression type for Kafka messages |
 | sentry.kafka.message.max.bytes | int | `50000000` | Maximum message size for Kafka |
 | sentry.kafka.socket.timeout.ms | int | `1000` | Socket timeout for Kafka connections |
@@ -729,7 +691,7 @@ Note: this table is incomplete, so have a look at the values.yaml in case you mi
 | sentry.processSpans.maxPollIntervalMs | int | `300000` | Kafka `--max-poll-interval-ms` (self-hosted `SENTRY_KAFKA_MAX_POLL_INTERVAL_MS`). Set `null` to omit the flag. |
 | sentry.singleOrganization | bool | `true` |  |
 | sentry.taskBroker.affinity | object | `{}` | |
-| sentry.taskBroker.brokers | list | (see `values.yaml`) | One broker StatefulSet per item. Required per broker: `name`, `kafkaDeadletterTopic`, `kafkaRetryTopic`, `kafkaTopics` (YAML map mounted at `/etc/taskbroker/config.yml`; hyphenated topic names need YAML, not env). Optional: `replicas`, `resources` (merged with `sentry.taskBroker.resources`), `topologySpreadConstraints` (overrides `sentry.taskBroker.topologySpreadConstraints`). Replaces legacy `topic` / `consumerGroup`. See [taskbroker Kafka config migration](https://github.com/getsentry/taskbroker/blob/main/docs/kafka-config-migration.md). |
+| sentry.taskBroker.brokers | list | (see `values.yaml`) | One broker StatefulSet per item. Required per broker: `name`, `kafkaDeadletterTopic`, `kafkaRetryTopic`, `kafkaTopics` (YAML map mounted at `/etc/taskbroker/config.yml`; hyphenated topic names need YAML, not env). Optional: `kafkaSessionTimeoutMs` (defaults to `60000`), `replicas`, `resources` (merged with `sentry.taskBroker.resources`), `topologySpreadConstraints` (overrides `sentry.taskBroker.topologySpreadConstraints`). Replaces legacy `topic` / `consumerGroup`. See [taskbroker Kafka config migration](https://github.com/getsentry/taskbroker/blob/main/docs/kafka-config-migration.md). |
 | sentry.taskBroker.containerSecurityContext | object | `{}` | |
 | sentry.taskBroker.enabled | bool | `true` | |
 | sentry.taskBroker.env | list | `[]` | |
@@ -885,35 +847,6 @@ Note: this table is incomplete, so have a look at the values.yaml in case you mi
 | snuba.genericMetricsCountersConsumer.resources | object | `{}` |  |
 | snuba.genericMetricsCountersConsumer.securityContext | object | `{}` |  |
 | snuba.genericMetricsCountersConsumer.topologySpreadConstraints | list | `[]` |  |
-| snuba.genericMetricsDistributionConsumer.affinity | object | `{}` |  |
-| snuba.genericMetricsDistributionConsumer.containerSecurityContext | object | `{}` |  |
-| snuba.genericMetricsDistributionConsumer.enabled | bool | `true` |  |
-| snuba.genericMetricsDistributionConsumer.env | list | `[]` |  |
-| snuba.genericMetricsDistributionConsumer.livenessProbe.enabled | bool | `true` |  |
-| snuba.genericMetricsDistributionConsumer.livenessProbe.initialDelaySeconds | int | `5` |  |
-| snuba.genericMetricsDistributionConsumer.livenessProbe.periodSeconds | int | `320` |  |
-| snuba.genericMetricsDistributionConsumer.maxBatchTimeMs | int | `750` |  |
-| snuba.genericMetricsDistributionConsumer.maxPollIntervalMs | int | `300000` | Kafka `--max-poll-interval-ms` (self-hosted `SENTRY_KAFKA_MAX_POLL_INTERVAL_MS`). Set `null` to omit the flag. |
-| snuba.genericMetricsDistributionConsumer.nodeSelector | object | `{}` |  |
-| snuba.genericMetricsDistributionConsumer.replicas | int | `1` |  |
-| snuba.genericMetricsDistributionConsumer.resources | object | `{}` |  |
-| snuba.genericMetricsDistributionConsumer.securityContext | object | `{}` |  |
-| snuba.genericMetricsDistributionConsumer.topologySpreadConstraints | list | `[]` |  |
-| snuba.genericMetricsGaugesConsumer.maxPollIntervalMs | int | `300000` | Kafka `--max-poll-interval-ms` (self-hosted `SENTRY_KAFKA_MAX_POLL_INTERVAL_MS`). Set `null` to omit the flag. |
-| snuba.genericMetricsSetsConsumer.affinity | object | `{}` |  |
-| snuba.genericMetricsSetsConsumer.containerSecurityContext | object | `{}` |  |
-| snuba.genericMetricsSetsConsumer.enabled | bool | `true` |  |
-| snuba.genericMetricsSetsConsumer.env | list | `[]` |  |
-| snuba.genericMetricsSetsConsumer.livenessProbe.enabled | bool | `true` |  |
-| snuba.genericMetricsSetsConsumer.livenessProbe.initialDelaySeconds | int | `5` |  |
-| snuba.genericMetricsSetsConsumer.livenessProbe.periodSeconds | int | `320` |  |
-| snuba.genericMetricsSetsConsumer.maxBatchTimeMs | int | `750` |  |
-| snuba.genericMetricsSetsConsumer.maxPollIntervalMs | int | `300000` | Kafka `--max-poll-interval-ms` (self-hosted `SENTRY_KAFKA_MAX_POLL_INTERVAL_MS`). Set `null` to omit the flag. |
-| snuba.genericMetricsSetsConsumer.nodeSelector | object | `{}` |  |
-| snuba.genericMetricsSetsConsumer.replicas | int | `1` |  |
-| snuba.genericMetricsSetsConsumer.resources | object | `{}` |  |
-| snuba.genericMetricsSetsConsumer.securityContext | object | `{}` |  |
-| snuba.genericMetricsSetsConsumer.topologySpreadConstraints | list | `[]` |  |
 | snuba.groupAttributesConsumer.affinity | object | `{}` |  |
 | snuba.groupAttributesConsumer.containerSecurityContext | object | `{}` |  |
 | snuba.groupAttributesConsumer.enabled | bool | `true` |  |
