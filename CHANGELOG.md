@@ -2,6 +2,16 @@
 
 The changelog below refers to the main `sentry` chart only.
 
+## Upgrading to Chart 33.4.0
+
+Chart `33.4.0` targets [Sentry 26.8.0](https://github.com/getsentry/self-hosted/releases/tag/26.8.0).
+
+- Replay recordings are consumed by TaskBroker on the **ingest** broker (`ingest-replay-recordings` `raw` topic, `sentry.replays.tasks.process_replay_recording`). Leftover `sentry.ingestReplayRecordings` overrides are ignored. If you fully override `sentry.taskBroker.brokers`, add that topic yourself (same pattern as `profiles`).
+- Dropped unused consumers: `sentry.billingMetricsConsumer`, Snuba generic-metrics gauges/sets/distributions (consumers and subscription schedulers). Counters stay (`snuba.genericMetricsCountersConsumer`, `snuba.subscriptionConsumerGenericMetricsCounters`).
+- Per-broker `kafkaSessionTimeoutMs` defaults to `60000` (self-hosted `kafka_session_timeout_ms`).
+- Sentry Kafka consumers default to `autoOffsetReset: earliest` and `noStrictOffsetReset: true` (self-hosted `--auto-offset-reset=earliest --no-strict-offset-reset`).
+- Self-hosted compose also switched Redis to Valkey, lowered Kafka log retention to 3h, and added a SeaweedFS `weed mini` KEK migration. Those do not apply to this chart (Bitnami Redis / external Kafka / no `weed mini`).
+
 ## Upgrading to Chart 33.0.0
 
 Chart `33.0.0` targets [Sentry 26.7.0](https://github.com/getsentry/self-hosted/releases/tag/26.7.0).
