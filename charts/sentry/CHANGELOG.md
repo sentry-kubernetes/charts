@@ -1,5 +1,12 @@
 # Changelog
 
+## [33.3.1](https://github.com/sentry-kubernetes/charts/compare/sentry-v33.3.0...sentry-v33.3.1) (2026-08-18)
+
+
+### Bug Fixes
+
+* **sentry:** update clickhouse cleanup cronjob template ([#2270](https://github.com/sentry-kubernetes/charts/issues/2270)) ([74e9fc8](https://github.com/sentry-kubernetes/charts/commit/74e9fc861eeb3f63a38140bfb061a3b486c3f25d))
+
 ## [33.3.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v33.2.0...sentry-v33.3.0) (2026-08-10)
 
 
