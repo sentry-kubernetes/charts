@@ -186,6 +186,10 @@ Note: this table is incomplete, so have a look at the values.yaml in case you mi
 | hooks.snubaInit.resources.requests.cpu | string | `"700m"` |  |
 | hooks.snubaInit.resources.requests.memory | string | `"1Gi"` |  |
 | hooks.snubaMigrate.enabled | bool | `true` |  |
+| hooks.taskbrokerMigrate.resources.limits.cpu | string | `"2000m"` |  |
+| hooks.taskbrokerMigrate.resources.limits.memory | string | `"1Gi"` |  |
+| hooks.taskbrokerMigrate.resources.requests.cpu | string | `"700m"` |  |
+| hooks.taskbrokerMigrate.resources.requests.memory | string | `"1Gi"` |  |
 | images.relay.imagePullSecrets | list | `[]` |  |
 | images.sentry.imagePullSecrets | list | `[]` |  |
 | images.snuba.imagePullSecrets | list | `[]` |  |
@@ -692,13 +696,14 @@ Note: this table is incomplete, so have a look at the values.yaml in case you mi
 | sentry.processSpans.maxPollIntervalMs | int | `300000` | Kafka `--max-poll-interval-ms` (self-hosted `SENTRY_KAFKA_MAX_POLL_INTERVAL_MS`). Set `null` to omit the flag. |
 | sentry.singleOrganization | bool | `true` |  |
 | sentry.taskBroker.affinity | object | `{}` | |
-| sentry.taskBroker.brokers | list | (see `values.yaml`) | One broker StatefulSet per item. Required per broker: `name`, `kafkaDeadletterTopic`, `kafkaRetryTopic`, `kafkaTopics` (YAML map mounted at `/etc/taskbroker/config.yml`; hyphenated topic names need YAML, not env). Optional: `kafkaSessionTimeoutMs` (defaults to `60000`), `replicas`, `resources` (merged with `sentry.taskBroker.resources`), `topologySpreadConstraints` (overrides `sentry.taskBroker.topologySpreadConstraints`). Replaces legacy `topic` / `consumerGroup`. See [taskbroker Kafka config migration](https://github.com/getsentry/taskbroker/blob/main/docs/kafka-config-migration.md). |
+| sentry.taskBroker.brokers | list | (see `values.yaml`) | One broker StatefulSet per item. Required per broker: `name`, `kafkaDeadletterTopic`, `kafkaRetryTopic`, `kafkaTopics` (YAML map mounted at `/etc/taskbroker/config.yml`; hyphenated topic names need YAML, not env). Optional: `store.adapter` (`sqlite` \| `postgres`, inherits `sentry.taskBroker.store.adapter`), `persistence.enabled` (inherits `sentry.taskBroker.persistence.enabled`; independent of adapter), `kafkaSessionTimeoutMs` (defaults to `60000`), `replicas`, `resources` (merged with `sentry.taskBroker.resources`), `topologySpreadConstraints` (overrides `sentry.taskBroker.topologySpreadConstraints`). Replaces legacy `topic` / `consumerGroup`. See [taskbroker Kafka config migration](https://github.com/getsentry/taskbroker/blob/main/docs/kafka-config-migration.md). |
 | sentry.taskBroker.containerSecurityContext | object | `{}` | |
 | sentry.taskBroker.enabled | bool | `true` | |
 | sentry.taskBroker.env | list | `[]` | |
+| sentry.taskBroker.hooks.skipMigrateJob | bool | `false` | Skip the Helm taskbroker migrate Job. Required if `hooks.enabled` is false and any broker uses the postgres adapter. |
 | sentry.taskBroker.nodeSelector | object | `{}` | |
 | sentry.taskBroker.persistence.accessMode | string | `"ReadWriteOnce"` | |
-| sentry.taskBroker.persistence.enabled | bool | `true` | |
+| sentry.taskBroker.persistence.enabled | bool | `true` | Independent of `store.adapter`. Postgres with a PVC is unused disk, not an error. Turning this off on an existing StatefulSet cannot remove `volumeClaimTemplates`. |
 | sentry.taskBroker.persistence.size | string | `"1Gi"` | |
 | sentry.taskBroker.persistence.storageClass | string | `""` | |
 | sentry.taskBroker.priorityClassName | string | `""` | |
@@ -706,6 +711,21 @@ Note: this table is incomplete, so have a look at the values.yaml in case you mi
 | sentry.taskBroker.resources | object | `{}` | Default container resources for task broker pods; merged with each broker’s `resources` in `sentry.taskBroker.brokers`. |
 | sentry.taskBroker.securityContext | object | `{}` | |
 | sentry.taskBroker.sidecars | list | `[]` | |
+| sentry.taskBroker.store.adapter | string | `"sqlite"` | `sqlite` or `postgres`. Per-broker override: `brokers[].store.adapter`. |
+| sentry.taskBroker.store.postgres.database | string | `"taskbroker"` | Dedicated taskbroker database. Do not reuse the Sentry or Snuba databases. |
+| sentry.taskBroker.store.postgres.defaultDatabase | string | `""` | libpq database for `CREATE DATABASE` existence check. Empty uses `sentry.postgresql.database` (typically `sentry`, not `postgres`). |
+| sentry.taskBroker.store.postgres.ddlExistingSecret | string | `""` | Optional secret for the DDL user password. Defaults to `existingSecret` / `password`. |
+| sentry.taskBroker.store.postgres.ddlExistingSecretKey | string | `"postgresql-password"` | |
+| sentry.taskBroker.store.postgres.ddlUser | string | `""` | DDL username. Empty uses `store.postgres.user`. |
+| sentry.taskBroker.store.postgres.existingSecret | string | `""` | Secret for `TASKBROKER_STORE__PG__PASSWORD`. Required (or `password`) when postgres adapter and `postgresql.enabled=false`. |
+| sentry.taskBroker.store.postgres.existingSecretKey | string | `"postgresql-password"` | |
+| sentry.taskBroker.store.postgres.host | string | `""` | Postgres primary host. Required when `postgresql.enabled=false`. Must not be PgBouncer / a transaction-mode pooler. When `postgresql.enabled=true`, defaults to the in-cluster primary (not pgbouncer). |
+| sentry.taskBroker.store.postgres.maxConnections | int | `64` | Documentation only. The binary hardcodes 64+64 connections per replica. |
+| sentry.taskBroker.store.postgres.minConnections | int | `64` | Documentation only. The binary ignores this. |
+| sentry.taskBroker.store.postgres.password | string | `""` | Injected as env, never written to the ConfigMap. Prefer `existingSecret` in production. |
+| sentry.taskBroker.store.postgres.port | int | `5432` | Always emitted as an integer. |
+| sentry.taskBroker.store.postgres.queryParams | string | `""` | Extra libpq query string, e.g. `sslmode=require`. |
+| sentry.taskBroker.store.postgres.user | string | `""` | Empty inherits `sentry.postgresql.username` (bundled Postgres or `externalPostgresql.username`). |
 | sentry.taskBroker.tolerations | list | `[]` | |
 | sentry.taskBroker.topologySpreadConstraints | list | `[]` | Default pod topologySpreadConstraints for task broker pods; overridden by each broker’s `topologySpreadConstraints` in `sentry.taskBroker.brokers`. |
 | sentry.taskBroker.volumeMounts | list | `[]` | |
@@ -1558,6 +1578,37 @@ externalKafka:
       port: 9093
     - host: "kafka-confluent-3"
       port: 9094
+```
+
+## Taskbroker store
+
+Taskbroker defaults to **SQLite** (`sentry.taskBroker.store.adapter: sqlite`) with a per-pod PVC. To run a broker against PostgreSQL (the adapter Sentry SaaS uses), set `store.adapter: postgres` globally and/or `brokers[].store.adapter: postgres` on selected brokers.
+
+- Use a **dedicated** database (`taskbroker` by default). Do not reuse the Sentry or Snuba databases.
+- Point `store.postgres.host` at a **real PostgreSQL primary** (for example CNPG `postgres-rw`). Do **not** use PgBouncer or a CNPG pooler with `poolMode: transaction` — taskbroker uses sqlx prepared statements, which break in transaction pooling. When `postgresql.enabled=false`, `store.postgres.host` is required; the chart does **not** inherit `externalPostgresql.host` (that value is often a pooler).
+- Passwords are injected as `TASKBROKER_STORE__PG__PASSWORD` / `TASKBROKER_STORE__PG__DDL_PASSWORD` from `password` or `existingSecret`. They are never written to the ConfigMap (`PgConfig` would otherwise default to `"password"`).
+- `taskbroker --run migrations` always `CREATE DATABASE` if the target database is missing. The connecting role needs `CREATEDB`, or pre-create the database. `defaultDatabase` is only the libpq database used for that existence check; when empty it uses `sentry.postgresql.database` (typically `sentry` on CNPG, not `postgres`).
+- Persistence is **independent** of the adapter. A postgres broker with `persistence.enabled: true` keeps an unused `data` PVC; that is valid. Operators who want to drop disk set `persistence.enabled: false` themselves. Kubernetes cannot remove `volumeClaimTemplates` from an existing StatefulSet, so leaving persistence on is the sqlite→postgres upgrade path. Turning persistence off later may leave unused PVCs.
+- Connection pools are **64 read + 64 write per replica**, hardcoded in taskbroker (not Helm-configurable). Size Postgres `max_connections` for `(64+64)*replicas + migrate Job + other Sentry/Snuba clients`. Default CNPG `max_connections` (~100) is too low for even one postgres broker plus the migrate Job (the Job opens another 64-conn existence pool).
+- The chart runs a Helm hook Job (`post-install,pre-upgrade`, weight 2) with a dedicated migrate ConfigMap (weight 1). With `asHook: false`, the StatefulSet is a normal resource and the Job runs as a post-install hook **after** resources, so the first pod may boot before migrate completes — confirm Job success before relying on GetTask. If `hooks.enabled` is false, set `sentry.taskBroker.hooks.skipMigrateJob: true` and run migrations yourself; otherwise Helm render fails.
+- There is no SQLite→Postgres data migration. In-flight sqlite activations are dropped.
+
+Example (external CNPG primary, ingest only):
+
+```yaml
+sentry:
+  taskBroker:
+    store:
+      postgres:
+        host: postgres-rw
+        existingSecret: sentry-postgresql-secret
+        existingSecretKey: password
+        database: taskbroker
+        # user defaults to sentry.postgresql.username / externalPostgresql.username
+    brokers:
+      - name: ingest
+        store:
+          adapter: postgres
 ```
 
 ## External Postgres configuration

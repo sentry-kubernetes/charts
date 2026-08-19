@@ -21,7 +21,7 @@ metadata:
   {{- end }}
 data:
   config.yml: |
-    {{- include "sentry.taskbroker.configYml" (dict "broker" $broker) | nindent 4 }}
+    {{- include "sentry.taskbroker.configYml" (dict "broker" $broker "root" $root) | nindent 4 }}
 ---
 {{- end }}
 {{- end }}
