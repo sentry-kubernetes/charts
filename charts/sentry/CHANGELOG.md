@@ -1,5 +1,12 @@
 # Changelog
 
+## [33.5.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v33.4.0...sentry-v33.5.0) (2026-08-19)
+
+
+### Features
+
+* charts/sentry: add existingSecret support for GeoIP credentials ([#2284](https://github.com/sentry-kubernetes/charts/issues/2284)) ([b9d3d6d](https://github.com/sentry-kubernetes/charts/commit/b9d3d6d4b4e231b0c3ce4b0406820e00cf69b4fa))
+
 ## [33.4.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v33.3.1...sentry-v33.4.0) (2026-08-18)
 
 
