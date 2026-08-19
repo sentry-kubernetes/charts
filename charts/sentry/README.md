@@ -1582,18 +1582,11 @@ externalKafka:
 
 ## Taskbroker store
 
-Taskbroker defaults to **SQLite** (`sentry.taskBroker.store.adapter: sqlite`) with a per-pod PVC. To run a broker against PostgreSQL (the adapter Sentry SaaS uses), set `store.adapter: postgres` globally and/or `brokers[].store.adapter: postgres` on selected brokers.
+Taskbroker uses SQLite by default. Switch a broker to PostgreSQL with `sentry.taskBroker.store.adapter` or `brokers[].store.adapter`.
 
-- Use a **dedicated** database (`taskbroker` by default). Do not reuse the Sentry or Snuba databases.
-- Point `store.postgres.host` at a **real PostgreSQL primary** (for example CNPG `postgres-rw`). Do **not** use PgBouncer or a CNPG pooler with `poolMode: transaction` — taskbroker uses sqlx prepared statements, which break in transaction pooling. When `postgresql.enabled=false`, `store.postgres.host` is required; the chart does **not** inherit `externalPostgresql.host` (that value is often a pooler).
-- Passwords are injected as `TASKBROKER_STORE__PG__PASSWORD` / `TASKBROKER_STORE__PG__DDL_PASSWORD` from `password` or `existingSecret`. They are never written to the ConfigMap (`PgConfig` would otherwise default to `"password"`).
-- `taskbroker --run migrations` always `CREATE DATABASE` if the target database is missing. The connecting role needs `CREATEDB`, or pre-create the database. `defaultDatabase` is only the libpq database used for that existence check; when empty it uses `sentry.postgresql.database` (typically `sentry` on CNPG, not `postgres`).
-- Persistence is **independent** of the adapter. A postgres broker with `persistence.enabled: true` keeps an unused `data` PVC; that is valid. Operators who want to drop disk set `persistence.enabled: false` themselves. Kubernetes cannot remove `volumeClaimTemplates` from an existing StatefulSet, so leaving persistence on is the sqlite→postgres upgrade path. Turning persistence off later may leave unused PVCs.
-- Connection pools are **64 read + 64 write per replica**, hardcoded in taskbroker (not Helm-configurable). Size Postgres `max_connections` for `(64+64)*replicas + migrate Job + other Sentry/Snuba clients`. Default CNPG `max_connections` (~100) is too low for even one postgres broker plus the migrate Job (the Job opens another 64-conn existence pool).
-- The chart runs a Helm hook Job (`post-install,pre-upgrade`, weight 2) with a dedicated migrate ConfigMap (weight 1). With `asHook: false`, the StatefulSet is a normal resource and the Job runs as a post-install hook **after** resources, so the first pod may boot before migrate completes — confirm Job success before relying on GetTask. If `hooks.enabled` is false, set `sentry.taskBroker.hooks.skipMigrateJob: true` and run migrations yourself; otherwise Helm render fails.
-- There is no SQLite→Postgres data migration. In-flight sqlite activations are dropped.
+Use a dedicated `taskbroker` database and a real primary (`postgres-rw`). Do not use PgBouncer or a transaction-mode pooler, and do not reuse the Sentry or Snuba databases. With external Postgres, set `store.postgres.host` yourself — the chart will not take `externalPostgresql.host` (that is often a pooler).
 
-Example (external CNPG primary, ingest only):
+Each postgres replica opens 128 connections (hardcoded). Raise `max_connections` before enabling; CNPG's default (~100) is too low. Switching adapters does not migrate in-flight SQLite tasks.
 
 ```yaml
 sentry:
@@ -1603,8 +1596,6 @@ sentry:
         host: postgres-rw
         existingSecret: sentry-postgresql-secret
         existingSecretKey: password
-        database: taskbroker
-        # user defaults to sentry.postgresql.username / externalPostgresql.username
     brokers:
       - name: ingest
         store:
