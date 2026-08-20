@@ -3402,6 +3402,9 @@ extraManifests: []
 
 pgbouncer:
   enabled: false
+  # Extra container env. Must match the image dialect (edoburu/pgbouncer by default:
+  # AUTH_TYPE, MIN_POOL_SIZE, SERVER_TLS_SSLMODE, ...). Built-in settings are
+  # injected under both edoburu and Bitnami names so a bitnamilegacy image override still works.
   env: []
   postgres:
     cp_max: 10
@@ -3411,8 +3414,8 @@ pgbouncer:
     user: ''
     password: ''
   image:
-    repository: "bitnamilegacy/pgbouncer"
-    tag: "1.23.1-debian-12-r5"
+    repository: "edoburu/pgbouncer"
+    tag: "v1.25.2-p0"
     pullPolicy: IfNotPresent
   replicas: 2
   podDisruptionBudget:

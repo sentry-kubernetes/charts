@@ -1326,7 +1326,11 @@ Launchpad RPC shared secret (required by Sentry web and launchpad-taskworker)
 
 
 {{/*
-Pgbouncer environment variables
+Pgbouncer environment variables.
+
+Injected under both Bitnami names (POSTGRESQL_*, PGBOUNCER_*) and edoburu names
+(DB_*) so the default edoburu/pgbouncer image works and a bitnamilegacy override
+still does.
 */}}
 {{- define "sentry.pgbouncer.env" -}}
 {{- if and .Values.externalPostgresql.existingSecret .Values.externalPostgresql.existingSecretKeys.host }}
@@ -1335,8 +1339,15 @@ Pgbouncer environment variables
     secretKeyRef:
       name: {{ .Values.externalPostgresql.existingSecret }}
       key: {{ default .Values.externalPostgresql.existingSecretKeys.host }}
+- name: DB_HOST
+  valueFrom:
+    secretKeyRef:
+      name: {{ .Values.externalPostgresql.existingSecret }}
+      key: {{ default .Values.externalPostgresql.existingSecretKeys.host }}
 {{- else }}
 - name: POSTGRESQL_HOST
+  value: {{ include "sentry.postgresql.host" . | quote }}
+- name: DB_HOST
   value: {{ include "sentry.postgresql.host" . | quote }}
 {{- end }}
 {{- if and .Values.externalPostgresql.existingSecret .Values.externalPostgresql.existingSecretKeys.port }}
@@ -1345,8 +1356,15 @@ Pgbouncer environment variables
     secretKeyRef:
       name: {{ .Values.externalPostgresql.existingSecret }}
       key: {{ default .Values.externalPostgresql.existingSecretKeys.port }}
+- name: DB_PORT
+  valueFrom:
+    secretKeyRef:
+      name: {{ .Values.externalPostgresql.existingSecret }}
+      key: {{ default .Values.externalPostgresql.existingSecretKeys.port }}
 {{- else }}
 - name: POSTGRESQL_PORT
+  value: {{ include "sentry.postgresql.port" . | quote }}
+- name: DB_PORT
   value: {{ include "sentry.postgresql.port" . | quote }}
 {{- end }}
 {{- if and .Values.externalPostgresql.existingSecret .Values.externalPostgresql.existingSecretKeys.database }}
@@ -1355,8 +1373,15 @@ Pgbouncer environment variables
     secretKeyRef:
       name: {{ .Values.externalPostgresql.existingSecret }}
       key: {{ default .Values.externalPostgresql.existingSecretKeys.database }}
+- name: DB_NAME
+  valueFrom:
+    secretKeyRef:
+      name: {{ .Values.externalPostgresql.existingSecret }}
+      key: {{ default .Values.externalPostgresql.existingSecretKeys.database }}
 {{- else }}
 - name: PGBOUNCER_DATABASE
+  value: {{ include "sentry.postgresql.database" . | quote }}
+- name: DB_NAME
   value: {{ include "sentry.postgresql.database" . | quote }}
 {{- end }}
 {{- if .Values.postgresql.enabled }}
@@ -1365,11 +1390,23 @@ Pgbouncer environment variables
     secretKeyRef:
       name: {{ default (include "sentry.postgresql.fullname" .) .Values.postgresql.auth.existingSecret }}
       key: {{ default "postgres-password" .Values.postgresql.auth.secretKeys.adminPasswordKey }}
+- name: DB_PASSWORD
+  valueFrom:
+    secretKeyRef:
+      name: {{ default (include "sentry.postgresql.fullname" .) .Values.postgresql.auth.existingSecret }}
+      key: {{ default "postgres-password" .Values.postgresql.auth.secretKeys.adminPasswordKey }}
 {{- else if .Values.externalPostgresql.password }}
 - name: POSTGRESQL_PASSWORD
   value: {{ .Values.externalPostgresql.password | quote }}
+- name: DB_PASSWORD
+  value: {{ .Values.externalPostgresql.password | quote }}
 {{- else if .Values.externalPostgresql.existingSecret }}
 - name: POSTGRESQL_PASSWORD
+  valueFrom:
+    secretKeyRef:
+      name: {{ .Values.externalPostgresql.existingSecret }}
+      key: {{ or .Values.externalPostgresql.existingSecretKeys.password .Values.externalPostgresql.existingSecretKey "postgresql-password" }}
+- name: DB_PASSWORD
   valueFrom:
     secretKeyRef:
       name: {{ .Values.externalPostgresql.existingSecret }}
@@ -1381,8 +1418,15 @@ Pgbouncer environment variables
     secretKeyRef:
       name: {{ .Values.externalPostgresql.existingSecret }}
       key: {{ default .Values.externalPostgresql.existingSecretKeys.username }}
+- name: DB_USER
+  valueFrom:
+    secretKeyRef:
+      name: {{ .Values.externalPostgresql.existingSecret }}
+      key: {{ default .Values.externalPostgresql.existingSecretKeys.username }}
 {{- else }}
 - name: POSTGRESQL_USERNAME
+  value: {{ include "sentry.postgresql.username" . | quote }}
+- name: DB_USER
   value: {{ include "sentry.postgresql.username" . | quote }}
 {{- end }}
 {{- end -}}

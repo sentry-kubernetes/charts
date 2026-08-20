@@ -375,8 +375,8 @@ Note: this table is incomplete, so have a look at the values.yaml in case you mi
 | pgbouncer.authType | string | `"md5"` |  |
 | pgbouncer.enabled | bool | `false` |  |
 | pgbouncer.image.pullPolicy | string | `"IfNotPresent"` |  |
-| pgbouncer.image.repository | string | `"bitnami/pgbouncer"` |  |
-| pgbouncer.image.tag | string | `"1.23.1-debian-12-r5"` |  |
+| pgbouncer.image.repository | string | `"edoburu/pgbouncer"` |  |
+| pgbouncer.image.tag | string | `"v1.25.2-p0"` |  |
 | pgbouncer.maxClientConn | string | `"8192"` |  |
 | pgbouncer.nodeSelector | object | `{}` |  |
 | pgbouncer.podDisruptionBudget.enabled | bool | `true` |  |
