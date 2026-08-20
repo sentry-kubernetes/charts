@@ -18,6 +18,11 @@ jobs:
         with:
           path: 'gh-pages'
 
+      - name: Set up Helm
+        uses: azure/setup-helm@v5
+        with:
+          version: v4.2.4
+
       - run: |
           cd gh-pages
           git config --local user.email "action@github.com"
@@ -25,25 +30,12 @@ jobs:
           git fetch --no-tags --prune --depth=1 origin +refs/heads/*:refs/remotes/origin/*
           git checkout gh-pages
 
-      - name: Build clickhouse chart
-        uses: WyriHaximus/github-action-helm3@v4
-        with:
-          exec: helm package -u main/charts/clickhouse --destination gh-pages/charts
-
-      - name: Build sentry chart
-        uses: WyriHaximus/github-action-helm3@v4
-        with:
-          exec: helm package -u main/charts/sentry --destination gh-pages/charts
-
-      - name: Build sentry-kubernetes chart
-        uses: WyriHaximus/github-action-helm3@v4
-        with:
-          exec: helm package -u main/charts/sentry-kubernetes --destination gh-pages/charts
-
-      - name: Build sentry-kubernetes chart
-        uses: WyriHaximus/github-action-helm3@v4
-        with:
-          exec: helm repo index --url https://sentry-kubernetes.github.io/charts ./gh-pages/charts
+      - name: Package charts
+        run: |
+          helm package -u main/charts/clickhouse --destination gh-pages/charts
+          helm package -u main/charts/sentry --destination gh-pages/charts
+          helm package -u main/charts/sentry-kubernetes --destination gh-pages/charts
+          helm repo index --url https://sentry-kubernetes.github.io/charts ./gh-pages/charts
 
       - name: Commit files
         run: |
