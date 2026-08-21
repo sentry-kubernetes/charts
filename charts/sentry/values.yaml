@@ -3424,7 +3424,13 @@ pgbouncer:
     minAvailable: 1
     # -- Maximum unavailable pods set in PodDisruptionBudget. If set, 'minAvailable' is ignored.
     # maxUnavailable: 1
-  authType: "md5"
+  # edoburu/pgbouncer always writes auth_user into the database line, so pgbouncer logs
+  # into the backend with the credential from its own userlist instead of passing the
+  # client's through. "md5" stores that credential as an md5 hash, which a scram-sha-256
+  # backend (the PostgreSQL 14+ default) rejects with "server login failed: wrong password
+  # type". "scram-sha-256" stores it in plain text, so pgbouncer can derive either scheme
+  # and works against both kinds of backend.
+  authType: "scram-sha-256"
   maxClientConn: "8192"
   poolSize: "50"
   poolMode: "transaction"

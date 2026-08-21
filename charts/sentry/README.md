@@ -372,7 +372,7 @@ Note: this table is incomplete, so have a look at the values.yaml in case you mi
 | openai | object | `{}` |  |
 | pagerduty | object | `{}` |  |
 | pgbouncer.affinity | object | `{}` |  |
-| pgbouncer.authType | string | `"md5"` |  |
+| pgbouncer.authType | string | `"scram-sha-256"` |  |
 | pgbouncer.enabled | bool | `false` |  |
 | pgbouncer.image.pullPolicy | string | `"IfNotPresent"` |  |
 | pgbouncer.image.repository | string | `"edoburu/pgbouncer"` |  |
