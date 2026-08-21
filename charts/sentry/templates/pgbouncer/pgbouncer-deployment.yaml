@@ -1,4 +1,7 @@
 {{- if .Values.pgbouncer.enabled }}
+{{- if and (contains "edoburu" .Values.pgbouncer.image.repository) (eq .Values.pgbouncer.authType "md5") -}}
+{{- fail "\n\nERROR: pgbouncer.authType `md5` is not usable with the edoburu/pgbouncer image.\nThat image always sets `auth_user`, so pgbouncer logs into PostgreSQL with the md5 hash\nfrom its own userlist; a scram-sha-256 backend (PostgreSQL 14+ default) rejects it with\n`server login failed: wrong password type`.\nEither:\n  - set `pgbouncer.authType: scram-sha-256` (recommended, works against md5 backends too)\n  - or override `pgbouncer.image` with an image whose entrypoint does not set `auth_user`\n" -}}
+{{- end -}}
 ---
 apiVersion: apps/v1
 kind: Deployment
