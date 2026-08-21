@@ -23,7 +23,7 @@ spec:
       annotations:
         checksum/configYml: {{ .Values.config.configYml | toYaml | toString | sha256sum }}
         checksum/sentryConfPy: {{ .Values.config.sentryConfPy | sha256sum }}
-        checksum/config.yaml: {{ include "sentry.config" . | sha256sum }}
+        checksum/config.yaml: {{ include "sentry.config.checksum" . }}
       {{- if .Values.sentry.taskScheduler.annotations }}
 {{ toYaml .Values.sentry.taskScheduler.annotations | indent 8 }}
       {{- end }}          
@@ -94,6 +94,7 @@ spec:
 {{- if .Values.sentry.taskScheduler.env }}
 {{ toYaml .Values.sentry.taskScheduler.env | indent 8 }}
 {{- end }}
+        {{- with include "sentry.envFrom" . }}{{ . | nindent 8 }}{{- end }}
         resources:
 {{ toYaml .Values.sentry.taskScheduler.resources | indent 10 }}
 {{- if .Values.sentry.taskScheduler.containerSecurityContext }}

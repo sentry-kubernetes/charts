@@ -26,7 +26,7 @@ spec:
       annotations:
         checksum/configYml: {{ .Values.config.configYml | toYaml | toString | sha256sum }}
         checksum/sentryConfPy: {{ .Values.config.sentryConfPy | sha256sum }}
-        checksum/config.yaml: {{ include "sentry.config" . | sha256sum }}
+        checksum/config.yaml: {{ include "sentry.config.checksum" . }}
         {{- if .Values.sentry.web.annotations }}
 {{ toYaml .Values.sentry.web.annotations | indent 8 }}
         {{- end }}
@@ -112,10 +112,17 @@ spec:
 {{- if .Values.sentry.web.env }}
 {{ toYaml .Values.sentry.web.env | indent 8 }}
 {{- end }}
-{{- if .Values.sentry.web.existingSecretEnv }}
+{{- if or .Values.sentry.web.existingSecretEnv (include "sentry.credentials.sentryEnv.enabled" .) }}
         envFrom:
+{{- if .Values.sentry.web.existingSecretEnv }}
           - secretRef:
               name: {{.Values.sentry.web.existingSecretEnv}}
+{{- end }}
+{{- if (include "sentry.credentials.sentryEnv.enabled" .) }}
+          - secretRef:
+              name: {{ template "sentry.fullname" . }}-sentry-env
+              optional: true
+{{- end }}
 {{- end }}
         volumeMounts:
         - mountPath: /etc/sentry

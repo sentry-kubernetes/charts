@@ -1,5 +1,12 @@
 # Changelog
 
+## [33.6.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v33.5.0...sentry-v33.6.0) (2026-08-20)
+
+
+### Features
+
+* charts/sentry: source S3 and integration credentials from a Secret ([#2279](https://github.com/sentry-kubernetes/charts/issues/2279)) ([87bb399](https://github.com/sentry-kubernetes/charts/commit/87bb399c31f7f6e5b8c9bf14505e88dea01c520a))
+
 ## [33.5.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v33.4.0...sentry-v33.5.0) (2026-08-19)
 
 

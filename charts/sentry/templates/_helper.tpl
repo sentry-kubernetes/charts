@@ -797,6 +797,120 @@ See: https://github.com/getsentry/taskbroker/blob/main/docs/kafka-config-migrati
 {{- end -}}
 
 {{/*
+Sentry-fleet credentials that the chart manages itself.
+
+Only plaintext values appear here. When a credential is supplied through an
+existingSecret, sentry.env references that Secret directly and the key is
+omitted, so the two paths are never both active for the same credential.
+
+Consumed by templates/sentry/secret-sentry-env.yaml and, through
+sentry.config.checksum, by the pod annotations that roll workloads when a
+plaintext credential is rotated.
+*/}}
+{{- define "sentry.credentials.sentryEnv.data" -}}
+{{- if and (eq (default "" .Values.filestore.backend) "s3") (not .Values.filestore.s3.existingSecret) }}
+{{- with .Values.filestore.s3.accessKey }}
+S3_ACCESS_KEY_ID: {{ . | b64enc | quote }}
+{{- end }}
+{{- with .Values.filestore.s3.secretKey }}
+S3_SECRET_ACCESS_KEY: {{ . | b64enc | quote }}
+{{- end }}
+{{- end }}
+{{- $replayS3 := .Values.replay.storage.s3 | default dict }}
+{{- if and (eq (default "" .Values.replay.storage.backend) "s3") (not $replayS3.existingSecret) }}
+{{- with $replayS3.accessKey }}
+REPLAY_S3_ACCESS_KEY_ID: {{ . | b64enc | quote }}
+{{- end }}
+{{- with $replayS3.secretKey }}
+REPLAY_S3_SECRET_ACCESS_KEY: {{ . | b64enc | quote }}
+{{- end }}
+{{- end }}
+{{- $profilesS3 := .Values.filestore.profiles.s3 | default dict }}
+{{- if and (eq (default "" .Values.filestore.profiles.backend) "s3") (not $profilesS3.existingSecret) }}
+{{- with $profilesS3.accessKey }}
+PROFILES_S3_ACCESS_KEY_ID: {{ . | b64enc | quote }}
+{{- end }}
+{{- with $profilesS3.secretKey }}
+PROFILES_S3_SECRET_ACCESS_KEY: {{ . | b64enc | quote }}
+{{- end }}
+{{- end }}
+{{- $nodestoreS3 := .Values.nodestore.s3 | default dict }}
+{{- if and (eq (default "" .Values.nodestore.backend) "s3") (not $nodestoreS3.existingSecret) }}
+{{- with $nodestoreS3.accessKeyId }}
+NODESTORE_S3_ACCESS_KEY_ID: {{ . | b64enc | quote }}
+{{- end }}
+{{- with $nodestoreS3.secretAccessKey }}
+NODESTORE_S3_SECRET_ACCESS_KEY: {{ . | b64enc | quote }}
+{{- end }}
+{{- end }}
+{{- if not .Values.github.existingSecret }}
+{{- with .Values.github.privateKey }}
+GITHUB_APP_PRIVATE_KEY: {{ . | b64enc | quote }}
+{{- end }}
+{{- with .Values.github.webhookSecret }}
+GITHUB_APP_WEBHOOK_SECRET: {{ . | b64enc | quote }}
+{{- end }}
+{{- with .Values.github.clientId }}
+GITHUB_APP_CLIENT_ID: {{ . | b64enc | quote }}
+{{- end }}
+{{- with .Values.github.clientSecret }}
+GITHUB_APP_CLIENT_SECRET: {{ . | b64enc | quote }}
+{{- end }}
+{{- end }}
+{{- if and (not .Values.google.existingSecret) .Values.google.clientId .Values.google.clientSecret }}
+GOOGLE_AUTH_CLIENT_ID: {{ .Values.google.clientId | b64enc | quote }}
+GOOGLE_AUTH_CLIENT_SECRET: {{ .Values.google.clientSecret | b64enc | quote }}
+{{- end }}
+{{- if and (not .Values.slack.existingSecret) .Values.slack.clientId .Values.slack.clientSecret .Values.slack.signingSecret }}
+SLACK_CLIENT_ID: {{ .Values.slack.clientId | b64enc | quote }}
+SLACK_CLIENT_SECRET: {{ .Values.slack.clientSecret | b64enc | quote }}
+SLACK_SIGNING_SECRET: {{ .Values.slack.signingSecret | b64enc | quote }}
+{{- end }}
+{{- if and (not .Values.discord.existingSecret) .Values.discord.applicationId .Values.discord.publicKey .Values.discord.clientSecret .Values.discord.botToken }}
+DISCORD_APPLICATION_ID: {{ .Values.discord.applicationId | b64enc | quote }}
+DISCORD_PUBLIC_KEY: {{ .Values.discord.publicKey | b64enc | quote }}
+DISCORD_CLIENT_SECRET: {{ .Values.discord.clientSecret | b64enc | quote }}
+DISCORD_BOT_TOKEN: {{ .Values.discord.botToken | b64enc | quote }}
+{{- end }}
+{{- end -}}
+
+{{/*
+Whether the chart manages any Sentry-fleet credential itself. Guards both the
+generated Secret and the envFrom that consumes it, so an envFrom can never
+reference a Secret that was not rendered.
+*/}}
+{{- define "sentry.credentials.sentryEnv.enabled" -}}
+{{- if (include "sentry.credentials.sentryEnv.data" . | trim) }}true{{ end }}
+{{- end -}}
+
+{{/*
+envFrom entry for the chart-managed Sentry credential Secret. The reference is
+optional because every consumer of these variables already treats them as
+absent-by-default: the SENTRY_OPTIONS guards omit the option entirely and the
+S3 reads fall back to an empty string. Tolerating an absent Secret therefore
+degrades to the same "not configured" path rather than blocking pod startup,
+which also lets pre-upgrade hooks run before the Secret is applied.
+*/}}
+{{- define "sentry.envFrom" -}}
+{{- if (include "sentry.credentials.sentryEnv.enabled" .) -}}
+envFrom:
+  - secretRef:
+      name: {{ template "sentry.fullname" . }}-sentry-env
+      optional: true
+{{- end -}}
+{{- end -}}
+
+{{/*
+Rollout trigger for the Sentry fleet. Hashes the ConfigMap content together
+with the generated Secret data, so rotating a plaintext credential that now
+lives in the Secret still restarts pods. Reduces to sha256(config) when no
+credential is chart-managed.
+*/}}
+{{- define "sentry.config.checksum" -}}
+{{- printf "%s%s" (include "sentry.config" .) (include "sentry.credentials.sentryEnv.data" . | trim) | sha256sum -}}
+{{- end -}}
+
+{{/*
 Common Sentry environment variables
 */}}
 {{- define "sentry.env" -}}

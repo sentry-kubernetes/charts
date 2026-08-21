@@ -23,7 +23,7 @@ spec:
     metadata:
       name: {{ template "sentry.fullname" . }}-user-create
       annotations:
-        checksum/configmap.yaml: {{ include "sentry.config" . | sha256sum }}
+        checksum/configmap.yaml: {{ include "sentry.config.checksum" . }}
         {{- if .Values.hooks.dbInit.podAnnotations }}
 {{ toYaml .Values.hooks.dbInit.podAnnotations | indent 8 }}
         {{- end }}
@@ -112,6 +112,7 @@ spec:
         {{- if .Values.hooks.dbInit.env }}
 {{ toYaml .Values.hooks.dbInit.env | indent 8 }}
         {{- end }}
+        {{- with include "sentry.envFrom" . }}{{ . | nindent 8 }}{{- end }}
         volumeMounts:
         - mountPath: /etc/sentry
           name: config

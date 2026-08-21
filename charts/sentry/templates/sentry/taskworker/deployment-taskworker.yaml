@@ -42,7 +42,7 @@ spec:
       annotations:
         checksum/configYml: {{ $root.Values.config.configYml | toYaml | toString | sha256sum }}
         checksum/sentryConfPy: {{ $root.Values.config.sentryConfPy | sha256sum }}
-        checksum/config.yaml: {{ include "sentry.config" $root | sha256sum }}
+        checksum/config.yaml: {{ include "sentry.config.checksum" $root }}
       {{- if $root.Values.sentry.taskWorker.annotations }}
 {{ toYaml $root.Values.sentry.taskWorker.annotations | indent 8 }}
       {{- end }}
@@ -125,6 +125,7 @@ spec:
 {{ toYaml $root.Values.sentry.taskWorker.env | indent 8 }}
 {{- end }}
 {{- $taskWorkerResources := mergeOverwrite (deepCopy (default dict $root.Values.sentry.taskWorker.resources)) (deepCopy (default dict $worker.resources)) }}
+        {{- with include "sentry.envFrom" $root }}{{ . | nindent 8 }}{{- end }}
         resources:
 {{ toYaml $taskWorkerResources | indent 10 }}
 {{- if $root.Values.sentry.taskWorker.containerSecurityContext }}
