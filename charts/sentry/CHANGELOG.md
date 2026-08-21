@@ -1,5 +1,12 @@
 # Changelog
 
+## [33.7.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v33.6.0...sentry-v33.7.0) (2026-08-21)
+
+
+### Features
+
+* taskbroker postgresql store ([#2286](https://github.com/sentry-kubernetes/charts/issues/2286)) ([2f057a7](https://github.com/sentry-kubernetes/charts/commit/2f057a7bd90ad6d1534914fa4d5d9626d39f9d33))
+
 ## [33.6.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v33.5.0...sentry-v33.6.0) (2026-08-20)
 
 
