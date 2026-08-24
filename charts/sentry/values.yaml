@@ -434,6 +434,37 @@ sentry:
       # persistentVolumeClaimRetentionPolicy:
       #   whenDeleted: Retain  # or Delete
       #   whenScaled: Retain   # or Delete
+    # store.adapter -- sqlite (default) | postgres. Per-broker override: brokers[].store.adapter.
+    # Persistence is independent of the adapter: a postgres broker may keep an unused PVC.
+    store:
+      adapter: sqlite
+      postgres:
+        # Required when adapter is postgres and postgresql.enabled=false. Do not inherit
+        # externalPostgresql.host (that may be a transaction-mode pooler such as postgres-pooler-rw).
+        # When postgresql.enabled=true, defaults to the in-cluster primary Service (not PgBouncer).
+        host: ""
+        port: 5432
+        # Empty: inherit sentry.postgresql.username (bundled postgres or externalPostgresql.username).
+        user: ""
+        password: ""
+        existingSecret: ""
+        existingSecretKey: postgresql-password
+        ddlUser: ""
+        ddlExistingSecret: ""
+        # Only applied when ddlExistingSecret is set. Otherwise DDL uses existingSecretKey.
+        ddlExistingSecretKey: postgresql-password
+        database: taskbroker
+        # Empty: use sentry.postgresql.database (typically sentry on CNPG, not postgres).
+        defaultDatabase: ""
+        queryParams: ""
+        # Documentation only: taskbroker hardcodes 64 read + 64 write connections per replica.
+        maxConnections: 64
+        minConnections: 64
+    hooks:
+      # When true, skip the Helm migrate Job. Required if hooks.enabled is false and any broker uses postgres.
+      skipMigrateJob: false
+    # brokers[].store.adapter -- Optional per-broker sqlite | postgres; empty inherits store.adapter.
+    # brokers[].persistence.enabled -- Optional per-broker PVC flag; omit to inherit taskBroker.persistence.enabled.
     # brokers[].kafkaSessionTimeoutMs -- Kafka session.timeout.ms for this broker (self-hosted kafka_session_timeout_ms). Defaults to 60000 if omitted.
     # brokers[].resources -- Optional per-broker container resources; merged over taskBroker.resources (broker keys win).
     # brokers[].topologySpreadConstraints -- Optional per-broker pod topologySpreadConstraints; overriding taskBroker.topologySpreadConstraints (broker list win).
@@ -2182,6 +2213,24 @@ hooks:
     volumeMounts: []
   snubaMigrate:
     enabled: true
+    podLabels: {}
+    podAnnotations: {}
+    resources:
+      limits:
+        cpu: 2000m
+        memory: 1Gi
+      requests:
+        cpu: 700m
+        memory: 1Gi
+    affinity: {}
+    nodeSelector: {}
+    tolerations: []
+    securityContext: {}
+    containerSecurityContext: {}
+    sidecars: []
+    volumes: []
+    volumeMounts: []
+  taskbrokerMigrate:
     podLabels: {}
     podAnnotations: {}
     resources:

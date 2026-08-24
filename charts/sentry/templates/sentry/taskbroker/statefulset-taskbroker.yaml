@@ -1,6 +1,19 @@
 {{- if .Values.sentry.taskBroker.enabled }}
 {{- $root := . }}
+{{- include "sentry.taskbroker.validate" $root }}
 {{- range $broker := .Values.sentry.taskBroker.brokers }}
+{{- $ctx := dict "broker" $broker "root" $root }}
+{{- $adapter := include "sentry.taskbroker.adapter" $ctx }}
+{{- $persist := eq (include "sentry.taskbroker.persist" $ctx) "true" }}
+{{- $keepVCT := false }}
+{{- if not $persist }}
+{{- $stsName := printf "%s-taskbroker-%s" (include "sentry.fullname" $root) $broker.name }}
+{{- $live := lookup "apps/v1" "StatefulSet" $root.Release.Namespace $stsName }}
+{{- if and $live $live.spec $live.spec.volumeClaimTemplates }}
+{{- $keepVCT = true }}
+{{- end }}
+{{- end }}
+{{- $claimData := or $persist $keepVCT }}
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
@@ -42,7 +55,7 @@ spec:
         checksum/configYml: {{ $root.Values.config.configYml | toYaml | toString | sha256sum }}
         checksum/sentryConfPy: {{ $root.Values.config.sentryConfPy | sha256sum }}
         checksum/config.yaml: {{ include "sentry.config.checksum" $root }}
-        checksum/taskbrokerConfig: {{ include "sentry.taskbroker.configYml" (dict "broker" $broker) | sha256sum }}
+        checksum/taskbrokerConfig: {{ include "sentry.taskbroker.configYml" $ctx | sha256sum }}
       {{- if $root.Values.sentry.taskBroker.annotations }}
 {{ toYaml $root.Values.sentry.taskBroker.annotations | indent 8 }}
       {{- end }}
@@ -98,10 +111,15 @@ spec:
           - -c
           - /etc/taskbroker/config.yml
         env:
+        {{- if eq $adapter "sqlite" }}
         - name: TASKBROKER_DB_PATH
           value: /opt/sqlite/taskbroker-activations.sqlite
+        {{- end }}
 {{ include "sentry.env" $root | indent 8 }}
 {{ include "sentry.taskbroker.kafka.env" $root | indent 8 }}
+        {{- if eq $adapter "postgres" }}
+{{ include "sentry.taskbroker.postgres.env" $ctx | indent 8 }}
+        {{- end }}
 {{- if $root.Values.sentry.taskBroker.env }}
 {{ toYaml $root.Values.sentry.taskBroker.env | indent 8 }}
 {{- end }}
@@ -144,7 +162,7 @@ spec:
       - name: taskbroker-config
         configMap:
           name: {{ template "sentry.fullname" $root }}-taskbroker-{{ $broker.name }}-config
-      {{- if not $root.Values.sentry.taskBroker.persistence.enabled }}
+      {{- if not $claimData }}
       - name: data
         emptyDir: {}
       {{- end }}
@@ -154,7 +172,7 @@ spec:
 {{- if $root.Values.global.volumes }}
 {{ toYaml $root.Values.global.volumes | indent 6 }}
 {{- end }}
-  {{- if $root.Values.sentry.taskBroker.persistence.enabled }}
+  {{- if $claimData }}
   volumeClaimTemplates:
   - metadata:
       name: data

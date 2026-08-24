@@ -5,6 +5,10 @@ on:
     tags:
       - '*'
 
+permissions:
+  contents: write
+  packages: write
+
 jobs:
   build-push:
     runs-on: ubuntu-latest
@@ -32,9 +36,11 @@ jobs:
 
       - name: Package charts
         run: |
-          helm package -u main/charts/clickhouse --destination gh-pages/charts
-          helm package -u main/charts/sentry --destination gh-pages/charts
-          helm package -u main/charts/sentry-kubernetes --destination gh-pages/charts
+          mkdir -p packages
+          helm package -u main/charts/clickhouse --destination packages
+          helm package -u main/charts/sentry --destination packages
+          helm package -u main/charts/sentry-kubernetes --destination packages
+          cp packages/*.tgz gh-pages/charts/
           helm repo index --url https://sentry-kubernetes.github.io/charts ./gh-pages/charts
 
       - name: Commit files
@@ -58,3 +64,17 @@ jobs:
           PUBLISH_DIR: ./gh-pages/charts
         with:
           keepFiles: true
+
+      - name: Login to GHCR
+        uses: docker/login-action@v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Push charts to GHCR
+        run: |
+          shopt -s nullglob
+          for pkg in packages/*.tgz; do
+            helm push "$pkg" "oci://ghcr.io/${GITHUB_REPOSITORY_OWNER}/charts"
+          done
