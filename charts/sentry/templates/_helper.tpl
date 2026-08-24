@@ -886,10 +886,10 @@ mail.existingSecret.
 */}}
 {{- define "sentry.credentials.postgresMail.data" -}}
 {{- if and (not .Values.postgresql.enabled) .Values.externalPostgresql.password }}
-POSTGRES_PASSWORD: {{ .Values.externalPostgresql.password | b64enc | quote }}
+POSTGRES_PASSWORD: {{ .Values.externalPostgresql.password | toString | b64enc | quote }}
 {{- end }}
 {{- with .Values.mail.password }}
-SENTRY_EMAIL_PASSWORD: {{ . | b64enc | quote }}
+SENTRY_EMAIL_PASSWORD: {{ . | toString | b64enc | quote }}
 {{- end }}
 {{- end -}}
 
@@ -942,7 +942,7 @@ always in place first.
 {{- define "sentry.credentials.hooksEnv.data" -}}
 {{- include "sentry.credentials.postgresMail.data" . }}
 {{- if and (not .Values.user.existingSecret) .Values.user.password }}
-ADMIN_PASSWORD: {{ .Values.user.password | b64enc | quote }}
+ADMIN_PASSWORD: {{ .Values.user.password | toString | b64enc | quote }}
 {{- end }}
 {{- end -}}
 
@@ -985,7 +985,7 @@ it has no use for.
 */}}
 {{- define "sentry.credentials.pgbouncerEnv.data" -}}
 {{- if and (not .Values.postgresql.enabled) .Values.externalPostgresql.password }}
-POSTGRESQL_PASSWORD: {{ .Values.externalPostgresql.password | b64enc | quote }}
+POSTGRESQL_PASSWORD: {{ .Values.externalPostgresql.password | toString | b64enc | quote }}
 {{- end }}
 {{- end -}}
 
