@@ -1,5 +1,12 @@
 # Changelog
 
+## [33.8.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v33.7.0...sentry-v33.8.0) (2026-08-24)
+
+
+### Features
+
+* **ci:** publish helm charts as OCI artifacts to GHCR ([#2292](https://github.com/sentry-kubernetes/charts/issues/2292)) ([339aae7](https://github.com/sentry-kubernetes/charts/commit/339aae7426ad1d23cf88ae367c7847e2d78bd4da))
+
 ## [33.7.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v33.6.0...sentry-v33.7.0) (2026-08-21)
 
 
