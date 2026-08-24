@@ -23,44 +23,54 @@ spec:
         {{- include "sentry.component.labels" (dict "component" "pgbouncer" "ctx" .) | nindent 8 }}
     spec:
       containers:
-      - name: pgbouncer
-        image: {{ .Values.pgbouncer.image.repository }}:{{ .Values.pgbouncer.image.tag }}
-        imagePullPolicy: {{ .Values.pgbouncer.image.pullPolicy }}
-        resources:
-          {{ toYaml .Values.pgbouncer.resources | nindent 10 }}
-        env:
-          {{- if .Values.pgbouncer.env }}
-          {{ toYaml .Values.pgbouncer.env | nindent 10 }}
-          {{- end }}
-          {{ include "sentry.pgbouncer.env" . | nindent 10 }}
-          - name: PGBOUNCER_PORT
-            value: "5432"
-          - name: PGBOUNCER_AUTH_TYPE
-            value: {{ .Values.pgbouncer.authType | quote }}
-          - name: PGBOUNCER_MAX_CLIENT_CONN
-            value: {{ .Values.pgbouncer.maxClientConn | quote }}
-          - name: PGBOUNCER_DEFAULT_POOL_SIZE
-            value: {{ .Values.pgbouncer.poolSize | quote }}
-          - name: PGBOUNCER_POOL_MODE
-            value: {{ .Values.pgbouncer.poolMode | quote }}
-        ports:
-          - containerPort: 5432
-            name: pgbouncer
-            protocol: TCP
+        - name: pgbouncer
+          image: {{ .Values.pgbouncer.image.repository }}:{{ .Values.pgbouncer.image.tag }}
+          imagePullPolicy: {{ .Values.pgbouncer.image.pullPolicy }}
+          resources:
+            {{ toYaml .Values.pgbouncer.resources | nindent 12 }}
+          env:
+            {{- if .Values.pgbouncer.env }}
+            {{ toYaml .Values.pgbouncer.env | nindent 12 }}
+            {{- end }}
+            {{ include "sentry.pgbouncer.env" . | nindent 12 }}
+            - name: DATABASE_URL
+              value: "postgres://$(POSTGRESQL_USERNAME):$(POSTGRESQL_PASSWORD)@$(POSTGRESQL_HOST):$(POSTGRESQL_PORT)/$(PGBOUNCER_DATABASE)"
+            - name: LISTEN_PORT
+              value: "5432"
+            - name: AUTH_TYPE
+              value: {{ .Values.pgbouncer.authType | quote }}
+            - name: ADMIN_USERS
+              value: "$(POSTGRESQL_USERNAME)"
+            - name: POOL_MODE
+              value: {{ .Values.pgbouncer.poolMode | quote }}
+            - name: MAX_CLIENT_CONN
+              value: {{ .Values.pgbouncer.maxClientConn | quote }}
+            - name: DEFAULT_POOL_SIZE
+              value: {{ .Values.pgbouncer.poolSize | quote }}
+            - name: SERVER_RESET_QUERY
+              value: "SELECT pg_advisory_unlock_all()"
+            - name: SERVER_RESET_QUERY_ALWAYS
+              value: "1"
+            - name: UNIX_SOCKET_DIR
+              value: "/tmp"
+          ports:
+            - containerPort: 5432
+              name: pgbouncer
+              protocol: TCP
 {{- if or .Values.pgbouncer.volumeMounts .Values.global.volumeMounts }}
-        volumeMounts:
+          volumeMounts:
 {{- end }}
 {{- if .Values.pgbouncer.volumeMounts }}
-{{ toYaml .Values.pgbouncer.volumeMounts | indent 8 }}
+{{ toYaml .Values.pgbouncer.volumeMounts | indent 12 }}
 {{- end }}
 {{- if .Values.global.volumeMounts }}
-{{ toYaml .Values.global.volumeMounts | indent 8 }}
+{{ toYaml .Values.global.volumeMounts | indent 12 }}
 {{- end }}
 {{- if .Values.pgbouncer.sidecars }}
-{{ toYaml .Values.pgbouncer.sidecars | indent 6 }}
+{{ toYaml .Values.pgbouncer.sidecars | indent 8 }}
 {{- end }}
 {{- if .Values.global.sidecars }}
-{{ toYaml .Values.global.sidecars | indent 6 }}
+{{ toYaml .Values.global.sidecars | indent 8 }}
 {{- end }}
       {{- if .Values.pgbouncer.nodeSelector }}
       nodeSelector:
@@ -92,9 +102,9 @@ spec:
       volumes:
 {{- end }}
 {{- if .Values.pgbouncer.volumes }}
-{{ toYaml .Values.pgbouncer.volumes | indent 6 }}
+{{ toYaml .Values.pgbouncer.volumes | indent 8 }}
 {{- end }}
 {{- if .Values.global.volumes }}
-{{ toYaml .Values.global.volumes | indent 6 }}
+{{ toYaml .Values.global.volumes | indent 8 }}
 {{- end }}
 {{- end }}
