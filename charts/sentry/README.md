@@ -14,6 +14,12 @@ Please refer to the [External Services Documentation](docs/external-services.md)
 helm repo add sentry https://sentry-kubernetes.github.io/charts
 ```
 
+Charts are also published as OCI artifacts on GHCR:
+
+```
+helm install sentry oci://ghcr.io/sentry-kubernetes/charts/sentry --version <chart-version>
+```
+
 ## Quick install
 
 You must provide an admin password (or reference an existing secret). For a quick test:
