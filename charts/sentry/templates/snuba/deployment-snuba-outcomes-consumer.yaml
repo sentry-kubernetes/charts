@@ -98,7 +98,7 @@ spec:
           {{- end }}
           - "--max-batch-size"
           - "{{ default "3" .Values.snuba.outcomesConsumer.maxBatchSize }}"
-          {{- if .Values.snuba.outcomesConsumer.processes }}
+          {{- if and .Values.snuba.outcomesConsumer.processes (not .Values.snuba.rustConsumer) }}
           - "--processes"
           - "{{ .Values.snuba.outcomesConsumer.processes }}"
           {{- end }}

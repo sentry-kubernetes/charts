@@ -10,6 +10,10 @@ settings.py: |
 
   DEBUG = env("DEBUG", "0").lower() in ("1", "true")
 
+{{- if .Values.ipv6 }}
+  HOST = "::"
+{{- end }}
+
 {{- if .Values.kafka.enabled -}}
   {{ if .Values.kafka.provisioning.enabled }}
 

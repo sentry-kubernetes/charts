@@ -276,7 +276,7 @@ sentry.conf.py: |-
   ##############
 
   {{- if .Values.ipv6 }}
-  SENTRY_WEB_HOST = "[::]"
+  SENTRY_WEB_HOST = "::"
   {{- else }}
   SENTRY_WEB_HOST = "0.0.0.0"
   {{- end }}
@@ -286,7 +286,7 @@ sentry.conf.py: |-
   SENTRY_PUBLIC = {{ .Values.system.public | ternary "True" "False" }}
   SENTRY_WEB_OPTIONS = {
   {{- if .Values.ipv6 }}
-      "http-socket": "%s:%s" % (SENTRY_WEB_HOST, SENTRY_WEB_PORT),
+      "http-socket": "[%s]:%s" % (SENTRY_WEB_HOST, SENTRY_WEB_PORT),
   {{- else }}
       "http": "%s:%s" % (SENTRY_WEB_HOST, SENTRY_WEB_PORT),
   {{- end }}
