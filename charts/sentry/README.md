@@ -379,7 +379,6 @@ Note: this table is incomplete, so have a look at the values.yaml in case you mi
 | nginx.enabled | bool | `false` |  |
 | nginx.existingServerConfigConfigmap | string | `"{{ template \"sentry.fullname\" . }}"` |  |
 | nginx.extraLocationSnippet | bool | `false` |  |
-| openai | object | `{}` |  |
 | pagerduty | object | `{}` |  |
 | pgbouncer.affinity | object | `{}` |  |
 | pgbouncer.authType | string | `"md5"` |  |
