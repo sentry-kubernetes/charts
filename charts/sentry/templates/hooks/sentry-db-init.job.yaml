@@ -85,7 +85,7 @@ spec:
         {{- if .Values.hooks.dbInit.env }}
 {{ toYaml .Values.hooks.dbInit.env | indent 8 }}
         {{- end }}
-        {{- with include "sentry.envFrom" . }}{{ . | nindent 8 }}{{- end }}
+        {{- with include "sentry.hooks.envFrom" . }}{{ . | nindent 8 }}{{- end }}
         volumeMounts:
         - mountPath: /etc/sentry
           name: config
