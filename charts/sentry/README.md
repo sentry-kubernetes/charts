@@ -338,6 +338,9 @@ Note: this table is incomplete, so have a look at the values.yaml in case you mi
 | metrics.affinity | object | `{}` |  |
 | metrics.containerSecurityContext | object | `{}` |  |
 | metrics.enabled | bool | `false` |  |
+| metrics.extraArgs | list | `[]` | Extra statsd-exporter args appended after `--statsd.listen-udp=:9125` and `--web.listen-address=:9102`. List of strings or map of flag to value. Duplicate flags override (last wins). |
+| metrics.extraVolumeMounts | list | `[]` | Extra volume mounts concatenated with `metrics.volumeMounts`. |
+| metrics.extraVolumes | list | `[]` | Extra volumes concatenated with `metrics.volumes`. |
 | metrics.image.pullPolicy | string | `"IfNotPresent"` |  |
 | metrics.image.repository | string | `"prom/statsd-exporter"` |  |
 | metrics.image.tag | string | `"v0.17.0"` |  |
@@ -368,6 +371,7 @@ Note: this table is incomplete, so have a look at the values.yaml in case you mi
 | metrics.serviceMonitor.scrapeInterval | string | `"30s"` |  |
 | metrics.sidecars | list | `[]` |  |
 | metrics.tolerations | list | `[]` |  |
+| metrics.volumeMounts | list | `[]` |  |
 | metrics.volumes | list | `[]` |  |
 | nginx.containerPort | int | `8080` |  |
 | nginx.customReadinessProbe.failureThreshold | int | `3` |  |
