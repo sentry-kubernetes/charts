@@ -35,13 +35,23 @@ spec:
           {{ include "sentry.pgbouncer.env" . | nindent 10 }}
           - name: PGBOUNCER_PORT
             value: "5432"
+          - name: LISTEN_PORT
+            value: "5432"
           - name: PGBOUNCER_AUTH_TYPE
+            value: {{ .Values.pgbouncer.authType | quote }}
+          - name: AUTH_TYPE
             value: {{ .Values.pgbouncer.authType | quote }}
           - name: PGBOUNCER_MAX_CLIENT_CONN
             value: {{ .Values.pgbouncer.maxClientConn | quote }}
+          - name: MAX_CLIENT_CONN
+            value: {{ .Values.pgbouncer.maxClientConn | quote }}
           - name: PGBOUNCER_DEFAULT_POOL_SIZE
             value: {{ .Values.pgbouncer.poolSize | quote }}
+          - name: DEFAULT_POOL_SIZE
+            value: {{ .Values.pgbouncer.poolSize | quote }}
           - name: PGBOUNCER_POOL_MODE
+            value: {{ .Values.pgbouncer.poolMode | quote }}
+          - name: POOL_MODE
             value: {{ .Values.pgbouncer.poolMode | quote }}
         ports:
           - containerPort: 5432
