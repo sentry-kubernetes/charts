@@ -8,7 +8,7 @@ appVersion: 26.8.0
 dependencies:
   - name: memcached
     repository: oci://registry-1.docker.io/cloudpirates
-    version: 0.9.3
+    version: 0.14.11
   - name: redis
     repository: oci://registry-1.docker.io/bitnamicharts
     version: 17.11.3
@@ -23,7 +23,7 @@ dependencies:
     condition: postgresql.enabled
   - name: nginx
     repository: oci://registry-1.docker.io/cloudpirates
-    version: 0.7.0
+    version: 0.16.10
     condition: nginx.enabled
 maintainers:
   - name: sentry-kubernetes
