@@ -1286,17 +1286,6 @@ Set google auth
 {{- end }}
 
 {{/*
-Set openai api
-*/}}
-{{- if .Values.openai.existingSecret }}
-- name: OPENAI_API_KEY
-  valueFrom:
-    secretKeyRef:
-      name: {{ .Values.openai.existingSecret }}
-      key: {{ default "api-token" .Values.openai.existingSecretKey }}
-{{- end }}
-
-{{/*
 Set JS SDK Loader assets setup
 */}}
 {{- if .Values.sentry.jsSdk.setupAssets }}

@@ -2438,10 +2438,6 @@ pagerduty: {}
 #   existingSecretAppId: ""             # by default "app-id"
 #   Reference -> https://develop.sentry.dev/integrations/pagerduty/
 
-openai: {}
-#   existingSecret: "xxxxx"
-#   existingSecretKey: ""               # by default "api-token"
-
 ingress:
   enabled: false
   ingressClassName: nginx

@@ -684,12 +684,6 @@ sentry.conf.py: |-
   SENTRY_RELAY_WHITELIST_PK = []
   SENTRY_RELAY_OPEN_REGISTRATION = True
 
-  #######################
-  # OpenAi Suggestions #
-  #######################
-
-  OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "")
-
   ########################
   # JS SDK Loader Script #
   ########################
