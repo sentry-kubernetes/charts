@@ -32,6 +32,23 @@ git -C $SH diff $FROM $TO -- . ':(exclude)*.md' ':(exclude).github' ':(exclude)_
 
 If a commit's intent is unclear, read its PR (the number is in the subject): `gh pr view <n> -R getsentry/self-hosted`. A PR description often explains the change (for example, a consumer moved into a taskworker task) and tells you which chart change follows from it.
 
+Also read the breaking changes in the component releases: `gh release view $TO -R getsentry/<repo>` for `snuba`, `relay` and `symbolicator`. Snuba's commit list (`gh api repos/getsentry/snuba/compare/$FROM...$TO`) shows ClickHouse version and settings changes that self-hosted never touches.
+
+### Image changes the diff doesn't show
+
+The chart overrides image entrypoints and runs probes inside the containers, so a change to an image's user or shell can break pods without any matching self-hosted change. Compare the image configs:
+
+```sh
+for img in sentry snuba relay symbolicator vroom taskbroker uptime-checker launchpad; do for v in $FROM $TO; do
+  echo "$img $v $(docker buildx imagetools inspect ghcr.io/getsentry/$img:$v --format '{{json .Image}}' \
+    | yq -p json '(.config // .["linux/amd64"].config) | (.User // "root") + "  " + ((.Entrypoint // []) | join(" "))')"
+done; done
+docker run --rm --entrypoint python3 ghcr.io/getsentry/snuba:$TO -c 'import shutil; print([shutil.which(b) for b in ("sh", "bash")])'
+```
+
+- **User changed** (26.10.0: the sentry image went from root to uid 999): check that PVC mounts stay writable. `sentry.podSecurityContext` sets the `fsGroup`.
+- **Shell gone** (26.10.0: the snuba image): every `sh -c`, `test` or `stat` that runs in that image fails. That includes the exec probes in `templates/_helper.tpl`, which now use `python3`.
+
 ## 3. Map each change to the chart
 
 All paths are under `charts/sentry/`.
@@ -133,6 +150,15 @@ yq -r 'select(.kind=="Deployment" or .kind=="StatefulSet" or .kind=="CronJob")
   | (.spec.template.spec // .spec.jobTemplate.spec.template.spec) as $p
   | .metadata.name + "  " + ((($p.containers[0].command // []) + ($p.containers[0].args // [])) | join(" "))' \
   /tmp/render-feature-complete.yaml | grep -v '^---'
+```
+
+Also check that every consumer the chart still runs exists in Sentry at `TO`. A consumer removed from Sentry makes its Deployment crashloop:
+
+```sh
+gh api "repos/getsentry/sentry/contents/src/sentry/consumers/__init__.py?ref=$TO" --jq .content | base64 -d \
+  | grep -oE '^    "[a-z0-9-]+": \{' | cut -d'"' -f2 | sort > /tmp/sentry-consumers
+grep -A1 '"consumer"' /tmp/render-feature-complete.yaml | grep -oE '"[a-z0-9-]+"' | tr -d '"' | grep -v '^consumer$' | sort -u \
+  | grep -vxFf /tmp/sentry-consumers   # prints consumers that no longer exist
 ```
 
 Match the two lists by consumer name (`run consumer <name>`) or Snuba `--storage`/`--entity`, not by workload name. Every Sentry/Snuba service in compose needs a chart workload, and the reverse, apart from infra and components that are disabled by default (profiling, for example).
