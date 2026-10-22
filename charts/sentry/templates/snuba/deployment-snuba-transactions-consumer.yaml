@@ -101,7 +101,7 @@ spec:
           - "--max-batch-size"
           - "{{ .Values.snuba.transactionsConsumer.maxBatchSize }}"
           {{- end }}
-          {{- if .Values.snuba.transactionsConsumer.processes }}
+          {{- if and .Values.snuba.transactionsConsumer.processes (not .Values.snuba.rustConsumer) }}
           - "--processes"
           - "{{ .Values.snuba.transactionsConsumer.processes }}"
           {{- end }}

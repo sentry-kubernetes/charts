@@ -200,6 +200,10 @@ kafka_session_timeout_ms: {{ default 60000 $broker.kafkaSessionTimeoutMs }}
 kafka_deadletter_topic: {{ required (printf "sentry.taskBroker.brokers[%s].kafkaDeadletterTopic is required" $broker.name) $broker.kafkaDeadletterTopic }}
 kafka_retry_topic: {{ required (printf "sentry.taskBroker.brokers[%s].kafkaRetryTopic is required" $broker.name) $broker.kafkaRetryTopic }}
 
+{{- if $root.Values.ipv6 }}
+grpc_addr: '[::]'
+{{- end }}
+
 kafka_topics:
 {{- range $topicName, $topic := $broker.kafkaTopics }}
   {{ $topicName }}:
