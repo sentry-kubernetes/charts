@@ -18,6 +18,10 @@ spec:
   {{- end }}
   template:
     metadata:
+      {{- if (include "sentry.credentials.pgbouncerEnv.enabled" .) }}
+      annotations:
+        checksum/pgbouncer-env: {{ include "sentry.credentials.pgbouncerEnv.data" . | trim | sha256sum }}
+      {{- end }}
       labels:
         app: {{ template "sentry.fullname" . }}-pgbouncer
         {{- include "sentry.component.labels" (dict "component" "pgbouncer" "ctx" .) | nindent 8 }}
@@ -43,6 +47,12 @@ spec:
             value: {{ .Values.pgbouncer.poolSize | quote }}
           - name: PGBOUNCER_POOL_MODE
             value: {{ .Values.pgbouncer.poolMode | quote }}
+        {{- if (include "sentry.credentials.pgbouncerEnv.enabled" .) }}
+        envFrom:
+          - secretRef:
+              name: {{ template "sentry.fullname" . }}-pgbouncer-env
+              optional: true
+        {{- end }}
         ports:
           - containerPort: 5432
             name: pgbouncer

@@ -106,13 +106,14 @@ spec:
               name: {{ .Values.user.existingSecret }}
               key: {{ default "admin-password" .Values.user.existingSecretKey }}
         {{- else if .Values.user.password }}
-        - name: ADMIN_PASSWORD
-          value: {{ .Values.user.password | quote }}
+        {{- /* Supplied by the chart-managed hook Secret through envFrom. The branch is
+               kept so that existingSecret still takes precedence over a plaintext
+               password, as it does today. */}}
         {{- end }}
         {{- if .Values.hooks.dbInit.env }}
 {{ toYaml .Values.hooks.dbInit.env | indent 8 }}
         {{- end }}
-        {{- with include "sentry.envFrom" . }}{{ . | nindent 8 }}{{- end }}
+        {{- with include "sentry.hooks.envFrom" . }}{{ . | nindent 8 }}{{- end }}
         volumeMounts:
         - mountPath: /etc/sentry
           name: config
