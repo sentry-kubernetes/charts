@@ -101,7 +101,7 @@ spec:
           - "--max-batch-size"
           - "{{ .Values.snuba.issueOccurrenceConsumer.maxBatchSize }}"
           {{- end }}
-          {{- if .Values.snuba.issueOccurrenceConsumer.processes }}
+          {{- if and .Values.snuba.issueOccurrenceConsumer.processes (not .Values.snuba.rustConsumer) }}
           - "--processes"
           - "{{ .Values.snuba.issueOccurrenceConsumer.processes }}"
           {{- end }}
