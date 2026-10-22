@@ -77,10 +77,7 @@ spec:
 {{- $taskWorkerTopologySpreadConstraints := ternary $worker.topologySpreadConstraints $root.Values.sentry.taskWorker.topologySpreadConstraints (hasKey $worker "topologySpreadConstraints") }}
       topologySpreadConstraints:
 {{ toYaml $taskWorkerTopologySpreadConstraints | indent 8 }}
-      {{- if $root.Values.sentry.taskWorker.securityContext }}
-      securityContext:
-{{ toYaml $root.Values.sentry.taskWorker.securityContext | indent 8 }}
-      {{- end }}
+      {{- include "sentry.podSecurityContext" (dict "securityContext" $root.Values.sentry.taskWorker.securityContext "ctx" $root) | nindent 6 }}
       {{- if $root.Values.sentry.taskWorker.priorityClassName }}
       priorityClassName: "{{ $root.Values.sentry.taskWorker.priorityClassName }}"
       {{- end }}

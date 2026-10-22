@@ -112,7 +112,6 @@ config.yml: |-
       transactions: "{{ default "" .Values.kafkaTopicOverrides.prefix }}ingest-transactions"
       outcomes: "{{ default "" .Values.kafkaTopicOverrides.prefix }}outcomes"
       outcomes_billing: "{{ default "" .Values.kafkaTopicOverrides.prefix }}ingest-outcomes"
-      metrics_generic: "{{ default "" .Values.kafkaTopicOverrides.prefix }}ingest-performance-metrics"
       profiles: "{{ default "" .Values.kafkaTopicOverrides.prefix }}profiles"
       replay_events: "{{ default "" .Values.kafkaTopicOverrides.prefix }}ingest-replay-events"
       replay_recordings: "{{ default "" .Values.kafkaTopicOverrides.prefix }}ingest-replay-recordings"

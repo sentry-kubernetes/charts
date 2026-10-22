@@ -351,7 +351,6 @@ sentry.conf.py: |-
               "organizations:org-ingest-subdomains",
               {{- end }}
               "organizations:issue-views",
-              "organizations:incidents",
               "organizations:integrations-issue-basic",
               "organizations:integrations-issue-sync",
               "organizations:invite-members",
