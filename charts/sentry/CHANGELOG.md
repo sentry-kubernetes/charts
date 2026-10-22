@@ -1,5 +1,21 @@
 # Changelog
 
+## [34.0.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v33.8.0...sentry-v34.0.0) (2026-10-22)
+
+
+### ⚠ BREAKING CHANGES
+
+* upgrade to sentry v26.10.0 ([#2308](https://github.com/sentry-kubernetes/charts/issues/2308))
+
+### Features
+
+* upgrade to sentry v26.10.0 ([#2308](https://github.com/sentry-kubernetes/charts/issues/2308)) ([9c25207](https://github.com/sentry-kubernetes/charts/commit/9c252073c931e91aede5a4229c79734e13525eb2))
+
+
+### Bug Fixes
+
+* **charts/sentry:** change ConfigMap creation priority in taskbroker for first-time installation ([#2306](https://github.com/sentry-kubernetes/charts/issues/2306)) ([2a8c106](https://github.com/sentry-kubernetes/charts/commit/2a8c1063ef17f7b8adfb492080bf5330769e41db))
+
 ## [33.8.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v33.7.0...sentry-v33.8.0) (2026-08-24)
 
 
