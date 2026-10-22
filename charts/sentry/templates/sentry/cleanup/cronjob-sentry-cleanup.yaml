@@ -65,10 +65,7 @@ spec:
           imagePullSecrets:
 {{ toYaml .Values.images.sentry.imagePullSecrets | indent 12 }}
             {{- end }}
-            {{- if .Values.sentry.cleanup.securityContext }}
-          securityContext:
-{{ toYaml .Values.sentry.cleanup.securityContext | indent 12 }}
-      {{- end }}
+          {{- include "sentry.podSecurityContext" (dict "securityContext" .Values.sentry.cleanup.securityContext "ctx" .) | nindent 10 }}
           initContainers:
 {{ include "sentry.initContainer.nodestore-s3" . | indent 10 }}
           containers:

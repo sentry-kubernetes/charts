@@ -13,6 +13,7 @@
 {{/*
   livenessProbe block for kafka-consumer / worker deployments that expose a
   file-based healthcheck via `--healthcheck-file-path` / `--health-check-file`.
+  Uses python3, not sh: the snuba image ships without a shell since 26.10.0.
 
   Arguments (dict):
     livenessProbe:   the workload's .Values.<x>.livenessProbe value
@@ -28,13 +29,28 @@
 livenessProbe:
   exec:
     command:
-      - sh
+      - python3
       - -c
-      - 'test $(($(date +%s) - $(stat -c %Y {{ $file }} 2>/dev/null || echo 0))) -lt {{ $fresh }}'
+      - 'import os, sys, time; sys.exit(time.time() - os.path.getmtime("{{ $file }}") >= {{ $fresh }})'
 {{- with $probeConfig }}
 {{- toYaml . | nindent 2 }}
 {{- end }}
 {{- end -}}
+{{- end -}}
+
+{{/*
+  Pod securityContext for pods running the sentry image: the component's
+  securityContext merged over .Values.sentry.podSecurityContext (component keys win).
+  The sentry image runs as uid/gid 999 since 26.10.0; fsGroup keeps the filestore
+  and replay PVCs writable.
+  Args: securityContext (the component's value), ctx (root context).
+*/}}
+{{- define "sentry.podSecurityContext" -}}
+{{- $sc := merge (deepCopy (default dict .securityContext)) (deepCopy (default dict .ctx.Values.sentry.podSecurityContext)) -}}
+{{- if $sc }}
+securityContext:
+{{ toYaml $sc | indent 2 }}
+{{- end }}
 {{- end -}}
 
 {{/*
@@ -72,9 +88,9 @@ RollingUpdate
 startupProbe:
   exec:
     command:
-      - test
-      - -f
-      - {{ $file }}
+      - python3
+      - -c
+      - 'import os, sys; sys.exit(not os.path.exists("{{ $file }}"))'
 {{- with $probeConfig }}
 {{- toYaml . | nindent 2 }}
 {{- end }}
