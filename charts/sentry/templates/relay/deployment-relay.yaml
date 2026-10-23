@@ -120,11 +120,15 @@ spec:
             - name: rendered-config
               mountPath: /rendered-config
           resources:
+          {{- if (.Values.relay.configRender).resources -}}
+            {{ toYaml .Values.relay.configRender.resources | nindent 12 -}}
+          {{- else }}
             requests:
               cpu: 10m
               memory: 16Mi
             limits:
               memory: 32Mi
+          {{- end }}
         {{- end }}
         - name: {{ .Chart.Name }}-relay-init
           image: "{{ template "relay.image" . }}"
