@@ -1,5 +1,13 @@
 # Changelog
 
+## [34.1.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v34.0.0...sentry-v34.1.0) (2026-10-25)
+
+
+### Features
+
+* **charts/sentry/relay:** allow overriding resources for the configRender init container ([#2312](https://github.com/sentry-kubernetes/charts/issues/2312)) ([bff2535](https://github.com/sentry-kubernetes/charts/commit/bff25356e526506c3ab921de57435db72f249219))
+* **sentry:** add support for customizing the init container image in the external Kafka provisioning job ([#2311](https://github.com/sentry-kubernetes/charts/issues/2311)) ([7d48b15](https://github.com/sentry-kubernetes/charts/commit/7d48b154d050eb461963c28b5c85ae802354643d))
+
 ## [34.0.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v33.8.0...sentry-v34.0.0) (2026-10-22)
 
 
