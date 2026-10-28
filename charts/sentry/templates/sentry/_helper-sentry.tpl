@@ -441,6 +441,24 @@ sentry.conf.py: |-
       }
   )
 
+  {{- if and (has "feature-complete" .Values.profiles) .Values.sentry.features.enableUptime }}
+
+  ##########
+  # Uptime #
+  ##########
+  # Sentry calls the uptime-checker API for "Test Monitor" previews and assertion validation.
+  from sentry.conf.types.uptime import UptimeRegionConfig
+
+  UPTIME_REGIONS = [
+      UptimeRegionConfig(
+          slug="default",
+          name="Default Region",
+          config_redis_cluster=SENTRY_UPTIME_DETECTOR_CLUSTER,
+          api_endpoint="{{ template "sentry.fullname" . }}-uptime-checker:{{ template "uptimeChecker.port" }}",
+      ),
+  ]
+  {{- end }}
+
   #######################
   # Email Configuration #
   #######################
