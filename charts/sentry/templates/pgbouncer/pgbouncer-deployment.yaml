@@ -1,4 +1,7 @@
 {{- if .Values.pgbouncer.enabled }}
+{{- if and (contains "edoburu" .Values.pgbouncer.image.repository) (eq .Values.pgbouncer.authType "md5") -}}
+{{- fail "\n\nERROR: pgbouncer.authType `md5` is not usable with the edoburu/pgbouncer image.\nThat image always sets `auth_user`, so pgbouncer logs into PostgreSQL with the md5 hash\nfrom its own userlist; a scram-sha-256 backend (PostgreSQL 14+ default) rejects it with\n`server login failed: wrong password type`.\nEither:\n  - set `pgbouncer.authType: scram-sha-256` (recommended, works against md5 backends too)\n  - or override `pgbouncer.image` with an image whose entrypoint does not set `auth_user`\n" -}}
+{{- end -}}
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -39,12 +42,22 @@ spec:
           {{ include "sentry.pgbouncer.env" . | nindent 10 }}
           - name: PGBOUNCER_PORT
             value: "5432"
+          - name: LISTEN_PORT
+            value: "5432"
           - name: PGBOUNCER_AUTH_TYPE
+            value: {{ .Values.pgbouncer.authType | quote }}
+          - name: AUTH_TYPE
             value: {{ .Values.pgbouncer.authType | quote }}
           - name: PGBOUNCER_MAX_CLIENT_CONN
             value: {{ .Values.pgbouncer.maxClientConn | quote }}
+          - name: MAX_CLIENT_CONN
+            value: {{ .Values.pgbouncer.maxClientConn | quote }}
           - name: PGBOUNCER_DEFAULT_POOL_SIZE
             value: {{ .Values.pgbouncer.poolSize | quote }}
+          - name: DEFAULT_POOL_SIZE
+            value: {{ .Values.pgbouncer.poolSize | quote }}
+          - name: POOL_MODE
+            value: {{ .Values.pgbouncer.poolMode | quote }}
           - name: PGBOUNCER_POOL_MODE
             value: {{ .Values.pgbouncer.poolMode | quote }}
         {{- if (include "sentry.credentials.pgbouncerEnv.enabled" .) }}

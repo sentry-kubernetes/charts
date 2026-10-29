@@ -2,6 +2,30 @@
 
 The changelog below refers to the main `sentry` chart only.
 
+## Upgrading to Chart 35.0.0
+
+### Breaking: PgBouncer image and authentication
+
+If `pgbouncer.enabled` is true, the default image changes from `bitnamilegacy/pgbouncer` to `edoburu/pgbouncer:v1.25.2-p0`. Sentry remains on 26.10.1. Installations with PgBouncer disabled are unaffected.
+
+- Remove an explicit `pgbouncer.authType: md5` override or change it to `scram-sha-256`, the new default. The edoburu entrypoint stores an MD5-only password when configured for MD5, which cannot authenticate to a SCRAM PostgreSQL backend. The new default works with both SCRAM and MD5 PostgreSQL backends; it does not require changing PostgreSQL's password storage.
+- The chart translates its built-in connection and pool values to both image dialects. Custom entries in `pgbouncer.env` must use edoburu's names instead of Bitnami's names:
+
+  | Bitnami | edoburu |
+  |---|---|
+  | `POSTGRESQL_HOST`, `POSTGRESQL_PORT` | `DB_HOST`, `DB_PORT` |
+  | `POSTGRESQL_USERNAME`, `POSTGRESQL_PASSWORD` | `DB_USER`, `DB_PASSWORD` |
+  | `PGBOUNCER_DATABASE`, `PGBOUNCER_PORT` | `DB_NAME`, `LISTEN_PORT` |
+  | `PGBOUNCER_AUTH_TYPE`, `PGBOUNCER_POOL_MODE` | `AUTH_TYPE`, `POOL_MODE` |
+  | `PGBOUNCER_MAX_CLIENT_CONN`, `PGBOUNCER_DEFAULT_POOL_SIZE` | `MAX_CLIENT_CONN`, `DEFAULT_POOL_SIZE` |
+  | `PGBOUNCER_MIN_POOL_SIZE` | `MIN_POOL_SIZE` |
+
+  Do not strip prefixes blindly: check other custom options against the [image's supported variables](https://github.com/edoburu/docker-pgbouncer/tree/v1.25.2-p0).
+- Review custom mounts and permissions. The image runs as uid/gid 70 and uses `/etc/pgbouncer/pgbouncer.ini` and `/etc/pgbouncer/userlist.txt`, not Bitnami paths. Generated configuration needs a writable directory; a mounted existing configuration/userlist is not regenerated from changed environment variables.
+- Review custom TLS settings separately. Use `SERVER_TLS_SSLMODE` / `SERVER_TLS_CA_FILE` for backend verification and `CLIENT_TLS_SSLMODE` / `CLIENT_TLS_CERT_FILE` / `CLIENT_TLS_KEY_FILE` for frontend TLS. SCRAM authenticates clients but does not encrypt the connection.
+
+To defer the image migration, explicitly retain the old `pgbouncer.image.repository` and `.tag`; this does not restore maintenance or security updates for that image.
+
 ## Upgrading to Chart 34.1.1
 
 Chart `34.1.1` targets [Sentry 26.10.1](https://github.com/getsentry/self-hosted/releases/tag/26.10.1).
