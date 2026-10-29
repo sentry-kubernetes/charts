@@ -1,5 +1,12 @@
 # Changelog
 
+## [34.1.1](https://github.com/sentry-kubernetes/charts/compare/sentry-v34.1.0...sentry-v34.1.1) (2026-10-27)
+
+
+### Bug Fixes
+
+* IPv6 listener for sentry, taskbroker and snuba ([#2294](https://github.com/sentry-kubernetes/charts/issues/2294)) ([ae45e22](https://github.com/sentry-kubernetes/charts/commit/ae45e22eaef00a3a0cd4f780b8644551b5fbd002))
+
 ## [34.1.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v34.0.0...sentry-v34.1.0) (2026-10-25)
 
 
