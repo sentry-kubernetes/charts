@@ -1,0 +1,28 @@
+{{- if has "feature-complete" .Values.profiles }}
+{{- if .Values.sentry.features.enableUptime }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "sentry.fullname" . }}-uptime-checker
+  annotations:
+    {{- range $key, $value := .Values.uptimeChecker.service.annotations }}
+      {{ $key }}: {{ $value | quote }}
+    {{- end }}
+  labels:
+    app: {{ template "sentry.fullname" . }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
+    release: "{{ .Release.Name }}"
+    heritage: "{{ .Release.Service }}"
+    {{- include "sentry.component.labels" (dict "component" "uptime-checker" "ctx" .) | nindent 4 }}
+spec:
+  type: ClusterIP
+  ports:
+  - port: {{ template "uptimeChecker.port" }}
+    targetPort: {{ template "uptimeChecker.port" }}
+    protocol: TCP
+    name: {{ .Values.service.name }}-uptime-checker
+  selector:
+    app: {{ template "sentry.fullname" . }}
+    role: uptime-checker
+{{- end }}
+{{- end }}

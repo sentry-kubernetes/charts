@@ -276,7 +276,7 @@ sentry.conf.py: |-
   ##############
 
   {{- if .Values.ipv6 }}
-  SENTRY_WEB_HOST = "[::]"
+  SENTRY_WEB_HOST = "::"
   {{- else }}
   SENTRY_WEB_HOST = "0.0.0.0"
   {{- end }}
@@ -286,7 +286,7 @@ sentry.conf.py: |-
   SENTRY_PUBLIC = {{ .Values.system.public | ternary "True" "False" }}
   SENTRY_WEB_OPTIONS = {
   {{- if .Values.ipv6 }}
-      "http-socket": "%s:%s" % (SENTRY_WEB_HOST, SENTRY_WEB_PORT),
+      "http-socket": "[%s]:%s" % (SENTRY_WEB_HOST, SENTRY_WEB_PORT),
   {{- else }}
       "http": "%s:%s" % (SENTRY_WEB_HOST, SENTRY_WEB_PORT),
   {{- end }}
@@ -440,6 +440,24 @@ sentry.conf.py: |-
           {{- end }}
       }
   )
+
+  {{- if and (has "feature-complete" .Values.profiles) .Values.sentry.features.enableUptime }}
+
+  ##########
+  # Uptime #
+  ##########
+  # Sentry calls the uptime-checker API for "Test Monitor" previews and assertion validation.
+  from sentry.conf.types.uptime import UptimeRegionConfig
+
+  UPTIME_REGIONS = [
+      UptimeRegionConfig(
+          slug="default",
+          name="Default Region",
+          config_redis_cluster=SENTRY_UPTIME_DETECTOR_CLUSTER,
+          api_endpoint="{{ template "sentry.fullname" . }}-uptime-checker:{{ template "uptimeChecker.port" }}",
+      ),
+  ]
+  {{- end }}
 
   #######################
   # Email Configuration #
@@ -687,12 +705,6 @@ sentry.conf.py: |-
   #########
   SENTRY_RELAY_WHITELIST_PK = []
   SENTRY_RELAY_OPEN_REGISTRATION = True
-
-  #######################
-  # OpenAi Suggestions #
-  #######################
-
-  OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "")
 
   ########################
   # JS SDK Loader Script #

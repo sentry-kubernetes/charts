@@ -146,7 +146,7 @@ vroom:
     existingClaim: ""
     # this will be passed to the SENTRY_BUCKET_PROFILES env var
     # examples: file:///var/vroom/sentry-profiles, s3://my-profiles-bucket, gs://my-profiles-bucket
-    # S3-compatible stores (26.10.0+ query params): s3://profiles?region=us-east-1&endpoint=minio:9000&use_path_style=true&disable_https=true
+    # S3-compatible stores (26.10.0+ query params): s3://profiles?region=us-east-1&endpoint=http://minio:9000&use_path_style=true
     bucketString: "file:///var/vroom/sentry-profiles"
 
   autoscaling:
@@ -2302,10 +2302,6 @@ pagerduty: {}
 #   existingSecretAppId: ""             # by default "app-id"
 #   Reference -> https://develop.sentry.dev/integrations/pagerduty/
 
-openai: {}
-#   existingSecret: "xxxxx"
-#   existingSecretKey: ""               # by default "api-token"
-
 ingress:
   enabled: false
   ingressClassName: nginx
@@ -3247,7 +3243,14 @@ metrics:
   securityContext: {}
   containerSecurityContext: {}
 
+  ## List of full statsd-exporter arguments appended after the default listen flags.
+  extraArgs: []
+  # extraArgs:
+  #   - "--log.level=debug"
+  extraVolumes: []
+  extraVolumeMounts: []
   volumes: []
+  volumeMounts: []
   sidecars: []
 
   # schedulerName:

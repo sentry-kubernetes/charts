@@ -362,6 +362,9 @@ Note: this table is incomplete, so have a look at the values.yaml in case you mi
 | metrics.affinity | object | `{}` |  |
 | metrics.containerSecurityContext | object | `{}` |  |
 | metrics.enabled | bool | `false` |  |
+| metrics.extraArgs | list | `[]` | Extra statsd-exporter args appended after `--statsd.listen-udp=:9125` and `--web.listen-address=:9102`. List of complete argument strings, including explicit boolean values such as `--statsd.parse-dogstatsd-tags=false`. |
+| metrics.extraVolumeMounts | list | `[]` | Extra volume mounts concatenated with `metrics.volumeMounts`. |
+| metrics.extraVolumes | list | `[]` | Extra volumes concatenated with `metrics.volumes`. |
 | metrics.image.pullPolicy | string | `"IfNotPresent"` |  |
 | metrics.image.repository | string | `"prom/statsd-exporter"` |  |
 | metrics.image.tag | string | `"v0.17.0"` |  |
@@ -392,6 +395,7 @@ Note: this table is incomplete, so have a look at the values.yaml in case you mi
 | metrics.serviceMonitor.scrapeInterval | string | `"30s"` |  |
 | metrics.sidecars | list | `[]` |  |
 | metrics.tolerations | list | `[]` |  |
+| metrics.volumeMounts | list | `[]` |  |
 | metrics.volumes | list | `[]` |  |
 | nginx.containerPort | int | `8080` |  |
 | nginx.customReadinessProbe.failureThreshold | int | `3` |  |
@@ -403,7 +407,6 @@ Note: this table is incomplete, so have a look at the values.yaml in case you mi
 | nginx.enabled | bool | `false` |  |
 | nginx.existingServerConfigConfigmap | string | `"{{ template \"sentry.fullname\" . }}"` |  |
 | nginx.extraLocationSnippet | bool | `false` |  |
-| openai | object | `{}` |  |
 | pagerduty | object | `{}` |  |
 | pgbouncer.affinity | object | `{}` |  |
 | pgbouncer.authType | string | `"md5"` |  |
@@ -1399,6 +1402,14 @@ vroom:
         secretKeyRef:
           name: sentry-profiles-s3
           key: s3-secret-access-key
+```
+
+For an S3-compatible store (MinIO, SeaweedFS, Ceph, …), put the scheme in `endpoint`. `disable_https` has no effect on a custom endpoint, and without a scheme vroom cannot read profiles back (the UI returns 500 when opening a profile):
+
+```yaml
+vroom:
+  persistence:
+    bucketString: "s3://sentry-profiles?region=us-east-1&endpoint=http://minio:9000&use_path_style=true"
 ```
 
 GCS example:

@@ -142,7 +142,7 @@ spec:
         args:
           - cleanup
           - -c
-          - /etc/symbolicator/config.yml 
+          - /etc/symbolicator/config.yml
           - --repeat
           - {{ .Values.symbolicator.api.cleaner.repeat }}
         volumeMounts:
@@ -157,6 +157,10 @@ spec:
         {{ end }}
         resources:
 {{ toYaml .Values.symbolicator.api.cleaner.resources | indent 12 }}
+{{- if .Values.symbolicator.api.cleaner.containerSecurityContext }}
+        securityContext:
+{{ toYaml .Values.symbolicator.api.cleaner.containerSecurityContext | indent 12 }}
+{{- end }}
       {{- end }}
 {{- if .Values.symbolicator.api.sidecars }}
 {{ toYaml .Values.symbolicator.api.sidecars | indent 6 }}

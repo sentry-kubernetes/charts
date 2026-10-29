@@ -76,6 +76,17 @@ spec:
         args:
           - "--statsd.listen-udp=:9125"
           - "--web.listen-address=:9102"
+{{- with .Values.metrics.extraArgs }}
+{{- if not (kindIs "slice" .) }}
+{{- fail "metrics.extraArgs must be a list of strings" }}
+{{- end }}
+{{- range . }}
+{{- if not (kindIs "string" .) }}
+{{- fail "metrics.extraArgs must be a list of strings" }}
+{{- end }}
+          - {{ . | quote }}
+{{- end }}
+{{- end }}
         image: "{{ .Values.metrics.image.repository }}:{{ .Values.metrics.image.tag }}"
         imagePullPolicy: {{ .Values.metrics.image.pullPolicy }}
         ports:
@@ -83,10 +94,11 @@ spec:
           containerPort: 9125
         - name: metrics
           containerPort: 9102
-{{- if or .Values.metrics.volumeMounts .Values.global.volumeMounts }}
+{{- $metricsVolumeMounts := concat (.Values.metrics.volumeMounts | default list) (.Values.metrics.extraVolumeMounts | default list) }}
+{{- if or $metricsVolumeMounts .Values.global.volumeMounts }}
         volumeMounts:
-{{- if .Values.metrics.volumeMounts }}
-{{ toYaml .Values.metrics.volumeMounts | indent 8 }}
+{{- if $metricsVolumeMounts }}
+{{ toYaml $metricsVolumeMounts | indent 8 }}
 {{- end }}
 {{- if .Values.global.volumeMounts }}
 {{ toYaml .Values.global.volumeMounts | indent 8 }}
@@ -128,10 +140,11 @@ spec:
 {{- if .Values.global.sidecars }}
 {{ toYaml .Values.global.sidecars | indent 6 }}
 {{- end }}
-{{- if or .Values.metrics.volumes .Values.global.volumes }}
+{{- $metricsVolumes := concat (.Values.metrics.volumes | default list) (.Values.metrics.extraVolumes | default list) }}
+{{- if or $metricsVolumes .Values.global.volumes }}
       volumes:
-{{- if .Values.metrics.volumes }}
-{{ toYaml .Values.metrics.volumes | indent 6 }}
+{{- if $metricsVolumes }}
+{{ toYaml $metricsVolumes | indent 6 }}
 {{- end }}
 {{- if .Values.global.volumes }}
 {{ toYaml .Values.global.volumes | indent 6 }}
