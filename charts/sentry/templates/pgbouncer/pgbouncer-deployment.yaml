@@ -52,9 +52,9 @@ spec:
             value: {{ .Values.pgbouncer.poolSize | quote }}
           - name: DEFAULT_POOL_SIZE
             value: {{ .Values.pgbouncer.poolSize | quote }}
-          - name: PGBOUNCER_POOL_MODE
-            value: {{ .Values.pgbouncer.poolMode | quote }}
           - name: POOL_MODE
+            value: {{ .Values.pgbouncer.poolMode | quote }}
+          - name: PGBOUNCER_POOL_MODE
             value: {{ .Values.pgbouncer.poolMode | quote }}
         ports:
           - containerPort: 5432
