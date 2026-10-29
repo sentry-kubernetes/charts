@@ -77,26 +77,14 @@ spec:
           - "--statsd.listen-udp=:9125"
           - "--web.listen-address=:9102"
 {{- with .Values.metrics.extraArgs }}
-{{- if kindIs "map" . }}
-{{- range $flag, $value := . }}
-{{- $name := $flag }}
-{{- if not (or (hasPrefix "--" $name) (hasPrefix "-" $name)) }}
-{{- $name = printf "--%s" $name }}
+{{- if not (kindIs "slice" .) }}
+{{- fail "metrics.extraArgs must be a list of strings" }}
 {{- end }}
-{{- if kindIs "bool" $value }}
-{{- if $value }}
-          - {{ $name | quote }}
-{{- end }}
-{{- else if or (kindIs "invalid" $value) (eq (toString $value) "") }}
-          - {{ $name | quote }}
-{{- else }}
-          - {{ printf "%s=%v" $name $value | quote }}
-{{- end }}
-{{- end }}
-{{- else }}
 {{- range . }}
-          - {{ . | quote }}
+{{- if not (kindIs "string" .) }}
+{{- fail "metrics.extraArgs must be a list of strings" }}
 {{- end }}
+          - {{ . | quote }}
 {{- end }}
 {{- end }}
         image: "{{ .Values.metrics.image.repository }}:{{ .Values.metrics.image.tag }}"

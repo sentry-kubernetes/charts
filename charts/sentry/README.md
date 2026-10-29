@@ -338,7 +338,7 @@ Note: this table is incomplete, so have a look at the values.yaml in case you mi
 | metrics.affinity | object | `{}` |  |
 | metrics.containerSecurityContext | object | `{}` |  |
 | metrics.enabled | bool | `false` |  |
-| metrics.extraArgs | list | `[]` | Extra statsd-exporter args appended after `--statsd.listen-udp=:9125` and `--web.listen-address=:9102`. List of strings or map of flag to value. Duplicate flags override (last wins). |
+| metrics.extraArgs | list | `[]` | Extra statsd-exporter args appended after `--statsd.listen-udp=:9125` and `--web.listen-address=:9102`. List of complete argument strings, including explicit boolean values such as `--statsd.parse-dogstatsd-tags=false`. |
 | metrics.extraVolumeMounts | list | `[]` | Extra volume mounts concatenated with `metrics.volumeMounts`. |
 | metrics.extraVolumes | list | `[]` | Extra volumes concatenated with `metrics.volumes`. |
 | metrics.image.pullPolicy | string | `"IfNotPresent"` |  |

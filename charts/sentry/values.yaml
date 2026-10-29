@@ -3405,9 +3405,7 @@ metrics:
   securityContext: {}
   containerSecurityContext: {}
 
-  ## Extra statsd-exporter args appended after the default listen flags
-  ## (--statsd.listen-udp=:9125, --web.listen-address=:9102). Duplicate flags
-  ## override (last wins). List of full args, or map of flag to value.
+  ## List of full statsd-exporter arguments appended after the default listen flags.
   extraArgs: []
   # extraArgs:
   #   - "--log.level=debug"
