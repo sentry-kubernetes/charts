@@ -1,5 +1,29 @@
 # Changelog
 
+## [35.0.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v34.1.1...sentry-v35.0.0) (2026-10-29)
+
+
+### ⚠ BREAKING CHANGES
+
+* **sentry:** replace the legacy PgBouncer image with edoburu/pgbouncer ([#2290](https://github.com/sentry-kubernetes/charts/issues/2290))
+
+### Features
+
+* charts/sentry: add metrics extraArgs and extra volumes ([#2299](https://github.com/sentry-kubernetes/charts/issues/2299)) ([5bea486](https://github.com/sentry-kubernetes/charts/commit/5bea4861c75135a1cd13884c39bd68b0f6bc14f0))
+* charts/sentry: source Postgres, mail and admin credentials from a Secret ([#2291](https://github.com/sentry-kubernetes/charts/issues/2291)) ([6585d38](https://github.com/sentry-kubernetes/charts/commit/6585d3812f48aeec53a1dc3ecc53d67b56015c1a))
+* **sentry:** replace the legacy PgBouncer image with edoburu/pgbouncer ([#2290](https://github.com/sentry-kubernetes/charts/issues/2290)) ([dd6fa84](https://github.com/sentry-kubernetes/charts/commit/dd6fa84032dee59247ade8c68a3d3bd4ed9ba2e0))
+
+
+### Bug Fixes
+
+* **charts/sentry/sentry:** fix initial setup by omitting mail TLS/SSL options for default installs ([#2313](https://github.com/sentry-kubernetes/charts/issues/2313)) ([bbe99ef](https://github.com/sentry-kubernetes/charts/commit/bbe99efd2b4e10ffaff893cb096bf5f4d2682991))
+* **charts/sentry:** drop ArgoCD Sync hook annotation from sentry-secret ([#2243](https://github.com/sentry-kubernetes/charts/issues/2243)) ([da0dd9b](https://github.com/sentry-kubernetes/charts/commit/da0dd9b9ffca8c26a36aa5f9f21bfb75e4d75709))
+* remove obsolete suggested solution configuration ([#2273](https://github.com/sentry-kubernetes/charts/issues/2273)) ([e9ff611](https://github.com/sentry-kubernetes/charts/commit/e9ff611ef530a2d0e285fd948594195f44a1698d))
+* **sentry:** configure uptime-checker Kafka authentication ([#2295](https://github.com/sentry-kubernetes/charts/issues/2295)) ([8074147](https://github.com/sentry-kubernetes/charts/commit/8074147c444c1154b697929b3dae5956b9b40de6))
+* **sentry:** preserve Kafka cluster mappings with topic prefixes ([#2319](https://github.com/sentry-kubernetes/charts/issues/2319)) ([ed0a7cc](https://github.com/sentry-kubernetes/charts/commit/ed0a7ccfe3bc9ce44348f17225931f45d63d1bb3))
+* support containerSecurityContext for Symbolicator Cleaner StatefulSet ([#2298](https://github.com/sentry-kubernetes/charts/issues/2298)) ([1b68003](https://github.com/sentry-kubernetes/charts/commit/1b68003da86a0351f742e9c00dccfea5458df68d))
+* Updated memcached and nginx cloudpirates dependencies ([#2301](https://github.com/sentry-kubernetes/charts/issues/2301)) ([29eb177](https://github.com/sentry-kubernetes/charts/commit/29eb17761dded87e8ea41669d0f4d85292a27100))
+
 ## [34.1.1](https://github.com/sentry-kubernetes/charts/compare/sentry-v34.1.0...sentry-v34.1.1) (2026-10-27)
 
 
