@@ -2,9 +2,9 @@
 
 The changelog below refers to the main `sentry` chart only.
 
-## Upgrading to Chart 34.2.0
+## Upgrading to Chart 34.1.1
 
-Chart `34.2.0` targets [Sentry 26.10.1](https://github.com/getsentry/self-hosted/releases/tag/26.10.1).
+Chart `34.1.1` targets [Sentry 26.10.1](https://github.com/getsentry/self-hosted/releases/tag/26.10.1).
 
 This is a security patch for the [eMudhra Intermediate CA compromise](https://emudhra.we-have-a-problem.com/): the 26.10.1 images ship updated CA bundles, so upgrade promptly. Upstream has no patched ClickHouse image yet (it waits on Altinity); since you run your own ClickHouse, update it once a patched image is available.
 
@@ -30,7 +30,7 @@ The sentry image no longer runs as root. Pods running it get a new default pod s
 
 ### Breaking: vroom S3 bucket URL parameters
 
-vroom's storage library renamed the S3 URL query parameters. If `vroom.persistence.bucketString` points at an S3-compatible store, replace `s3ForcePathStyle=true` with `use_path_style=true`, and drop `disableSSL=true` in favour of an `http://` scheme in `endpoint` (see 34.2.0). The `file://` default and plain `s3://bucket` / `gs://bucket` URLs are unaffected.
+vroom's storage library renamed the S3 URL query parameters. If `vroom.persistence.bucketString` points at an S3-compatible store, replace `s3ForcePathStyle=true` with `use_path_style=true`, and drop `disableSSL=true` in favour of an `http://` scheme in `endpoint` (see 34.1.1). The `file://` default and plain `s3://bucket` / `gs://bucket` URLs are unaffected.
 
 ### Removed components
 
