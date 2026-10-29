@@ -1431,15 +1431,8 @@ still does.
     secretKeyRef:
       name: {{ default (include "sentry.postgresql.fullname" .) .Values.postgresql.auth.existingSecret }}
       key: {{ default "postgres-password" .Values.postgresql.auth.secretKeys.adminPasswordKey }}
-- name: DB_PASSWORD
-  valueFrom:
-    secretKeyRef:
-      name: {{ default (include "sentry.postgresql.fullname" .) .Values.postgresql.auth.existingSecret }}
-      key: {{ default "postgres-password" .Values.postgresql.auth.secretKeys.adminPasswordKey }}
 {{- else if .Values.externalPostgresql.password }}
 - name: POSTGRESQL_PASSWORD
-  value: {{ .Values.externalPostgresql.password | quote }}
-- name: DB_PASSWORD
   value: {{ .Values.externalPostgresql.password | quote }}
 {{- else if .Values.externalPostgresql.existingSecret }}
 - name: POSTGRESQL_PASSWORD
@@ -1447,11 +1440,10 @@ still does.
     secretKeyRef:
       name: {{ .Values.externalPostgresql.existingSecret }}
       key: {{ or .Values.externalPostgresql.existingSecretKeys.password .Values.externalPostgresql.existingSecretKey "postgresql-password" }}
+{{- end }}
+{{- if or .Values.postgresql.enabled .Values.externalPostgresql.password .Values.externalPostgresql.existingSecret }}
 - name: DB_PASSWORD
-  valueFrom:
-    secretKeyRef:
-      name: {{ .Values.externalPostgresql.existingSecret }}
-      key: {{ or .Values.externalPostgresql.existingSecretKeys.password .Values.externalPostgresql.existingSecretKey "postgresql-password" }}
+  value: "$(POSTGRESQL_PASSWORD)"
 {{- end }}
 {{- if and .Values.externalPostgresql.existingSecret .Values.externalPostgresql.existingSecretKeys.username }}
 - name: POSTGRESQL_USERNAME

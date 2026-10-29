@@ -23,6 +23,8 @@ for source in container.get("envFrom", []):
     secret = next(d for d in docs if d["kind"] == "Secret" and d["metadata"]["name"] == source["secretRef"]["name"])
     env.update({key: base64.b64decode(value).decode() for key, value in secret["data"].items()})
 env.update({e["name"]: e["value"] for e in container["env"] if "value" in e})
+assert env["DB_PASSWORD"] == "$(POSTGRESQL_PASSWORD)"
+env["DB_PASSWORD"] = env["POSTGRESQL_PASSWORD"]
 assert env["AUTH_TYPE"] == "scram-sha-256"
 blocked = subprocess.run([*rendered.args, "--set", "pgbouncer.authType=md5"], text=True, capture_output=True)
 assert blocked.returncode != 0 and "pgbouncer.authType" in blocked.stderr
