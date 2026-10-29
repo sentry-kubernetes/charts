@@ -14,6 +14,12 @@ Please refer to the [External Services Documentation](docs/external-services.md)
 helm repo add sentry https://sentry-kubernetes.github.io/charts
 ```
 
+Charts are also published as OCI artifacts on GHCR:
+
+```
+helm install sentry oci://ghcr.io/sentry-kubernetes/charts/sentry --version <chart-version>
+```
+
 ## Quick install
 
 You must provide an admin password (or reference an existing secret). For a quick test:
@@ -186,6 +192,10 @@ Note: this table is incomplete, so have a look at the values.yaml in case you mi
 | hooks.snubaInit.resources.requests.cpu | string | `"700m"` |  |
 | hooks.snubaInit.resources.requests.memory | string | `"1Gi"` |  |
 | hooks.snubaMigrate.enabled | bool | `true` |  |
+| hooks.taskbrokerMigrate.resources.limits.cpu | string | `"2000m"` |  |
+| hooks.taskbrokerMigrate.resources.limits.memory | string | `"1Gi"` |  |
+| hooks.taskbrokerMigrate.resources.requests.cpu | string | `"700m"` |  |
+| hooks.taskbrokerMigrate.resources.requests.memory | string | `"1Gi"` |  |
 | images.relay.imagePullSecrets | list | `[]` |  |
 | images.sentry.imagePullSecrets | list | `[]` |  |
 | images.snuba.imagePullSecrets | list | `[]` |  |
@@ -210,103 +220,127 @@ Note: this table is incomplete, so have a look at the values.yaml in case you mi
 | kafka.provisioning.enabled | bool | `true` |  |
 | kafka.provisioning.topics[0].config."message.timestamp.type" | string | `"LogAppendTime"` |  |
 | kafka.provisioning.topics[0].name | string | `"events"` |  |
+| kafka.provisioning.topics[100].name | string | `"taskworker-cutover"` |  |
+| kafka.provisioning.topics[101].name | string | `"taskworker-email"` |  |
+| kafka.provisioning.topics[102].name | string | `"taskworker-ingest-attachments"` |  |
+| kafka.provisioning.topics[103].name | string | `"taskworker-ingest-errors-postprocess"` |  |
+| kafka.provisioning.topics[104].name | string | `"taskworker-ingest-profiling"` |  |
+| kafka.provisioning.topics[105].name | string | `"taskworker-workflows-engine"` |  |
 | kafka.provisioning.topics[10].name | string | `"outcomes-billing-dlq"` |  |
-| kafka.provisioning.topics[11].name | string | `"ingest-sessions"` |  |
-| kafka.provisioning.topics[12].config."cleanup.policy" | string | `"compact,delete"` |  |
-| kafka.provisioning.topics[12].config."min.compaction.lag.ms" | string | `"3600000"` |  |
-| kafka.provisioning.topics[12].name | string | `"snuba-metrics-commit-log"` |  |
-| kafka.provisioning.topics[13].name | string | `"scheduled-subscriptions-events"` |  |
-| kafka.provisioning.topics[14].name | string | `"scheduled-subscriptions-transactions"` |  |
-| kafka.provisioning.topics[15].name | string | `"scheduled-subscriptions-metrics"` |  |
-| kafka.provisioning.topics[16].name | string | `"scheduled-subscriptions-generic-metrics-sets"` |  |
-| kafka.provisioning.topics[17].name | string | `"scheduled-subscriptions-generic-metrics-distributions"` |  |
-| kafka.provisioning.topics[18].name | string | `"scheduled-subscriptions-generic-metrics-counters"` |  |
-| kafka.provisioning.topics[19].name | string | `"scheduled-subscriptions-generic-metrics-gauges"` |  |
+| kafka.provisioning.topics[11].name | string | `"ingest-spans"` |  |
+| kafka.provisioning.topics[12].name | string | `"ingest-sessions"` |  |
+| kafka.provisioning.topics[13].config."cleanup.policy" | string | `"compact,delete"` |  |
+| kafka.provisioning.topics[13].config."min.compaction.lag.ms" | string | `"3600000"` |  |
+| kafka.provisioning.topics[13].name | string | `"snuba-metrics-commit-log"` |  |
+| kafka.provisioning.topics[14].name | string | `"scheduled-subscriptions-events"` |  |
+| kafka.provisioning.topics[15].name | string | `"scheduled-subscriptions-transactions"` |  |
+| kafka.provisioning.topics[16].name | string | `"scheduled-subscriptions-metrics"` |  |
+| kafka.provisioning.topics[17].name | string | `"events-subscription-results"` |  |
+| kafka.provisioning.topics[18].name | string | `"transactions-subscription-results"` |  |
+| kafka.provisioning.topics[19].name | string | `"metrics-subscription-results"` |  |
 | kafka.provisioning.topics[1].name | string | `"event-replacements"` |  |
-| kafka.provisioning.topics[20].name | string | `"events-subscription-results"` |  |
-| kafka.provisioning.topics[21].name | string | `"transactions-subscription-results"` |  |
-| kafka.provisioning.topics[22].name | string | `"metrics-subscription-results"` |  |
-| kafka.provisioning.topics[23].name | string | `"generic-metrics-subscription-results"` |  |
+| kafka.provisioning.topics[20].name | string | `"generic-metrics-subscription-results"` |  |
+| kafka.provisioning.topics[21].config."message.timestamp.type" | string | `"LogAppendTime"` |  |
+| kafka.provisioning.topics[21].name | string | `"snuba-queries"` |  |
+| kafka.provisioning.topics[22].config."message.timestamp.type" | string | `"LogAppendTime"` |  |
+| kafka.provisioning.topics[22].name | string | `"processed-profiles"` |  |
+| kafka.provisioning.topics[23].name | string | `"profiles-call-tree"` |  |
+| kafka.provisioning.topics[24].config."max.message.bytes" | string | `"15000000"` |  |
 | kafka.provisioning.topics[24].config."message.timestamp.type" | string | `"LogAppendTime"` |  |
-| kafka.provisioning.topics[24].name | string | `"snuba-queries"` |  |
+| kafka.provisioning.topics[24].name | string | `"ingest-replay-events"` |  |
 | kafka.provisioning.topics[25].config."message.timestamp.type" | string | `"LogAppendTime"` |  |
-| kafka.provisioning.topics[25].name | string | `"processed-profiles"` |  |
-| kafka.provisioning.topics[26].name | string | `"profiles-call-tree"` |  |
-| kafka.provisioning.topics[27].name | string | `"snuba-profile-chunks"` |  |
-| kafka.provisioning.topics[28].config."max.message.bytes" | string | `"15000000"` |  |
+| kafka.provisioning.topics[25].name | string | `"snuba-generic-metrics"` |  |
+| kafka.provisioning.topics[26].config."message.timestamp.type" | string | `"LogAppendTime"` |  |
+| kafka.provisioning.topics[26].name | string | `"generic-events"` |  |
+| kafka.provisioning.topics[27].config."cleanup.policy" | string | `"compact,delete"` |  |
+| kafka.provisioning.topics[27].config."min.compaction.lag.ms" | string | `"3600000"` |  |
+| kafka.provisioning.topics[27].name | string | `"snuba-generic-events-commit-log"` |  |
 | kafka.provisioning.topics[28].config."message.timestamp.type" | string | `"LogAppendTime"` |  |
-| kafka.provisioning.topics[28].name | string | `"ingest-replay-events"` |  |
-| kafka.provisioning.topics[29].config."message.timestamp.type" | string | `"LogAppendTime"` |  |
-| kafka.provisioning.topics[29].name | string | `"snuba-generic-metrics"` |  |
+| kafka.provisioning.topics[28].name | string | `"group-attributes"` |  |
+| kafka.provisioning.topics[29].name | string | `"snuba-dead-letter-metrics"` |  |
 | kafka.provisioning.topics[2].config."cleanup.policy" | string | `"compact,delete"` |  |
 | kafka.provisioning.topics[2].config."min.compaction.lag.ms" | string | `"3600000"` |  |
 | kafka.provisioning.topics[2].name | string | `"snuba-commit-log"` |  |
-| kafka.provisioning.topics[30].config."cleanup.policy" | string | `"compact,delete"` |  |
-| kafka.provisioning.topics[30].config."min.compaction.lag.ms" | string | `"3600000"` |  |
-| kafka.provisioning.topics[30].name | string | `"snuba-generic-metrics-sets-commit-log"` |  |
-| kafka.provisioning.topics[31].config."cleanup.policy" | string | `"compact,delete"` |  |
-| kafka.provisioning.topics[31].config."min.compaction.lag.ms" | string | `"3600000"` |  |
-| kafka.provisioning.topics[31].name | string | `"snuba-generic-metrics-distributions-commit-log"` |  |
-| kafka.provisioning.topics[32].config."cleanup.policy" | string | `"compact,delete"` |  |
-| kafka.provisioning.topics[32].config."min.compaction.lag.ms" | string | `"3600000"` |  |
-| kafka.provisioning.topics[32].name | string | `"snuba-generic-metrics-counters-commit-log"` |  |
-| kafka.provisioning.topics[33].config."cleanup.policy" | string | `"compact,delete"` |  |
-| kafka.provisioning.topics[33].config."min.compaction.lag.ms" | string | `"3600000"` |  |
-| kafka.provisioning.topics[33].name | string | `"snuba-generic-metrics-gauges-commit-log"` |  |
-| kafka.provisioning.topics[34].config."message.timestamp.type" | string | `"LogAppendTime"` |  |
-| kafka.provisioning.topics[34].name | string | `"generic-events"` |  |
-| kafka.provisioning.topics[35].config."cleanup.policy" | string | `"compact,delete"` |  |
-| kafka.provisioning.topics[35].config."min.compaction.lag.ms" | string | `"3600000"` |  |
-| kafka.provisioning.topics[35].name | string | `"snuba-generic-events-commit-log"` |  |
-| kafka.provisioning.topics[36].config."message.timestamp.type" | string | `"LogAppendTime"` |  |
-| kafka.provisioning.topics[36].name | string | `"group-attributes"` |  |
-| kafka.provisioning.topics[37].name | string | `"snuba-dead-letter-metrics"` |  |
-| kafka.provisioning.topics[38].name | string | `"snuba-dead-letter-generic-metrics"` |  |
-| kafka.provisioning.topics[39].name | string | `"snuba-dead-letter-replays"` |  |
+| kafka.provisioning.topics[30].name | string | `"snuba-dead-letter-replays"` |  |
+| kafka.provisioning.topics[31].name | string | `"snuba-dead-letter-generic-events"` |  |
+| kafka.provisioning.topics[32].name | string | `"snuba-dead-letter-querylog"` |  |
+| kafka.provisioning.topics[33].name | string | `"snuba-dead-letter-group-attributes"` |  |
+| kafka.provisioning.topics[34].name | string | `"snuba-dead-letter-items"` |  |
+| kafka.provisioning.topics[35].name | string | `"ingest-attachments"` |  |
+| kafka.provisioning.topics[36].name | string | `"ingest-attachments-dlq"` |  |
+| kafka.provisioning.topics[37].name | string | `"ingest-transactions"` |  |
+| kafka.provisioning.topics[38].name | string | `"ingest-transactions-dlq"` |  |
+| kafka.provisioning.topics[39].name | string | `"ingest-transactions-backlog"` |  |
 | kafka.provisioning.topics[3].name | string | `"cdc"` |  |
-| kafka.provisioning.topics[40].name | string | `"snuba-dead-letter-generic-events"` |  |
-| kafka.provisioning.topics[41].name | string | `"snuba-dead-letter-querylog"` |  |
-| kafka.provisioning.topics[42].name | string | `"snuba-dead-letter-group-attributes"` |  |
-| kafka.provisioning.topics[43].name | string | `"ingest-attachments"` |  |
-| kafka.provisioning.topics[44].name | string | `"ingest-attachments-dlq"` |  |
-| kafka.provisioning.topics[45].name | string | `"ingest-transactions"` |  |
-| kafka.provisioning.topics[46].name | string | `"ingest-transactions-dlq"` |  |
-| kafka.provisioning.topics[47].name | string | `"ingest-events-dlq"` |  |
-| kafka.provisioning.topics[48].name | string | `"ingest-events"` |  |
-| kafka.provisioning.topics[49].name | string | `"ingest-replay-recordings"` |  |
+| kafka.provisioning.topics[40].name | string | `"ingest-events-dlq"` |  |
+| kafka.provisioning.topics[41].name | string | `"ingest-events"` |  |
+| kafka.provisioning.topics[42].name | string | `"ingest-replay-recordings"` |  |
+| kafka.provisioning.topics[43].name | string | `"ingest-metrics"` |  |
+| kafka.provisioning.topics[44].name | string | `"ingest-metrics-dlq"` |  |
+| kafka.provisioning.topics[45].name | string | `"ingest-performance-metrics"` |  |
+| kafka.provisioning.topics[46].name | string | `"ingest-feedback-events"` |  |
+| kafka.provisioning.topics[47].name | string | `"ingest-feedback-events-dlq"` |  |
+| kafka.provisioning.topics[48].name | string | `"ingest-monitors"` |  |
+| kafka.provisioning.topics[49].name | string | `"monitors-clock-tasks"` |  |
 | kafka.provisioning.topics[4].config."message.timestamp.type" | string | `"LogAppendTime"` |  |
 | kafka.provisioning.topics[4].name | string | `"transactions"` |  |
-| kafka.provisioning.topics[50].name | string | `"ingest-metrics"` |  |
-| kafka.provisioning.topics[51].name | string | `"ingest-metrics-dlq"` |  |
-| kafka.provisioning.topics[52].name | string | `"ingest-performance-metrics"` |  |
-| kafka.provisioning.topics[53].name | string | `"ingest-feedback-events"` |  |
-| kafka.provisioning.topics[54].name | string | `"ingest-feedback-events-dlq"` |  |
-| kafka.provisioning.topics[55].name | string | `"ingest-monitors"` |  |
-| kafka.provisioning.topics[56].name | string | `"monitors-clock-tasks"` |  |
-| kafka.provisioning.topics[57].name | string | `"monitors-clock-tick"` |  |
-| kafka.provisioning.topics[58].name | string | `"monitors-incident-occurrences"` |  |
-| kafka.provisioning.topics[59].name | string | `"profiles"` |  |
+| kafka.provisioning.topics[50].name | string | `"monitors-clock-tick"` |  |
+| kafka.provisioning.topics[51].name | string | `"monitors-incident-occurrences"` |  |
+| kafka.provisioning.topics[52].name | string | `"profiles"` |  |
+| kafka.provisioning.topics[53].name | string | `"ingest-occurrences"` |  |
+| kafka.provisioning.topics[54].name | string | `"snuba-spans"` |  |
+| kafka.provisioning.topics[55].name | string | `"snuba-eap-spans-commit-log"` |  |
+| kafka.provisioning.topics[56].name | string | `"scheduled-subscriptions-eap-spans"` |  |
+| kafka.provisioning.topics[57].name | string | `"scheduled-subscriptions-eap-items"` |  |
+| kafka.provisioning.topics[58].name | string | `"eap-spans-subscription-results"` |  |
+| kafka.provisioning.topics[59].name | string | `"subscription-results-eap-items"` |  |
 | kafka.provisioning.topics[5].config."cleanup.policy" | string | `"compact,delete"` |  |
 | kafka.provisioning.topics[5].config."min.compaction.lag.ms" | string | `"3600000"` |  |
 | kafka.provisioning.topics[5].name | string | `"snuba-transactions-commit-log"` |  |
-| kafka.provisioning.topics[60].name | string | `"ingest-occurrences"` |  |
-| kafka.provisioning.topics[61].name | string | `"snuba-spans"` |  |
-| kafka.provisioning.topics[62].name | string | `"snuba-eap-spans-commit-log"` |  |
-| kafka.provisioning.topics[63].name | string | `"scheduled-subscriptions-eap-spans"` |  |
-| kafka.provisioning.topics[64].name | string | `"eap-spans-subscription-results"` |  |
-| kafka.provisioning.topics[65].name | string | `"snuba-eap-mutations"` |  |
-| kafka.provisioning.topics[66].name | string | `"snuba-lw-deletions-generic-events"` |  |
-| kafka.provisioning.topics[67].name | string | `"shared-resources-usage"` |  |
-| kafka.provisioning.topics[68].name | string | `"snuba-profile-chunks"` |  |
-| kafka.provisioning.topics[69].name | string | `"buffered-segments"` |  |
+| kafka.provisioning.topics[60].name | string | `"snuba-items-commit-log"` |  |
+| kafka.provisioning.topics[61].name | string | `"snuba-eap-mutations"` |  |
+| kafka.provisioning.topics[62].name | string | `"snuba-lw-deletions-generic-events"` |  |
+| kafka.provisioning.topics[63].name | string | `"snuba-lw-deletions-eap-items"` |  |
+| kafka.provisioning.topics[64].name | string | `"shared-resources-usage"` |  |
+| kafka.provisioning.topics[65].name | string | `"snuba-profile-chunks"` |  |
+| kafka.provisioning.topics[66].name | string | `"buffered-segments"` |  |
+| kafka.provisioning.topics[67].name | string | `"uptime-configs"` |  |
+| kafka.provisioning.topics[68].name | string | `"uptime-results"` |  |
+| kafka.provisioning.topics[69].name | string | `"snuba-uptime-results"` |  |
 | kafka.provisioning.topics[6].config."message.timestamp.type" | string | `"LogAppendTime"` |  |
 | kafka.provisioning.topics[6].name | string | `"snuba-metrics"` |  |
-| kafka.provisioning.topics[70].name | string | `"buffered-segments-dlq"` |  |
-| kafka.provisioning.topics[71].name | string | `"uptime-configs"` |  |
-| kafka.provisioning.topics[72].name | string | `"uptime-results"` |  |
-| kafka.provisioning.topics[73].name | string | `"task-worker"` |  |
+| kafka.provisioning.topics[70].name | string | `"task-worker"` |  |
+| kafka.provisioning.topics[71].name | string | `"snuba-ourlogs"` |  |
+| kafka.provisioning.topics[72].name | string | `"snuba-items"` |  |
+| kafka.provisioning.topics[73].name | string | `"taskworker"` |  |
+| kafka.provisioning.topics[74].name | string | `"taskworker-dlq"` |  |
+| kafka.provisioning.topics[75].name | string | `"taskworker-billing"` |  |
+| kafka.provisioning.topics[76].name | string | `"taskworker-billing-dlq"` |  |
+| kafka.provisioning.topics[77].name | string | `"taskworker-control"` |  |
+| kafka.provisioning.topics[78].name | string | `"taskworker-control-dlq"` |  |
+| kafka.provisioning.topics[79].name | string | `"taskworker-ingest"` |  |
 | kafka.provisioning.topics[7].name | string | `"outcomes"` |  |
+| kafka.provisioning.topics[80].name | string | `"taskworker-ingest-dlq"` |  |
+| kafka.provisioning.topics[81].name | string | `"taskworker-ingest-errors"` |  |
+| kafka.provisioning.topics[82].name | string | `"taskworker-ingest-errors-dlq"` |  |
+| kafka.provisioning.topics[83].name | string | `"taskworker-ingest-transactions"` |  |
+| kafka.provisioning.topics[84].name | string | `"taskworker-ingest-transactions-dlq"` |  |
+| kafka.provisioning.topics[85].name | string | `"taskworker-internal"` |  |
+| kafka.provisioning.topics[86].name | string | `"taskworker-internal-dlq"` |  |
+| kafka.provisioning.topics[87].name | string | `"taskworker-limited"` |  |
+| kafka.provisioning.topics[88].name | string | `"taskworker-limited-dlq"` |  |
+| kafka.provisioning.topics[89].name | string | `"taskworker-long"` |  |
 | kafka.provisioning.topics[8].name | string | `"outcomes-dlq"` |  |
+| kafka.provisioning.topics[90].name | string | `"taskworker-long-dlq"` |  |
+| kafka.provisioning.topics[91].name | string | `"taskworker-products"` |  |
+| kafka.provisioning.topics[92].name | string | `"taskworker-products-dlq"` |  |
+| kafka.provisioning.topics[93].name | string | `"taskworker-sentryapp"` |  |
+| kafka.provisioning.topics[94].name | string | `"taskworker-sentryapp-dlq"` |  |
+| kafka.provisioning.topics[95].name | string | `"taskworker-symbolication"` |  |
+| kafka.provisioning.topics[96].name | string | `"taskworker-symbolication-dlq"` |  |
+| kafka.provisioning.topics[97].name | string | `"taskworker-usage"` |  |
+| kafka.provisioning.topics[98].name | string | `"taskworker-usage-dlq"` |  |
+| kafka.provisioning.topics[99].name | string | `"taskworker-buffer"` |  |
 | kafka.provisioning.topics[9].name | string | `"outcomes-billing"` |  |
 | kafka.sasl.client.users | list | `[]` | List of usernames for client communications when SASL is enabled, first user will be used if enabled |
 | kafka.sasl.client.passwords | list | `[]` | List of passwords for client communications when SASL is enabled, must match the number of client.users, first password will be used if enabled |
@@ -328,6 +362,9 @@ Note: this table is incomplete, so have a look at the values.yaml in case you mi
 | metrics.affinity | object | `{}` |  |
 | metrics.containerSecurityContext | object | `{}` |  |
 | metrics.enabled | bool | `false` |  |
+| metrics.extraArgs | list | `[]` | Extra statsd-exporter args appended after `--statsd.listen-udp=:9125` and `--web.listen-address=:9102`. List of complete argument strings, including explicit boolean values such as `--statsd.parse-dogstatsd-tags=false`. |
+| metrics.extraVolumeMounts | list | `[]` | Extra volume mounts concatenated with `metrics.volumeMounts`. |
+| metrics.extraVolumes | list | `[]` | Extra volumes concatenated with `metrics.volumes`. |
 | metrics.image.pullPolicy | string | `"IfNotPresent"` |  |
 | metrics.image.repository | string | `"prom/statsd-exporter"` |  |
 | metrics.image.tag | string | `"v0.17.0"` |  |
@@ -358,6 +395,7 @@ Note: this table is incomplete, so have a look at the values.yaml in case you mi
 | metrics.serviceMonitor.scrapeInterval | string | `"30s"` |  |
 | metrics.sidecars | list | `[]` |  |
 | metrics.tolerations | list | `[]` |  |
+| metrics.volumeMounts | list | `[]` |  |
 | metrics.volumes | list | `[]` |  |
 | nginx.containerPort | int | `8080` |  |
 | nginx.customReadinessProbe.failureThreshold | int | `3` |  |
@@ -369,7 +407,6 @@ Note: this table is incomplete, so have a look at the values.yaml in case you mi
 | nginx.enabled | bool | `false` |  |
 | nginx.existingServerConfigConfigmap | string | `"{{ template \"sentry.fullname\" . }}"` |  |
 | nginx.extraLocationSnippet | bool | `false` |  |
-| openai | object | `{}` |  |
 | pagerduty | object | `{}` |  |
 | pgbouncer.affinity | object | `{}` |  |
 | pgbouncer.authType | string | `"scram-sha-256"` |  |
@@ -486,25 +523,6 @@ Note: this table is incomplete, so have a look at the values.yaml in case you mi
 | sentry.features.enableSpan | bool | `false` |  |
 | sentry.features.orgSubdomains | bool | `false` |  |
 | sentry.features.vstsLimitedScopes | bool | `true` |  |
-| sentry.genericMetricsConsumer.affinity | object | `{}` |  |
-| sentry.genericMetricsConsumer.autoscaling.enabled | bool | `false` |  |
-| sentry.genericMetricsConsumer.autoscaling.maxReplicas | int | `3` |  |
-| sentry.genericMetricsConsumer.autoscaling.minReplicas | int | `1` |  |
-| sentry.genericMetricsConsumer.autoscaling.targetCPUUtilizationPercentage | int | `50` |  |
-| sentry.genericMetricsConsumer.containerSecurityContext | object | `{}` |  |
-| sentry.genericMetricsConsumer.enabled | bool | `true` |  |
-| sentry.genericMetricsConsumer.env | list | `[]` |  |
-| sentry.genericMetricsConsumer.livenessProbe.enabled | bool | `true` |  |
-| sentry.genericMetricsConsumer.livenessProbe.initialDelaySeconds | int | `5` |  |
-| sentry.genericMetricsConsumer.livenessProbe.periodSeconds | int | `320` |  |
-| sentry.genericMetricsConsumer.maxPollIntervalMs | int | `300000` | Kafka `--max-poll-interval-ms` (self-hosted `SENTRY_KAFKA_MAX_POLL_INTERVAL_MS`). Set `null` to omit the flag. |
-| sentry.genericMetricsConsumer.nodeSelector | object | `{}` |  |
-| sentry.genericMetricsConsumer.replicas | int | `1` |  |
-| sentry.genericMetricsConsumer.resources | object | `{}` |  |
-| sentry.genericMetricsConsumer.securityContext | object | `{}` |  |
-| sentry.genericMetricsConsumer.sidecars | list | `[]` |  |
-| sentry.genericMetricsConsumer.topologySpreadConstraints | list | `[]` |  |
-| sentry.genericMetricsConsumer.volumes | list | `[]` |  |
 | sentry.ingestConsumerAttachments.affinity | object | `{}` |  |
 | sentry.ingestConsumerAttachments.autoscaling.enabled | bool | `false` |  |
 | sentry.ingestConsumerAttachments.autoscaling.maxReplicas | int | `3` |  |
@@ -643,6 +661,8 @@ Note: this table is incomplete, so have a look at the values.yaml in case you mi
 | sentry.metricsConsumer.volumes | list | `[]` |  |
 | sentry.monitorsClockTasks.maxPollIntervalMs | int | `300000` | Kafka `--max-poll-interval-ms` (self-hosted `SENTRY_KAFKA_MAX_POLL_INTERVAL_MS`). Set `null` to omit the flag. |
 | sentry.monitorsClockTick.maxPollIntervalMs | int | `300000` | Kafka `--max-poll-interval-ms` (self-hosted `SENTRY_KAFKA_MAX_POLL_INTERVAL_MS`). Set `null` to omit the flag. |
+| sentry.podSecurityContext.fsGroup | int | `999` | Pod securityContext for every pod running the sentry image; each component's securityContext is merged over it. The sentry image runs as uid/gid 999 since 26.10.0, so fsGroup keeps the filestore/replay PVCs writable. Set to `null` where fsGroup is not allowed (e.g. OpenShift restricted SCC). |
+| sentry.podSecurityContext.fsGroupChangePolicy | string | `"OnRootMismatch"` |  |
 | sentry.postProcessForwardErrors.affinity | object | `{}` |  |
 | sentry.postProcessForwardErrors.containerSecurityContext | object | `{}` |  |
 | sentry.postProcessForwardErrors.enabled | bool | `true` |  |
@@ -688,17 +708,17 @@ Note: this table is incomplete, so have a look at the values.yaml in case you mi
 | sentry.postProcessForwardTransactions.sidecars | list | `[]` |  |
 | sentry.postProcessForwardTransactions.topologySpreadConstraints | list | `[]` |  |
 | sentry.postProcessForwardTransactions.volumes | list | `[]` |  |
-| sentry.processSegments.maxPollIntervalMs | int | `300000` | Kafka `--max-poll-interval-ms` (self-hosted `SENTRY_KAFKA_MAX_POLL_INTERVAL_MS`). Set `null` to omit the flag. |
 | sentry.processSpans.maxPollIntervalMs | int | `300000` | Kafka `--max-poll-interval-ms` (self-hosted `SENTRY_KAFKA_MAX_POLL_INTERVAL_MS`). Set `null` to omit the flag. |
 | sentry.singleOrganization | bool | `true` |  |
 | sentry.taskBroker.affinity | object | `{}` | |
-| sentry.taskBroker.brokers | list | (see `values.yaml`) | One broker StatefulSet per item. Required per broker: `name`, `kafkaDeadletterTopic`, `kafkaRetryTopic`, `kafkaTopics` (YAML map mounted at `/etc/taskbroker/config.yml`; hyphenated topic names need YAML, not env). Optional: `kafkaSessionTimeoutMs` (defaults to `60000`), `replicas`, `resources` (merged with `sentry.taskBroker.resources`), `topologySpreadConstraints` (overrides `sentry.taskBroker.topologySpreadConstraints`). Replaces legacy `topic` / `consumerGroup`. See [taskbroker Kafka config migration](https://github.com/getsentry/taskbroker/blob/main/docs/kafka-config-migration.md). |
+| sentry.taskBroker.brokers | list | (see `values.yaml`) | One broker StatefulSet per item. Required per broker: `name`, `kafkaDeadletterTopic`, `kafkaRetryTopic`, `kafkaTopics` (YAML map mounted at `/etc/taskbroker/config.yml`; hyphenated topic names need YAML, not env). Optional: `store.adapter` (`sqlite` \| `postgres`, inherits `sentry.taskBroker.store.adapter`), `persistence.enabled` (inherits `sentry.taskBroker.persistence.enabled`; independent of adapter), `kafkaSessionTimeoutMs` (defaults to `60000`), `replicas`, `resources` (merged with `sentry.taskBroker.resources`), `topologySpreadConstraints` (overrides `sentry.taskBroker.topologySpreadConstraints`). Replaces legacy `topic` / `consumerGroup`. See [taskbroker Kafka config migration](https://github.com/getsentry/taskbroker/blob/main/docs/kafka-config-migration.md). |
 | sentry.taskBroker.containerSecurityContext | object | `{}` | |
 | sentry.taskBroker.enabled | bool | `true` | |
 | sentry.taskBroker.env | list | `[]` | |
+| sentry.taskBroker.hooks.skipMigrateJob | bool | `false` | Skip the Helm taskbroker migrate Job. Required if `hooks.enabled` is false and any broker uses the postgres adapter. |
 | sentry.taskBroker.nodeSelector | object | `{}` | |
 | sentry.taskBroker.persistence.accessMode | string | `"ReadWriteOnce"` | |
-| sentry.taskBroker.persistence.enabled | bool | `true` | |
+| sentry.taskBroker.persistence.enabled | bool | `true` | Independent of `store.adapter`. Postgres with a PVC is unused disk, not an error. Turning this off on an existing StatefulSet cannot remove `volumeClaimTemplates`. |
 | sentry.taskBroker.persistence.size | string | `"1Gi"` | |
 | sentry.taskBroker.persistence.storageClass | string | `""` | |
 | sentry.taskBroker.priorityClassName | string | `""` | |
@@ -706,6 +726,21 @@ Note: this table is incomplete, so have a look at the values.yaml in case you mi
 | sentry.taskBroker.resources | object | `{}` | Default container resources for task broker pods; merged with each broker’s `resources` in `sentry.taskBroker.brokers`. |
 | sentry.taskBroker.securityContext | object | `{}` | |
 | sentry.taskBroker.sidecars | list | `[]` | |
+| sentry.taskBroker.store.adapter | string | `"sqlite"` | `sqlite` or `postgres`. Per-broker override: `brokers[].store.adapter`. |
+| sentry.taskBroker.store.postgres.database | string | `"taskbroker"` | Dedicated taskbroker database. Do not reuse the Sentry or Snuba databases. |
+| sentry.taskBroker.store.postgres.defaultDatabase | string | `""` | libpq database for `CREATE DATABASE` existence check. Empty uses `sentry.postgresql.database` (typically `sentry`, not `postgres`). |
+| sentry.taskBroker.store.postgres.ddlExistingSecret | string | `""` | Optional secret for the DDL user password. Defaults to `existingSecret` / `password`. |
+| sentry.taskBroker.store.postgres.ddlExistingSecretKey | string | `"postgresql-password"` | |
+| sentry.taskBroker.store.postgres.ddlUser | string | `""` | DDL username. Empty uses `store.postgres.user`. |
+| sentry.taskBroker.store.postgres.existingSecret | string | `""` | Secret for `TASKBROKER_STORE__PG__PASSWORD`. Required (or `password`) when postgres adapter and `postgresql.enabled=false`. |
+| sentry.taskBroker.store.postgres.existingSecretKey | string | `"postgresql-password"` | |
+| sentry.taskBroker.store.postgres.host | string | `""` | Postgres primary host. Required when `postgresql.enabled=false`. Must not be PgBouncer / a transaction-mode pooler. When `postgresql.enabled=true`, defaults to the in-cluster primary (not pgbouncer). |
+| sentry.taskBroker.store.postgres.maxConnections | int | `64` | Documentation only. The binary hardcodes 64+64 connections per replica. |
+| sentry.taskBroker.store.postgres.minConnections | int | `64` | Documentation only. The binary ignores this. |
+| sentry.taskBroker.store.postgres.password | string | `""` | Injected as env, never written to the ConfigMap. Prefer `existingSecret` in production. |
+| sentry.taskBroker.store.postgres.port | int | `5432` | Always emitted as an integer. |
+| sentry.taskBroker.store.postgres.queryParams | string | `""` | Extra libpq query string, e.g. `sslmode=require`. |
+| sentry.taskBroker.store.postgres.user | string | `""` | Empty inherits `sentry.postgresql.username` (bundled Postgres or `externalPostgresql.username`). |
 | sentry.taskBroker.tolerations | list | `[]` | |
 | sentry.taskBroker.topologySpreadConstraints | list | `[]` | Default pod topologySpreadConstraints for task broker pods; overridden by each broker’s `topologySpreadConstraints` in `sentry.taskBroker.brokers`. |
 | sentry.taskBroker.volumeMounts | list | `[]` | |
@@ -834,20 +869,6 @@ Note: this table is incomplete, so have a look at the values.yaml in case you mi
 | snuba.consumer.topologySpreadConstraints | list | `[]` |  |
 | snuba.dbInitJob.env | list | `[]` |  |
 | snuba.eapItemsConsumer.maxPollIntervalMs | int | `300000` | Kafka `--max-poll-interval-ms` (self-hosted `SENTRY_KAFKA_MAX_POLL_INTERVAL_MS`). Set `null` to omit the flag. |
-| snuba.genericMetricsCountersConsumer.affinity | object | `{}` |  |
-| snuba.genericMetricsCountersConsumer.containerSecurityContext | object | `{}` |  |
-| snuba.genericMetricsCountersConsumer.enabled | bool | `true` |  |
-| snuba.genericMetricsCountersConsumer.env | list | `[]` |  |
-| snuba.genericMetricsCountersConsumer.livenessProbe.enabled | bool | `true` |  |
-| snuba.genericMetricsCountersConsumer.livenessProbe.initialDelaySeconds | int | `5` |  |
-| snuba.genericMetricsCountersConsumer.livenessProbe.periodSeconds | int | `320` |  |
-| snuba.genericMetricsCountersConsumer.maxBatchTimeMs | int | `750` |  |
-| snuba.genericMetricsCountersConsumer.maxPollIntervalMs | int | `300000` | Kafka `--max-poll-interval-ms` (self-hosted `SENTRY_KAFKA_MAX_POLL_INTERVAL_MS`). Set `null` to omit the flag. |
-| snuba.genericMetricsCountersConsumer.nodeSelector | object | `{}` |  |
-| snuba.genericMetricsCountersConsumer.replicas | int | `1` |  |
-| snuba.genericMetricsCountersConsumer.resources | object | `{}` |  |
-| snuba.genericMetricsCountersConsumer.securityContext | object | `{}` |  |
-| snuba.genericMetricsCountersConsumer.topologySpreadConstraints | list | `[]` |  |
 | snuba.groupAttributesConsumer.affinity | object | `{}` |  |
 | snuba.groupAttributesConsumer.containerSecurityContext | object | `{}` |  |
 | snuba.groupAttributesConsumer.enabled | bool | `true` |  |
@@ -1383,6 +1404,14 @@ vroom:
           key: s3-secret-access-key
 ```
 
+For an S3-compatible store (MinIO, SeaweedFS, Ceph, …), put the scheme in `endpoint`. `disable_https` has no effect on a custom endpoint, and without a scheme vroom cannot read profiles back (the UI returns 500 when opening a profile):
+
+```yaml
+vroom:
+  persistence:
+    bucketString: "s3://sentry-profiles?region=us-east-1&endpoint=http://minio:9000&use_path_style=true"
+```
+
 GCS example:
 
 ```yaml
@@ -1558,6 +1587,28 @@ externalKafka:
       port: 9093
     - host: "kafka-confluent-3"
       port: 9094
+```
+
+## Taskbroker store
+
+Taskbroker uses SQLite by default. Switch a broker to PostgreSQL with `sentry.taskBroker.store.adapter` or `brokers[].store.adapter`.
+
+Use a dedicated `taskbroker` database and a real primary (`postgres-rw`). Do not use PgBouncer or a transaction-mode pooler, and do not reuse the Sentry or Snuba databases. With external Postgres, set `store.postgres.host` yourself — the chart will not take `externalPostgresql.host` (that is often a pooler).
+
+Each postgres replica opens 128 connections (hardcoded). Raise `max_connections` before enabling; CNPG's default (~100) is too low. Switching adapters does not migrate in-flight SQLite tasks.
+
+```yaml
+sentry:
+  taskBroker:
+    store:
+      postgres:
+        host: postgres-rw
+        existingSecret: sentry-postgresql-secret
+        existingSecretKey: password
+    brokers:
+      - name: ingest
+        store:
+          adapter: postgres
 ```
 
 ## External Postgres configuration

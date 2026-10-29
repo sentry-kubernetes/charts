@@ -1,0 +1,156 @@
+{{- if and .Values.sentry.taskBroker.enabled .Values.hooks.enabled (ne (include "sentry.taskbroker.skipMigrateJob" .) "true") }}
+{{- if eq (include "sentry.taskbroker.anyPostgres" .) "true" }}
+{{- $root := . }}
+{{- $migrateBroker := dict }}
+{{- $found := false }}
+{{- range $broker := .Values.sentry.taskBroker.brokers }}
+{{- if and (not $found) (eq (include "sentry.taskbroker.adapter" (dict "broker" $broker "root" $root)) "postgres") }}
+{{- $migrateBroker = $broker }}
+{{- $found = true }}
+{{- end }}
+{{- end }}
+{{- $ctx := dict "broker" $migrateBroker "root" $root }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "sentry.fullname" . }}-taskbroker-migrate
+  labels:
+    app: sentry
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
+    release: "{{ .Release.Name }}"
+    heritage: "{{ .Release.Service }}"
+    role: taskbroker-migrate
+    {{- include "sentry.component.labels" (dict "component" "taskbroker-migrate" "ctx" .) | nindent 4 }}
+  annotations:
+    "helm.sh/hook": "post-install,pre-upgrade"
+    "helm.sh/hook-weight": "1"
+    "helm.sh/hook-delete-policy": "{{ if .Values.hooks.removeOnSuccess }}hook-succeeded,{{ end }}before-hook-creation"
+data:
+  config.yml: |
+    {{- include "sentry.taskbroker.configYml" $ctx | nindent 4 }}
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ template "sentry.fullname" . }}-taskbroker-migrate
+  labels:
+    app: sentry
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
+    release: "{{ .Release.Name }}"
+    heritage: "{{ .Release.Service }}"
+    role: taskbroker-migrate
+    {{- include "sentry.component.labels" (dict "component" "taskbroker-migrate" "ctx" .) | nindent 4 }}
+  annotations:
+    "helm.sh/hook": "post-install,pre-upgrade"
+    "helm.sh/hook-weight": "2"
+    "helm.sh/hook-delete-policy": "{{ if .Values.hooks.removeOnSuccess }}hook-succeeded,{{ end }}before-hook-creation"
+spec:
+  {{- if .Values.hooks.activeDeadlineSeconds }}
+  activeDeadlineSeconds: {{ .Values.hooks.activeDeadlineSeconds }}
+  {{- end }}
+  template:
+    metadata:
+      name: {{ template "sentry.fullname" . }}-taskbroker-migrate
+      annotations:
+        checksum/taskbrokerMigrateConfig: {{ include "sentry.taskbroker.configYml" $ctx | sha256sum }}
+        {{- if .Values.hooks.taskbrokerMigrate.podAnnotations }}
+{{ toYaml .Values.hooks.taskbrokerMigrate.podAnnotations | indent 8 }}
+        {{- end }}
+      labels:
+        app: sentry
+        release: "{{ .Release.Name }}"
+        role: taskbroker-migrate
+        {{- if .Values.hooks.taskbrokerMigrate.podLabels }}
+{{ toYaml .Values.hooks.taskbrokerMigrate.podLabels | indent 8 }}
+        {{- end }}
+    spec:
+      {{- if .Values.hooks.taskbrokerMigrate.affinity }}
+      affinity:
+{{ toYaml .Values.hooks.taskbrokerMigrate.affinity | indent 8 }}
+      {{- end }}
+      {{- if .Values.hooks.taskbrokerMigrate.nodeSelector }}
+      nodeSelector:
+{{ toYaml .Values.hooks.taskbrokerMigrate.nodeSelector | indent 8 }}
+      {{- else if .Values.global.nodeSelector }}
+      nodeSelector:
+{{ toYaml .Values.global.nodeSelector | indent 8 }}
+      {{- end }}
+      {{- if .Values.hooks.taskbrokerMigrate.tolerations }}
+      tolerations:
+{{ toYaml .Values.hooks.taskbrokerMigrate.tolerations | indent 8 }}
+      {{- else if .Values.global.tolerations }}
+      tolerations:
+{{ toYaml .Values.global.tolerations | indent 8 }}
+      {{- end }}
+      restartPolicy: {{ .Values.hooks.restartPolicy | default "Never" }}
+      {{- if .Values.images.taskbroker.imagePullSecrets }}
+      imagePullSecrets:
+{{ toYaml .Values.images.taskbroker.imagePullSecrets | indent 8 }}
+      {{- end }}
+      {{- if .Values.dnsPolicy }}
+      dnsPolicy: {{ .Values.dnsPolicy | quote }}
+      {{- end }}
+      {{- if .Values.dnsConfig }}
+      dnsConfig:
+{{ toYaml .Values.dnsConfig | indent 8 }}
+      {{- end }}
+      {{- if .Values.hooks.taskbrokerMigrate.securityContext }}
+      securityContext:
+{{ toYaml .Values.hooks.taskbrokerMigrate.securityContext | indent 8 }}
+      {{- else if .Values.hooks.securityContext }}
+      securityContext:
+{{ toYaml .Values.hooks.securityContext | indent 8 }}
+      {{- end }}
+      {{- if .Values.serviceAccount.enabled }}
+      serviceAccountName: {{ .Values.serviceAccount.name }}-taskbroker
+      {{- end }}
+      containers:
+      - name: taskbroker-migrate
+        image: "{{ template "taskbroker.image" . }}"
+        imagePullPolicy: {{ default "IfNotPresent" .Values.images.taskbroker.pullPolicy }}
+        command:
+          - /opt/taskbroker
+          - --config
+          - /etc/taskbroker/config.yml
+          - --run
+          - migrations
+        env:
+{{ include "sentry.taskbroker.kafka.env" . | indent 8 }}
+{{ include "sentry.taskbroker.postgres.env" $ctx | indent 8 }}
+        volumeMounts:
+        - name: taskbroker-config
+          mountPath: /etc/taskbroker
+          readOnly: true
+{{- if .Values.hooks.taskbrokerMigrate.volumeMounts }}
+{{ toYaml .Values.hooks.taskbrokerMigrate.volumeMounts | indent 8 }}
+{{- end }}
+{{- if .Values.global.volumeMounts }}
+{{ toYaml .Values.global.volumeMounts | indent 8 }}
+{{- end }}
+        resources:
+{{ toYaml .Values.hooks.taskbrokerMigrate.resources | indent 10 }}
+{{- if .Values.hooks.taskbrokerMigrate.containerSecurityContext }}
+        securityContext:
+{{ toYaml .Values.hooks.taskbrokerMigrate.containerSecurityContext | indent 10 }}
+{{- end }}
+{{- if .Values.hooks.taskbrokerMigrate.sidecars }}
+{{ toYaml .Values.hooks.taskbrokerMigrate.sidecars | indent 6 }}
+{{- end }}
+{{- if .Values.global.sidecars }}
+{{ toYaml .Values.global.sidecars | indent 6 }}
+{{- end }}
+      volumes:
+      - name: taskbroker-config
+        configMap:
+          name: {{ template "sentry.fullname" . }}-taskbroker-migrate
+{{- if .Values.hooks.taskbrokerMigrate.volumes }}
+{{ toYaml .Values.hooks.taskbrokerMigrate.volumes | indent 6 }}
+{{- end }}
+{{- if .Values.global.volumes }}
+{{ toYaml .Values.global.volumes | indent 6 }}
+{{- end }}
+      {{- if .Values.hooks.shareProcessNamespace }}
+      shareProcessNamespace: {{ .Values.hooks.shareProcessNamespace }}
+      {{- end }}
+{{- end }}
+{{- end }}

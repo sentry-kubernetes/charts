@@ -2,6 +2,50 @@
 
 The changelog below refers to the main `sentry` chart only.
 
+## Upgrading to Chart 34.1.1
+
+Chart `34.1.1` targets [Sentry 26.10.1](https://github.com/getsentry/self-hosted/releases/tag/26.10.1).
+
+This is a security patch for the [eMudhra Intermediate CA compromise](https://emudhra.we-have-a-problem.com/): the 26.10.1 images ship updated CA bundles, so upgrade promptly. Upstream has no patched ClickHouse image yet (it waits on Altinity); since you run your own ClickHouse, update it once a patched image is available.
+
+- With `sentry.features.enableUptime` on (feature-complete profile), uptime "Test Monitor" previews and assertion validation now work. The chart adds a `<release>-uptime-checker` Service on port `12345` (with `uptimeChecker.service.annotations`) and points Sentry's `UPTIME_REGIONS` at it. Before, Sentry skipped these calls: "Test Monitor" failed with an empty HTTP 400 and invalid assertions were saved. Scheduled checks were not affected. The uptime-checker listens on IPv4 only (`0.0.0.0`), so on IPv6-only clusters this API stays unreachable.
+- Correction to the 34.0.0 notes: `disable_https=true` has no effect on a custom S3 endpoint, so vroom could not read profiles from S3-compatible stores (opening a profile or flamegraph returned 500). Put the scheme in the endpoint instead, for example `s3://profiles?region=us-east-1&endpoint=http://minio:9000&use_path_style=true`. The `file://` default is unaffected.
+- The vroom image is now distroless (no shell; still uid/gid 1000). `kubectl exec ... sh` into vroom no longer works, and any custom `exec` probe or sidecar that relied on the vroom image's shell must change.
+- Self-hosted also renamed its gRPC CA bundle env var to `GRPC_DEFAULT_SSL_ROOTS_FILE_PATH`, bumped Valkey, nginx, pgbouncer and SeaweedFS (and disabled SeaweedFS telemetry), and changed its backup script. Those do not apply to this chart (the chart never set the gRPC variable; the rest are subcharts / external services / Compose-only scripts).
+
+## Upgrading to Chart 34.0.0
+
+Chart `34.0.0` targets [Sentry 26.10.0](https://github.com/getsentry/self-hosted/releases/tag/26.10.0) and includes [26.9.0](https://github.com/getsentry/self-hosted/releases/tag/26.9.0). No self-hosted hard stop lies between 26.8.0 and 26.10.0.
+
+### Breaking: ClickHouse 25.8 required
+
+Snuba 26.10.0 refuses to run migrations against ClickHouse older than `25.8.16`. Upgrade your ClickHouse **before** upgrading the chart. Self-hosted and this chart's CI use `altinity/clickhouse-server:25.8.28.10001.altinitystable`. Snuba now talks to ClickHouse over HTTP only, so `externalClickhouse.httpPort` (default `8123`) must be reachable.
+
+### Breaking: Sentry runs as non-root (uid/gid 999)
+
+The sentry image no longer runs as root. Pods running it get a new default pod securityContext, `sentry.podSecurityContext` (`fsGroup: 999`, `fsGroupChangePolicy: OnRootMismatch`), so Kubernetes makes the filestore and replay PVCs writable for uid 999. Each component's own `securityContext` is merged over it.
+
+- If your volume driver ignores `fsGroup` (many NFS/RWX setups), `chown -R 999:999` the filestore volume once before upgrading. This matches self-hosted's `ensure-sentry-data-ownership.sh`.
+- If your platform forbids `fsGroup: 999` (e.g. OpenShift restricted SCC), set `sentry.podSecurityContext.fsGroup` and `.fsGroupChangePolicy` to `null` and give the volume an ownership that uid 999 can write.
+
+### Breaking: vroom S3 bucket URL parameters
+
+vroom's storage library renamed the S3 URL query parameters. If `vroom.persistence.bucketString` points at an S3-compatible store, replace `s3ForcePathStyle=true` with `use_path_style=true`, and drop `disableSSL=true` in favour of an `http://` scheme in `endpoint` (see 34.1.1). The `file://` default and plain `s3://bucket` / `gs://bucket` URLs are unaffected.
+
+### Removed components
+
+Remove any overrides for these keys from your values:
+
+- `sentry.processSegments`: segments are processed by the `sentry.spans.process_segments.process_segment` task on the default TaskBroker (the `process-segments` consumer no longer exists in Sentry).
+- `sentry.genericMetricsConsumer`, `snuba.genericMetricsCountersConsumer`, `snuba.subscriptionConsumerGenericMetricsCounters`, and the `generic-metrics-subscription-results` topic on the `products` TaskBroker: Sentry, Snuba and Relay no longer produce or consume generic metrics. If you fully override `sentry.taskBroker.brokers`, drop that topic yourself.
+
+### Other
+
+- Liveness and startup probes of Kafka consumers use `python3` instead of `sh`, because the snuba image no longer ships a shell.
+- Removed generic-metrics and `buffered-segments-dlq` topics from `kafka.provisioning.topics`. Existing topics are not deleted. Optionally delete these leftover consumer groups as self-hosted does: `billing-metrics-consumer`, `snuba-gen-metrics-distributions-consumers`, `snuba-gen-metrics-gauges-consumers`, `snuba-gen-metrics-sets-consumers`.
+- Removed the `organizations:incidents` feature flag, the `generic_metrics_*` Snuba storage sets, and Relay's `metrics_generic` topic mapping.
+- Self-hosted also bumped Postgres (14 trixie, then 18), Valkey, Kafka, nginx and pgbouncer images, reworked its compose healthchecks, and changed SeaweedFS/profiles migrations. Those do not apply to this chart (subcharts / external services / Kubernetes probes).
+
 ## Upgrading to Chart 33.4.0
 
 Chart `33.4.0` targets [Sentry 26.8.0](https://github.com/getsentry/self-hosted/releases/tag/26.8.0).
