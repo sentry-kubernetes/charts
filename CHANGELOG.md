@@ -6,6 +6,8 @@ The changelog below refers to the main `sentry` chart only.
 
 Chart `34.2.0` targets [Sentry 26.10.1](https://github.com/getsentry/self-hosted/releases/tag/26.10.1).
 
+This is a security patch for the [eMudhra Intermediate CA compromise](https://emudhra.we-have-a-problem.com/): the 26.10.1 images ship updated CA bundles, so upgrade promptly. Upstream has no patched ClickHouse image yet (it waits on Altinity); since you run your own ClickHouse, update it once a patched image is available.
+
 - With `sentry.features.enableUptime` on (feature-complete profile), uptime "Test Monitor" previews and assertion validation now work. The chart adds a `<release>-uptime-checker` Service on port `12345` (with `uptimeChecker.service.annotations`) and points Sentry's `UPTIME_REGIONS` at it. Before, Sentry skipped these calls: "Test Monitor" failed with an empty HTTP 400 and invalid assertions were saved. Scheduled checks were not affected. The uptime-checker listens on IPv4 only (`0.0.0.0`), so on IPv6-only clusters this API stays unreachable.
 - Correction to the 34.0.0 notes: `disable_https=true` has no effect on a custom S3 endpoint, so vroom could not read profiles from S3-compatible stores (opening a profile or flamegraph returned 500). Put the scheme in the endpoint instead, for example `s3://profiles?region=us-east-1&endpoint=http://minio:9000&use_path_style=true`. The `file://` default is unaffected.
 - The vroom image is now distroless (no shell; still uid/gid 1000). `kubectl exec ... sh` into vroom no longer works, and any custom `exec` probe or sidecar that relied on the vroom image's shell must change.
