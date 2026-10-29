@@ -1263,6 +1263,14 @@ For an existing deployment, preserve the current Secret and key: set `sentry.exi
 Keep `hooks.preUpgrade: false` (the default) so migration Jobs run after the normal resources and Secrets have been applied. ArgoCD maps the Helm post-install/post-upgrade hooks to PostSync. Enabling pre-upgrade hooks maps them to PreSync, before new chart-managed Secrets exist.
 
 
+## Chart-managed database, mail and admin credentials
+
+Inline Postgres and mail passwords are placed in the fleet's credential Secret. Hook Jobs use a separate Secret created before the Jobs in the same Helm hook phase; Helm removes it after a successful phase. A failed or interrupted operation may leave that hook Secret behind until the next run, so remove it manually if abandoning the release.
+
+With `useArgoCdCompatibleAnnotations: true`, the Job credential Secret is a normal, managed resource applied before the Jobs, not a Sync hook. Keep `hooks.preUpgrade: false` for ArgoCD so Jobs do not run before new Secrets are applied.
+
+Helm still stores supplied values in its release metadata. Use the existing Secret options when credentials must be managed outside Helm.
+
 ## Launchpad RPC shared secret
 
 If no `launchpadTaskWorker.existingSecret` value is specified, the RPC shared secret used between `sentry-web` and the Launchpad taskworker is generated for you on the first installation and stored in a kubernetes secret.

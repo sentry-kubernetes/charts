@@ -924,6 +924,25 @@ DISCORD_PUBLIC_KEY: {{ .Values.discord.publicKey | b64enc | quote }}
 DISCORD_CLIENT_SECRET: {{ .Values.discord.clientSecret | b64enc | quote }}
 DISCORD_BOT_TOKEN: {{ .Values.discord.botToken | b64enc | quote }}
 {{- end }}
+{{- include "sentry.credentials.postgresMail.data" . }}
+{{- end -}}
+
+{{/*
+The Postgres and mail credentials the chart manages itself, in the key names the
+Sentry fleet already reads. Shared by the Sentry Secret and the hook Secret so the
+two can never disagree about a value.
+
+The conditions mirror the env blocks these replace: postgresql.enabled takes the
+password from the subchart's own Secret, and mail.password takes precedence over
+mail.existingSecret.
+*/}}
+{{- define "sentry.credentials.postgresMail.data" -}}
+{{- if and (not .Values.postgresql.enabled) .Values.externalPostgresql.password }}
+POSTGRES_PASSWORD: {{ .Values.externalPostgresql.password | toString | b64enc | quote }}
+{{- end }}
+{{- with .Values.mail.password }}
+SENTRY_EMAIL_PASSWORD: {{ . | toString | b64enc | quote }}
+{{- end }}
 {{- end -}}
 
 {{/*
@@ -935,15 +954,16 @@ reference a Secret that was not rendered.
 {{- if (include "sentry.credentials.sentryEnv.data" . | trim) }}true{{ end }}
 {{- end -}}
 
-{{/*
-envFrom entry for the chart-managed Sentry credential Secret. The reference is
-optional because every consumer of these variables already treats them as
-absent-by-default: the SENTRY_OPTIONS guards omit the option entirely and the
-S3 reads fall back to an empty string. Tolerating an absent Secret therefore
-degrades to the same "not configured" path rather than blocking pod startup,
-which also lets pre-upgrade hooks run before the Secret is applied.
-*/}}
 {{- define "sentry.envFrom" -}}
+{{- if (include "sentry.credentials.sentryEnv.enabled" .) -}}
+envFrom:
+  - secretRef:
+      name: {{ template "sentry.fullname" . }}-sentry-env
+{{- end -}}
+{{- end -}}
+
+{{/* Pre-upgrade Jobs may run before a new fleet Secret is applied. */}}
+{{- define "sentry.hooks.envFrom" -}}
 {{- if (include "sentry.credentials.sentryEnv.enabled" .) -}}
 envFrom:
   - secretRef:
@@ -960,6 +980,53 @@ credential is chart-managed.
 */}}
 {{- define "sentry.config.checksum" -}}
 {{- printf "%s%s" (include "sentry.config" .) (include "sentry.credentials.sentryEnv.data" . | trim) | sha256sum -}}
+{{- end -}}
+
+{{/*
+Credentials the hook Jobs need before the release's own resources exist.
+
+With hooks.preUpgrade enabled, sentry-db-init and user-create run as pre-upgrade
+hooks, which Helm executes before it applies the release manifest. A credential
+held only in a normal Secret is therefore unavailable to them on the upgrade that
+first introduces it, and the Job fails before the Secret it needs is ever applied.
+This Secret is a hook itself, at a weight below every Job that reads it, so it is
+always in place first.
+*/}}
+{{- define "sentry.credentials.hooksEnv.data" -}}
+{{- include "sentry.credentials.postgresMail.data" . }}
+{{- if and .Values.user.create (not .Values.user.existingSecret) .Values.user.password }}
+ADMIN_PASSWORD: {{ .Values.user.password | toString | b64enc | quote }}
+{{- end }}
+{{- end -}}
+
+{{- define "sentry.credentials.hooksEnv.enabled" -}}
+{{- if and .Values.hooks.enabled (include "sentry.credentials.hooksEnv.data" . | trim) }}true{{ end }}
+{{- end -}}
+
+{{- define "sentry.hooks.env" -}}
+{{- $name := printf "%s-hooks-env" (include "sentry.fullname" .) -}}
+{{- range $key, $_ := (include "sentry.credentials.postgresMail.data" . | fromYaml) }}
+- name: {{ $key }}
+  valueFrom:
+    secretKeyRef:
+      name: {{ $name }}
+      key: {{ $key }}
+{{- end }}
+{{- end -}}
+
+{{/*
+The Postgres password pgbouncer connects with. Kept in its own Secret rather than
+sharing the Sentry one so pgbouncer is not handed S3 keys and integration tokens
+it has no use for.
+*/}}
+{{- define "sentry.credentials.pgbouncerEnv.data" -}}
+{{- if and (not .Values.postgresql.enabled) .Values.externalPostgresql.password }}
+POSTGRESQL_PASSWORD: {{ .Values.externalPostgresql.password | toString | b64enc | quote }}
+{{- end }}
+{{- end -}}
+
+{{- define "sentry.credentials.pgbouncerEnv.enabled" -}}
+{{- if (include "sentry.credentials.pgbouncerEnv.data" . | trim) }}true{{ end }}
 {{- end -}}
 
 {{/*
@@ -1015,8 +1082,8 @@ Set external Postgresql password from existingSecret
       name: {{ default (include "sentry.postgresql.fullname" .) .Values.postgresql.auth.existingSecret }}
       key: {{ default "postgres-password" .Values.postgresql.auth.secretKeys.adminPasswordKey }}
 {{- else if .Values.externalPostgresql.password }}
-- name: POSTGRES_PASSWORD
-  value: {{ .Values.externalPostgresql.password | quote }}
+{{- /* Supplied by the chart-managed Secret through envFrom. The branch is kept so
+       that a plaintext password still takes precedence over existingSecret. */}}
 {{- else if .Values.externalPostgresql.existingSecret }}
 - name: POSTGRES_PASSWORD
   valueFrom:
@@ -1213,8 +1280,8 @@ Set google application
 Set sentry email password
 */}}
 {{- if .Values.mail.password }}
-- name: SENTRY_EMAIL_PASSWORD
-  value: {{ .Values.mail.password | quote }}
+{{- /* Supplied by the chart-managed Secret through envFrom. The branch is kept so
+       that a plaintext password still takes precedence over existingSecret. */}}
 {{- else if .Values.mail.existingSecret }}
 - name: SENTRY_EMAIL_PASSWORD
   valueFrom:
@@ -1407,8 +1474,8 @@ Pgbouncer environment variables
       name: {{ default (include "sentry.postgresql.fullname" .) .Values.postgresql.auth.existingSecret }}
       key: {{ default "postgres-password" .Values.postgresql.auth.secretKeys.adminPasswordKey }}
 {{- else if .Values.externalPostgresql.password }}
-- name: POSTGRESQL_PASSWORD
-  value: {{ .Values.externalPostgresql.password | quote }}
+{{- /* Supplied by the chart-managed Secret through envFrom. The branch is kept so
+       that a plaintext password still takes precedence over existingSecret. */}}
 {{- else if .Values.externalPostgresql.existingSecret }}
 - name: POSTGRESQL_PASSWORD
   valueFrom:

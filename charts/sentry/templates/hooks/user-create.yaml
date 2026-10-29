@@ -99,6 +99,7 @@ spec:
         env:
 {{ include "sentry.env" . | indent 8 }}
 {{ include "sentry.env.nodestore-s3" . | indent 8 }}
+{{ include "sentry.hooks.env" . | indent 8 }}
         {{- if .Values.user.existingSecret }}
         - name: ADMIN_PASSWORD
           valueFrom:
@@ -107,12 +108,15 @@ spec:
               key: {{ default "admin-password" .Values.user.existingSecretKey }}
         {{- else if .Values.user.password }}
         - name: ADMIN_PASSWORD
-          value: {{ .Values.user.password | quote }}
+          valueFrom:
+            secretKeyRef:
+              name: {{ template "sentry.fullname" . }}-hooks-env
+              key: ADMIN_PASSWORD
         {{- end }}
         {{- if .Values.hooks.dbInit.env }}
 {{ toYaml .Values.hooks.dbInit.env | indent 8 }}
         {{- end }}
-        {{- with include "sentry.envFrom" . }}{{ . | nindent 8 }}{{- end }}
+        {{- with include "sentry.hooks.envFrom" . }}{{ . | nindent 8 }}{{- end }}
         volumeMounts:
         - mountPath: /etc/sentry
           name: config
