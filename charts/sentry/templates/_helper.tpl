@@ -993,7 +993,7 @@ always in place first.
 */}}
 {{- define "sentry.credentials.hooksEnv.data" -}}
 {{- include "sentry.credentials.postgresMail.data" . }}
-{{- if and (not .Values.user.existingSecret) .Values.user.password }}
+{{- if and .Values.user.create (not .Values.user.existingSecret) .Values.user.password }}
 ADMIN_PASSWORD: {{ .Values.user.password | toString | b64enc | quote }}
 {{- end }}
 {{- end -}}
@@ -1002,32 +1002,15 @@ ADMIN_PASSWORD: {{ .Values.user.password | toString | b64enc | quote }}
 {{- if and .Values.hooks.enabled (include "sentry.credentials.hooksEnv.data" . | trim) }}true{{ end }}
 {{- end -}}
 
-{{/*
-The full envFrom block for the hook Jobs, which read from both the Sentry Secret
-and the hook Secret. Emitted as one block because a container may only have a
-single envFrom. Reduces to exactly sentry.envFrom when no hook credential is
-chart-managed, so hook Jobs that gain nothing here are left untouched.
-
-Both references are optional for the same reason as in sentry.envFrom: either
-Secret exists only when the chart manages a credential that belongs in it, and a
-missing reference must not block the pod from starting.
-*/}}
-{{- define "sentry.hooks.envFrom" -}}
-{{- $sentryEnv := include "sentry.credentials.sentryEnv.enabled" . -}}
-{{- $hooksEnv := include "sentry.credentials.hooksEnv.enabled" . -}}
-{{- if or $sentryEnv $hooksEnv -}}
-envFrom:
-{{- if $sentryEnv }}
-  - secretRef:
-      name: {{ template "sentry.fullname" . }}-sentry-env
-      optional: true
+{{- define "sentry.hooks.env" -}}
+{{- $name := printf "%s-hooks-env" (include "sentry.fullname" .) -}}
+{{- range $key, $_ := (include "sentry.credentials.postgresMail.data" . | fromYaml) }}
+- name: {{ $key }}
+  valueFrom:
+    secretKeyRef:
+      name: {{ $name }}
+      key: {{ $key }}
 {{- end }}
-{{- if $hooksEnv }}
-  - secretRef:
-      name: {{ template "sentry.fullname" . }}-hooks-env
-      optional: true
-{{- end }}
-{{- end -}}
 {{- end -}}
 
 {{/*

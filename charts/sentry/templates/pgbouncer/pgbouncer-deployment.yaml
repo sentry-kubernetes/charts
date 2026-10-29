@@ -51,7 +51,6 @@ spec:
         envFrom:
           - secretRef:
               name: {{ template "sentry.fullname" . }}-pgbouncer-env
-              optional: true
         {{- end }}
         ports:
           - containerPort: 5432
