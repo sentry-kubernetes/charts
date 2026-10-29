@@ -1401,6 +1401,14 @@ vroom:
           key: s3-secret-access-key
 ```
 
+For an S3-compatible store (MinIO, SeaweedFS, Ceph, …), put the scheme in `endpoint`. `disable_https` has no effect on a custom endpoint, and without a scheme vroom cannot read profiles back (the UI returns 500 when opening a profile):
+
+```yaml
+vroom:
+  persistence:
+    bucketString: "s3://sentry-profiles?region=us-east-1&endpoint=http://minio:9000&use_path_style=true"
+```
+
 GCS example:
 
 ```yaml
