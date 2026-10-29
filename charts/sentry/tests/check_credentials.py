@@ -51,6 +51,10 @@ for argo in [False, True]:
                 assert job["metadata"]["annotations"]["helm.sh/hook"] == annotations["helm.sh/hook"]
                 assert int(annotations["helm.sh/hook-weight"]) < int(job["metadata"]["annotations"]["helm.sh/hook-weight"])
         assert "ADMIN_PASSWORD" not in env(find(docs, "-db-init"))
+        hook_sources = find(docs, "-db-init")["spec"]["template"]["spec"]["containers"][0]["envFrom"]
+        assert all(e["secretRef"]["name"].endswith("-sentry-env") for e in hook_sources)
+        fleet_sources = find(docs, "-web")["spec"]["template"]["spec"]["containers"][0]["envFrom"]
+        assert all(not e["secretRef"].get("optional", False) for e in fleet_sources)
         assert env(find(docs, "-user-create"))["ADMIN_PASSWORD"]["valueFrom"]["secretKeyRef"]["key"] == "ADMIN_PASSWORD"
         pod = find(docs, "-pgbouncer")["spec"]["template"]["spec"]
         assert all(not e["secretRef"].get("optional", False) for e in pod["containers"][0]["envFrom"])

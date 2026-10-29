@@ -1255,6 +1255,14 @@ If no `sentry.existingSecret` value is specified, for your security, the [`syste
 If `sentry.existingSecret` / `sentry.existingSecretKey` values are provided, those secrets will be used.
 
 
+## Chart-managed database, mail and admin credentials
+
+Inline Postgres and mail passwords are placed in the fleet's credential Secret. Hook Jobs use a separate Secret created before the Jobs in the same Helm hook phase; Helm removes it after a successful phase. A failed or interrupted operation may leave that hook Secret behind until the next run, so remove it manually if abandoning the release.
+
+With `useArgoCdCompatibleAnnotations: true`, the Job credential Secret is a normal, managed resource applied before the Jobs, not a Sync hook. Keep `hooks.preUpgrade: false` for ArgoCD so Jobs do not run before new Secrets are applied.
+
+Helm still stores supplied values in its release metadata. Use the existing Secret options when credentials must be managed outside Helm.
+
 ## Launchpad RPC shared secret
 
 If no `launchpadTaskWorker.existingSecret` value is specified, the RPC shared secret used between `sentry-web` and the Launchpad taskworker is generated for you on the first installation and stored in a kubernetes secret.
