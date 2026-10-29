@@ -1,5 +1,36 @@
 # Changelog
 
+## [34.1.1](https://github.com/sentry-kubernetes/charts/compare/sentry-v34.1.0...sentry-v34.1.1) (2026-10-27)
+
+
+### Bug Fixes
+
+* IPv6 listener for sentry, taskbroker and snuba ([#2294](https://github.com/sentry-kubernetes/charts/issues/2294)) ([ae45e22](https://github.com/sentry-kubernetes/charts/commit/ae45e22eaef00a3a0cd4f780b8644551b5fbd002))
+
+## [34.1.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v34.0.0...sentry-v34.1.0) (2026-10-25)
+
+
+### Features
+
+* **charts/sentry/relay:** allow overriding resources for the configRender init container ([#2312](https://github.com/sentry-kubernetes/charts/issues/2312)) ([bff2535](https://github.com/sentry-kubernetes/charts/commit/bff25356e526506c3ab921de57435db72f249219))
+* **sentry:** add support for customizing the init container image in the external Kafka provisioning job ([#2311](https://github.com/sentry-kubernetes/charts/issues/2311)) ([7d48b15](https://github.com/sentry-kubernetes/charts/commit/7d48b154d050eb461963c28b5c85ae802354643d))
+
+## [34.0.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v33.8.0...sentry-v34.0.0) (2026-10-22)
+
+
+### ⚠ BREAKING CHANGES
+
+* upgrade to sentry v26.10.0 ([#2308](https://github.com/sentry-kubernetes/charts/issues/2308))
+
+### Features
+
+* upgrade to sentry v26.10.0 ([#2308](https://github.com/sentry-kubernetes/charts/issues/2308)) ([9c25207](https://github.com/sentry-kubernetes/charts/commit/9c252073c931e91aede5a4229c79734e13525eb2))
+
+
+### Bug Fixes
+
+* **charts/sentry:** change ConfigMap creation priority in taskbroker for first-time installation ([#2306](https://github.com/sentry-kubernetes/charts/issues/2306)) ([2a8c106](https://github.com/sentry-kubernetes/charts/commit/2a8c1063ef17f7b8adfb492080bf5330769e41db))
+
 ## [33.8.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v33.7.0...sentry-v33.8.0) (2026-08-24)
 
 
