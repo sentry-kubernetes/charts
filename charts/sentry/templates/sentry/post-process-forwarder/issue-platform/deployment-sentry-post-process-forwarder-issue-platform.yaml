@@ -79,10 +79,7 @@ spec:
       dnsConfig:
 {{ toYaml .Values.dnsConfig | indent 8 }}
       {{- end }}
-      {{- if .Values.sentry.postProcessForwardIssuePlatform.securityContext }}
-      securityContext:
-{{ toYaml .Values.sentry.postProcessForwardIssuePlatform.securityContext | indent 8 }}
-      {{- end }}
+      {{- include "sentry.podSecurityContext" (dict "securityContext" .Values.sentry.postProcessForwardIssuePlatform.securityContext "ctx" .) | nindent 6 }}
       initContainers:
 {{ include "sentry.initContainer.nodestore-s3" . | indent 6 }}
       containers:

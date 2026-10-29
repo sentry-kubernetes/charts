@@ -88,6 +88,8 @@ spec:
 {{- end }}
         image: "{{ template "uptimeChecker.image" . }}"
         imagePullPolicy: {{ default "IfNotPresent" .Values.images.uptimeChecker.pullPolicy }}
+        ports:
+        - containerPort: {{ template "uptimeChecker.port" }}
         env:
 {{- include "uptimeChecker.env" . | nindent 8 }}
 {{- if .Values.uptimeChecker.env }}

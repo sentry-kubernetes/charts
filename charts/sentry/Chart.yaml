@@ -2,13 +2,13 @@ apiVersion: v2
 name: sentry
 description: A Helm chart for Kubernetes
 type: application
-version: 33.8.0
+version: 34.1.1
 # renovate image=ghcr.io/getsentry/sentry
-appVersion: 26.8.0
+appVersion: 26.10.1
 dependencies:
   - name: memcached
     repository: oci://registry-1.docker.io/cloudpirates
-    version: 0.9.3
+    version: 0.14.11
   - name: redis
     repository: oci://registry-1.docker.io/bitnamicharts
     version: 17.11.3
@@ -23,7 +23,7 @@ dependencies:
     condition: postgresql.enabled
   - name: nginx
     repository: oci://registry-1.docker.io/cloudpirates
-    version: 0.7.0
+    version: 0.16.10
     condition: nginx.enabled
 maintainers:
   - name: sentry-kubernetes

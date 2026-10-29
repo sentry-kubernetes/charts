@@ -17,7 +17,7 @@ metadata:
     meta.helm.sh/release-name: "{{ $root.Release.Name }}"
     meta.helm.sh/release-namespace: "{{ $root.Release.Namespace }}"
     "helm.sh/hook": "post-install,post-upgrade"
-    "helm.sh/hook-weight": "3"
+    "helm.sh/hook-weight": "2"
   {{- end }}
 data:
   config.yml: |

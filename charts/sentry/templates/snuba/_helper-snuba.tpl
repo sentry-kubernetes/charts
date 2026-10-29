@@ -10,6 +10,10 @@ settings.py: |
 
   DEBUG = env("DEBUG", "0").lower() in ("1", "true")
 
+{{- if .Values.ipv6 }}
+  HOST = "::"
+{{- end }}
+
 {{- if .Values.kafka.enabled -}}
   {{ if .Values.kafka.provisioning.enabled }}
 
@@ -59,15 +63,11 @@ settings.py: |
           "profiles",
           "functions",
           "replays",
-          "generic_metrics_sets",
-          "generic_metrics_distributions",
           "search_issues",
-          "generic_metrics_counters",
           "spans",
           "events_analytics_platform",
           "events_analytics_platform_ro",
           "group_attributes",
-          "generic_metrics_gauges",
           "metrics_summaries",
           "profile_chunks",
       },
