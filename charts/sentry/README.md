@@ -1254,6 +1254,14 @@ If no `sentry.existingSecret` value is specified, for your security, the [`syste
 
 If `sentry.existingSecret` / `sentry.existingSecretKey` values are provided, those secrets will be used.
 
+### ArgoCD
+
+Set `useArgoCdCompatibleAnnotations: true` and use a stable, externally managed Secret with `sentry.existingSecret` when deploying through ArgoCD. Without it, each Helm render generates a new key, which can invalidate sessions, CSRF tokens and signed links on sync. Removing the Secret's Sync hook annotation does not prevent this rotation.
+
+For an existing deployment, preserve the current Secret and key: set `sentry.existingSecret` to its name and manage it outside the chart before syncing. Do not generate a replacement key. If ArgoCD already tracks that Secret, make sure pruning will not delete it when the chart stops rendering it.
+
+Keep `hooks.preUpgrade: false` (the default) so migration Jobs run after the normal resources and Secrets have been applied. ArgoCD maps the Helm post-install/post-upgrade hooks to PostSync. Enabling pre-upgrade hooks maps them to PreSync, before new chart-managed Secrets exist.
+
 
 ## Launchpad RPC shared secret
 
