@@ -9,10 +9,12 @@
 {{- define "snuba.port" -}}1218{{- end -}}
 {{- define "symbolicator.port" -}}3021{{- end -}}
 {{- define "vroom.port" -}}8085{{- end -}}
+{{- define "uptimeChecker.port" -}}12345{{- end -}}
 
 {{/*
   livenessProbe block for kafka-consumer / worker deployments that expose a
   file-based healthcheck via `--healthcheck-file-path` / `--health-check-file`.
+  Uses python3, not sh: the snuba image ships without a shell since 26.10.0.
 
   Arguments (dict):
     livenessProbe:   the workload's .Values.<x>.livenessProbe value
@@ -28,12 +30,43 @@
 livenessProbe:
   exec:
     command:
-      - sh
+      - python3
       - -c
-      - 'test $(($(date +%s) - $(stat -c %Y {{ $file }} 2>/dev/null || echo 0))) -lt {{ $fresh }}'
+      - 'import os, sys, time; sys.exit(time.time() - os.path.getmtime("{{ $file }}") >= {{ $fresh }})'
 {{- with $probeConfig }}
 {{- toYaml . | nindent 2 }}
 {{- end }}
+{{- end -}}
+{{- end -}}
+
+{{/*
+  Pod securityContext for pods running the sentry image: the component's
+  securityContext merged over .Values.sentry.podSecurityContext (component keys win).
+  The sentry image runs as uid/gid 999 since 26.10.0; fsGroup keeps the filestore
+  and replay PVCs writable.
+  Args: securityContext (the component's value), ctx (root context).
+*/}}
+{{- define "sentry.podSecurityContext" -}}
+{{- $sc := merge (deepCopy (default dict .securityContext)) (deepCopy (default dict .ctx.Values.sentry.podSecurityContext)) -}}
+{{- if $sc }}
+securityContext:
+{{ toYaml $sc | indent 2 }}
+{{- end }}
+{{- end -}}
+
+{{/*
+  Recreate when replicas=1 (single-partition consumer, sentry-kubernetes/charts#2238),
+  else RollingUpdate. Explicit strategyType always wins.
+  Args: strategyType, replicas, autoscaling (all from .Values.<x>).
+*/}}
+{{- define "sentry.kafkaConsumer.strategyType" -}}
+{{- $autoscaling := .autoscaling | default dict -}}
+{{- if .strategyType -}}
+{{- .strategyType -}}
+{{- else if and (eq (.replicas | int) 1) (not $autoscaling.enabled) -}}
+Recreate
+{{- else -}}
+RollingUpdate
 {{- end -}}
 {{- end -}}
 
@@ -56,9 +89,9 @@ livenessProbe:
 startupProbe:
   exec:
     command:
-      - test
-      - -f
-      - {{ $file }}
+      - python3
+      - -c
+      - 'import os, sys; sys.exit(not os.path.exists("{{ $file }}"))'
 {{- with $probeConfig }}
 {{- toYaml . | nindent 2 }}
 {{- end }}
@@ -93,6 +126,14 @@ startupProbe:
 {{- default "1.38.0" .Values.hooks.dbCheck.image.tag -}}
 {{- end -}}
 
+{{- define "relay.configRender.image" -}}
+{{- $configRender := default (dict) .Values.relay.configRender -}}
+{{- $image := default (dict) $configRender.image -}}
+{{- default "busybox" $image.repository -}}
+:
+{{- default "1.36" $image.tag -}}
+{{- end -}}
+
 {{- define "vroom.image" -}}
 {{- default "ghcr.io/getsentry/vroom" .Values.images.vroom.repository -}}
 :
@@ -118,11 +159,27 @@ startupProbe:
 {{- end -}}
 
 {{- define "launchpad.secretName" -}}
-{{- printf "%s-launchpad-secret" (include "sentry.fullname" .) -}}
+{{- default (printf "%s-launchpad-secret" (include "sentry.fullname" .)) .Values.launchpadTaskWorker.existingSecret -}}
+{{- end -}}
+
+{{- define "launchpad.secretKey" -}}
+{{- default "rpc-shared-secret" .Values.launchpadTaskWorker.existingSecretKey -}}
 {{- end -}}
 
 {{- define "launchpad.enabled" -}}
 {{- if and (has "feature-complete" .Values.profiles) .Values.launchpadTaskWorker.enabled .Values.sentry.taskBroker.enabled -}}true{{- end -}}
+{{- end -}}
+
+{{/*
+GeoIP credentials: the updater Job is enabled by either a plaintext accountID or an
+externally-managed Secret, and reads whichever Secret is in play via envFrom.
+*/}}
+{{- define "sentry.geodata.enabled" -}}
+{{- if or .Values.geodata.accountID .Values.geodata.existingSecret -}}true{{- end -}}
+{{- end -}}
+
+{{- define "sentry.geodata.secretName" -}}
+{{- default (printf "%s-geoip-env" (include "sentry.fullname" .)) .Values.geodata.existingSecret -}}
 {{- end -}}
 
 {{/*
@@ -666,51 +723,30 @@ Set external Clickhouse password from existingSecret
 {{- end -}}
 
 {{/*
-TaskBroker Kafka environment variables.
-The TaskBroker binary (Rust) reads Kafka config from TASKBROKER_KAFKA_* prefixed env vars,
-not the standard KAFKA_SASL_* vars used by Python-based Sentry/Snuba components.
-This helper auto-injects the required TASKBROKER_KAFKA_* and TASKBROKER_KAFKA_DEADLETTER_*
-env vars when externalKafka is configured with SASL authentication.
-See: https://github.com/sentry-kubernetes/charts/issues/2088
+TaskBroker Kafka cluster address/auth via TASKBROKER_KAFKA_CLUSTERS__DEFAULT__*.
+Topic maps (including hyphenated names) live in the mounted config.yml ConfigMap.
+See: https://github.com/getsentry/taskbroker/blob/main/docs/kafka-config-migration.md
 */}}
 {{- define "sentry.taskbroker.kafka.env" -}}
-{{- if not .Values.kafka.enabled }}
-{{- $securityProtocol := include "sentry.kafka.security_protocol" . -}}
-{{- $bootstrapServers := include "sentry.kafka.bootstrap_servers_string" . -}}
-- name: TASKBROKER_KAFKA_SECURITY_PROTOCOL
-  value: {{ $securityProtocol | quote }}
-- name: TASKBROKER_KAFKA_DEADLETTER_CLUSTER
-  value: {{ $bootstrapServers | quote }}
-- name: TASKBROKER_KAFKA_DEADLETTER_SECURITY_PROTOCOL
+- name: TASKBROKER_KAFKA_CLUSTERS__DEFAULT__ADDRESS
+  value: {{ include "sentry.kafka.bootstrap_servers_string" . | quote }}
+{{ if not .Values.kafka.enabled -}}
+{{- $securityProtocol := include "sentry.kafka.security_protocol" . }}
+- name: TASKBROKER_KAFKA_CLUSTERS__DEFAULT__SECURITY_PROTOCOL
   value: {{ $securityProtocol | quote }}
 {{- if regexMatch "^SASL_" $securityProtocol }}
 {{- if .Values.externalKafka.sasl.existingSecret }}
-- name: TASKBROKER_KAFKA_SASL_MECHANISM
+- name: TASKBROKER_KAFKA_CLUSTERS__DEFAULT__SASL_MECHANISM
   valueFrom:
     secretKeyRef:
       name: {{ .Values.externalKafka.sasl.existingSecret }}
       key: {{ default "mechanism" .Values.externalKafka.sasl.existingSecretKeys.mechanism }}
-- name: TASKBROKER_KAFKA_SASL_USERNAME
+- name: TASKBROKER_KAFKA_CLUSTERS__DEFAULT__SASL_USERNAME
   valueFrom:
     secretKeyRef:
       name: {{ .Values.externalKafka.sasl.existingSecret }}
       key: {{ default "username" .Values.externalKafka.sasl.existingSecretKeys.username }}
-- name: TASKBROKER_KAFKA_SASL_PASSWORD
-  valueFrom:
-    secretKeyRef:
-      name: {{ .Values.externalKafka.sasl.existingSecret }}
-      key: {{ default "password" .Values.externalKafka.sasl.existingSecretKeys.password }}
-- name: TASKBROKER_KAFKA_DEADLETTER_SASL_MECHANISM
-  valueFrom:
-    secretKeyRef:
-      name: {{ .Values.externalKafka.sasl.existingSecret }}
-      key: {{ default "mechanism" .Values.externalKafka.sasl.existingSecretKeys.mechanism }}
-- name: TASKBROKER_KAFKA_DEADLETTER_SASL_USERNAME
-  valueFrom:
-    secretKeyRef:
-      name: {{ .Values.externalKafka.sasl.existingSecret }}
-      key: {{ default "username" .Values.externalKafka.sasl.existingSecretKeys.username }}
-- name: TASKBROKER_KAFKA_DEADLETTER_SASL_PASSWORD
+- name: TASKBROKER_KAFKA_CLUSTERS__DEFAULT__SASL_PASSWORD
   valueFrom:
     secretKeyRef:
       name: {{ .Values.externalKafka.sasl.existingSecret }}
@@ -720,21 +756,15 @@ See: https://github.com/sentry-kubernetes/charts/issues/2088
 {{- $saslUsername := include "sentry.kafka.sasl_username" . -}}
 {{- $saslPassword := include "sentry.kafka.sasl_password" . -}}
 {{- if not (eq "None" $saslMechanism) }}
-- name: TASKBROKER_KAFKA_SASL_MECHANISM
-  value: {{ $saslMechanism | quote }}
-- name: TASKBROKER_KAFKA_DEADLETTER_SASL_MECHANISM
+- name: TASKBROKER_KAFKA_CLUSTERS__DEFAULT__SASL_MECHANISM
   value: {{ $saslMechanism | quote }}
 {{- end }}
 {{- if not (eq "None" $saslUsername) }}
-- name: TASKBROKER_KAFKA_SASL_USERNAME
-  value: {{ $saslUsername | quote }}
-- name: TASKBROKER_KAFKA_DEADLETTER_SASL_USERNAME
+- name: TASKBROKER_KAFKA_CLUSTERS__DEFAULT__SASL_USERNAME
   value: {{ $saslUsername | quote }}
 {{- end }}
 {{- if not (eq "None" $saslPassword) }}
-- name: TASKBROKER_KAFKA_SASL_PASSWORD
-  value: {{ $saslPassword | quote }}
-- name: TASKBROKER_KAFKA_DEADLETTER_SASL_PASSWORD
+- name: TASKBROKER_KAFKA_CLUSTERS__DEFAULT__SASL_PASSWORD
   value: {{ $saslPassword | quote }}
 {{- end }}
 {{- end }}
@@ -759,12 +789,47 @@ See: https://github.com/sentry-kubernetes/charts/issues/2088
   valueFrom:
     secretKeyRef:
       name: {{ include "launchpad.secretName" . }}
-      key: rpc-shared-secret
+      key: {{ include "launchpad.secretKey" . }}
 {{- end -}}
 
 {{- define "uptimeChecker.env" -}}
 - name: UPTIME_CHECKER_RESULTS_KAFKA_CLUSTER
   value: {{ include "sentry.kafka.bootstrap_servers_string" . | quote }}
+{{- if and (not .Values.kafka.enabled) .Values.externalKafka.sasl.existingSecret }}
+- name: UPTIME_CHECKER_KAFKA_SASL_MECHANISM
+  valueFrom:
+    secretKeyRef:
+      name: {{ .Values.externalKafka.sasl.existingSecret }}
+      key: {{ default "mechanism" .Values.externalKafka.sasl.existingSecretKeys.mechanism }}
+- name: UPTIME_CHECKER_KAFKA_SASL_USERNAME
+  valueFrom:
+    secretKeyRef:
+      name: {{ .Values.externalKafka.sasl.existingSecret }}
+      key: {{ default "username" .Values.externalKafka.sasl.existingSecretKeys.username }}
+- name: UPTIME_CHECKER_KAFKA_SASL_PASSWORD
+  valueFrom:
+    secretKeyRef:
+      name: {{ .Values.externalKafka.sasl.existingSecret }}
+      key: {{ default "password" .Values.externalKafka.sasl.existingSecretKeys.password }}
+{{- else }}
+{{- $sentryKafkaSaslMechanism := include "sentry.kafka.sasl_mechanism" . -}}
+{{- if not (eq "None" $sentryKafkaSaslMechanism) }}
+- name: UPTIME_CHECKER_KAFKA_SASL_MECHANISM
+  value: {{ $sentryKafkaSaslMechanism | quote }}
+{{- end }}
+{{- $sentryKafkaSaslUsername := include "sentry.kafka.sasl_username" . -}}
+{{- if not (eq "None" $sentryKafkaSaslUsername) }}
+- name: UPTIME_CHECKER_KAFKA_SASL_USERNAME
+  value: {{ $sentryKafkaSaslUsername | quote }}
+{{- end }}
+{{- $sentryKafkaSaslPassword := include "sentry.kafka.sasl_password" . -}}
+{{- if not (eq "None" $sentryKafkaSaslPassword) }}
+- name: UPTIME_CHECKER_KAFKA_SASL_PASSWORD
+  value: {{ $sentryKafkaSaslPassword | quote }}
+{{- end }}
+{{- end }}
+- name: UPTIME_CHECKER_KAFKA_SECURITY_PROTOCOL
+  value: {{ include "sentry.kafka.security_protocol" . | lower | quote }}
 {{- /* Expose Redis password from secret if configured to avoid rendering secrets inline */}}
 {{- if and (.Values.redis.enabled) (.Values.redis.auth.existingSecret) }}
 - name: HELM_CHARTS_SENTRY_REDIS_PASSWORD_CONTROLLED
@@ -781,6 +846,120 @@ See: https://github.com/sentry-kubernetes/charts/issues/2088
 {{- end }}
 - name: UPTIME_CHECKER_REDIS_HOST
   value: {{ include "sentry.redis.uri" . | quote }}
+{{- end -}}
+
+{{/*
+Sentry-fleet credentials that the chart manages itself.
+
+Only plaintext values appear here. When a credential is supplied through an
+existingSecret, sentry.env references that Secret directly and the key is
+omitted, so the two paths are never both active for the same credential.
+
+Consumed by templates/sentry/secret-sentry-env.yaml and, through
+sentry.config.checksum, by the pod annotations that roll workloads when a
+plaintext credential is rotated.
+*/}}
+{{- define "sentry.credentials.sentryEnv.data" -}}
+{{- if and (eq (default "" .Values.filestore.backend) "s3") (not .Values.filestore.s3.existingSecret) }}
+{{- with .Values.filestore.s3.accessKey }}
+S3_ACCESS_KEY_ID: {{ . | b64enc | quote }}
+{{- end }}
+{{- with .Values.filestore.s3.secretKey }}
+S3_SECRET_ACCESS_KEY: {{ . | b64enc | quote }}
+{{- end }}
+{{- end }}
+{{- $replayS3 := .Values.replay.storage.s3 | default dict }}
+{{- if and (eq (default "" .Values.replay.storage.backend) "s3") (not $replayS3.existingSecret) }}
+{{- with $replayS3.accessKey }}
+REPLAY_S3_ACCESS_KEY_ID: {{ . | b64enc | quote }}
+{{- end }}
+{{- with $replayS3.secretKey }}
+REPLAY_S3_SECRET_ACCESS_KEY: {{ . | b64enc | quote }}
+{{- end }}
+{{- end }}
+{{- $profilesS3 := .Values.filestore.profiles.s3 | default dict }}
+{{- if and (eq (default "" .Values.filestore.profiles.backend) "s3") (not $profilesS3.existingSecret) }}
+{{- with $profilesS3.accessKey }}
+PROFILES_S3_ACCESS_KEY_ID: {{ . | b64enc | quote }}
+{{- end }}
+{{- with $profilesS3.secretKey }}
+PROFILES_S3_SECRET_ACCESS_KEY: {{ . | b64enc | quote }}
+{{- end }}
+{{- end }}
+{{- $nodestoreS3 := .Values.nodestore.s3 | default dict }}
+{{- if and (eq (default "" .Values.nodestore.backend) "s3") (not $nodestoreS3.existingSecret) }}
+{{- with $nodestoreS3.accessKeyId }}
+NODESTORE_S3_ACCESS_KEY_ID: {{ . | b64enc | quote }}
+{{- end }}
+{{- with $nodestoreS3.secretAccessKey }}
+NODESTORE_S3_SECRET_ACCESS_KEY: {{ . | b64enc | quote }}
+{{- end }}
+{{- end }}
+{{- if not .Values.github.existingSecret }}
+{{- with .Values.github.privateKey }}
+GITHUB_APP_PRIVATE_KEY: {{ . | b64enc | quote }}
+{{- end }}
+{{- with .Values.github.webhookSecret }}
+GITHUB_APP_WEBHOOK_SECRET: {{ . | b64enc | quote }}
+{{- end }}
+{{- with .Values.github.clientId }}
+GITHUB_APP_CLIENT_ID: {{ . | b64enc | quote }}
+{{- end }}
+{{- with .Values.github.clientSecret }}
+GITHUB_APP_CLIENT_SECRET: {{ . | b64enc | quote }}
+{{- end }}
+{{- end }}
+{{- if and (not .Values.google.existingSecret) .Values.google.clientId .Values.google.clientSecret }}
+GOOGLE_AUTH_CLIENT_ID: {{ .Values.google.clientId | b64enc | quote }}
+GOOGLE_AUTH_CLIENT_SECRET: {{ .Values.google.clientSecret | b64enc | quote }}
+{{- end }}
+{{- if and (not .Values.slack.existingSecret) .Values.slack.clientId .Values.slack.clientSecret .Values.slack.signingSecret }}
+SLACK_CLIENT_ID: {{ .Values.slack.clientId | b64enc | quote }}
+SLACK_CLIENT_SECRET: {{ .Values.slack.clientSecret | b64enc | quote }}
+SLACK_SIGNING_SECRET: {{ .Values.slack.signingSecret | b64enc | quote }}
+{{- end }}
+{{- if and (not .Values.discord.existingSecret) .Values.discord.applicationId .Values.discord.publicKey .Values.discord.clientSecret .Values.discord.botToken }}
+DISCORD_APPLICATION_ID: {{ .Values.discord.applicationId | b64enc | quote }}
+DISCORD_PUBLIC_KEY: {{ .Values.discord.publicKey | b64enc | quote }}
+DISCORD_CLIENT_SECRET: {{ .Values.discord.clientSecret | b64enc | quote }}
+DISCORD_BOT_TOKEN: {{ .Values.discord.botToken | b64enc | quote }}
+{{- end }}
+{{- end -}}
+
+{{/*
+Whether the chart manages any Sentry-fleet credential itself. Guards both the
+generated Secret and the envFrom that consumes it, so an envFrom can never
+reference a Secret that was not rendered.
+*/}}
+{{- define "sentry.credentials.sentryEnv.enabled" -}}
+{{- if (include "sentry.credentials.sentryEnv.data" . | trim) }}true{{ end }}
+{{- end -}}
+
+{{/*
+envFrom entry for the chart-managed Sentry credential Secret. The reference is
+optional because every consumer of these variables already treats them as
+absent-by-default: the SENTRY_OPTIONS guards omit the option entirely and the
+S3 reads fall back to an empty string. Tolerating an absent Secret therefore
+degrades to the same "not configured" path rather than blocking pod startup,
+which also lets pre-upgrade hooks run before the Secret is applied.
+*/}}
+{{- define "sentry.envFrom" -}}
+{{- if (include "sentry.credentials.sentryEnv.enabled" .) -}}
+envFrom:
+  - secretRef:
+      name: {{ template "sentry.fullname" . }}-sentry-env
+      optional: true
+{{- end -}}
+{{- end -}}
+
+{{/*
+Rollout trigger for the Sentry fleet. Hashes the ConfigMap content together
+with the generated Secret data, so rotating a plaintext credential that now
+lives in the Secret still restarts pods. Reduces to sha256(config) when no
+credential is chart-managed.
+*/}}
+{{- define "sentry.config.checksum" -}}
+{{- printf "%s%s" (include "sentry.config" .) (include "sentry.credentials.sentryEnv.data" . | trim) | sha256sum -}}
 {{- end -}}
 
 {{/*
@@ -1092,6 +1271,17 @@ Set discord
 {{- end }}
 
 {{/*
+Set pagerduty
+*/}}
+{{- if .Values.pagerduty.existingSecret }}
+- name: PAGERDUTY_APP_ID
+  valueFrom:
+    secretKeyRef:
+      name: {{ .Values.pagerduty.existingSecret }}
+      key: {{ default "app-id" .Values.pagerduty.existingSecretAppId }}
+{{- end }}
+
+{{/*
 Set github app
 */}}
 {{- if and .Values.github.existingSecret }}
@@ -1148,17 +1338,6 @@ Set google auth
 {{- end }}
 
 {{/*
-Set openai api
-*/}}
-{{- if .Values.openai.existingSecret }}
-- name: OPENAI_API_KEY
-  valueFrom:
-    secretKeyRef:
-      name: {{ .Values.openai.existingSecret }}
-      key: {{ default "api-token" .Values.openai.existingSecretKey }}
-{{- end }}
-
-{{/*
 Set JS SDK Loader assets setup
 */}}
 {{- if .Values.sentry.jsSdk.setupAssets }}
@@ -1174,7 +1353,7 @@ Launchpad RPC shared secret (required by Sentry web and launchpad-taskworker)
   valueFrom:
     secretKeyRef:
       name: {{ include "launchpad.secretName" . }}
-      key: rpc-shared-secret
+      key: {{ include "launchpad.secretKey" . }}
 {{- end }}
 {{- end -}}
 

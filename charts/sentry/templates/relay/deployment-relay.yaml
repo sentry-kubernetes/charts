@@ -15,7 +15,7 @@ metadata:
     release: "{{ .Release.Name }}"
     heritage: "{{ .Release.Service }}"
     {{- include "sentry.component.labels" (dict "component" "relay" "ctx" .) | nindent 4 }}
-  {{- if .Values.asHook }}
+  {{- if .Values.relay.asHook }}
   {{- /* Add the Helm annotations so that deployment after asHook from true to false works */}}
   annotations:
     meta.helm.sh/release-name: "{{ .Release.Name }}"
@@ -84,9 +84,10 @@ spec:
       {{- end }}
       initContainers:
         {{- if and (not .Values.kafka.enabled) .Values.externalKafka.sasl.existingSecret }}
+        {{- $configRenderImage := default (dict) (default (dict) .Values.relay.configRender).image }}
         - name: {{ .Chart.Name }}-relay-config-render
-          image: "busybox:1.36"
-          imagePullPolicy: IfNotPresent
+          image: "{{ template "relay.configRender.image" . }}"
+          imagePullPolicy: {{ default "IfNotPresent" $configRenderImage.pullPolicy }}
           command:
             - /bin/sh
             - -c
@@ -119,11 +120,15 @@ spec:
             - name: rendered-config
               mountPath: /rendered-config
           resources:
+          {{- if (.Values.relay.configRender).resources -}}
+            {{ toYaml .Values.relay.configRender.resources | nindent 12 -}}
+          {{- else }}
             requests:
               cpu: 10m
               memory: 16Mi
             limits:
               memory: 32Mi
+          {{- end }}
         {{- end }}
         - name: {{ .Chart.Name }}-relay-init
           image: "{{ template "relay.image" . }}"
@@ -218,7 +223,7 @@ spec:
             subPath: config.yml
             readOnly: true
           {{- end }}
-          {{- if and .Values.geodata.volumeName .Values.geodata.accountID }}
+          {{- if and .Values.geodata.volumeName (include "sentry.geodata.enabled" .) }}
           - name: {{ .Values.geodata.volumeName }}
             mountPath: {{ .Values.geodata.mountPath }}
             readOnly: true
@@ -275,7 +280,7 @@ spec:
       - name: rendered-config
         emptyDir: {}
       {{- end }}
-      {{- if and .Values.geodata.volumeName .Values.geodata.accountID }}
+      {{- if and .Values.geodata.volumeName (include "sentry.geodata.enabled" .) }}
       - name: {{ .Values.geodata.volumeName }}
         persistentVolumeClaim:
           claimName: data-sentry-geoip

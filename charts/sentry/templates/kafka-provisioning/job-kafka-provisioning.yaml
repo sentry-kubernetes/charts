@@ -1,9 +1,11 @@
 {{- if and (not .Values.kafka.enabled) .Values.externalKafka.provisioning.enabled }}
 {{- $provisioning := .Values.externalKafka.provisioning }}
 {{- $topicctl := $provisioning.topicctl | default dict }}
+{{- $waitForKafka := $provisioning.waitForKafka | default dict }}
 {{- $saslFromSecret := .Values.externalKafka.sasl.existingSecret }}
 
 {{- $topicctlImage := printf "%s:%s" ($topicctl.image.repository | default "segment/topicctl") ($topicctl.image.tag | default "v2.0.2") }}
+{{- $waitForKafkaImage := printf "%s:%s" (($waitForKafka.image).repository | default "busybox") (($waitForKafka.image).tag | default "1.36" | toString) }}
 
 apiVersion: batch/v1
 kind: Job
@@ -53,7 +55,7 @@ spec:
       {{- end }}
       initContainers:
         - name: wait-for-kafka
-          image: busybox:1.36
+          image: {{ $waitForKafkaImage }}
           imagePullPolicy: IfNotPresent
           securityContext:
             allowPrivilegeEscalation: false

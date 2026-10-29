@@ -20,6 +20,8 @@ metadata:
   {{- end }}
 spec:
   revisionHistoryLimit: {{ .Values.revisionHistoryLimit }}
+  strategy:
+    type: {{ include "sentry.kafkaConsumer.strategyType" (dict "strategyType" .Values.sentry.metricsConsumer.strategyType "replicas" .Values.sentry.metricsConsumer.replicas) }}
   selector:
     matchLabels:
       app: {{ template "sentry.fullname" . }}
@@ -31,7 +33,7 @@ spec:
       annotations:
         checksum/configYml: {{ .Values.config.configYml | toYaml | toString | sha256sum }}
         checksum/sentryConfPy: {{ .Values.config.sentryConfPy | sha256sum }}
-        checksum/config.yaml: {{ include "sentry.config" . | sha256sum }}
+        checksum/config.yaml: {{ include "sentry.config.checksum" . }}
         {{- if .Values.sentry.metricsConsumer.annotations }}
 {{ toYaml .Values.sentry.metricsConsumer.annotations | indent 8 }}
         {{- end }}
@@ -77,10 +79,7 @@ spec:
       dnsConfig:
 {{ toYaml .Values.dnsConfig | indent 8 }}
       {{- end }}
-      {{- if .Values.sentry.metricsConsumer.securityContext }}
-      securityContext:
-{{ toYaml .Values.sentry.metricsConsumer.securityContext | indent 8 }}
-      {{- end }}
+      {{- include "sentry.podSecurityContext" (dict "securityContext" .Values.sentry.metricsConsumer.securityContext "ctx" .) | nindent 6 }}
       initContainers:
 {{ include "sentry.initContainer.nodestore-s3" . | indent 6 }}
       containers:
@@ -126,6 +125,7 @@ spec:
 {{- if .Values.sentry.metricsConsumer.env }}
 {{ toYaml .Values.sentry.metricsConsumer.env | indent 8 }}
 {{- end }}
+        {{- with include "sentry.envFrom" . }}{{ . | nindent 8 }}{{- end }}
         volumeMounts:
         - mountPath: /etc/sentry
           name: config

@@ -3,11 +3,13 @@ apiVersion: {{ template "sentry.autoscaling.apiVersion" . }}
 kind: HorizontalPodAutoscaler
 metadata:
   name: {{ template "sentry.fullname" . }}-relay
+  {{- if .Values.relay.asHook }}
   annotations:
     meta.helm.sh/release-name: "{{ .Release.Name }}"
     meta.helm.sh/release-namespace: "{{ .Release.Namespace }}"
     "helm.sh/hook": "post-install,post-upgrade"
     "helm.sh/hook-weight": "25"
+  {{- end }}
   labels:
     {{- include "sentry.component.labels" (dict "component" "relay" "ctx" .) | nindent 4 }}
 spec:

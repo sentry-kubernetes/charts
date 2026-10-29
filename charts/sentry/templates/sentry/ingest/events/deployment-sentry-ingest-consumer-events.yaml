@@ -19,6 +19,8 @@ metadata:
   {{- end }}
 spec:
   revisionHistoryLimit: {{ .Values.revisionHistoryLimit }}
+  strategy:
+    type: {{ include "sentry.kafkaConsumer.strategyType" (dict "strategyType" .Values.sentry.ingestConsumerEvents.strategyType "replicas" .Values.sentry.ingestConsumerEvents.replicas "autoscaling" .Values.sentry.ingestConsumerEvents.autoscaling) }}
   selector:
     matchLabels:
       app: {{ template "sentry.fullname" . }}
@@ -32,7 +34,7 @@ spec:
       annotations:
         checksum/configYml: {{ .Values.config.configYml | toYaml | toString | sha256sum }}
         checksum/sentryConfPy: {{ .Values.config.sentryConfPy | sha256sum }}
-        checksum/config.yaml: {{ include "sentry.config" . | sha256sum }}
+        checksum/config.yaml: {{ include "sentry.config.checksum" . }}
         {{- if .Values.sentry.ingestConsumerEvents.annotations }}
 {{ toYaml .Values.sentry.ingestConsumerEvents.annotations | indent 8 }}
         {{- end }}
@@ -78,10 +80,7 @@ spec:
       dnsConfig:
 {{ toYaml .Values.dnsConfig | indent 8 }}
       {{- end }}
-      {{- if .Values.sentry.ingestConsumerEvents.securityContext }}
-      securityContext:
-{{ toYaml .Values.sentry.ingestConsumerEvents.securityContext | indent 8 }}
-      {{- end }}
+      {{- include "sentry.podSecurityContext" (dict "securityContext" .Values.sentry.ingestConsumerEvents.securityContext "ctx" .) | nindent 6 }}
       initContainers:
 {{ include "sentry.initContainer.nodestore-s3" . | indent 6 }}
       containers:
@@ -104,6 +103,10 @@ spec:
           {{- end }}
           - "--healthcheck-file-path"
           - "/tmp/health.txt"
+          {{- if .Values.sentry.ingestConsumerEvents.maxPollIntervalMs }}
+          - "--max-poll-interval-ms"
+          - "{{ .Values.sentry.ingestConsumerEvents.maxPollIntervalMs }}"
+          {{- end }}
           {{- if .Values.sentry.ingestConsumerEvents.logLevel }}
           - "--log-level"
           - "{{ .Values.sentry.ingestConsumerEvents.logLevel }}"
@@ -137,6 +140,7 @@ spec:
 {{- if .Values.sentry.ingestConsumerEvents.env }}
 {{ toYaml .Values.sentry.ingestConsumerEvents.env | indent 8 }}
 {{- end }}
+        {{- with include "sentry.envFrom" . }}{{ . | nindent 8 }}{{- end }}
         volumeMounts:
         - mountPath: /etc/sentry
           name: config

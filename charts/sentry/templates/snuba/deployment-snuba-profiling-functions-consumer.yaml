@@ -20,6 +20,8 @@ metadata:
   {{- end }}
 spec:
   revisionHistoryLimit: {{ .Values.revisionHistoryLimit }}
+  strategy:
+    type: {{ include "sentry.kafkaConsumer.strategyType" (dict "strategyType" .Values.snuba.profilingFunctionsConsumer.strategyType "replicas" .Values.snuba.profilingFunctionsConsumer.replicas) }}
   selector:
     matchLabels:
       app: {{ template "sentry.fullname" . }}
@@ -128,6 +130,10 @@ spec:
           {{- end }}
           - "--health-check-file"
           - "/tmp/health.txt"
+          {{- if .Values.snuba.profilingFunctionsConsumer.maxPollIntervalMs }}
+          - "--max-poll-interval-ms"
+          - "{{ .Values.snuba.profilingFunctionsConsumer.maxPollIntervalMs }}"
+          {{- end }}
         {{- include "sentry.startupProbe.execHealthcheckFile" (dict "startupProbe" .Values.snuba.profilingFunctionsConsumer.startupProbe "healthcheckFile" "/tmp/health.txt") | nindent 8 }}
         {{- include "sentry.livenessProbe.execHealthcheckFile" (dict "livenessProbe" .Values.snuba.profilingFunctionsConsumer.livenessProbe "healthcheckFile" "/tmp/health.txt") | nindent 8 }}
         ports:

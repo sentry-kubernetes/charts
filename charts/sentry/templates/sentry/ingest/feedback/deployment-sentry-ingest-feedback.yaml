@@ -20,6 +20,8 @@ metadata:
   {{- end }}
 spec:
   revisionHistoryLimit: {{ .Values.revisionHistoryLimit }}
+  strategy:
+    type: {{ include "sentry.kafkaConsumer.strategyType" (dict "strategyType" .Values.sentry.ingestFeedback.strategyType "replicas" .Values.sentry.ingestFeedback.replicas "autoscaling" .Values.sentry.ingestFeedback.autoscaling) }}
   selector:
     matchLabels:
       app: {{ template "sentry.fullname" . }}
@@ -33,7 +35,7 @@ spec:
       annotations:
         checksum/configYml: {{ .Values.config.configYml | toYaml | toString | sha256sum }}
         checksum/sentryConfPy: {{ .Values.config.sentryConfPy | sha256sum }}
-        checksum/config.yaml: {{ include "sentry.config" . | sha256sum }}
+        checksum/config.yaml: {{ include "sentry.config.checksum" . }}
         {{- if .Values.sentry.ingestFeedback.annotations }}
 {{ toYaml .Values.sentry.ingestFeedback.annotations | indent 8 }}
         {{- end }}
@@ -79,10 +81,7 @@ spec:
       dnsConfig:
 {{ toYaml .Values.dnsConfig | indent 8 }}
       {{- end }}
-      {{- if .Values.sentry.ingestFeedback.securityContext }}
-      securityContext:
-{{ toYaml .Values.sentry.ingestFeedback.securityContext | indent 8 }}
-      {{- end }}
+      {{- include "sentry.podSecurityContext" (dict "securityContext" .Values.sentry.ingestFeedback.securityContext "ctx" .) | nindent 6 }}
       initContainers:
 {{ include "sentry.initContainer.nodestore-s3" . | indent 6 }}
       containers:
@@ -105,6 +104,10 @@ spec:
           {{- end }}
           - "--healthcheck-file-path"
           - "/tmp/health.txt"
+          {{- if .Values.sentry.ingestFeedback.maxPollIntervalMs }}
+          - "--max-poll-interval-ms"
+          - "{{ .Values.sentry.ingestFeedback.maxPollIntervalMs }}"
+          {{- end }}
         {{- include "sentry.startupProbe.execHealthcheckFile" (dict "startupProbe" .Values.sentry.ingestFeedback.startupProbe "healthcheckFile" "/tmp/health.txt") | nindent 8 }}
         {{- include "sentry.livenessProbe.execHealthcheckFile" (dict "livenessProbe" .Values.sentry.ingestFeedback.livenessProbe "healthcheckFile" "/tmp/health.txt") | nindent 8 }}
         env:
@@ -115,6 +118,7 @@ spec:
 {{- if .Values.sentry.ingestFeedback.env }}
 {{ toYaml .Values.sentry.ingestFeedback.env | indent 8 }}
 {{- end }}
+        {{- with include "sentry.envFrom" . }}{{ . | nindent 8 }}{{- end }}
         volumeMounts:
         - mountPath: /etc/sentry
           name: config

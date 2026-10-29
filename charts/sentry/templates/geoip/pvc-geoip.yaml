@@ -1,4 +1,4 @@
-{{- if .Values.geodata.accountID }}
+{{- if include "sentry.geodata.enabled" . }}
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:

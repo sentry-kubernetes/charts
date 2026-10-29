@@ -1,0 +1,176 @@
+{{- if .Values.snuba.outcomesAcceptedConsumer.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "sentry.fullname" . }}-snuba-outcomes-accepted-consumer
+  labels:
+    app: {{ template "sentry.fullname" . }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
+    release: "{{ .Release.Name }}"
+    heritage: "{{ .Release.Service }}"
+    {{- include "sentry.component.labels" (dict "component" "snuba-outcomes-accepted-consumer" "ctx" .) | nindent 4 }}
+  {{- if .Values.asHook }}
+  {{- /* Add the Helm annotations so that deployment after asHook from true to false works */}}
+  annotations:
+    meta.helm.sh/release-name: "{{ .Release.Name }}"
+    meta.helm.sh/release-namespace: "{{ .Release.Namespace }}"
+    "helm.sh/hook": "post-install,post-upgrade"
+    "helm.sh/hook-weight": "12"
+  {{- end }}
+spec:
+  revisionHistoryLimit: {{ .Values.revisionHistoryLimit }}
+  selector:
+    matchLabels:
+      app: {{ template "sentry.fullname" . }}
+      release: "{{ .Release.Name }}"
+      role: snuba-outcomes-accepted-consumer
+  replicas: {{ .Values.snuba.outcomesAcceptedConsumer.replicas }}
+  template:
+    metadata:
+      annotations:
+        checksum/snubaSettingsPy: {{ .Values.config.snubaSettingsPy | sha256sum }}
+        checksum/config.yaml: {{ include "sentry.snuba.config" . | sha256sum }}
+        {{- if .Values.snuba.outcomesAcceptedConsumer.annotations }}
+{{ toYaml .Values.snuba.outcomesAcceptedConsumer.annotations | indent 8 }}
+        {{- end }}
+      labels:
+        app: {{ template "sentry.fullname" . }}
+        release: "{{ .Release.Name }}"
+        role: snuba-outcomes-accepted-consumer
+        {{- include "sentry.component.labels" (dict "component" "snuba-outcomes-accepted-consumer" "ctx" .) | nindent 8 }}
+        {{- if .Values.snuba.outcomesAcceptedConsumer.podLabels }}
+{{ toYaml .Values.snuba.outcomesAcceptedConsumer.podLabels | indent 8 }}
+        {{- end }}
+    spec:
+      affinity:
+      {{- if .Values.snuba.outcomesAcceptedConsumer.affinity }}
+{{ toYaml .Values.snuba.outcomesAcceptedConsumer.affinity | indent 8 }}
+      {{- end }}
+      {{- if .Values.snuba.outcomesAcceptedConsumer.nodeSelector }}
+      nodeSelector:
+{{ toYaml .Values.snuba.outcomesAcceptedConsumer.nodeSelector | indent 8 }}
+      {{- else if .Values.global.nodeSelector }}
+      nodeSelector:
+{{ toYaml .Values.global.nodeSelector | indent 8 }}
+      {{- end }}
+      {{- if .Values.snuba.outcomesAcceptedConsumer.tolerations }}
+      tolerations:
+{{ toYaml .Values.snuba.outcomesAcceptedConsumer.tolerations | indent 8 }}
+      {{- else if .Values.global.tolerations }}
+      tolerations:
+{{ toYaml .Values.global.tolerations | indent 8 }}
+      {{- end }}
+      {{- if .Values.snuba.outcomesAcceptedConsumer.topologySpreadConstraints }}
+      topologySpreadConstraints:
+{{ toYaml .Values.snuba.outcomesAcceptedConsumer.topologySpreadConstraints | indent 8 }}
+      {{- end }}
+      {{- if .Values.images.snuba.imagePullSecrets }}
+      imagePullSecrets:
+{{ toYaml .Values.images.snuba.imagePullSecrets | indent 8 }}
+      {{- end }}
+      {{- if .Values.dnsPolicy }}
+      dnsPolicy: {{ .Values.dnsPolicy | quote }}
+      {{- end }}
+      {{- if .Values.dnsConfig }}
+      dnsConfig:
+{{ toYaml .Values.dnsConfig | indent 8 }}
+      {{- end }}
+      {{- if .Values.snuba.outcomesAcceptedConsumer.securityContext }}
+      securityContext:
+{{ toYaml .Values.snuba.outcomesAcceptedConsumer.securityContext | indent 8 }}
+      {{- end }}
+      containers:
+      - name: {{ .Chart.Name }}-snuba
+        image: "{{ template "snuba.image" . }}"
+        imagePullPolicy: {{ default "IfNotPresent" .Values.images.snuba.pullPolicy }}
+        command:
+          - "snuba"
+          - "accepted-outcomes-consumer"
+          - "--storage"
+          - "eap_items"
+          - "--consumer-group"
+          - "{{ default "accepted_outcomes" .Values.snuba.outcomesAcceptedConsumer.consumerGroup }}"
+          {{- if .Values.snuba.outcomesAcceptedConsumer.autoOffsetReset }}
+          - "--auto-offset-reset"
+          - "{{ .Values.snuba.outcomesAcceptedConsumer.autoOffsetReset }}"
+          {{- end }}
+          {{- if .Values.snuba.outcomesAcceptedConsumer.rawTopic }}
+          - "--raw-topic"
+          - "{{ .Values.snuba.outcomesAcceptedConsumer.rawTopic }}"
+          {{- end }}
+          - "--accepted-outcomes-topic"
+          - "{{ default "" ((.Values.kafkaTopicOverrides).prefix) }}{{ default "outcomes-billing" .Values.snuba.outcomesAcceptedConsumer.outcomesAcceptedTopic }}"
+          {{- if .Values.snuba.outcomesAcceptedConsumer.maxBatchSize }}
+          - "--max-batch-size"
+          - "{{ .Values.snuba.outcomesAcceptedConsumer.maxBatchSize }}"
+          {{- end }}
+          {{- if .Values.snuba.outcomesAcceptedConsumer.maxBatchTimeMs }}
+          - "--max-batch-time-ms"
+          - "{{ .Values.snuba.outcomesAcceptedConsumer.maxBatchTimeMs }}"
+          {{- end }}
+          {{- if .Values.snuba.outcomesAcceptedConsumer.bucketInterval }}
+          - "--bucket-interval"
+          - "{{ .Values.snuba.outcomesAcceptedConsumer.bucketInterval }}"
+          {{- end }}
+          {{- if .Values.snuba.outcomesAcceptedConsumer.queuedMaxMessagesKbytes }}
+          - "--queued-max-messages-kbytes"
+          - "{{ .Values.snuba.outcomesAcceptedConsumer.queuedMaxMessagesKbytes }}"
+          {{- end }}
+          {{- if .Values.snuba.outcomesAcceptedConsumer.queuedMinMessages }}
+          - "--queued-min-messages"
+          - "{{ .Values.snuba.outcomesAcceptedConsumer.queuedMinMessages }}"
+          {{- end }}
+          {{- if .Values.snuba.outcomesAcceptedConsumer.noStrictOffsetReset }}
+          - "--no-strict-offset-reset"
+          {{- end }}
+          {{- /* No file healthcheck: accepted-outcomes-consumer accepts --health-check-file but does not write it yet. */}}
+          {{- if .Values.snuba.outcomesAcceptedConsumer.maxPollIntervalMs }}
+          - "--max-poll-interval-ms"
+          - "{{ .Values.snuba.outcomesAcceptedConsumer.maxPollIntervalMs }}"
+          {{- end }}
+        ports:
+        - containerPort: {{ template "snuba.port" }}
+        env:
+{{ include "sentry.snuba.env" . | indent 8 }}
+{{- if .Values.snuba.outcomesAcceptedConsumer.env }}
+{{ toYaml .Values.snuba.outcomesAcceptedConsumer.env | indent 8 }}
+{{- end }}
+        envFrom:
+        - secretRef:
+            name: {{ template "sentry.fullname" . }}-snuba-env
+        volumeMounts:
+        - mountPath: /etc/snuba
+          name: config
+          readOnly: true
+{{- if .Values.snuba.outcomesAcceptedConsumer.volumeMounts }}
+{{ toYaml .Values.snuba.outcomesAcceptedConsumer.volumeMounts | indent 8 }}
+{{- end }}
+{{- if .Values.global.volumeMounts }}
+{{ toYaml .Values.global.volumeMounts | indent 8 }}
+{{- end }}
+        resources:
+{{ toYaml .Values.snuba.outcomesAcceptedConsumer.resources | indent 12 }}
+{{- if .Values.snuba.outcomesAcceptedConsumer.containerSecurityContext }}
+        securityContext:
+{{ toYaml .Values.snuba.outcomesAcceptedConsumer.containerSecurityContext | indent 12 }}
+{{- end }}
+{{- if .Values.snuba.outcomesAcceptedConsumer.sidecars }}
+{{ toYaml .Values.snuba.outcomesAcceptedConsumer.sidecars | indent 6 }}
+{{- end }}
+{{- if .Values.global.sidecars }}
+{{ toYaml .Values.global.sidecars | indent 6 }}
+{{- end }}
+      {{- if .Values.serviceAccount.enabled }}
+      serviceAccountName: {{ .Values.serviceAccount.name }}-snuba
+      {{- end }}
+      volumes:
+        - name: config
+          configMap:
+            name: {{ template "sentry.fullname" . }}-snuba
+{{- if .Values.snuba.outcomesAcceptedConsumer.volumes }}
+{{ toYaml .Values.snuba.outcomesAcceptedConsumer.volumes | indent 8 }}
+{{- end }}
+{{- if .Values.global.volumes }}
+{{ toYaml .Values.global.volumes | indent 8 }}
+{{- end }}
+{{- end }}

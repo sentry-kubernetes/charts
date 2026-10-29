@@ -30,47 +30,25 @@ config.yml: |-
   {{- with .Values.github.appName }}
   github-app.name: {{ . | quote }}
   {{- end }}
-  {{- if not .Values.github.existingSecret }}
-    {{- with .Values.github.privateKey }}
-  github-app.private-key: {{- . | toYaml | indent 2 }}
-    {{- end }}
-    {{- with .Values.github.webhookSecret }}
-  github-app.webhook-secret: {{ . | quote }}
-    {{- end }}
-    {{- with .Values.github.clientId }}
-  github-app.client-id: {{ . | quote }}
-    {{- end }}
-    {{- with .Values.github.clientSecret }}
-  github-app.client-secret: {{ . | quote }}
-    {{- end }}
-  {{- end }}
 
   ##########
   # Google #
   ##########
-  {{- if and (.Values.google.clientId) (.Values.google.clientSecret) (not .Values.google.existingSecret) }}
-  auth-google.client-id: {{ .Values.google.clientId | quote }}
-  auth-google.client-secret: {{ .Values.google.clientSecret | quote }}
-  {{- end }}
 
   #########
   # Slack #
   #########
-  {{- if and (.Values.slack.clientId) (.Values.slack.clientSecret) (.Values.slack.signingSecret) (not .Values.slack.existingSecret) }}
-  slack.client-id: {{ .Values.slack.clientId | quote }}
-  slack.client-secret: {{ .Values.slack.clientSecret | quote }}
-  slack.signing-secret: {{ .Values.slack.signingSecret | quote }}
-  {{ end }}
 
   ###########
   # Discord #
   ###########
-  {{- if and (.Values.discord.applicationId) (.Values.discord.publicKey) (.Values.discord.clientSecret) (.Values.discord.botToken) (not .Values.discord.existingSecret) }}
-  discord.application-id: {{ .Values.discord.applicationId | quote }}
-  discord.public-key: {{ .Values.discord.publicKey | quote }}
-  discord.client-secret: {{ .Values.discord.clientSecret | quote }}
-  discord.bot-token: {{ .Values.discord.botToken | quote }}
-  {{ end }}
+
+  #############
+  # PagerDuty #
+  #############
+  {{- if and (.Values.pagerduty.appId) (not .Values.pagerduty.existingSecret) }}
+  pagerduty.app-id: {{ .Values.pagerduty.appId | quote }}
+  {{- end }}
 
   #########
   # Redis #
@@ -298,7 +276,7 @@ sentry.conf.py: |-
   ##############
 
   {{- if .Values.ipv6 }}
-  SENTRY_WEB_HOST = "[::]"
+  SENTRY_WEB_HOST = "::"
   {{- else }}
   SENTRY_WEB_HOST = "0.0.0.0"
   {{- end }}
@@ -308,7 +286,7 @@ sentry.conf.py: |-
   SENTRY_PUBLIC = {{ .Values.system.public | ternary "True" "False" }}
   SENTRY_WEB_OPTIONS = {
   {{- if .Values.ipv6 }}
-      "http-socket": "%s:%s" % (SENTRY_WEB_HOST, SENTRY_WEB_PORT),
+      "http-socket": "[%s]:%s" % (SENTRY_WEB_HOST, SENTRY_WEB_PORT),
   {{- else }}
       "http": "%s:%s" % (SENTRY_WEB_HOST, SENTRY_WEB_PORT),
   {{- end }}
@@ -362,7 +340,6 @@ sentry.conf.py: |-
   SENTRY_FEATURES = {
     "auth:register": {{ .Values.auth.register | ternary "True" "False" }}
   }
-  SENTRY_FEATURES["projects:sample-events"] = False
   SENTRY_FEATURES.update(
       {
           feature: True
@@ -373,24 +350,20 @@ sentry.conf.py: |-
               {{- if .Values.sentry.features.orgSubdomains }}
               "organizations:org-ingest-subdomains",
               {{- end }}
-              "organizations:discover",
-              "organizations:global-views",
               "organizations:issue-views",
-              "organizations:incidents",
               "organizations:integrations-issue-basic",
               "organizations:integrations-issue-sync",
               "organizations:invite-members",
               "organizations:sso-basic",
               "organizations:sso-saml2",
               "organizations:advanced-search",
-              "organizations:issue-platform",
-              "organizations:monitors",
-              "organizations:dashboards-mep",
-              "organizations:mep-rollout-flag",
-              "organizations:dashboards-rh-widget",
               "organizations:dynamic-sampling",
+              "organizations:workflow-engine-ui",
+              "organizations:workflow-engine-rule-serializers",
+              "organizations:discover-saved-queries-deprecation",
+              "organizations:expose-migrated-discover-queries",
+              "organizations:performance-transaction-deprecation-banner",
               "projects:custom-inbound-filters",
-              "projects:data-forwarding",
               "projects:discard-groups",
               "projects:plugins",
               "projects:rate-limits",
@@ -405,19 +378,10 @@ sentry.conf.py: |-
               "organizations:visibility-explore-range-high",
               "organizations:transaction-metrics-extraction",
               "organizations:indexed-spans-extraction",
-              "organizations:insights-entry-points",
-              "organizations:insights-initial-modules",
-              "organizations:insights-addon-modules",
               "organizations:insights-modules-use-eap",
-              "organizations:starfish-mobile-appstart",
               "organizations:on-demand-metrics-extraction",
               "projects:span-metrics-extraction",
               "projects:span-metrics-extraction-addons",
-
-              # extra trace UI flags from chart
-              "organizations:trace-view-load-more",
-              "organizations:trace-tabs-ui",
-              "organizations:trace-view-linked-traces",
           )
           {{- end }}
           {{- if .Values.sentry.features.enableSessionReplay }}
@@ -425,15 +389,7 @@ sentry.conf.py: |-
               # Session Replay
               "organizations:session-replay",
               "organizations:session-replay-ui",
-              "organizations:session-replay-issue-emails",
               "organizations:session-replay-recording-scrubbing",
-              "organizations:session-replay-slack-new-issue",
-          )
-          {{- end }}
-          {{- if .Values.sentry.features.enableFeedback }}
-          + (
-              # User Feedback
-              "organizations:user-feedback-ui",
           )
           {{- end }}
           {{- if .Values.sentry.features.enableProfiling }}
@@ -451,19 +407,15 @@ sentry.conf.py: |-
           + (
               # Uptime Monitoring
               "organizations:uptime",
-              "organizations:uptime-create-issues",
           )
           {{- end }}
           + (
               # Logs (OurLogs)
               "organizations:ourlogs-enabled",
               "organizations:ourlogs-ingestion",
-              "organizations:ourlogs-stats",
-              "organizations:ourlogs-replay-ui",
 
               # Metrics (Trace Metrics)
               "organizations:tracemetrics-enabled",
-              "organizations:tracemetrics-alerts",
               "organizations:tracemetrics-ingestion",
               "organizations:tracemetrics-equations-in-alerts",
               "organizations:tracemetrics-equations-in-explore",
@@ -472,9 +424,7 @@ sentry.conf.py: |-
               "organizations:tracemetrics-stats-bytes-ui",
               "organizations:tracemetrics-pii-scrubbing-ui",
 
-              # Chart-only / misc
-              "organizations:related-events",
-              "organizations:reprocessing-v2",
+              # Misc
               "organizations:set-grouping-config",
               "organizations:onboarding",
               "projects:similarity-indexing",
@@ -490,6 +440,24 @@ sentry.conf.py: |-
           {{- end }}
       }
   )
+
+  {{- if and (has "feature-complete" .Values.profiles) .Values.sentry.features.enableUptime }}
+
+  ##########
+  # Uptime #
+  ##########
+  # Sentry calls the uptime-checker API for "Test Monitor" previews and assertion validation.
+  from sentry.conf.types.uptime import UptimeRegionConfig
+
+  UPTIME_REGIONS = [
+      UptimeRegionConfig(
+          slug="default",
+          name="Default Region",
+          config_redis_cluster=SENTRY_UPTIME_DETECTOR_CLUSTER,
+          api_endpoint="{{ template "sentry.fullname" . }}-uptime-checker:{{ template "uptimeChecker.port" }}",
+      ),
+  ]
+  {{- end }}
 
   #######################
   # Email Configuration #
@@ -522,8 +490,12 @@ sentry.conf.py: |-
 
   {{- if eq .Values.filestore.backend "s3" }}
   SENTRY_OPTIONS['filestore.options'] = {
-      'access_key': os.getenv("S3_ACCESS_KEY_ID", {{ .Values.filestore.s3.accessKey | default "" | quote }}),
-      'secret_key': os.getenv("S3_SECRET_ACCESS_KEY", {{ .Values.filestore.s3.secretKey | default "" | quote }}),
+      {{- if or .Values.filestore.s3.accessKey .Values.filestore.s3.existingSecret }}
+      'access_key': os.getenv("S3_ACCESS_KEY_ID", ""),
+      {{- end }}
+      {{- if or .Values.filestore.s3.secretKey .Values.filestore.s3.existingSecret }}
+      'secret_key': os.getenv("S3_SECRET_ACCESS_KEY", ""),
+      {{- end }}
       {{- if .Values.filestore.s3.bucketName }}
       'bucket_name': {{ .Values.filestore.s3.bucketName | quote }},
       {{- end }}
@@ -570,8 +542,12 @@ sentry.conf.py: |-
   {{- if eq .Values.replay.storage.backend "s3" }}
   {{- $replayS3 := .Values.replay.storage.s3 | default dict }}
   SENTRY_OPTIONS['replay.storage.options'] = {
-      'access_key': os.getenv("REPLAY_S3_ACCESS_KEY_ID", {{ $replayS3.accessKey | default "" | quote }}),
-      'secret_key': os.getenv("REPLAY_S3_SECRET_ACCESS_KEY", {{ $replayS3.secretKey | default "" | quote }}),
+      {{- if or $replayS3.accessKey $replayS3.existingSecret }}
+      'access_key': os.getenv("REPLAY_S3_ACCESS_KEY_ID", ""),
+      {{- end }}
+      {{- if or $replayS3.secretKey $replayS3.existingSecret }}
+      'secret_key': os.getenv("REPLAY_S3_SECRET_ACCESS_KEY", ""),
+      {{- end }}
       {{- if $replayS3.bucketName }}
       'bucket_name': {{ $replayS3.bucketName | quote }},
       {{- end }}
@@ -623,8 +599,12 @@ sentry.conf.py: |-
   {{- if eq .Values.filestore.profiles.backend "s3" }}
   {{- $profilesS3 := .Values.filestore.profiles.s3 | default dict }}
   SENTRY_OPTIONS['filestore.profiles-options'] = {
-      'access_key': os.getenv("PROFILES_S3_ACCESS_KEY_ID", {{ $profilesS3.accessKey | default "" | quote }}),
-      'secret_key': os.getenv("PROFILES_S3_SECRET_ACCESS_KEY", {{ $profilesS3.secretKey | default "" | quote }}),
+      {{- if or $profilesS3.accessKey $profilesS3.existingSecret }}
+      'access_key': os.getenv("PROFILES_S3_ACCESS_KEY_ID", ""),
+      {{- end }}
+      {{- if or $profilesS3.secretKey $profilesS3.existingSecret }}
+      'secret_key': os.getenv("PROFILES_S3_SECRET_ACCESS_KEY", ""),
+      {{- end }}
       {{- if $profilesS3.bucketName }}
       'bucket_name': {{ $profilesS3.bucketName | quote }},
       {{- end }}
@@ -698,8 +678,12 @@ sentry.conf.py: |-
       {{- if $nodestoreS3.regionName }}
       "region_name": {{ $nodestoreS3.regionName | quote }},
       {{- end }}
-      "aws_access_key_id": os.getenv("NODESTORE_S3_ACCESS_KEY_ID", {{ $nodestoreS3.accessKeyId | default "" | quote }}),
-      "aws_secret_access_key": os.getenv("NODESTORE_S3_SECRET_ACCESS_KEY", {{ $nodestoreS3.secretAccessKey | default "" | quote }}),
+      {{- if or $nodestoreS3.accessKeyId $nodestoreS3.existingSecret }}
+      "aws_access_key_id": os.getenv("NODESTORE_S3_ACCESS_KEY_ID", ""),
+      {{- end }}
+      {{- if or $nodestoreS3.secretAccessKey $nodestoreS3.existingSecret }}
+      "aws_secret_access_key": os.getenv("NODESTORE_S3_SECRET_ACCESS_KEY", ""),
+      {{- end }}
   }
   {{- end }}
   {{- end }}
@@ -717,14 +701,6 @@ sentry.conf.py: |-
   SENTRY_RELAY_WHITELIST_PK = []
   SENTRY_RELAY_OPEN_REGISTRATION = True
 
-  #######################
-  # OpenAi Suggestions #
-  #######################
-
-  OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "")
-  if OPENAI_API_KEY:
-    SENTRY_FEATURES["organizations:open-ai-suggestion"] = True
-
   ########################
   # JS SDK Loader Script #
   ########################
@@ -740,7 +716,7 @@ sentry.conf.py: |-
   }
 {{- end }}
 
-{{- if .Values.slack.existingSecret }}
+{{- if or .Values.slack.existingSecret (and .Values.slack.clientId .Values.slack.clientSecret .Values.slack.signingSecret) }}
   #########
   # SLACK #
   #########
@@ -749,7 +725,7 @@ sentry.conf.py: |-
   SENTRY_OPTIONS['slack.signing-secret'] = os.environ.get("SLACK_SIGNING_SECRET")
 {{- end }}
 
-{{- if .Values.discord.existingSecret }}
+{{- if or .Values.discord.existingSecret (and .Values.discord.applicationId .Values.discord.publicKey .Values.discord.clientSecret .Values.discord.botToken) }}
   ###########
   # DISCORD #
   ###########
@@ -759,7 +735,14 @@ sentry.conf.py: |-
   SENTRY_OPTIONS['discord.bot-token'] = os.environ.get("DISCORD_BOT_TOKEN")
 {{- end }}
 
-{{- if .Values.google.existingSecret }}
+{{- if .Values.pagerduty.existingSecret }}
+  #############
+  # PAGERDUTY #
+  #############
+  SENTRY_OPTIONS['pagerduty.app-id'] = os.environ.get("PAGERDUTY_APP_ID")
+{{- end }}
+
+{{- if or .Values.google.existingSecret (and .Values.google.clientId .Values.google.clientSecret) }}
   #########
   # GOOGLE #
   #########
@@ -767,23 +750,31 @@ sentry.conf.py: |-
   SENTRY_OPTIONS['auth-google.client-secret'] = os.environ.get("GOOGLE_AUTH_CLIENT_SECRET")
 {{- end }}
 
-{{- if .Values.github.existingSecret }}
+{{- if or .Values.github.existingSecret .Values.github.privateKey .Values.github.webhookSecret .Values.github.clientId .Values.github.clientSecret }}
   ##########
   # Github #
   ##########
-  {{- if .Values.github.existingSecretAppIdKey }}
+  {{- if and .Values.github.existingSecret .Values.github.existingSecretAppIdKey }}
   # GitHub App ID must be an integer (Sentry 26.x+)
   _github_app_id = os.environ.get("GITHUB_APP_ID")
   if _github_app_id:
       SENTRY_OPTIONS['github-app.id'] = int(_github_app_id)
   {{- end }}
-  {{- if .Values.github.existingSecretAppNameKey }}
+  {{- if and .Values.github.existingSecret .Values.github.existingSecretAppNameKey }}
   SENTRY_OPTIONS['github-app.name'] = os.environ.get("GITHUB_APP_NAME")
   {{- end }}
+  {{- if or .Values.github.existingSecret .Values.github.privateKey }}
   SENTRY_OPTIONS['github-app.private-key'] = os.environ.get("GITHUB_APP_PRIVATE_KEY")
+  {{- end }}
+  {{- if or .Values.github.existingSecret .Values.github.webhookSecret }}
   SENTRY_OPTIONS['github-app.webhook-secret'] = os.environ.get("GITHUB_APP_WEBHOOK_SECRET")
+  {{- end }}
+  {{- if or .Values.github.existingSecret .Values.github.clientId }}
   SENTRY_OPTIONS['github-app.client-id'] = os.environ.get("GITHUB_APP_CLIENT_ID")
+  {{- end }}
+  {{- if or .Values.github.existingSecret .Values.github.clientSecret }}
   SENTRY_OPTIONS['github-app.client-secret'] = os.environ.get("GITHUB_APP_CLIENT_SECRET")
+  {{- end }}
 {{- end }}
   {{ .Values.config.sentryConfPy | nindent 2 }}
 {{- end -}}

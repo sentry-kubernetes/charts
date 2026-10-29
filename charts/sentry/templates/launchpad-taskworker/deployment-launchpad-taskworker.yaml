@@ -101,12 +101,14 @@ spec:
         securityContext:
 {{ toYaml .Values.launchpadTaskWorker.containerSecurityContext | indent 10 }}
 {{- end }}
-{{- if .Values.launchpadTaskWorker.volumeMounts }}
+{{- if or .Values.launchpadTaskWorker.volumeMounts .Values.global.volumeMounts }}
         volumeMounts:
+{{- if .Values.launchpadTaskWorker.volumeMounts }}
 {{ toYaml .Values.launchpadTaskWorker.volumeMounts | indent 8 }}
 {{- end }}
 {{- if .Values.global.volumeMounts }}
 {{ toYaml .Values.global.volumeMounts | indent 8 }}
+{{- end }}
 {{- end }}
         livenessProbe:
           exec:

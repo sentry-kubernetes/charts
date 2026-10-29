@@ -107,6 +107,10 @@ spec:
           - "--queued-min-messages"
           - "{{ .Values.snuba.replacer.queuedMinMessages }}"
         {{- end }}
+          {{- if .Values.snuba.replacer.maxPollIntervalMs }}
+          - "--max-poll-interval-ms"
+          - "{{ .Values.snuba.replacer.maxPollIntervalMs }}"
+          {{- end }}
         ports:
         - containerPort: {{ template "snuba.port" }}
         env:

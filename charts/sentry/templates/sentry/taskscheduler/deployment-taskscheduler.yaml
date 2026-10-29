@@ -23,7 +23,7 @@ spec:
       annotations:
         checksum/configYml: {{ .Values.config.configYml | toYaml | toString | sha256sum }}
         checksum/sentryConfPy: {{ .Values.config.sentryConfPy | sha256sum }}
-        checksum/config.yaml: {{ include "sentry.config" . | sha256sum }}
+        checksum/config.yaml: {{ include "sentry.config.checksum" . }}
       {{- if .Values.sentry.taskScheduler.annotations }}
 {{ toYaml .Values.sentry.taskScheduler.annotations | indent 8 }}
       {{- end }}          
@@ -66,10 +66,7 @@ spec:
       topologySpreadConstraints:
 {{ toYaml .Values.sentry.taskScheduler.topologySpreadConstraints | indent 8 }}
       {{- end }}
-      {{- if .Values.sentry.taskScheduler.securityContext }}
-      securityContext:
-{{ toYaml .Values.sentry.taskScheduler.securityContext | indent 8 }}
-      {{- end }}
+      {{- include "sentry.podSecurityContext" (dict "securityContext" .Values.sentry.taskScheduler.securityContext "ctx" .) | nindent 6 }}
       {{- if .Values.sentry.taskScheduler.priorityClassName }}
       priorityClassName: "{{ .Values.sentry.taskScheduler.priorityClassName }}"
       {{- end }}
@@ -94,6 +91,7 @@ spec:
 {{- if .Values.sentry.taskScheduler.env }}
 {{ toYaml .Values.sentry.taskScheduler.env | indent 8 }}
 {{- end }}
+        {{- with include "sentry.envFrom" . }}{{ . | nindent 8 }}{{- end }}
         resources:
 {{ toYaml .Values.sentry.taskScheduler.resources | indent 10 }}
 {{- if .Values.sentry.taskScheduler.containerSecurityContext }}
@@ -108,7 +106,7 @@ spec:
           name: sentry-data
 {{ include "sentry.volumeMount.replay-filesystem" . | indent 8 }}
 {{ include "sentry.volumeMount.nodestore-s3" . | indent 8 }}
-        {{- if and .Values.geodata.volumeName .Values.geodata.accountID }}
+        {{- if and .Values.geodata.volumeName (include "sentry.geodata.enabled" .) }}
         - name: {{ .Values.geodata.volumeName }}
           mountPath: {{ .Values.geodata.mountPath }}
           readOnly: true
@@ -152,7 +150,7 @@ spec:
         secret:
           secretName: {{ include "sentry.gcs.secretName" . }}
       {{ end }}
-      {{- if and .Values.geodata.volumeName .Values.geodata.accountID }}
+      {{- if and .Values.geodata.volumeName (include "sentry.geodata.enabled" .) }}
       - name: {{ .Values.geodata.volumeName }}
         persistentVolumeClaim:
           claimName: data-sentry-geoip

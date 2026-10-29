@@ -62,7 +62,7 @@ spec:
         spec:
           containers:
             - name: clickhouse-keeper
-              image: altinity/clickhouse-keeper:25.3.6.10034.altinitystable
+              image: altinity/clickhouse-keeper:25.8.28.10001.altinitystable
           affinity:
             podAntiAffinity:
               requiredDuringSchedulingIgnoredDuringExecution:
@@ -126,7 +126,7 @@ spec:
         spec:
           containers:
             - name: clickhouse
-              image: altinity/clickhouse-server:25.3.6.10034.altinitystable
+              image: altinity/clickhouse-server:25.8.28.10001.altinitystable
           affinity:
             podAntiAffinity:
               requiredDuringSchedulingIgnoredDuringExecution:
@@ -143,7 +143,7 @@ spec:
             requests:
               storage: 20Gi
   defaults:
-    replicasUseFQDN: "true"
+    replicasUseFQDN: "yes"
     templates:
       podTemplate: clickhouse
       dataVolumeClaimTemplate: data-volume
@@ -198,11 +198,16 @@ EOF
 
 **Note**: The `clusterName` in your Sentry `values.yaml` must match the cluster name in the ClickHouse manifest above (`sentry-cluster`).
 
-Install Sentry:
+Install Sentry from the Helm repo:
 ```bash
 helm repo add sentry https://sentry-kubernetes.github.io/charts
 helm repo update
 helm install -n sentry my-sentry sentry/sentry -f values.yaml --wait --timeout=2400s
+```
+
+Or from GHCR (OCI). Harbor proxy caches need this path:
+```bash
+helm install -n sentry my-sentry oci://ghcr.io/sentry-kubernetes/charts/sentry --version <chart-version> -f values.yaml --wait --timeout=2400s
 ```
 
 ## Values

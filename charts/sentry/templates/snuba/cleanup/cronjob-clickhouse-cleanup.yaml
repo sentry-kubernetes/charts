@@ -79,10 +79,18 @@ spec:
                 echo "Connecting to ClickHouse at $CLICKHOUSE_HOST:$CLICKHOUSE_PORT"
 
                 # Build clickhouse-client arguments; omit --password if empty to avoid bad-arg error
+                # CLICKHOUSE_PASSWORD may be unset (secret key is optional), so default it under `set -u`
+                CLICKHOUSE_PASSWORD="${CLICKHOUSE_PASSWORD:-}"
                 CH_ARGS=(--host="$CLICKHOUSE_HOST" --port="$CLICKHOUSE_PORT" --user="$CLICKHOUSE_USER" --database="$CLICKHOUSE_DATABASE")
                 if [ -n "$CLICKHOUSE_PASSWORD" ]; then
                   CH_ARGS+=(--password="$CLICKHOUSE_PASSWORD")
                 fi
+                {{ if .Values.externalClickhouse.secure }}
+                CH_ARGS+=(--secure)
+                {{ if not .Values.externalClickhouse.verify }}
+                CH_ARGS+=(--accept-invalid-certificate)
+                {{ end }}
+                {{ end }}
 
                 # Function to discover tables
                 discover_tables() {
@@ -218,8 +226,8 @@ spec:
                   name: {{ .Values.externalClickhouse.existingSecret | quote }}
                   key: {{ default "clickhouse-password" .Values.externalClickhouse.existingSecretKey | quote }}
                 {{- else }}
-                  name: {{ template "sentry.fullname" . }}-clickhouse
-                  key: clickhouse-password
+                  name: {{ template "sentry.fullname" . }}-snuba-env
+                  key: CLICKHOUSE_PASSWORD
                 {{- end }}
                   optional: true
 {{- if .Values.snuba.cleanup.env }}
