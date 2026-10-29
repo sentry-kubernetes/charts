@@ -463,13 +463,12 @@ sentry.conf.py: |-
   # Email Configuration #
   #######################
   SENTRY_OPTIONS['mail.backend'] = os.getenv("SENTRY_EMAIL_BACKEND", {{ .Values.mail.backend | quote }})
-  {{- if or (not .Values.asHook) (ne .Values.mail.backend "dummy") }}
-  {{- if hasKey .Values.mail "useSsl" }}
-  SENTRY_OPTIONS['mail.use-ssl'] = os.getenv("SENTRY_EMAIL_USE_SSL", {{ .Values.mail.useSsl | quote }}).lower() in ("true", "1", "yes")
-  {{- else }}
-  SENTRY_OPTIONS['mail.use-tls'] = os.getenv("SENTRY_EMAIL_USE_TLS", {{ .Values.mail.useTls | quote }}).lower() in ("true", "1", "yes")
-  {{- end }}
-  {{- end }}
+  _mail_use_tls = os.getenv("SENTRY_EMAIL_USE_TLS", {{ .Values.mail.useTls | quote }}).lower() in ("true", "1", "yes")
+  if SENTRY_OPTIONS['mail.backend'] != "dummy" or _mail_use_tls or "SENTRY_EMAIL_USE_TLS" in os.environ:
+      SENTRY_OPTIONS['mail.use-tls'] = _mail_use_tls
+  _mail_use_ssl = os.getenv("SENTRY_EMAIL_USE_SSL", {{ .Values.mail.useSsl | quote }}).lower() in ("true", "1", "yes")
+  if SENTRY_OPTIONS['mail.backend'] != "dummy" or _mail_use_ssl or "SENTRY_EMAIL_USE_SSL" in os.environ:
+      SENTRY_OPTIONS['mail.use-ssl'] = _mail_use_ssl
   SENTRY_OPTIONS['mail.username'] = os.getenv("SENTRY_EMAIL_USERNAME", {{ .Values.mail.username | quote }})
   SENTRY_OPTIONS['mail.password'] = os.getenv("SENTRY_EMAIL_PASSWORD", "")
   SENTRY_OPTIONS['mail.port'] = int(os.getenv("SENTRY_EMAIL_PORT", {{ .Values.mail.port | quote }}))

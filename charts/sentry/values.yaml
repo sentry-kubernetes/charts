@@ -2124,9 +2124,8 @@ system:
 mail:
   # For example: smtp
   backend: dummy
-  # NOTE: `mail.useTls` and `mail.useSsl` are mutually exclusive and should not appear at the same time. Only uncomment one of them.
-  # useSsl: false
   useTls: false
+  useSsl: false
   username: ""
   password: ""
   # existingSecret: secret-name
