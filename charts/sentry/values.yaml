@@ -3242,7 +3242,14 @@ metrics:
   securityContext: {}
   containerSecurityContext: {}
 
+  ## List of full statsd-exporter arguments appended after the default listen flags.
+  extraArgs: []
+  # extraArgs:
+  #   - "--log.level=debug"
+  extraVolumes: []
+  extraVolumeMounts: []
   volumes: []
+  volumeMounts: []
   sidecars: []
 
   # schedulerName:
