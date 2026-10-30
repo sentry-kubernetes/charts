@@ -112,16 +112,16 @@ Note: this table is incomplete, so have a look at the values.yaml in case you mi
 | filestore.profiles.s3.existingSecret | string | `nil` | Existing secret containing S3 credentials |
 | filestore.profiles.s3.accessKeyIdRef | string | `nil` | Key in existingSecret for access key ID |
 | filestore.profiles.s3.secretAccessKeyRef | string | `nil` | Key in existingSecret for secret access key |
-| filestore.profiles.s3.access_key | string | `nil` | S3 access key (plain text) |
-| filestore.profiles.s3.secret_key | string | `nil` | S3 secret key (plain text) |
-| filestore.profiles.s3.bucket_name | string | `nil` | S3 bucket name for profiles |
-| filestore.profiles.s3.endpoint_url | string | `nil` | S3 endpoint URL (for S3-compatible services like MinIO, SeaweedFS) |
+| filestore.profiles.s3.accessKey | string | `nil` | S3 access key (plain text) |
+| filestore.profiles.s3.secretKey | string | `nil` | S3 secret key (plain text) |
+| filestore.profiles.s3.bucketName | string | `nil` | S3 bucket name for profiles |
+| filestore.profiles.s3.endpointUrl | string | `nil` | S3 endpoint URL (for S3-compatible services like MinIO, SeaweedFS) |
 | filestore.profiles.s3.signature_version | string | `nil` | S3 signature version (e.g. s3v4) |
 | filestore.profiles.s3.region_name | string | `nil` | S3 region name |
 | filestore.profiles.s3.default_acl | string | `nil` | Default ACL for S3 objects |
 | filestore.profiles.s3.bucket_acl | string | `nil` | Bucket ACL for S3 |
 | filestore.profiles.s3.addressing_style | string | `nil` | S3 addressing style (path or virtual) |
-| filestore.profiles.filesystem.path | string | `"/var/lib/sentry/files/profiles"` | Path for filesystem profiles storage |
+| filestore.profiles.filesystem.path | string | `"/var/vroom/sentry-profiles"` | Path for filesystem profiles storage |
 | filestore.profiles.filesystem.persistence.enabled | bool | `true` | Enable persistence for profiles filesystem storage |
 | filestore.profiles.filesystem.persistence.shareWithVroom | bool | `false` | Share PVC with vroom deployment (requires ReadWriteMany on vroom.persistence.accessModes). NOT recommended for production |
 | filestore.profiles.filesystem.persistence.accessModes[0] | string | `"ReadWriteOnce"` | Access mode for profiles PVC (use ReadWriteMany when shareWithVroom is true) |
@@ -155,7 +155,7 @@ Note: this table is incomplete, so have a look at the values.yaml in case you mi
 | global.volumeMounts | list | `[]` |  |
 | global.volumes | list | `[]` |  |
 | google | object | `{}` |  |
-| hooks.activeDeadlineSeconds | int | `600` |  |
+| hooks.activeDeadlineSeconds | int | `1200` |  |
 | hooks.dbCheck.affinity | object | `{}` |  |
 | hooks.dbCheck.containerSecurityContext | object | `{}` |  |
 | hooks.dbCheck.enabled | bool | `true` |  |
@@ -371,7 +371,7 @@ Note: this table is incomplete, so have a look at the values.yaml in case you mi
 | metrics.livenessProbe.enabled | bool | `true` |  |
 | metrics.livenessProbe.failureThreshold | int | `3` |  |
 | metrics.livenessProbe.initialDelaySeconds | int | `30` |  |
-| metrics.livenessProbe.periodSeconds | int | `5` |  |
+| metrics.livenessProbe.periodSeconds | int | `3` |  |
 | metrics.livenessProbe.successThreshold | int | `1` |  |
 | metrics.livenessProbe.timeoutSeconds | int | `2` |  |
 | metrics.nodeSelector | object | `{}` |  |
@@ -533,7 +533,7 @@ Note: this table is incomplete, so have a look at the values.yaml in case you mi
 | sentry.ingestConsumerAttachments.env | list | `[]` |  |
 | sentry.ingestConsumerAttachments.livenessProbe.enabled | bool | `true` |  |
 | sentry.ingestConsumerAttachments.livenessProbe.initialDelaySeconds | int | `5` |  |
-| sentry.ingestConsumerAttachments.livenessProbe.periodSeconds | int | `320` |  |
+| sentry.ingestConsumerAttachments.livenessProbe.periodSeconds | int | `30` |  |
 | sentry.ingestConsumerAttachments.maxPollIntervalMs | int | `300000` | Kafka `--max-poll-interval-ms` (self-hosted `SENTRY_KAFKA_MAX_POLL_INTERVAL_MS`). Set `null` to omit the flag. |
 | sentry.ingestConsumerAttachments.nodeSelector | object | `{}` |  |
 | sentry.ingestConsumerAttachments.replicas | int | `1` |  |
@@ -552,7 +552,7 @@ Note: this table is incomplete, so have a look at the values.yaml in case you mi
 | sentry.ingestConsumerEvents.env | list | `[]` |  |
 | sentry.ingestConsumerEvents.livenessProbe.enabled | bool | `true` |  |
 | sentry.ingestConsumerEvents.livenessProbe.initialDelaySeconds | int | `5` |  |
-| sentry.ingestConsumerEvents.livenessProbe.periodSeconds | int | `320` |  |
+| sentry.ingestConsumerEvents.livenessProbe.periodSeconds | int | `30` |  |
 | sentry.ingestConsumerEvents.maxPollIntervalMs | int | `300000` | Kafka `--max-poll-interval-ms` (self-hosted `SENTRY_KAFKA_MAX_POLL_INTERVAL_MS`). Set `null` to omit the flag. |
 | sentry.ingestConsumerEvents.nodeSelector | object | `{}` |  |
 | sentry.ingestConsumerEvents.replicas | int | `1` |  |
@@ -571,7 +571,7 @@ Note: this table is incomplete, so have a look at the values.yaml in case you mi
 | sentry.ingestConsumerTransactions.env | list | `[]` |  |
 | sentry.ingestConsumerTransactions.livenessProbe.enabled | bool | `true` |  |
 | sentry.ingestConsumerTransactions.livenessProbe.initialDelaySeconds | int | `5` |  |
-| sentry.ingestConsumerTransactions.livenessProbe.periodSeconds | int | `320` |  |
+| sentry.ingestConsumerTransactions.livenessProbe.periodSeconds | int | `30` |  |
 | sentry.ingestConsumerTransactions.maxPollIntervalMs | int | `300000` | Kafka `--max-poll-interval-ms` (self-hosted `SENTRY_KAFKA_MAX_POLL_INTERVAL_MS`). Set `null` to omit the flag. |
 | sentry.ingestConsumerTransactions.nodeSelector | object | `{}` |  |
 | sentry.ingestConsumerTransactions.replicas | int | `1` |  |
@@ -586,11 +586,11 @@ Note: this table is incomplete, so have a look at the values.yaml in case you mi
 | sentry.ingestFeedback.autoscaling.minReplicas | int | `1` |  |
 | sentry.ingestFeedback.autoscaling.targetCPUUtilizationPercentage | int | `50` |  |
 | sentry.ingestFeedback.containerSecurityContext | object | `{}` |  |
-| sentry.ingestFeedback.enabled | bool | `false` |  |
+| sentry.ingestFeedback.enabled | bool | `true` |  |
 | sentry.ingestFeedback.env | list | `[]` |  |
 | sentry.ingestFeedback.livenessProbe.enabled | bool | `true` |  |
 | sentry.ingestFeedback.livenessProbe.initialDelaySeconds | int | `5` |  |
-| sentry.ingestFeedback.livenessProbe.periodSeconds | int | `320` |  |
+| sentry.ingestFeedback.livenessProbe.periodSeconds | int | `30` |  |
 | sentry.ingestFeedback.maxPollIntervalMs | int | `300000` | Kafka `--max-poll-interval-ms` (self-hosted `SENTRY_KAFKA_MAX_POLL_INTERVAL_MS`). Set `null` to omit the flag. |
 | sentry.ingestFeedback.nodeSelector | object | `{}` |  |
 | sentry.ingestFeedback.replicas | int | `1` |  |
@@ -609,7 +609,7 @@ Note: this table is incomplete, so have a look at the values.yaml in case you mi
 | sentry.ingestMonitors.env | list | `[]` |  |
 | sentry.ingestMonitors.livenessProbe.enabled | bool | `true` |  |
 | sentry.ingestMonitors.livenessProbe.initialDelaySeconds | int | `5` |  |
-| sentry.ingestMonitors.livenessProbe.periodSeconds | int | `320` |  |
+| sentry.ingestMonitors.livenessProbe.periodSeconds | int | `30` |  |
 | sentry.ingestMonitors.maxPollIntervalMs | int | `300000` | Kafka `--max-poll-interval-ms` (self-hosted `SENTRY_KAFKA_MAX_POLL_INTERVAL_MS`). Set `null` to omit the flag. |
 | sentry.ingestMonitors.nodeSelector | object | `{}` |  |
 | sentry.ingestMonitors.replicas | int | `1` |  |
@@ -628,7 +628,7 @@ Note: this table is incomplete, so have a look at the values.yaml in case you mi
 | sentry.ingestOccurrences.env | list | `[]` |  |
 | sentry.ingestOccurrences.livenessProbe.enabled | bool | `true` |  |
 | sentry.ingestOccurrences.livenessProbe.initialDelaySeconds | int | `5` |  |
-| sentry.ingestOccurrences.livenessProbe.periodSeconds | int | `320` |  |
+| sentry.ingestOccurrences.livenessProbe.periodSeconds | int | `30` |  |
 | sentry.ingestOccurrences.maxPollIntervalMs | int | `300000` | Kafka `--max-poll-interval-ms` (self-hosted `SENTRY_KAFKA_MAX_POLL_INTERVAL_MS`). Set `null` to omit the flag. |
 | sentry.ingestOccurrences.nodeSelector | object | `{}` |  |
 | sentry.ingestOccurrences.replicas | int | `1` |  |
@@ -650,7 +650,7 @@ Note: this table is incomplete, so have a look at the values.yaml in case you mi
 | sentry.metricsConsumer.env | list | `[]` |  |
 | sentry.metricsConsumer.livenessProbe.enabled | bool | `true` |  |
 | sentry.metricsConsumer.livenessProbe.initialDelaySeconds | int | `5` |  |
-| sentry.metricsConsumer.livenessProbe.periodSeconds | int | `320` |  |
+| sentry.metricsConsumer.livenessProbe.periodSeconds | int | `30` |  |
 | sentry.metricsConsumer.maxPollIntervalMs | int | `300000` | Kafka `--max-poll-interval-ms` (self-hosted `SENTRY_KAFKA_MAX_POLL_INTERVAL_MS`). Set `null` to omit the flag. |
 | sentry.metricsConsumer.nodeSelector | object | `{}` |  |
 | sentry.metricsConsumer.replicas | int | `1` |  |
@@ -669,7 +669,7 @@ Note: this table is incomplete, so have a look at the values.yaml in case you mi
 | sentry.postProcessForwardErrors.env | list | `[]` |  |
 | sentry.postProcessForwardErrors.livenessProbe.enabled | bool | `true` |  |
 | sentry.postProcessForwardErrors.livenessProbe.initialDelaySeconds | int | `5` |  |
-| sentry.postProcessForwardErrors.livenessProbe.periodSeconds | int | `320` |  |
+| sentry.postProcessForwardErrors.livenessProbe.periodSeconds | int | `30` |  |
 | sentry.postProcessForwardErrors.maxPollIntervalMs | int | `300000` | Kafka `--max-poll-interval-ms` (self-hosted `SENTRY_KAFKA_MAX_POLL_INTERVAL_MS`). Set `null` to omit the flag. |
 | sentry.postProcessForwardErrors.nodeSelector | object | `{}` |  |
 | sentry.postProcessForwardErrors.replicas | int | `1` |  |
@@ -684,7 +684,7 @@ Note: this table is incomplete, so have a look at the values.yaml in case you mi
 | sentry.postProcessForwardIssuePlatform.env | list | `[]` |  |
 | sentry.postProcessForwardIssuePlatform.livenessProbe.enabled | bool | `true` |  |
 | sentry.postProcessForwardIssuePlatform.livenessProbe.initialDelaySeconds | int | `5` |  |
-| sentry.postProcessForwardIssuePlatform.livenessProbe.periodSeconds | int | `320` |  |
+| sentry.postProcessForwardIssuePlatform.livenessProbe.periodSeconds | int | `30` |  |
 | sentry.postProcessForwardIssuePlatform.maxPollIntervalMs | int | `300000` | Kafka `--max-poll-interval-ms` (self-hosted `SENTRY_KAFKA_MAX_POLL_INTERVAL_MS`). Set `null` to omit the flag. |
 | sentry.postProcessForwardIssuePlatform.nodeSelector | object | `{}` |  |
 | sentry.postProcessForwardIssuePlatform.replicas | int | `1` |  |
@@ -699,7 +699,7 @@ Note: this table is incomplete, so have a look at the values.yaml in case you mi
 | sentry.postProcessForwardTransactions.env | list | `[]` |  |
 | sentry.postProcessForwardTransactions.livenessProbe.enabled | bool | `true` |  |
 | sentry.postProcessForwardTransactions.livenessProbe.initialDelaySeconds | int | `5` |  |
-| sentry.postProcessForwardTransactions.livenessProbe.periodSeconds | int | `320` |  |
+| sentry.postProcessForwardTransactions.livenessProbe.periodSeconds | int | `30` |  |
 | sentry.postProcessForwardTransactions.maxPollIntervalMs | int | `300000` | Kafka `--max-poll-interval-ms` (self-hosted `SENTRY_KAFKA_MAX_POLL_INTERVAL_MS`). Set `null` to omit the flag. |
 | sentry.postProcessForwardTransactions.nodeSelector | object | `{}` |  |
 | sentry.postProcessForwardTransactions.replicas | int | `1` |  |
@@ -754,7 +754,7 @@ Note: this table is incomplete, so have a look at the values.yaml in case you mi
 | sentry.taskWorker.containerSecurityContext | object | `{}` | |
 | sentry.taskWorker.enabled | bool | `true` | |
 | sentry.taskWorker.env | list | `[]` | |
-| sentry.taskWorker.livenessProbe.initialDelaySeconds | int | `10` | |
+| sentry.taskWorker.livenessProbe.initialDelaySeconds | int | `30` | |
 | sentry.taskWorker.livenessProbe.periodSeconds | int | `10` | |
 | sentry.taskWorker.livenessProbe.timeoutSeconds | int | `5` | |
 | sentry.taskWorker.nodeSelector | object | `{}` | |
@@ -859,7 +859,7 @@ Note: this table is incomplete, so have a look at the values.yaml in case you mi
 | snuba.consumer.env | list | `[]` |  |
 | snuba.consumer.livenessProbe.enabled | bool | `true` |  |
 | snuba.consumer.livenessProbe.initialDelaySeconds | int | `5` |  |
-| snuba.consumer.livenessProbe.periodSeconds | int | `320` |  |
+| snuba.consumer.livenessProbe.periodSeconds | int | `30` |  |
 | snuba.consumer.maxBatchTimeMs | int | `750` |  |
 | snuba.consumer.maxPollIntervalMs | int | `300000` | Kafka `--max-poll-interval-ms` (self-hosted `SENTRY_KAFKA_MAX_POLL_INTERVAL_MS`). Set `null` to omit the flag. |
 | snuba.consumer.nodeSelector | object | `{}` |  |
@@ -875,7 +875,7 @@ Note: this table is incomplete, so have a look at the values.yaml in case you mi
 | snuba.groupAttributesConsumer.env | list | `[]` |  |
 | snuba.groupAttributesConsumer.livenessProbe.enabled | bool | `true` |  |
 | snuba.groupAttributesConsumer.livenessProbe.initialDelaySeconds | int | `5` |  |
-| snuba.groupAttributesConsumer.livenessProbe.periodSeconds | int | `320` |  |
+| snuba.groupAttributesConsumer.livenessProbe.periodSeconds | int | `30` |  |
 | snuba.groupAttributesConsumer.maxBatchTimeMs | int | `750` |  |
 | snuba.groupAttributesConsumer.maxPollIntervalMs | int | `300000` | Kafka `--max-poll-interval-ms` (self-hosted `SENTRY_KAFKA_MAX_POLL_INTERVAL_MS`). Set `null` to omit the flag. |
 | snuba.groupAttributesConsumer.nodeSelector | object | `{}` |  |
@@ -889,7 +889,7 @@ Note: this table is incomplete, so have a look at the values.yaml in case you mi
 | snuba.issueOccurrenceConsumer.env | list | `[]` |  |
 | snuba.issueOccurrenceConsumer.livenessProbe.enabled | bool | `true` |  |
 | snuba.issueOccurrenceConsumer.livenessProbe.initialDelaySeconds | int | `5` |  |
-| snuba.issueOccurrenceConsumer.livenessProbe.periodSeconds | int | `320` |  |
+| snuba.issueOccurrenceConsumer.livenessProbe.periodSeconds | int | `30` |  |
 | snuba.issueOccurrenceConsumer.maxBatchTimeMs | int | `750` |  |
 | snuba.issueOccurrenceConsumer.maxPollIntervalMs | int | `300000` | Kafka `--max-poll-interval-ms` (self-hosted `SENTRY_KAFKA_MAX_POLL_INTERVAL_MS`). Set `null` to omit the flag. |
 | snuba.issueOccurrenceConsumer.nodeSelector | object | `{}` |  |
@@ -903,7 +903,7 @@ Note: this table is incomplete, so have a look at the values.yaml in case you mi
 | snuba.metricsConsumer.env | list | `[]` |  |
 | snuba.metricsConsumer.livenessProbe.enabled | bool | `true` |  |
 | snuba.metricsConsumer.livenessProbe.initialDelaySeconds | int | `5` |  |
-| snuba.metricsConsumer.livenessProbe.periodSeconds | int | `320` |  |
+| snuba.metricsConsumer.livenessProbe.periodSeconds | int | `30` |  |
 | snuba.metricsConsumer.maxBatchTimeMs | int | `750` |  |
 | snuba.metricsConsumer.maxPollIntervalMs | int | `300000` | Kafka `--max-poll-interval-ms` (self-hosted `SENTRY_KAFKA_MAX_POLL_INTERVAL_MS`). Set `null` to omit the flag. |
 | snuba.metricsConsumer.nodeSelector | object | `{}` |  |
@@ -929,7 +929,7 @@ Note: this table is incomplete, so have a look at the values.yaml in case you mi
 | snuba.outcomesBillingConsumer.env | list | `[]` |  |
 | snuba.outcomesBillingConsumer.livenessProbe.enabled | bool | `true` |  |
 | snuba.outcomesBillingConsumer.livenessProbe.initialDelaySeconds | int | `5` |  |
-| snuba.outcomesBillingConsumer.livenessProbe.periodSeconds | int | `320` |  |
+| snuba.outcomesBillingConsumer.livenessProbe.periodSeconds | int | `30` |  |
 | snuba.outcomesBillingConsumer.maxBatchSize | string | `"3"` |  |
 | snuba.outcomesBillingConsumer.maxBatchTimeMs | int | `750` |  |
 | snuba.outcomesBillingConsumer.maxPollIntervalMs | int | `300000` | Kafka `--max-poll-interval-ms` (self-hosted `SENTRY_KAFKA_MAX_POLL_INTERVAL_MS`). Set `null` to omit the flag. |
@@ -944,7 +944,7 @@ Note: this table is incomplete, so have a look at the values.yaml in case you mi
 | snuba.outcomesConsumer.env | list | `[]` |  |
 | snuba.outcomesConsumer.livenessProbe.enabled | bool | `true` |  |
 | snuba.outcomesConsumer.livenessProbe.initialDelaySeconds | int | `5` |  |
-| snuba.outcomesConsumer.livenessProbe.periodSeconds | int | `320` |  |
+| snuba.outcomesConsumer.livenessProbe.periodSeconds | int | `30` |  |
 | snuba.outcomesConsumer.maxBatchSize | string | `"3"` |  |
 | snuba.outcomesConsumer.maxPollIntervalMs | int | `300000` | Kafka `--max-poll-interval-ms` (self-hosted `SENTRY_KAFKA_MAX_POLL_INTERVAL_MS`). Set `null` to omit the flag. |
 | snuba.outcomesConsumer.nodeSelector | object | `{}` |  |
@@ -958,7 +958,7 @@ Note: this table is incomplete, so have a look at the values.yaml in case you mi
 | snuba.profilingFunctionsConsumer.env | list | `[]` |  |
 | snuba.profilingFunctionsConsumer.livenessProbe.enabled | bool | `true` |  |
 | snuba.profilingFunctionsConsumer.livenessProbe.initialDelaySeconds | int | `5` |  |
-| snuba.profilingFunctionsConsumer.livenessProbe.periodSeconds | int | `320` |  |
+| snuba.profilingFunctionsConsumer.livenessProbe.periodSeconds | int | `30` |  |
 | snuba.profilingFunctionsConsumer.maxBatchTimeMs | int | `750` |  |
 | snuba.profilingFunctionsConsumer.maxPollIntervalMs | int | `300000` | Kafka `--max-poll-interval-ms` (self-hosted `SENTRY_KAFKA_MAX_POLL_INTERVAL_MS`). Set `null` to omit the flag. |
 | snuba.profilingFunctionsConsumer.nodeSelector | object | `{}` |  |
@@ -972,7 +972,7 @@ Note: this table is incomplete, so have a look at the values.yaml in case you mi
 | snuba.profilingProfilesConsumer.env | list | `[]` |  |
 | snuba.profilingProfilesConsumer.livenessProbe.enabled | bool | `true` |  |
 | snuba.profilingProfilesConsumer.livenessProbe.initialDelaySeconds | int | `5` |  |
-| snuba.profilingProfilesConsumer.livenessProbe.periodSeconds | int | `320` |  |
+| snuba.profilingProfilesConsumer.livenessProbe.periodSeconds | int | `30` |  |
 | snuba.profilingProfilesConsumer.maxBatchTimeMs | int | `750` |  |
 | snuba.profilingProfilesConsumer.maxPollIntervalMs | int | `300000` | Kafka `--max-poll-interval-ms` (self-hosted `SENTRY_KAFKA_MAX_POLL_INTERVAL_MS`). Set `null` to omit the flag. |
 | snuba.profilingProfilesConsumer.nodeSelector | object | `{}` |  |
@@ -996,7 +996,7 @@ Note: this table is incomplete, so have a look at the values.yaml in case you mi
 | snuba.replaysConsumer.env | list | `[]` |  |
 | snuba.replaysConsumer.livenessProbe.enabled | bool | `true` |  |
 | snuba.replaysConsumer.livenessProbe.initialDelaySeconds | int | `5` |  |
-| snuba.replaysConsumer.livenessProbe.periodSeconds | int | `320` |  |
+| snuba.replaysConsumer.livenessProbe.periodSeconds | int | `30` |  |
 | snuba.replaysConsumer.maxBatchTimeMs | int | `750` |  |
 | snuba.replaysConsumer.maxPollIntervalMs | int | `300000` | Kafka `--max-poll-interval-ms` (self-hosted `SENTRY_KAFKA_MAX_POLL_INTERVAL_MS`). Set `null` to omit the flag. |
 | snuba.replaysConsumer.nodeSelector | object | `{}` |  |
@@ -1004,14 +1004,14 @@ Note: this table is incomplete, so have a look at the values.yaml in case you mi
 | snuba.replaysConsumer.resources | object | `{}` |  |
 | snuba.replaysConsumer.securityContext | object | `{}` |  |
 | snuba.replaysConsumer.topologySpreadConstraints | list | `[]` |  |
-| snuba.rustConsumer | bool | `false` |  |
+| snuba.rustConsumer | bool | `true` |  |
 | snuba.subscriptionConsumerEvents.affinity | object | `{}` |  |
 | snuba.subscriptionConsumerEvents.containerSecurityContext | object | `{}` |  |
 | snuba.subscriptionConsumerEvents.enabled | bool | `true` |  |
 | snuba.subscriptionConsumerEvents.env | list | `[]` |  |
 | snuba.subscriptionConsumerEvents.livenessProbe.enabled | bool | `true` |  |
 | snuba.subscriptionConsumerEvents.livenessProbe.initialDelaySeconds | int | `5` |  |
-| snuba.subscriptionConsumerEvents.livenessProbe.periodSeconds | int | `320` |  |
+| snuba.subscriptionConsumerEvents.livenessProbe.periodSeconds | int | `30` |  |
 | snuba.subscriptionConsumerEvents.nodeSelector | object | `{}` |  |
 | snuba.subscriptionConsumerEvents.replicas | int | `1` |  |
 | snuba.subscriptionConsumerEvents.resources | object | `{}` |  |
@@ -1024,7 +1024,7 @@ Note: this table is incomplete, so have a look at the values.yaml in case you mi
 | snuba.subscriptionConsumerMetrics.env | list | `[]` |  |
 | snuba.subscriptionConsumerMetrics.livenessProbe.enabled | bool | `true` |  |
 | snuba.subscriptionConsumerMetrics.livenessProbe.initialDelaySeconds | int | `5` |  |
-| snuba.subscriptionConsumerMetrics.livenessProbe.periodSeconds | int | `320` |  |
+| snuba.subscriptionConsumerMetrics.livenessProbe.periodSeconds | int | `30` |  |
 | snuba.subscriptionConsumerMetrics.nodeSelector | object | `{}` |  |
 | snuba.subscriptionConsumerMetrics.replicas | int | `1` |  |
 | snuba.subscriptionConsumerMetrics.resources | object | `{}` |  |
@@ -1037,7 +1037,7 @@ Note: this table is incomplete, so have a look at the values.yaml in case you mi
 | snuba.subscriptionConsumerTransactions.env | list | `[]` |  |
 | snuba.subscriptionConsumerTransactions.livenessProbe.enabled | bool | `true` |  |
 | snuba.subscriptionConsumerTransactions.livenessProbe.initialDelaySeconds | int | `5` |  |
-| snuba.subscriptionConsumerTransactions.livenessProbe.periodSeconds | int | `320` |  |
+| snuba.subscriptionConsumerTransactions.livenessProbe.periodSeconds | int | `30` |  |
 | snuba.subscriptionConsumerTransactions.nodeSelector | object | `{}` |  |
 | snuba.subscriptionConsumerTransactions.replicas | int | `1` |  |
 | snuba.subscriptionConsumerTransactions.resources | object | `{}` |  |
@@ -1050,7 +1050,7 @@ Note: this table is incomplete, so have a look at the values.yaml in case you mi
 | snuba.transactionsConsumer.env | list | `[]` |  |
 | snuba.transactionsConsumer.livenessProbe.enabled | bool | `true` |  |
 | snuba.transactionsConsumer.livenessProbe.initialDelaySeconds | int | `5` |  |
-| snuba.transactionsConsumer.livenessProbe.periodSeconds | int | `320` |  |
+| snuba.transactionsConsumer.livenessProbe.periodSeconds | int | `30` |  |
 | snuba.transactionsConsumer.maxBatchTimeMs | int | `750` |  |
 | snuba.transactionsConsumer.maxPollIntervalMs | int | `300000` | Kafka `--max-poll-interval-ms` (self-hosted `SENTRY_KAFKA_MAX_POLL_INTERVAL_MS`). Set `null` to omit the flag. |
 | snuba.transactionsConsumer.nodeSelector | object | `{}` |  |
