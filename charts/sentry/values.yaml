@@ -2784,7 +2784,10 @@ externalClickhouse:
 kafka:
   enabled: true
   image:
-    repository: bitnamilegacy/kafka
+    # bitnamilegacy/kafka is frozen/unmaintained; switched to the official image.
+    repository: apache/kafka
+    # apache/kafka tags don't use bitnami's "-debian-12-rX" suffix.
+    tag: 3.7.1
   ## Kafka broker configuration.
   ## These values are passed directly to the bitnami/kafka chart as `config`.
   ## Ref: https://github.com/bitnami/charts/tree/main/bitnami/kafka#kafka-broker-configuration
@@ -2801,6 +2804,52 @@ kafka:
     # Note that existing topics will remain with replicationFactor: 1 when updated.
     replicationFactor: 3
     enabled: true
+    # The chart's own default provisioning script sources bitnami's
+    # /opt/bitnami/scripts/libkafka.sh and calls /opt/bitnami/kafka/bin/kafka-topics.sh,
+    # neither of which exist on the apache/kafka image. "sentry.kafka.bundledProvisioningScript"
+    # (templates/kafka-provisioning/_helper-kafka-bundled-provisioning.tpl) is that same
+    # default script (see the kafka chart's templates/provisioning/job.yaml) with
+    # libkafka.sh's two functions inlined and the kafka-topics.sh path fixed; everything
+    # else -- SASL/TLS client-conf handling, pre/post scripts, parallel execution -- is
+    # unchanged.
+    command:
+      - /bin/bash
+    args:
+      - -efc
+      - |
+        {{- include "sentry.kafka.bundledProvisioningScript" $ | nindent 8 }}
+    # The chart's built-in wait container calls bitnami's `wait-for-port`, which
+    # doesn't exist on apache/kafka. Disable it and wait with bash's /dev/tcp instead.
+    waitForKafka: false
+    initContainers:
+      - name: wait-for-available-kafka
+        image: '{{ include "kafka.image" $ }}'
+        imagePullPolicy: '{{ $.Values.image.pullPolicy }}'
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+              - ALL
+          readOnlyRootFilesystem: true
+          runAsNonRoot: true
+          runAsUser: 1001
+          runAsGroup: 1001
+        command:
+          - /bin/bash
+          - -ec
+          - |
+            host='{{ include "common.names.fullname" $ }}'
+            port='{{ $.Values.service.ports.client }}'
+            for i in $(seq 1 60); do
+              if (exec 3<>"/dev/tcp/${host}/${port}") 2>/dev/null; then
+                echo "Kafka is available"
+                exit 0
+              fi
+              echo "Waiting for ${host}:${port} ($i/60)..."
+              sleep 2
+            done
+            echo "Timed out waiting for ${host}:${port}"
+            exit 1
     # Topic list is based on files below.
     # - https://github.com/getsentry/snuba/blob/master/snuba/utils/streams/topics.py
     # - https://github.com/getsentry/sentry/blob/master/src/sentry/conf/types/kafka_definition.py
@@ -2909,6 +2958,11 @@ kafka:
       - name: snuba-lw-deletions-generic-events
       - name: snuba-lw-deletions-eap-items
       - name: shared-resources-usage
+      - name: snuba-llm-proxy-cost
+        config:
+          "compression.type": lz4
+          "segment.bytes": "262144000"
+          "retention.ms": "86400000"
       - name: snuba-profile-chunks
       - name: buffered-segments
       - name: uptime-configs
@@ -2979,6 +3033,61 @@ kafka:
     ## if the load on the kafka controller increases, persistence.size must be increased
     # persistence:
     #   size: 8Gi
+    # apache/kafka's own user is uid/gid 1000 ("appuser"), but we deliberately keep
+    # the kafka chart's default uid/gid/fsGroup 1001 (no securityContext override).
+    # Existing PVCs hold data written by bitnami as 1001:1001 with mode 644, and
+    # fsGroup is not applied to every volume type (e.g. hostPath/local-path), so
+    # switching to 1000 fails upgrades with AccessDeniedException. apache/kafka runs
+    # fine as 1001: /opt/kafka is world-readable and logs/tmp are mounted volumes.
+    # Bypass the image's default entrypoint (bitnami-specific, not present on
+    # apache/kafka) and start Kafka directly against the mounted config file.
+    command:
+      - /opt/kafka/bin/kafka-server-start.sh
+    args:
+      - /opt/bitnami/kafka/config/server.properties
+    # Data stays on the chart default mountPath (/bitnami/kafka). Do NOT use
+    # /var/lib/kafka: apache/kafka declares `VOLUME /var/lib/kafka/data`, and
+    # containerd/CRI-O mount an ephemeral per-container dir over any image VOLUME
+    # not covered by an exact mount, which would shadow log.dir (<mountPath>/data)
+    # and keep data off the PVC. kafka-init.sh also hard-codes /bitnami/kafka.
+    # Application logs go to the image's LOG_DIR (/opt/kafka/logs), which must be
+    # writable because the root filesystem is read-only.
+    logPersistence:
+      mountPath: /opt/kafka/logs
+    # One-time KRaft format (bitnami's entrypoint did this internally);
+    # --ignore-formatted no-ops safely on already-formatted data. Runs after the
+    # chart's built-in kafka-init container, on the same apache/kafka image.
+    initContainers:
+      - name: kafka-kraft-format
+        # Same image as the broker, so image.tag / global.imageRegistry apply here too.
+        image: '{{ include "kafka.image" $ }}'
+        imagePullPolicy: '{{ $.Values.image.pullPolicy }}'
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+              - ALL
+          readOnlyRootFilesystem: true
+          runAsNonRoot: true
+          runAsUser: 1001
+          runAsGroup: 1001
+        env:
+          - name: KAFKA_KRAFT_CLUSTER_ID
+            valueFrom:
+              secretKeyRef:
+                # Same lookup the broker container uses (honours kraft.existingClusterIdSecret).
+                name: '{{ default (printf "%s-kraft-cluster-id" (include "common.names.fullname" $)) $.Values.kraft.existingClusterIdSecret }}'
+                key: kraft-cluster-id
+        command:
+          - /bin/bash
+          - -ec
+          - |
+            /opt/kafka/bin/kafka-storage.sh format --cluster-id "${KAFKA_KRAFT_CLUSTER_ID}" -c /config/server.properties --ignore-formatted
+        volumeMounts:
+          - name: data
+            mountPath: /bitnami/kafka
+          - name: kafka-config
+            mountPath: /config
   ## Use this to enable an extra service account
   # serviceAccount:
   #   create: false

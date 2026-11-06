@@ -2,6 +2,59 @@
 
 The changelog below refers to the main `sentry` chart only.
 
+## Upgrading to Chart 36.0.0
+
+### Breaking: Kafka image
+
+If `kafka.enabled` is true (the default), the bundled Kafka image changes from `bitnamilegacy/kafka:3.7.1-debian-12-r4` to the official `apache/kafka:3.7.1`. The Kafka version stays 3.7.1. Installations using `externalKafka` are unaffected.
+
+What does not change, so existing data is reused in place: the data path (`/bitnami/kafka`), the uid/gid and `fsGroup` (1001), the KRaft cluster ID and `server.properties`, which the kafka chart still renders. The upgrade is a normal rolling restart of the Kafka controllers. It was tested on a 3-node KRaft cluster: same cluster ID, all topics and messages kept, no under-replicated partitions.
+
+Before upgrading:
+
+- Snapshot the Kafka PVCs.
+- Remove overrides of `kafka.image.*`, `kafka.controller.command`, `kafka.controller.args`, `kafka.controller.initContainers`, `kafka.controller.persistence.mountPath`, `kafka.controller.logPersistence.mountPath`, `kafka.provisioning.command`, `kafka.provisioning.args` and `kafka.provisioning.initContainers`, or merge them with the new defaults. The chart now sets these to start `apache/kafka` directly, because the Bitnami entrypoint and scripts do not exist in that image.
+- Do not set `kafka.controller.persistence.mountPath` to `/var/lib/kafka`. The image declares `VOLUME /var/lib/kafka/data`, and the container runtime would mount an ephemeral directory over the Kafka data directory.
+- Do not change the Kafka uid/gid to 1000 (the image's own `appuser`). Existing data is owned by 1001 with mode 644, and `fsGroup` is not applied to every volume type (for example `hostPath` / local-path), so the brokers would fail with `AccessDeniedException`.
+- A custom `kafka.log4j` / `kafka.existingLog4jConfigMap` is mounted at the Bitnami path and is no longer read.
+
+Not supported with `apache/kafka` yet. These now fail at render time with an explanation:
+
+- SASL or TLS on any listener (`kafka.listeners.*.protocol` containing `SASL` or `SSL`). The image has no `openssl` for PEM keystores, and SCRAM users are not created when KRaft storage is formatted.
+- Broker-only nodes (`kafka.broker.replicaCount > 0`). Only `kafka.controller.*` is converted; use `kafka.controller.replicaCount`.
+
+To defer the migration, explicitly keep the old image by setting `kafka.image.repository: bitnamilegacy/kafka` and `kafka.image.tag: 3.7.1-debian-12-r4`, and reset the overrides listed above:
+
+```yaml
+kafka:
+  image:
+    repository: bitnamilegacy/kafka
+    tag: 3.7.1-debian-12-r4
+  controller:
+    command: []
+    args: []
+    initContainers: []
+    logPersistence:
+      mountPath: /opt/bitnami/kafka/logs
+  provisioning:
+    command: []
+    args: []
+    initContainers: []
+    waitForKafka: true
+```
+
+The render-time check only applies to `apache/kafka`. This does not restore maintenance or security updates for the Bitnami image.
+
+### New Kafka topic
+
+`snuba-llm-proxy-cost` is now provisioned with replication factor `kafka.provisioning.replicationFactor`. Snuba previously created it on its own with replication factor 1. Provisioning only creates missing topics, so on an existing installation, raise its replication factor manually, for example:
+
+```bash
+kubectl -n <namespace> exec <release>-kafka-controller-0 -c kafka -- bash -c '
+echo "{\"version\":1,\"partitions\":[{\"topic\":\"snuba-llm-proxy-cost\",\"partition\":0,\"replicas\":[0,1,2]}]}" > /tmp/r.json
+/opt/kafka/bin/kafka-reassign-partitions.sh --bootstrap-server localhost:9092 --reassignment-json-file /tmp/r.json --execute'
+```
+
 ## Upgrading to Chart 35.0.0
 
 ### Breaking: PgBouncer image and authentication

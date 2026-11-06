@@ -1,0 +1,2 @@
+{{- /* Renders nothing; fails the install/upgrade on unsupported bundled-Kafka settings. */ -}}
+{{- include "sentry.kafka.validateApacheImage" . -}}
