@@ -6,17 +6,28 @@ The changelog below refers to the main `sentry` chart only.
 
 ### Breaking: Kafka image
 
-If `kafka.enabled` is true (the default), the bundled Kafka image changes from `bitnamilegacy/kafka:3.7.1-debian-12-r4` to the official `apache/kafka:3.7.1`. The Kafka version stays 3.7.1. Installations using `externalKafka` are unaffected.
+If `kafka.enabled` is true (the default), the bundled Kafka image changes from `bitnamilegacy/kafka:3.7.1-debian-12-r4` to the official `apache/kafka:3.9.2`, which also upgrades Kafka from 3.7.1 to 3.9.2. Installations using `externalKafka` are unaffected.
 
-What does not change, so existing data is reused in place: the data path (`/bitnami/kafka`), the uid/gid and `fsGroup` (1001), the KRaft cluster ID and `server.properties`, which the kafka chart still renders. The upgrade is a normal rolling restart of the Kafka controllers. It was tested on a 3-node KRaft cluster: same cluster ID, all topics and messages kept, no under-replicated partitions.
+What does not change, so existing data is reused in place: the data path (`/bitnami/kafka`), the uid/gid and `fsGroup` (1001), the KRaft cluster ID and `server.properties`, which the kafka chart still renders. The upgrade is a normal rolling restart of the Kafka controllers. It was tested on a 3-node KRaft cluster under continuous produce traffic: same cluster ID, all topics and messages kept, no under-replicated partitions.
+
+The KRaft `metadata.version` is not changed by the upgrade: an existing cluster stays at `3.7-IV4` and keeps running with the 3.7 metadata features. This keeps a rollback to the 3.7.1 image possible (tested: a node rolled back to `bitnamilegacy/kafka:3.7.1-debian-12-r4` rejoined with its data). Once you no longer need a rollback, you can finalize the upgrade; after that, going back to 3.7 is no longer possible:
+
+```bash
+kubectl -n <namespace> exec <release>-kafka-controller-0 -c kafka -- \
+  /opt/kafka/bin/kafka-features.sh --bootstrap-server localhost:9092 upgrade --metadata 3.9
+```
+
+New installations are formatted with `metadata.version` 3.9 and cannot run the 3.7 image.
+
+Kafka now logs to stdout only. The image's default `log4j.properties` writes hourly-rolled files and `kafka-server-start.sh` writes a GC log, both into the `logs` emptyDir, which would grow until the pod is evicted for exceeding its ephemeral-storage limit. The chart sets a console-only `kafka.log4j` (same loggers and levels as Kafka's default), mounts it at `/opt/kafka/config/log4j.properties` with `kafka.controller.extraVolumeMounts`, and drops `-loggc` with `EXTRA_ARGS=-name kafkaServer` in `kafka.controller.extraEnvVars`. This matches what the Bitnami image did.
 
 Before upgrading:
 
 - Snapshot the Kafka PVCs.
-- Remove overrides of `kafka.image.*`, `kafka.controller.command`, `kafka.controller.args`, `kafka.controller.initContainers`, `kafka.controller.persistence.mountPath`, `kafka.controller.logPersistence.mountPath`, `kafka.provisioning.command`, `kafka.provisioning.args` and `kafka.provisioning.initContainers`, or merge them with the new defaults. The chart now sets these to start `apache/kafka` directly, because the Bitnami entrypoint and scripts do not exist in that image.
+- Remove overrides of `kafka.image.*`, `kafka.controller.command`, `kafka.controller.args`, `kafka.controller.initContainers`, `kafka.controller.extraEnvVars`, `kafka.controller.extraVolumeMounts`, `kafka.controller.persistence.mountPath`, `kafka.controller.logPersistence.mountPath`, `kafka.provisioning.command`, `kafka.provisioning.args` and `kafka.provisioning.initContainers`, or merge them with the new defaults. The chart now sets these to start `apache/kafka` directly, because the Bitnami entrypoint and scripts do not exist in that image.
 - Do not set `kafka.controller.persistence.mountPath` to `/var/lib/kafka`. The image declares `VOLUME /var/lib/kafka/data`, and the container runtime would mount an ephemeral directory over the Kafka data directory.
 - Do not change the Kafka uid/gid to 1000 (the image's own `appuser`). Existing data is owned by 1001 with mode 644, and `fsGroup` is not applied to every volume type (for example `hostPath` / local-path), so the brokers would fail with `AccessDeniedException`.
-- A custom `kafka.log4j` / `kafka.existingLog4jConfigMap` is mounted at the Bitnami path and is no longer read.
+- A custom `kafka.log4j` / `kafka.existingLog4jConfigMap` replaces the console-only default and is still used. It must be a log4j 1.x `log4j.properties` file (Kafka 3.9 uses reload4j). Avoid file appenders, or give `kafka.controller.logPersistence` enough space.
 
 Not supported with `apache/kafka` yet. These now fail at render time with an explanation:
 
@@ -34,6 +45,8 @@ kafka:
     command: []
     args: []
     initContainers: []
+    extraEnvVars: []
+    extraVolumeMounts: []
     logPersistence:
       mountPath: /opt/bitnami/kafka/logs
   provisioning:

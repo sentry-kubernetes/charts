@@ -28,7 +28,7 @@ docs = render()
 spec = find(docs, "StatefulSet", "-kafka-controller")["spec"]["template"]["spec"]
 containers = {c["name"]: c for c in spec["initContainers"] + spec["containers"]}
 kafka, fmt = containers["kafka"], containers["kafka-kraft-format"]
-assert kafka["image"].endswith("apache/kafka:3.7.1"), kafka["image"]
+assert kafka["image"].endswith("apache/kafka:3.9.2"), kafka["image"]
 assert kafka["command"] == ["/opt/kafka/bin/kafka-server-start.sh"]
 assert fmt["image"] == kafka["image"] and fmt["imagePullPolicy"] == kafka["imagePullPolicy"]
 # apache/kafka declares VOLUME /var/lib/kafka/data; mounting above it gets shadowed by the runtime.
@@ -42,6 +42,21 @@ for c in containers.values():
     assert c["securityContext"]["runAsGroup"] == 1001, c["name"]
 config = find(docs, "ConfigMap", "-kafka-controller-configuration")["data"]["server.properties"]
 assert "log.dir=/bitnami/kafka/data" in config
+
+# Logs go to stdout only: the logs emptyDir counts against ephemeral storage.
+log4j = find(docs, "ConfigMap", "-kafka-log4j-configuration")["data"]["log4j.properties"]
+assert "log4j.rootLogger=INFO, stdout" in log4j and "FileAppender" not in log4j
+log4j_mounts = [m for m in kafka["volumeMounts"] if m["name"] == "log4j-config"]
+assert {m["mountPath"] for m in log4j_mounts} >= {"/opt/kafka/config/log4j.properties"}, log4j_mounts
+env = {e["name"]: e.get("value") for e in kafka["env"]}
+assert env.get("EXTRA_ARGS") == "-name kafkaServer", env.get("EXTRA_ARGS")  # no -loggc
+# Not KAFKA_LOG4J_OPTS: `kubectl exec` CLI tools would inherit it and log INFO to stdout.
+assert "KAFKA_LOG4J_OPTS" not in env
+# Clearing kafka.log4j drops the extra mount instead of referencing a missing volume.
+spec_nolog = find(render("--set", "kafka.log4j="), "StatefulSet", "-kafka-controller")["spec"]["template"]["spec"]
+kafka_nolog = next(c for c in spec_nolog["containers"] if c["name"] == "kafka")
+assert not [m for m in kafka_nolog["volumeMounts"] if m["name"] == "log4j-config"]
+assert not [v for v in spec_nolog["volumes"] if v["name"] == "log4j-config"]
 
 # Provisioning: no bitnami-only binaries or scripts.
 job = find(docs, "Job", "-kafka-provisioning")["spec"]["template"]["spec"]

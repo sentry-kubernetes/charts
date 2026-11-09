@@ -211,18 +211,21 @@ Note: this table is incomplete, so have a look at the values.yaml in case you mi
 | ipv6 | bool | `false` |  |
 | kafka.controller.args | list | `["/opt/bitnami/kafka/config/server.properties"]` | Config file passed to `kafka-server-start.sh` (rendered there by the kafka chart's init container) |
 | kafka.controller.command | list | `["/opt/kafka/bin/kafka-server-start.sh"]` | Starts Kafka directly; the bitnami entrypoint does not exist on `apache/kafka` |
+| kafka.controller.extraEnvVars | list | `[{"name":"EXTRA_ARGS","value":"-name kafkaServer"}]` | Drops `-loggc` from `kafka-server-start.sh`, so no GC log is written to the `logs` emptyDir |
+| kafka.controller.extraVolumeMounts | string | (see `values.yaml`) | Mounts `kafka.log4j` / `kafka.existingLog4jConfigMap` at `/opt/kafka/config/log4j.properties`, the file `kafka-server-start.sh` reads |
 | kafka.controller.initContainers | list | (see `values.yaml`) | `kafka-kraft-format`: formats KRaft storage on first start (`--ignore-formatted` on later starts) |
 | kafka.controller.logPersistence.mountPath | string | `"/opt/kafka/logs"` | Kafka application log directory; must be writable because the root filesystem is read-only |
 | kafka.controller.nodeSelector | object | `{}` |  |
 | kafka.controller.replicaCount | int | `3` |  |
 | kafka.enabled | bool | `true` |  |
 | kafka.image.repository | string | `"apache/kafka"` | Kafka image (was `bitnamilegacy/kafka` before chart 36.0.0). With `apache/kafka`, SASL/TLS listeners and `kafka.broker.replicaCount > 0` are rejected at render time |
-| kafka.image.tag | string | `"3.7.1"` |  |
+| kafka.image.tag | string | `"3.9.2"` | Upgrading from 3.7.x keeps the KRaft `metadata.version` at 3.7, so rolling back stays possible |
 | kafka.kraft.enabled | bool | `true` |  |
 | kafka.listeners.client.protocol | string | `"PLAINTEXT"` | Security protocol for the Kafka client listener (PLAINTEXT, SASL_PLAINTEXT, SASL_SSL, SSL) |
 | kafka.listeners.controller.protocol | string | `"PLAINTEXT"` |  |
 | kafka.listeners.external.protocol | string | `"PLAINTEXT"` |  |
 | kafka.listeners.interbroker.protocol | string | `"PLAINTEXT"` |  |
+| kafka.log4j | string | (see `values.yaml`) | Console-only log4j config. The image's default writes hourly-rolled log files to the `logs` emptyDir, which fills the pod's ephemeral storage |
 | kafka.provisioning.args | list | (see `values.yaml`) | Runs `sentry.kafka.bundledProvisioningScript`: the kafka chart's provisioning script adapted to `apache/kafka` |
 | kafka.provisioning.command | list | `["/bin/bash"]` |  |
 | kafka.provisioning.enabled | bool | `true` |  |

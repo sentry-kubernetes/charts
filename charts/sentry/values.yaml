@@ -2787,7 +2787,29 @@ kafka:
     # bitnamilegacy/kafka is frozen/unmaintained; switched to the official image.
     repository: apache/kafka
     # apache/kafka tags don't use bitnami's "-debian-12-rX" suffix.
-    tag: 3.7.1
+    # Upgrading from 3.7.x leaves the KRaft metadata.version at 3.7, so a rollback
+    # to 3.7 stays possible. See CHANGELOG.md "Upgrading to Chart 36.0.0".
+    tag: 3.9.2
+  ## Console-only log4j config. apache/kafka's default log4j.properties writes
+  ## hourly-rolled files (server.log, controller.log, ...) to LOG_DIR, which is an
+  ## emptyDir here and would grow until the pod hits its ephemeral-storage limit.
+  ## Same loggers and levels as the default, all sent to stdout (as bitnami's image
+  ## did). controller.extraVolumeMounts mounts it where kafka-server-start.sh reads it.
+  log4j: |
+    log4j.rootLogger=INFO, stdout
+    log4j.appender.stdout=org.apache.log4j.ConsoleAppender
+    log4j.appender.stdout.layout=org.apache.log4j.PatternLayout
+    log4j.appender.stdout.layout.ConversionPattern=[%d] %p %m (%c)%n
+    log4j.logger.org.apache.zookeeper=INFO
+    log4j.logger.kafka=INFO
+    log4j.logger.org.apache.kafka=INFO
+    log4j.logger.kafka.request.logger=WARN
+    log4j.logger.kafka.network.RequestChannel$=WARN
+    log4j.logger.org.apache.kafka.controller=INFO
+    log4j.logger.kafka.controller=TRACE
+    log4j.logger.kafka.log.LogCleaner=INFO
+    log4j.logger.state.change.logger=INFO
+    log4j.logger.kafka.authorizer.logger=INFO
   ## Kafka broker configuration.
   ## These values are passed directly to the bitnami/kafka chart as `config`.
   ## Ref: https://github.com/bitnami/charts/tree/main/bitnami/kafka#kafka-broker-configuration
@@ -3045,6 +3067,23 @@ kafka:
       - /opt/kafka/bin/kafka-server-start.sh
     args:
       - /opt/bitnami/kafka/config/server.properties
+    extraEnvVars:
+      # kafka-server-start.sh defaults to "-name kafkaServer -loggc"; -loggc writes a
+      # GC log (up to 10 x 100M) to LOG_DIR. bitnami's image removed it as well.
+      - name: EXTRA_ARGS
+        value: -name kafkaServer
+    # Mount kafka.log4j (or existingLog4jConfigMap) over the image's default
+    # /opt/kafka/config/log4j.properties, which kafka-server-start.sh reads. This is
+    # used instead of KAFKA_LOG4J_OPTS: that env var would also be inherited by CLI
+    # tools run with `kubectl exec` (kafka-topics.sh, ...), replacing their quiet
+    # tools-log4j.properties and printing INFO logs into their stdout.
+    # A template string so the mount disappears if kafka.log4j is cleared.
+    extraVolumeMounts: |
+      {{- if or $.Values.log4j $.Values.existingLog4jConfigMap }}
+      - name: log4j-config
+        mountPath: /opt/kafka/config/log4j.properties
+        subPath: log4j.properties
+      {{- end }}
     # Data stays on the chart default mountPath (/bitnami/kafka). Do NOT use
     # /var/lib/kafka: apache/kafka declares `VOLUME /var/lib/kafka/data`, and
     # containerd/CRI-O mount an ephemeral per-container dir over any image VOLUME
