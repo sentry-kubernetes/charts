@@ -209,23 +209,36 @@ Note: this table is incomplete, so have a look at the values.yaml in case you mi
 | ingress.pathType | string | `"ImplementationSpecific"` |  |
 | ingress.regexPathStyle | string | `""` | Controller style for path rules (auto from ingressClassName if empty) |
 | ipv6 | bool | `false` |  |
+| kafka.controller.args | list | `["/opt/bitnami/kafka/config/server.properties"]` | Config file passed to `kafka-server-start.sh` (rendered there by the kafka chart's init container) |
+| kafka.controller.command | list | `["/opt/kafka/bin/kafka-server-start.sh"]` | Starts Kafka directly; the bitnami entrypoint does not exist on `apache/kafka` |
+| kafka.controller.extraEnvVars | list | `[{"name":"EXTRA_ARGS","value":"-name kafkaServer"}]` | Drops `-loggc` from `kafka-server-start.sh`, so no GC log is written to the `logs` emptyDir |
+| kafka.controller.extraVolumeMounts | string | (see `values.yaml`) | Mounts `kafka.log4j` / `kafka.existingLog4jConfigMap` at `/opt/kafka/config/log4j.properties`, the file `kafka-server-start.sh` reads |
+| kafka.controller.initContainers | list | (see `values.yaml`) | `kafka-kraft-format`: formats KRaft storage on first start (`--ignore-formatted` on later starts) |
+| kafka.controller.logPersistence.mountPath | string | `"/opt/kafka/logs"` | Kafka application log directory; must be writable because the root filesystem is read-only |
 | kafka.controller.nodeSelector | object | `{}` |  |
 | kafka.controller.replicaCount | int | `3` |  |
 | kafka.enabled | bool | `true` |  |
+| kafka.image.repository | string | `"apache/kafka"` | Kafka image (was `bitnamilegacy/kafka` before chart 36.0.0). With `apache/kafka`, SASL/TLS listeners and `kafka.broker.replicaCount > 0` are rejected at render time |
+| kafka.image.tag | string | `"3.9.2"` | Upgrading from 3.7.x keeps the KRaft `metadata.version` at 3.7, so rolling back stays possible |
 | kafka.kraft.enabled | bool | `true` |  |
 | kafka.listeners.client.protocol | string | `"PLAINTEXT"` | Security protocol for the Kafka client listener (PLAINTEXT, SASL_PLAINTEXT, SASL_SSL, SSL) |
 | kafka.listeners.controller.protocol | string | `"PLAINTEXT"` |  |
 | kafka.listeners.external.protocol | string | `"PLAINTEXT"` |  |
 | kafka.listeners.interbroker.protocol | string | `"PLAINTEXT"` |  |
+| kafka.log4j | string | (see `values.yaml`) | Console-only log4j config. The image's default writes hourly-rolled log files to the `logs` emptyDir, which fills the pod's ephemeral storage |
+| kafka.provisioning.args | list | (see `values.yaml`) | Runs `sentry.kafka.bundledProvisioningScript`: the kafka chart's provisioning script adapted to `apache/kafka` |
+| kafka.provisioning.command | list | `["/bin/bash"]` |  |
 | kafka.provisioning.enabled | bool | `true` |  |
+| kafka.provisioning.initContainers | list | (see `values.yaml`) | `wait-for-available-kafka`: waits for the Kafka client port using bash `/dev/tcp` |
 | kafka.provisioning.topics[0].config."message.timestamp.type" | string | `"LogAppendTime"` |  |
 | kafka.provisioning.topics[0].name | string | `"events"` |  |
-| kafka.provisioning.topics[100].name | string | `"taskworker-cutover"` |  |
-| kafka.provisioning.topics[101].name | string | `"taskworker-email"` |  |
-| kafka.provisioning.topics[102].name | string | `"taskworker-ingest-attachments"` |  |
-| kafka.provisioning.topics[103].name | string | `"taskworker-ingest-errors-postprocess"` |  |
-| kafka.provisioning.topics[104].name | string | `"taskworker-ingest-profiling"` |  |
-| kafka.provisioning.topics[105].name | string | `"taskworker-workflows-engine"` |  |
+| kafka.provisioning.topics[100].name | string | `"taskworker-buffer"` |  |
+| kafka.provisioning.topics[101].name | string | `"taskworker-cutover"` |  |
+| kafka.provisioning.topics[102].name | string | `"taskworker-email"` |  |
+| kafka.provisioning.topics[103].name | string | `"taskworker-ingest-attachments"` |  |
+| kafka.provisioning.topics[104].name | string | `"taskworker-ingest-errors-postprocess"` |  |
+| kafka.provisioning.topics[105].name | string | `"taskworker-ingest-profiling"` |  |
+| kafka.provisioning.topics[106].name | string | `"taskworker-workflows-engine"` |  |
 | kafka.provisioning.topics[10].name | string | `"outcomes-billing-dlq"` |  |
 | kafka.provisioning.topics[11].name | string | `"ingest-spans"` |  |
 | kafka.provisioning.topics[12].name | string | `"ingest-sessions"` |  |
@@ -302,46 +315,50 @@ Note: this table is incomplete, so have a look at the values.yaml in case you mi
 | kafka.provisioning.topics[62].name | string | `"snuba-lw-deletions-generic-events"` |  |
 | kafka.provisioning.topics[63].name | string | `"snuba-lw-deletions-eap-items"` |  |
 | kafka.provisioning.topics[64].name | string | `"shared-resources-usage"` |  |
-| kafka.provisioning.topics[65].name | string | `"snuba-profile-chunks"` |  |
-| kafka.provisioning.topics[66].name | string | `"buffered-segments"` |  |
-| kafka.provisioning.topics[67].name | string | `"uptime-configs"` |  |
-| kafka.provisioning.topics[68].name | string | `"uptime-results"` |  |
-| kafka.provisioning.topics[69].name | string | `"snuba-uptime-results"` |  |
+| kafka.provisioning.topics[65].config."compression.type" | string | `"lz4"` |  |
+| kafka.provisioning.topics[65].config."retention.ms" | string | `"86400000"` |  |
+| kafka.provisioning.topics[65].config."segment.bytes" | string | `"262144000"` |  |
+| kafka.provisioning.topics[65].name | string | `"snuba-llm-proxy-cost"` |  |
+| kafka.provisioning.topics[66].name | string | `"snuba-profile-chunks"` |  |
+| kafka.provisioning.topics[67].name | string | `"buffered-segments"` |  |
+| kafka.provisioning.topics[68].name | string | `"uptime-configs"` |  |
+| kafka.provisioning.topics[69].name | string | `"uptime-results"` |  |
 | kafka.provisioning.topics[6].config."message.timestamp.type" | string | `"LogAppendTime"` |  |
 | kafka.provisioning.topics[6].name | string | `"snuba-metrics"` |  |
-| kafka.provisioning.topics[70].name | string | `"task-worker"` |  |
-| kafka.provisioning.topics[71].name | string | `"snuba-ourlogs"` |  |
-| kafka.provisioning.topics[72].name | string | `"snuba-items"` |  |
-| kafka.provisioning.topics[73].name | string | `"taskworker"` |  |
-| kafka.provisioning.topics[74].name | string | `"taskworker-dlq"` |  |
-| kafka.provisioning.topics[75].name | string | `"taskworker-billing"` |  |
-| kafka.provisioning.topics[76].name | string | `"taskworker-billing-dlq"` |  |
-| kafka.provisioning.topics[77].name | string | `"taskworker-control"` |  |
-| kafka.provisioning.topics[78].name | string | `"taskworker-control-dlq"` |  |
-| kafka.provisioning.topics[79].name | string | `"taskworker-ingest"` |  |
+| kafka.provisioning.topics[70].name | string | `"snuba-uptime-results"` |  |
+| kafka.provisioning.topics[71].name | string | `"task-worker"` |  |
+| kafka.provisioning.topics[72].name | string | `"snuba-ourlogs"` |  |
+| kafka.provisioning.topics[73].name | string | `"snuba-items"` |  |
+| kafka.provisioning.topics[74].name | string | `"taskworker"` |  |
+| kafka.provisioning.topics[75].name | string | `"taskworker-dlq"` |  |
+| kafka.provisioning.topics[76].name | string | `"taskworker-billing"` |  |
+| kafka.provisioning.topics[77].name | string | `"taskworker-billing-dlq"` |  |
+| kafka.provisioning.topics[78].name | string | `"taskworker-control"` |  |
+| kafka.provisioning.topics[79].name | string | `"taskworker-control-dlq"` |  |
 | kafka.provisioning.topics[7].name | string | `"outcomes"` |  |
-| kafka.provisioning.topics[80].name | string | `"taskworker-ingest-dlq"` |  |
-| kafka.provisioning.topics[81].name | string | `"taskworker-ingest-errors"` |  |
-| kafka.provisioning.topics[82].name | string | `"taskworker-ingest-errors-dlq"` |  |
-| kafka.provisioning.topics[83].name | string | `"taskworker-ingest-transactions"` |  |
-| kafka.provisioning.topics[84].name | string | `"taskworker-ingest-transactions-dlq"` |  |
-| kafka.provisioning.topics[85].name | string | `"taskworker-internal"` |  |
-| kafka.provisioning.topics[86].name | string | `"taskworker-internal-dlq"` |  |
-| kafka.provisioning.topics[87].name | string | `"taskworker-limited"` |  |
-| kafka.provisioning.topics[88].name | string | `"taskworker-limited-dlq"` |  |
-| kafka.provisioning.topics[89].name | string | `"taskworker-long"` |  |
+| kafka.provisioning.topics[80].name | string | `"taskworker-ingest"` |  |
+| kafka.provisioning.topics[81].name | string | `"taskworker-ingest-dlq"` |  |
+| kafka.provisioning.topics[82].name | string | `"taskworker-ingest-errors"` |  |
+| kafka.provisioning.topics[83].name | string | `"taskworker-ingest-errors-dlq"` |  |
+| kafka.provisioning.topics[84].name | string | `"taskworker-ingest-transactions"` |  |
+| kafka.provisioning.topics[85].name | string | `"taskworker-ingest-transactions-dlq"` |  |
+| kafka.provisioning.topics[86].name | string | `"taskworker-internal"` |  |
+| kafka.provisioning.topics[87].name | string | `"taskworker-internal-dlq"` |  |
+| kafka.provisioning.topics[88].name | string | `"taskworker-limited"` |  |
+| kafka.provisioning.topics[89].name | string | `"taskworker-limited-dlq"` |  |
 | kafka.provisioning.topics[8].name | string | `"outcomes-dlq"` |  |
-| kafka.provisioning.topics[90].name | string | `"taskworker-long-dlq"` |  |
-| kafka.provisioning.topics[91].name | string | `"taskworker-products"` |  |
-| kafka.provisioning.topics[92].name | string | `"taskworker-products-dlq"` |  |
-| kafka.provisioning.topics[93].name | string | `"taskworker-sentryapp"` |  |
-| kafka.provisioning.topics[94].name | string | `"taskworker-sentryapp-dlq"` |  |
-| kafka.provisioning.topics[95].name | string | `"taskworker-symbolication"` |  |
-| kafka.provisioning.topics[96].name | string | `"taskworker-symbolication-dlq"` |  |
-| kafka.provisioning.topics[97].name | string | `"taskworker-usage"` |  |
-| kafka.provisioning.topics[98].name | string | `"taskworker-usage-dlq"` |  |
-| kafka.provisioning.topics[99].name | string | `"taskworker-buffer"` |  |
+| kafka.provisioning.topics[90].name | string | `"taskworker-long"` |  |
+| kafka.provisioning.topics[91].name | string | `"taskworker-long-dlq"` |  |
+| kafka.provisioning.topics[92].name | string | `"taskworker-products"` |  |
+| kafka.provisioning.topics[93].name | string | `"taskworker-products-dlq"` |  |
+| kafka.provisioning.topics[94].name | string | `"taskworker-sentryapp"` |  |
+| kafka.provisioning.topics[95].name | string | `"taskworker-sentryapp-dlq"` |  |
+| kafka.provisioning.topics[96].name | string | `"taskworker-symbolication"` |  |
+| kafka.provisioning.topics[97].name | string | `"taskworker-symbolication-dlq"` |  |
+| kafka.provisioning.topics[98].name | string | `"taskworker-usage"` |  |
+| kafka.provisioning.topics[99].name | string | `"taskworker-usage-dlq"` |  |
 | kafka.provisioning.topics[9].name | string | `"outcomes-billing"` |  |
+| kafka.provisioning.waitForKafka | bool | `false` | Disables the kafka chart's wait container (it calls bitnami's `wait-for-port`); `kafka.provisioning.initContainers` waits instead |
 | kafka.sasl.client.users | list | `[]` | List of usernames for client communications when SASL is enabled, first user will be used if enabled |
 | kafka.sasl.client.passwords | list | `[]` | List of passwords for client communications when SASL is enabled, must match the number of client.users, first password will be used if enabled |
 | kafka.sasl.enabledMechanisms | string | `"PLAIN,SCRAM-SHA-256,SCRAM-SHA-512"` | Comma-separated list of allowed SASL mechanisms when SASL listeners are configured |
