@@ -98,8 +98,11 @@ spec:
           - "--raw-topic"
           - "{{ .Values.snuba.outcomesAcceptedConsumer.rawTopic }}"
           {{- end }}
+          # Unlike --raw-events-topic elsewhere, this takes a LOGICAL topic name: snuba
+          # builds Topic(<value>) from it, so a prefixed name is not a valid enum member.
+          # Do not apply kafkaTopicOverrides.prefix here.
           - "--accepted-outcomes-topic"
-          - "{{ default "" ((.Values.kafkaTopicOverrides).prefix) }}{{ default "outcomes-billing" .Values.snuba.outcomesAcceptedConsumer.outcomesAcceptedTopic }}"
+          - "{{ default "outcomes-billing" .Values.snuba.outcomesAcceptedConsumer.outcomesAcceptedTopic }}"
           {{- if .Values.snuba.outcomesAcceptedConsumer.maxBatchSize }}
           - "--max-batch-size"
           - "{{ .Values.snuba.outcomesAcceptedConsumer.maxBatchSize }}"
