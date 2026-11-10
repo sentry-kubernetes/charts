@@ -40,11 +40,14 @@ jobs:
           helm package -u main/charts/clickhouse --destination packages
           helm package -u main/charts/sentry --destination packages
           helm package -u main/charts/sentry-kubernetes --destination packages
+          # Every chart is packaged on each release: drop the chart/version pairs that
+          # are already published, so their .tgz (and digest) are not overwritten.
+          find packages -name '*.tgz' -exec sh -c 'for f; do [ ! -e "gh-pages/charts/${f##*/}" ] || rm "$f"; done' sh {} +
           # Index only the new packages and merge them into the existing index:
           # re-indexing gh-pages/charts would reset `created` of every version
           # to the checkout time (and --merge alone does not prevent it).
           helm repo index --url https://sentry-kubernetes.github.io/charts --merge gh-pages/charts/index.yaml packages
-          cp packages/*.tgz gh-pages/charts/
+          find packages -name '*.tgz' -exec cp {} gh-pages/charts/ \;
           mv packages/index.yaml gh-pages/charts/index.yaml
 
       - name: Commit files
