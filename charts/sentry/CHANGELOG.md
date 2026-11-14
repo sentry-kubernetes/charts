@@ -1,5 +1,12 @@
 # Changelog
 
+## [36.0.1](https://github.com/sentry-kubernetes/charts/compare/sentry-v36.0.0...sentry-v36.0.1) (2026-11-14)
+
+
+### Bug Fixes
+
+* **sentry:** render symbolicator StatefulSet accessModes as a list ([#2327](https://github.com/sentry-kubernetes/charts/issues/2327)) ([91d5d58](https://github.com/sentry-kubernetes/charts/commit/91d5d584203b46e1be3c39bda49ecfa7a8bb5e36))
+
 ## [36.0.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v35.0.0...sentry-v36.0.0) (2026-11-09)
 
 
