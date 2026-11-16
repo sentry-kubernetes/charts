@@ -36,19 +36,21 @@ jobs:
 
       - name: Package charts
         run: |
-          mkdir -p packages
+          mkdir -p packages staging
           helm package -u main/charts/clickhouse --destination packages
           helm package -u main/charts/sentry --destination packages
           helm package -u main/charts/sentry-kubernetes --destination packages
-          # Every chart is packaged on each release: drop the chart/version pairs that
-          # are already published, so their .tgz (and digest) are not overwritten.
-          find packages -name '*.tgz' -exec sh -c 'for f; do [ ! -e "gh-pages/charts/${f##*/}" ] || rm "$f"; done' sh {} +
+          # Every chart is packaged on each release: stage only the chart/version pairs
+          # not published yet, so the published .tgz (and digests) are not overwritten.
+          # packages/ stays whole for the GHCR push below: a rerun after a failed push
+          # still pushes every chart.
+          for f in packages/*.tgz; do [ -e "gh-pages/charts/${f##*/}" ] || cp "$f" staging/; done
           # Index only the new packages and merge them into the existing index:
           # re-indexing gh-pages/charts would reset `created` of every version
           # to the checkout time (and --merge alone does not prevent it).
-          helm repo index --url https://sentry-kubernetes.github.io/charts --merge gh-pages/charts/index.yaml packages
-          find packages -name '*.tgz' -exec cp {} gh-pages/charts/ \;
-          mv packages/index.yaml gh-pages/charts/index.yaml
+          helm repo index --url https://sentry-kubernetes.github.io/charts --merge gh-pages/charts/index.yaml staging
+          find staging -name '*.tgz' -exec cp {} gh-pages/charts/ \;
+          mv staging/index.yaml gh-pages/charts/index.yaml
 
       - name: Commit files
         run: |
