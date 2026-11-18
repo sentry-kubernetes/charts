@@ -751,6 +751,42 @@ entries:
     version: 1.0.0
   sentry:
   - apiVersion: v2
+    appVersion: 26.11.0
+    created: "2026-11-18T12:00:58.947085472Z"
+    dependencies:
+    - name: memcached
+      repository: oci://registry-1.docker.io/cloudpirates
+      version: 0.14.11
+    - condition: redis.enabled
+      name: redis
+      repository: oci://registry-1.docker.io/bitnamicharts
+      version: 17.11.3
+    - condition: kafka.enabled
+      name: kafka
+      repository: oci://registry-1.docker.io/bitnamicharts
+      version: 29.3.14
+    - condition: postgresql.enabled
+      name: postgresql
+      repository: oci://registry-1.docker.io/bitnamicharts
+      version: 12.5.1
+    - condition: nginx.enabled
+      name: nginx
+      repository: oci://registry-1.docker.io/cloudpirates
+      version: 0.16.10
+    description: A Helm chart for Kubernetes
+    digest: 8734cd87957083e51df5e62698eea6b94f7dd8c4a87c3e1f63b718f8b561411c
+    home: https://github.com/sentry-kubernetes/charts
+    icon: https://raw.githubusercontent.com/sentry-kubernetes/charts/refs/heads/develop/docs/logo.png
+    maintainers:
+    - name: sentry-kubernetes
+    name: sentry
+    sources:
+    - https://github.com/sentry-kubernetes/charts/tree/develop/charts/sentry
+    type: application
+    urls:
+    - https://sentry-kubernetes.github.io/charts/sentry-36.1.0.tgz
+    version: 36.1.0
+  - apiVersion: v2
     appVersion: 26.10.1
     created: "2026-11-15T18:55:18.585872071Z"
     dependencies:
@@ -16854,4 +16890,4 @@ entries:
     urls:
     - https://sentry-kubernetes.github.io/charts/sentry-kubernetes-0.3.0.tgz
     version: 0.3.0
-generated: "2026-11-15T18:55:08.174992672Z"
+generated: "2026-11-18T12:00:58.925193084Z"
