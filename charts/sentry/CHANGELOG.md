@@ -1,5 +1,12 @@
 # Changelog
 
+## [36.1.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v36.0.1...sentry-v36.1.0) (2026-11-18)
+
+
+### Features
+
+* upgrade to sentry v26.11.0 ([#2330](https://github.com/sentry-kubernetes/charts/issues/2330)) ([7c80a9b](https://github.com/sentry-kubernetes/charts/commit/7c80a9b5943cc3f81144e831ff4e2d212d8fb3e9))
+
 ## [36.0.1](https://github.com/sentry-kubernetes/charts/compare/sentry-v36.0.0...sentry-v36.0.1) (2026-11-14)
 
 
