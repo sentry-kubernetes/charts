@@ -2,6 +2,17 @@
 
 The changelog below refers to the main `sentry` chart only.
 
+## Upgrading to Chart 36.1.0
+
+Chart `36.1.0` targets [Sentry 26.11.0](https://github.com/getsentry/self-hosted/releases/tag/26.11.0). No self-hosted hard stop lies between 26.10.1 and 26.11.0.
+
+- Upgrade your ClickHouse to `26.8.36.3`. Self-hosted moved from Altinity `25.8` to the official `clickhouse/clickhouse-server:26.8.36.3` image because the fix for [CVE-2026-116366](https://www.cve.org/cverecord?id=CVE-2026-116366) (unauthenticated remote code execution) was not backported to the upstream 25.x line. This chart's CI and the ClickHouse examples in the [README](README.md) now use that image. Snuba's minimum stays at `25.8.16`, so the chart upgrade does not wait on the ClickHouse upgrade; Snuba only logs a warning for versions newer than `26.8.36.3`.
+  - On x86, ClickHouse 26.8 requires AVX2. Check each node that can run ClickHouse with `grep avx2 /proc/cpuinfo`, or pin ClickHouse to nodes that support it.
+  - Snapshot the ClickHouse volumes before the major version bump.
+  - Self-hosted moved `allow_nullable_key` from the top level of `config.xml` into `<merge_tree>`, where ClickHouse reads it. If your ClickHouse config sets it at the top level, move it too.
+- `SENTRY_TSDB` is now `sentry.tsdb.snuba.SnubaTSDB`. Sentry 26.11.0 deleted `RedisSnubaTSDB` (an alias of `SnubaTSDB`) and now maps the old name to `SnubaTSDB` with a deprecation warning, so behaviour does not change. If you set `SENTRY_TSDB` in `config.sentryConfPy`, switch to the new class path.
+- Self-hosted also fixed its Postgres volume creation, its SeaweedFS KEK recovery and its external-Kafka patch. Those do not apply to this chart (Compose-only install scripts and optional modifications).
+
 ## Upgrading to Chart 36.0.0
 
 ### Breaking: Kafka image

@@ -126,7 +126,7 @@ spec:
         spec:
           containers:
             - name: clickhouse
-              image: altinity/clickhouse-server:25.8.28.10001.altinitystable
+              image: clickhouse/clickhouse-server:26.8.36.3
           affinity:
             podAntiAffinity:
               requiredDuringSchedulingIgnoredDuringExecution:
