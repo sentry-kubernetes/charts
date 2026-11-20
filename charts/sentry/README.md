@@ -192,6 +192,7 @@ Note: this table is incomplete, so have a look at the values.yaml in case you mi
 | hooks.snubaInit.resources.requests.cpu | string | `"700m"` |  |
 | hooks.snubaInit.resources.requests.memory | string | `"1Gi"` |  |
 | hooks.snubaMigrate.enabled | bool | `true` |  |
+| hooks.taskbrokerMigrate.enabled | bool | `true` | Run the taskbroker migrate Job when a broker uses the postgres adapter. Like the other hooks it also needs `hooks.enabled`; its phase follows `hooks.preUpgrade`. |
 | hooks.taskbrokerMigrate.resources.limits.cpu | string | `"2000m"` |  |
 | hooks.taskbrokerMigrate.resources.limits.memory | string | `"1Gi"` |  |
 | hooks.taskbrokerMigrate.resources.requests.cpu | string | `"700m"` |  |
@@ -732,7 +733,6 @@ Note: this table is incomplete, so have a look at the values.yaml in case you mi
 | sentry.taskBroker.containerSecurityContext | object | `{}` | |
 | sentry.taskBroker.enabled | bool | `true` | |
 | sentry.taskBroker.env | list | `[]` | |
-| sentry.taskBroker.hooks.skipMigrateJob | bool | `false` | Skip the Helm taskbroker migrate Job. Required if `hooks.enabled` is false and any broker uses the postgres adapter. |
 | sentry.taskBroker.nodeSelector | object | `{}` | |
 | sentry.taskBroker.persistence.accessMode | string | `"ReadWriteOnce"` | |
 | sentry.taskBroker.persistence.enabled | bool | `true` | Independent of `store.adapter`. Postgres with a PVC is unused disk, not an error. Turning this off on an existing StatefulSet cannot remove `volumeClaimTemplates`. |
@@ -751,12 +751,15 @@ Note: this table is incomplete, so have a look at the values.yaml in case you mi
 | sentry.taskBroker.store.postgres.ddlUser | string | `""` | DDL username. Empty uses `store.postgres.user`. |
 | sentry.taskBroker.store.postgres.existingSecret | string | `""` | Secret for `TASKBROKER_STORE__PG__PASSWORD`. Required (or `password`) when postgres adapter and `postgresql.enabled=false`. |
 | sentry.taskBroker.store.postgres.existingSecretKey | string | `"postgresql-password"` | |
-| sentry.taskBroker.store.postgres.host | string | `""` | Postgres primary host. Required when `postgresql.enabled=false`. Must not be PgBouncer / a transaction-mode pooler. When `postgresql.enabled=true`, defaults to the in-cluster primary (not pgbouncer). |
+| sentry.taskBroker.store.postgres.host | string | `""` | Postgres host for the brokers and, unless `migrationHost` is set, the migrate Job. Required when `postgresql.enabled=false`. A transaction-mode pooler only works for the brokers (see [Taskbroker store](#taskbroker-store)), never the chart PgBouncer. When `postgresql.enabled=true`, defaults to the in-cluster primary (not pgbouncer). |
 | sentry.taskBroker.store.postgres.maxConnections | int | `64` | Documentation only. The binary hardcodes 64+64 connections per replica. |
+| sentry.taskBroker.store.postgres.migrationHost | string | `""` | Host for the migrate Job only, e.g. the primary when `host` is a pooler. Empty uses `host`. |
+| sentry.taskBroker.store.postgres.migrationPort | string | `""` | Port for the migrate Job only. Empty uses `port`. |
+| sentry.taskBroker.store.postgres.migrationQueryParams | string | `""` | Query string for the migrate Job only, e.g. `sslmode=verify-full`. Empty uses `queryParams`. |
 | sentry.taskBroker.store.postgres.minConnections | int | `64` | Documentation only. The binary ignores this. |
 | sentry.taskBroker.store.postgres.password | string | `""` | Injected as env, never written to the ConfigMap. Prefer `existingSecret` in production. |
-| sentry.taskBroker.store.postgres.port | int | `5432` | Always emitted as an integer. |
-| sentry.taskBroker.store.postgres.queryParams | string | `""` | Extra libpq query string, e.g. `sslmode=require`. |
+| sentry.taskBroker.store.postgres.port | int | `5432` | Always emitted as an integer. Also used by the migrate Job unless `migrationPort` is set. |
+| sentry.taskBroker.store.postgres.queryParams | string | `""` | Extra libpq query string, e.g. `sslmode=require`. Also used by the migrate Job unless `migrationQueryParams` is set. |
 | sentry.taskBroker.store.postgres.user | string | `""` | Empty inherits `sentry.postgresql.username` (bundled Postgres or `externalPostgresql.username`). |
 | sentry.taskBroker.tolerations | list | `[]` | |
 | sentry.taskBroker.topologySpreadConstraints | list | `[]` | Default pod topologySpreadConstraints for task broker pods; overridden by each broker’s `topologySpreadConstraints` in `sentry.taskBroker.brokers`. |
@@ -1626,7 +1629,7 @@ externalKafka:
 
 Taskbroker uses SQLite by default. Switch a broker to PostgreSQL with `sentry.taskBroker.store.adapter` or `brokers[].store.adapter`.
 
-Use a dedicated `taskbroker` database and a real primary (`postgres-rw`). Do not use PgBouncer or a transaction-mode pooler, and do not reuse the Sentry or Snuba databases. With external Postgres, set `store.postgres.host` yourself — the chart will not take `externalPostgresql.host` (that is often a pooler).
+Use a dedicated `taskbroker` database; do not reuse the Sentry or Snuba databases. With external Postgres, set `store.postgres.host` yourself — the chart will not take `externalPostgresql.host` (that is often a pooler). Point it at a real primary (`postgres-rw`) unless the brokers go through a pooler (see [Through a connection pooler](#through-a-connection-pooler)).
 
 `store.postgres` applies to every postgres broker. Override any of its keys per broker with `brokers[].store.postgres`, for example to give each broker its own database. Brokers that share a database only claim tasks from their own topics, but tasks pending longer than `contention_drain_age_sec` (60s by default) can be claimed by any of them and count toward every broker's backpressure.
 
@@ -1655,6 +1658,35 @@ sentry:
           adapter: postgres
           postgres:
             database: taskbroker_ingest
+```
+
+### Migrations
+
+Brokers run with `run_migrations: false`; the `taskbroker-migrate` hook Job creates and updates the schema. It renders when a broker uses the postgres adapter and, like the other hooks, needs `hooks.enabled` and its own `hooks.taskbrokerMigrate.enabled`. Its phase follows `hooks.preUpgrade`: with `asHook: false` the brokers roll out before a post-upgrade Job, so set `hooks.preUpgrade: true` if a new TaskBroker version needs the new schema to start. If you skip the Job, run `taskbroker --run migrations` against the primary yourself, e.g. with `TASKBROKER_STORE__PG__HOST` and `TASKBROKER_STORE__PG__PORT` overriding the brokers' `config.yml`.
+
+### Through a connection pooler
+
+The brokers can connect through your own transaction-mode pooler; the migrate Job cannot, because sqlx migrations hold a session advisory lock. Point `store.postgres.host`/`port` at the pooler and `migrationHost`/`migrationPort` at the primary. Set both: each empty `migration*` value falls back to the broker value. `queryParams` go to the pooler; put TLS settings for the primary in `migrationQueryParams` (an empty one inherits `queryParams`).
+
+PgBouncer needs:
+
+- version [1.21](https://www.pgbouncer.org/2023/10/pgbouncer-1-21-0) or later with `max_prepared_statements` > 0 (default 200 since 1.24). sqlx uses protocol-level prepared statements.
+- `extra_float_digits` in `ignore_startup_parameters`. sqlx sends it by default.
+- the `taskbroker` database in its `[databases]` section.
+
+The chart's own PgBouncer only serves the Sentry database and cannot be used here. If brokers report `cached plan must not change result type` after a TaskBroker upgrade, run `RECONNECT` on the PgBouncer admin console.
+
+```yaml
+sentry:
+  taskBroker:
+    store:
+      postgres:
+        host: my-pgbouncer
+        port: 6432
+        migrationHost: postgres-rw
+        migrationPort: 5432
+        existingSecret: sentry-postgresql-secret
+        existingSecretKey: password
 ```
 
 ## External Postgres configuration

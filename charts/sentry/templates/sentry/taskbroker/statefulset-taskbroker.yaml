@@ -1,6 +1,5 @@
 {{- if .Values.sentry.taskBroker.enabled }}
 {{- $root := . }}
-{{- include "sentry.taskbroker.validate" $root }}
 {{- range $broker := .Values.sentry.taskBroker.brokers }}
 {{- $ctx := dict "broker" $broker "root" $root }}
 {{- $adapter := include "sentry.taskbroker.adapter" $ctx }}
