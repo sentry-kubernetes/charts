@@ -1,5 +1,30 @@
 # Changelog
 
+## [36.1.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v36.0.1...sentry-v36.1.0) (2026-11-18)
+
+
+### Features
+
+* upgrade to sentry v26.11.0 ([#2330](https://github.com/sentry-kubernetes/charts/issues/2330)) ([7c80a9b](https://github.com/sentry-kubernetes/charts/commit/7c80a9b5943cc3f81144e831ff4e2d212d8fb3e9))
+
+## [36.0.1](https://github.com/sentry-kubernetes/charts/compare/sentry-v36.0.0...sentry-v36.0.1) (2026-11-14)
+
+
+### Bug Fixes
+
+* **sentry:** render symbolicator StatefulSet accessModes as a list ([#2327](https://github.com/sentry-kubernetes/charts/issues/2327)) ([91d5d58](https://github.com/sentry-kubernetes/charts/commit/91d5d584203b46e1be3c39bda49ecfa7a8bb5e36))
+
+## [36.0.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v35.0.0...sentry-v36.0.0) (2026-11-09)
+
+
+### ⚠ BREAKING CHANGES
+
+* **sentry:** the bundled Kafka image changes from bitnamilegacy/kafka to apache/kafka. Overrides of kafka.image, kafka.controller.command/args/initContainers and kafka.provisioning.command/args/initContainers must be removed or merged. SASL/TLS listeners and kafka.broker.replicaCount > 0 are rejected with apache/kafka. See CHANGELOG.md "Upgrading to Chart 36.0.0" for the upgrade checklist and how to keep the previous image.
+
+### Features
+
+* **sentry:** replace bitnamilegacy/kafka with apache/kafka ([#2322](https://github.com/sentry-kubernetes/charts/issues/2322)) ([bfa44cd](https://github.com/sentry-kubernetes/charts/commit/bfa44cdc5d9c1a3ec05d71db616106f430952559))
+
 ## [35.0.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v34.1.1...sentry-v35.0.0) (2026-10-29)
 
 

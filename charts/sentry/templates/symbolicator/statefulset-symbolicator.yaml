@@ -206,7 +206,8 @@ spec:
       metadata:
         name: symbolicator-data
       spec:
-        accessModes: {{ .Values.symbolicator.api.persistence.accessModes }}
+        accessModes:
+          {{- toYaml .Values.symbolicator.api.persistence.accessModes | nindent 10 }}
         {{- if hasKey .Values.symbolicator.api.persistence "storageClassName" }}
         storageClassName: {{ .Values.symbolicator.api.persistence.storageClassName | quote }}
         {{- end }}
