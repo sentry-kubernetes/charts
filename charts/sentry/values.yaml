@@ -449,6 +449,8 @@ sentry:
         # Required when adapter is postgres and postgresql.enabled=false. Do not inherit
         # externalPostgresql.host (that may be a transaction-mode pooler such as postgres-pooler-rw).
         # When postgresql.enabled=true, defaults to the in-cluster primary Service (not PgBouncer).
+        # A transaction-mode pooler works for the brokers only (PgBouncer >= 1.21 with max_prepared_statements > 0
+        # and extra_float_digits ignored); then point the migrate Job at the primary with migrationHost/migrationPort.
         host: ""
         port: 5432
         # Empty: inherit sentry.postgresql.username (bundled postgres or externalPostgresql.username).
@@ -464,12 +466,14 @@ sentry:
         # Empty: use sentry.postgresql.database (typically sentry on CNPG, not postgres).
         defaultDatabase: ""
         queryParams: ""
+        # Migrate Job only: sqlx migrations hold a session advisory lock, so they need the primary even when
+        # host is a pooler. Each empty value falls back to host / port / queryParams above.
+        migrationHost: ""
+        migrationPort: ""
+        migrationQueryParams: ""
         # Documentation only: taskbroker hardcodes 64 read + 64 write connections per replica.
         maxConnections: 64
         minConnections: 64
-    hooks:
-      # When true, skip the Helm migrate Job. Required if hooks.enabled is false and any broker uses postgres.
-      skipMigrateJob: false
     # brokers[].store.adapter -- Optional per-broker sqlite | postgres; empty inherits store.adapter.
     # brokers[].persistence.enabled -- Optional per-broker PVC flag; omit to inherit taskBroker.persistence.enabled.
     # brokers[].kafkaSessionTimeoutMs -- Kafka session.timeout.ms for this broker (self-hosted kafka_session_timeout_ms). Defaults to 60000 if omitted.
@@ -2094,6 +2098,8 @@ hooks:
     volumes: []
     volumeMounts: []
   taskbrokerMigrate:
+    # Rendered only when a broker uses the postgres adapter.
+    enabled: true
     podLabels: {}
     podAnnotations: {}
     resources:
