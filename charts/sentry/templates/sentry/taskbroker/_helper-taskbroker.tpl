@@ -44,38 +44,22 @@ defines — include rebinds $.
 {{- if $any -}}true{{- else -}}false{{- end -}}
 {{- end -}}
 
-{{- define "sentry.taskbroker.skipMigrateJob" -}}
-{{- $th := default dict .Values.sentry.taskBroker.hooks -}}
-{{- $skip := false -}}
-{{- if hasKey $th "skipMigrateJob" -}}
-  {{- $skip = $th.skipMigrateJob -}}
-{{- end -}}
-{{- if $skip -}}true{{- else -}}false{{- end -}}
-{{- end -}}
-
-{{- define "sentry.taskbroker.validate" -}}
-{{- $root := . -}}
-{{- if eq (include "sentry.taskbroker.anyPostgres" $root) "true" }}
-  {{- if and (not $root.Values.hooks.enabled) (ne (include "sentry.taskbroker.skipMigrateJob" $root) "true") }}
-    {{- fail "postgres taskbroker requires hooks.enabled (for the migrate Job) or sentry.taskBroker.hooks.skipMigrateJob=true if you run migrations yourself" -}}
-  {{- end }}
-{{- end }}
-{{- end -}}
-
 {{- define "sentry.taskbroker.postgres.host" -}}
 {{- $root := .root -}}
 {{- $pg := default dict ((default dict $root.Values.sentry.taskBroker.store).postgres) -}}
 {{- $host := "" -}}
-{{- if $pg.host -}}
+{{- if and .migrate $pg.migrationHost -}}
+  {{- $host = $pg.migrationHost -}}
+{{- else if $pg.host -}}
   {{- $host = $pg.host -}}
 {{- else if $root.Values.postgresql.enabled -}}
   {{- $host = include "sentry.postgresql.host" $root -}}
 {{- else -}}
-  {{- fail "sentry.taskBroker.store.postgres.host is required when using the postgres adapter with postgresql.enabled=false. Set a non-pooled primary (e.g. postgres-rw), not a transaction-mode pooler." -}}
+  {{- fail "sentry.taskBroker.store.postgres.host is required when using the postgres adapter with postgresql.enabled=false. Use the PostgreSQL primary, or a transaction-mode pooler together with store.postgres.migrationHost for the migrate Job." -}}
 {{- end -}}
 {{- $pgbouncer := printf "%s-pgbouncer" (include "sentry.fullname" $root) -}}
 {{- if eq $host $pgbouncer -}}
-  {{- fail "sentry.taskBroker.store.postgres.host must not be the chart PgBouncer Service (transaction pooling breaks sqlx prepared statements). Use the PostgreSQL primary." -}}
+  {{- fail "sentry.taskBroker.store.postgres.host and migrationHost must not be the chart PgBouncer Service, which only serves the Sentry database." -}}
 {{- end -}}
 {{- $host -}}
 {{- end -}}
@@ -83,7 +67,9 @@ defines — include rebinds $.
 {{- define "sentry.taskbroker.postgres.port" -}}
 {{- $root := .root -}}
 {{- $pg := default dict ((default dict $root.Values.sentry.taskBroker.store).postgres) -}}
-{{- if or (not (hasKey $pg "port")) (eq (toString $pg.port) "") -}}
+{{- if and .migrate $pg.migrationPort -}}
+  {{- $pg.migrationPort -}}
+{{- else if or (not (hasKey $pg "port")) (eq (toString $pg.port) "") -}}
   {{- if $root.Values.postgresql.enabled -}}
     {{- include "sentry.postgresql.port" $root -}}
   {{- else -}}
@@ -191,6 +177,7 @@ Render taskbroker config.yml for a single broker.
 Expected keys on broker: kafkaDeadletterTopic, kafkaRetryTopic, kafkaTopics.
 Optional: kafkaSessionTimeoutMs (defaults to 60000).
 Invoke as: include "sentry.taskbroker.configYml" (dict "broker" $broker "root" $root)
+The migrate Job adds "migrate" true, so migrationHost / migrationPort / migrationQueryParams apply.
 */}}
 {{- define "sentry.taskbroker.configYml" -}}
 {{- $broker := .broker -}}
@@ -222,6 +209,10 @@ kafka_topics:
 {{- end }}
 {{- if eq $adapter "postgres" }}
 {{- $pg := default dict ((default dict $root.Values.sentry.taskBroker.store).postgres) }}
+{{- $queryParams := $pg.queryParams }}
+{{- if and .migrate $pg.migrationQueryParams }}
+{{- $queryParams = $pg.migrationQueryParams }}
+{{- end }}
 
 store:
   adapter: postgres
@@ -233,8 +224,8 @@ store:
     ddl_username: {{ include "sentry.taskbroker.postgres.ddlUser" . }}
     database_name: {{ include "sentry.taskbroker.postgres.database" . }}
     default_database_name: {{ include "sentry.taskbroker.postgres.defaultDatabase" . }}
-    {{- if $pg.queryParams }}
-    query_params: {{ $pg.queryParams | quote }}
+    {{- if $queryParams }}
+    query_params: {{ $queryParams | quote }}
     {{- end }}
 {{- end }}
 {{- end -}}

@@ -2,6 +2,18 @@
 
 The changelog below refers to the main `sentry` chart only.
 
+## Upgrading to Chart 37.0.0
+
+### Breaking: TaskBroker migrate hook
+
+The `taskbroker-migrate` hook Job now follows the same rules as the other hook Jobs. Installations where no TaskBroker broker uses the postgres adapter are unaffected.
+
+- `sentry.taskBroker.hooks.skipMigrateJob` is removed. Set `hooks.taskbrokerMigrate.enabled: false` instead; otherwise the Job runs whenever `hooks.enabled` is true.
+- `hooks.enabled: false` no longer fails the render. The Job is skipped like the other hooks, so run `taskbroker --run migrations` against the PostgreSQL primary yourself.
+- The Job runs as a `post-upgrade` hook unless `hooks.preUpgrade` is true; it used to always run `pre-upgrade`. With the default `asHook: true` it still finishes before the brokers are recreated. With `asHook: false` the brokers roll out first, so set `hooks.preUpgrade: true` if a TaskBroker release needs the new schema to start.
+
+New values `sentry.taskBroker.store.postgres.migrationHost`, `migrationPort` and `migrationQueryParams` give the migrate Job its own connection, for example to the primary while the brokers use a transaction-mode pooler. See [Taskbroker store](charts/sentry/README.md#taskbroker-store).
+
 ## Upgrading to Chart 36.1.0
 
 Chart `36.1.0` targets [Sentry 26.11.0](https://github.com/getsentry/self-hosted/releases/tag/26.11.0). No self-hosted hard stop lies between 26.10.1 and 26.11.0.
