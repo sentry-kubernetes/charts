@@ -62,9 +62,41 @@ defines — include rebinds $.
 {{- end }}
 {{- end -}}
 
+{{/*
+Postgres settings for one broker as YAML: brokers[].store.postgres merged over
+sentry.taskBroker.store.postgres (broker keys win, empty broker values inherit).
+Invoke as: include "sentry.taskbroker.postgres.values" (dict "broker" $broker "root" $root) | fromYaml
+*/}}
+{{- define "sentry.taskbroker.postgres.values" -}}
+{{- $global := default dict ((default dict .root.Values.sentry.taskBroker.store).postgres) -}}
+{{- $own := default dict ((default dict (default dict .broker).store).postgres) -}}
+{{- toYaml (mergeOverwrite (deepCopy $global) (deepCopy $own)) -}}
+{{- end -}}
+
+{{/*
+Postgres brokers that need a migrate Job: the first broker for each distinct
+host, port and database, as a list of broker names (YAML).
+*/}}
+{{- define "sentry.taskbroker.postgres.migrateBrokers" -}}
+{{- $root := . -}}
+{{- $seen := dict -}}
+{{- $names := list -}}
+{{- range $broker := $root.Values.sentry.taskBroker.brokers }}
+  {{- $ctx := dict "broker" $broker "root" $root -}}
+  {{- if eq (include "sentry.taskbroker.adapter" $ctx) "postgres" -}}
+    {{- $target := printf "%s:%s/%s" (include "sentry.taskbroker.postgres.host" $ctx) (include "sentry.taskbroker.postgres.port" $ctx) (include "sentry.taskbroker.postgres.database" $ctx) -}}
+    {{- if not (hasKey $seen $target) -}}
+      {{- $_ := set $seen $target true -}}
+      {{- $names = append $names $broker.name -}}
+    {{- end -}}
+  {{- end -}}
+{{- end }}
+{{- toYaml $names -}}
+{{- end -}}
+
 {{- define "sentry.taskbroker.postgres.host" -}}
 {{- $root := .root -}}
-{{- $pg := default dict ((default dict $root.Values.sentry.taskBroker.store).postgres) -}}
+{{- $pg := include "sentry.taskbroker.postgres.values" . | fromYaml -}}
 {{- $host := "" -}}
 {{- if $pg.host -}}
   {{- $host = $pg.host -}}
@@ -82,7 +114,7 @@ defines — include rebinds $.
 
 {{- define "sentry.taskbroker.postgres.port" -}}
 {{- $root := .root -}}
-{{- $pg := default dict ((default dict $root.Values.sentry.taskBroker.store).postgres) -}}
+{{- $pg := include "sentry.taskbroker.postgres.values" . | fromYaml -}}
 {{- if or (not (hasKey $pg "port")) (eq (toString $pg.port) "") -}}
   {{- if $root.Values.postgresql.enabled -}}
     {{- include "sentry.postgresql.port" $root -}}
@@ -96,7 +128,7 @@ defines — include rebinds $.
 
 {{- define "sentry.taskbroker.postgres.user" -}}
 {{- $root := .root -}}
-{{- $pg := default dict ((default dict $root.Values.sentry.taskBroker.store).postgres) -}}
+{{- $pg := include "sentry.taskbroker.postgres.values" . | fromYaml -}}
 {{- if and (hasKey $pg "user") (ne (toString $pg.user) "") -}}
   {{- $pg.user -}}
 {{- else -}}
@@ -106,7 +138,7 @@ defines — include rebinds $.
 
 {{- define "sentry.taskbroker.postgres.ddlUser" -}}
 {{- $root := .root -}}
-{{- $pg := default dict ((default dict $root.Values.sentry.taskBroker.store).postgres) -}}
+{{- $pg := include "sentry.taskbroker.postgres.values" . | fromYaml -}}
 {{- if $pg.ddlUser -}}
   {{- $pg.ddlUser -}}
 {{- else -}}
@@ -115,13 +147,13 @@ defines — include rebinds $.
 {{- end -}}
 
 {{- define "sentry.taskbroker.postgres.database" -}}
-{{- $pg := default dict ((default dict .root.Values.sentry.taskBroker.store).postgres) -}}
+{{- $pg := include "sentry.taskbroker.postgres.values" . | fromYaml -}}
 {{- default "taskbroker" $pg.database -}}
 {{- end -}}
 
 {{- define "sentry.taskbroker.postgres.defaultDatabase" -}}
 {{- $root := .root -}}
-{{- $pg := default dict ((default dict $root.Values.sentry.taskBroker.store).postgres) -}}
+{{- $pg := include "sentry.taskbroker.postgres.values" . | fromYaml -}}
 {{- if $pg.defaultDatabase -}}
   {{- $pg.defaultDatabase -}}
 {{- else -}}
@@ -135,7 +167,7 @@ defaults password to "password").
 */}}
 {{- define "sentry.taskbroker.postgres.env" -}}
 {{- $root := .root -}}
-{{- $pg := default dict ((default dict $root.Values.sentry.taskBroker.store).postgres) -}}
+{{- $pg := include "sentry.taskbroker.postgres.values" . | fromYaml -}}
 {{- $secret := default "" $pg.existingSecret -}}
 {{- $key := default "postgresql-password" $pg.existingSecretKey -}}
 {{- $ddlSecret := $secret -}}
@@ -221,7 +253,7 @@ kafka_topics:
     {{- end }}
 {{- end }}
 {{- if eq $adapter "postgres" }}
-{{- $pg := default dict ((default dict $root.Values.sentry.taskBroker.store).postgres) }}
+{{- $pg := include "sentry.taskbroker.postgres.values" . | fromYaml }}
 
 store:
   adapter: postgres
