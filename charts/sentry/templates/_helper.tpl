@@ -509,8 +509,8 @@ Set Kafka Confluent host
 Set Kafka Confluent port
 */}}
 {{- define "sentry.kafka.port" -}}
-{{- if and (.Values.kafka.enabled) (.Values.kafka.service.ports.client) -}}
-{{- .Values.kafka.service.ports.client }}
+{{- if .Values.kafka.enabled -}}
+{{- dig "service" "ports" "client" 9092 .Values.kafka }}
 {{- else if and (.Values.externalKafka) (not (.Values.externalKafka.cluster)) -}}
 {{ required "A valid .Values.externalKafka.port is required" .Values.externalKafka.port }}
 {{- end -}}
@@ -520,8 +520,8 @@ Set Kafka Confluent port
 Set Kafka Confluent Controller port
 */}}
 {{- define "sentry.kafka.controller_port" -}}
-{{- if and (.Values.kafka.enabled) (.Values.kafka.service.ports.controller ) -}}
-{{- .Values.kafka.service.ports.controller }}
+{{- if .Values.kafka.enabled -}}
+{{- dig "service" "ports" "controller" 9093 .Values.kafka }}
 {{- else if and (.Values.externalKafka) (not (.Values.externalKafka.cluster)) -}}
 {{ required "A valid .Values.externalKafka.port is required" .Values.externalKafka.port }}
 {{- end -}}
@@ -552,7 +552,11 @@ Set Kafka security protocol
 */}}
 {{- define "sentry.kafka.security_protocol" -}}
 {{- if .Values.kafka.enabled -}}
-{{ default "plaintext" .Values.kafka.listeners.client.protocol }}
+{{- if (((.Values.kafka.auth).client).enabled) -}}
+SASL_PLAINTEXT
+{{- else -}}
+PLAINTEXT
+{{- end -}}
 {{- else -}}
 {{ default "plaintext" .Values.externalKafka.security.protocol }}
 {{- end -}}

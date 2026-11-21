@@ -14,8 +14,8 @@ dependencies:
     version: 0.40.0
     condition: redis.enabled
   - name: kafka
-    repository: oci://registry-1.docker.io/bitnamicharts
-    version: 29.3.14
+    repository: oci://registry-1.docker.io/cloudpirates
+    version: 0.2.3
     condition: kafka.enabled
   - name: postgres
     alias: postgresql

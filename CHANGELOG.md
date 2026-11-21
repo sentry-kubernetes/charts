@@ -36,6 +36,14 @@ The bundled Postgres dependency is now the CloudPirates chart (`oci://registry-1
 
 This is not an in-place upgrade. Postgres 18 uses `PGDATA=/var/lib/postgresql/18/docker` and cannot open a Postgres 15 data directory. The new volume claim is `pgdata-<release>-sentry-postgresql-0`. The Bitnami claim `data-<release>-sentry-postgresql-0` is left behind. Dump and restore before upgrading (or keep using `externalPostgresql`). Do not point `postgresql.persistence.existingClaim` at the old claim.
 
+### Kafka chart switch
+
+The bundled Kafka dependency is now the CloudPirates chart (`oci://registry-1.docker.io/cloudpirates/kafka` 0.2.3) instead of Bitnami `29.3.14`. That chart installs **Kafka 4.4.0** (`apache/kafka:4.4.0`). The previous image was `apache/kafka:3.9.2`. `externalKafka` is unchanged.
+
+- `kafka.controller.replicaCount` is now `kafka.replicaCount`. Each node is a combined KRaft broker and controller. The old Bitnami controller command, args, init container, log4j mount, and `kafka.kraft` / `kafka.listeners` / `kafka.log4j` keys are gone.
+- Authentication stays off. The CloudPirates default turns SASL on for the client, inter-broker, and controller listeners. Keep `kafka.auth.client.enabled`, `kafka.auth.interBroker.enabled`, and `kafka.auth.controller.enabled` set to `false`, or Sentry will not be able to connect.
+- The data volume is mounted at `/var/lib/kafka/data`, which is the image `VOLUME`. The StatefulSet is `<release>-kafka` (the Bitnami one was `<release>-kafka-controller`). The new claim is `data-<release>-kafka-0`. A directory formatted by 4.4 cannot be opened by 3.9. Existing 3.9 data is not mounted by the new StatefulSet.
+
 ## Upgrading to Chart 36.0.0
 
 ### Breaking: Kafka image
