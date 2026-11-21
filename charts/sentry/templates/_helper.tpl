@@ -293,7 +293,11 @@ Set postgres port
 */}}
 {{- define "sentry.postgresql.port" -}}
 {{- if .Values.postgresql.enabled -}}
-{{- default 5432 .Values.postgresql.primary.service.ports.postgresql }}
+{{- if (.Values.postgresql.service).port -}}
+{{- .Values.postgresql.service.port -}}
+{{- else -}}
+5432
+{{- end -}}
 {{- else -}}
 {{- required "A valid .Values.externalPostgresql.port is required" .Values.externalPostgresql.port -}}
 {{- end -}}
@@ -304,7 +308,7 @@ Set postgresql username
 */}}
 {{- define "sentry.postgresql.username" -}}
 {{- if .Values.postgresql.enabled -}}
-{{- default "postgres" .Values.postgresql.postgresqlUsername }}
+{{- default "postgres" ((.Values.postgresql.auth).username) }}
 {{- else -}}
 {{ required "A valid .Values.externalPostgresql.username is required" .Values.externalPostgresql.username }}
 {{- end -}}
@@ -315,7 +319,7 @@ Set postgresql database
 */}}
 {{- define "sentry.postgresql.database" -}}
 {{- if .Values.postgresql.enabled -}}
-{{- default "sentry" .Values.postgresql.postgresqlDatabase }}
+{{- default "sentry" ((.Values.postgresql.auth).database) }}
 {{- else -}}
 {{ required "A valid .Values.externalPostgresql.database is required" .Values.externalPostgresql.database }}
 {{- end -}}
@@ -326,7 +330,12 @@ Set redis host
 */}}
 {{- define "sentry.redis.host" -}}
 {{- if .Values.redis.enabled -}}
-{{- template "sentry.redis.fullname" . -}}-master
+{{- $fullname := include "sentry.redis.fullname" . -}}
+{{- if eq (default "replication" .Values.redis.architecture) "standalone" -}}
+{{- $fullname -}}
+{{- else -}}
+{{- printf "%s-master" $fullname -}}
+{{- end -}}
 {{- else -}}
 {{ required "A valid .Values.externalRedis.host is required" .Values.externalRedis.host }}
 {{- end -}}
@@ -336,7 +345,11 @@ Set redis port
 */}}
 {{- define "sentry.redis.port" -}}
 {{- if .Values.redis.enabled -}}
-{{- default 6379 .Values.redis.redisPort }}
+{{- if (.Values.redis.tls).enabled -}}
+{{- dig "tls" "port" 6380 .Values.redis }}
+{{- else -}}
+{{- dig "service" "port" 6379 .Values.redis }}
+{{- end -}}
 {{- else -}}
 {{ required "A valid .Values.externalRedis.port is required" .Values.externalRedis.port }}
 {{- end -}}
@@ -370,7 +383,11 @@ Set redis ssl
 */}}
 {{- define "sentry.redis.ssl" -}}
 {{- if .Values.redis.enabled -}}
-{{ default false .Values.redis.ssl }}
+{{- if or .Values.redis.ssl ((.Values.redis.tls).enabled) -}}
+true
+{{- else -}}
+false
+{{- end -}}
 {{- else -}}
 {{ default false .Values.externalRedis.ssl }}
 {{- end -}}

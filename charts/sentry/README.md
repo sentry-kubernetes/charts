@@ -451,23 +451,20 @@ Note: this table is incomplete, so have a look at the values.yaml in case you mi
 | pgbouncer.updateStrategy.rollingUpdate.maxSurge | string | `"25%"` |  |
 | pgbouncer.updateStrategy.rollingUpdate.maxUnavailable | int | `1` |  |
 | pgbouncer.updateStrategy.type | string | `"RollingUpdate"` |  |
-| postgresql.auth.database | string | `"sentry"` |  |
+| postgresql.auth.database | string | `"sentry"` | Database created on first start and used by Sentry |
 | postgresql.connMaxAge | int | `0` |  |
 | postgresql.enabled | bool | `true` |  |
 | postgresql.nameOverride | string | `"sentry-postgresql"` |  |
-| postgresql.replication.applicationName | string | `"sentry"` |  |
-| postgresql.replication.enabled | bool | `false` |  |
-| postgresql.replication.numSynchronousReplicas | int | `1` |  |
-| postgresql.replication.readReplicas | int | `2` |  |
-| postgresql.replication.synchronousCommit | string | `"on"` |  |
+| postgresql.persistence.volumeName | string | `"pgdata"` | PVC prefix. Kept off the Bitnami claim name `data` |
+| redis.architecture | string | `"replication"` | `standalone` is a single instance. `replication` adds a `<fullname>-master` Service |
 | redis.auth.enabled | bool | `false` |  |
 | redis.auth.sentinel | bool | `false` |  |
 | redis.enabled | bool | `true` |  |
-| redis.master.nodeSelector | object | `{}` |  |
-| redis.master.persistence.enabled | bool | `true` |  |
 | redis.nameOverride | string | `"sentry-redis"` |  |
-| redis.replica.nodeSelector | object | `{}` |  |
-| redis.replica.replicaCount | int | `1` |  |
+| redis.nodeSelector | object | `{}` |  |
+| redis.persistence.enabled | bool | `true` |  |
+| redis.replicaCount | int | `2` | Total pods when `architecture=replication` (1 master + 1 replica) |
+| redis.tolerations | list | `[]` |  |
 | relay.affinity | object | `{}` |  |
 | relay.asHook | bool | `true` | Deploy relay as a Helm hook. Set to false for rolling updates instead of delete-and-recreate on upgrades |
 | relay.autoscaling.enabled | bool | `false` |  |

@@ -27,8 +27,9 @@ kafka:
 
 redis:
   enabled: true
-  master.persistence.enabled: false
-  replica.replicaCount: 0
+  architecture: standalone
+  persistence:
+    enabled: false
 
 externalClickhouse:
   host: "clickhouse-clickhouse-external.default.svc"

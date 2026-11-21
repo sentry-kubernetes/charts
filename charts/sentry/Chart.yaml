@@ -10,16 +10,17 @@ dependencies:
     repository: oci://registry-1.docker.io/cloudpirates
     version: 0.14.14
   - name: redis
-    repository: oci://registry-1.docker.io/bitnamicharts
-    version: 17.11.3
+    repository: oci://registry-1.docker.io/cloudpirates
+    version: 0.40.0
     condition: redis.enabled
   - name: kafka
     repository: oci://registry-1.docker.io/bitnamicharts
     version: 29.3.14
     condition: kafka.enabled
-  - name: postgresql
-    repository: oci://registry-1.docker.io/bitnamicharts
-    version: 12.5.1
+  - name: postgres
+    alias: postgresql
+    repository: oci://registry-1.docker.io/cloudpirates
+    version: 0.22.1
     condition: postgresql.enabled
   - name: nginx
     repository: oci://registry-1.docker.io/cloudpirates

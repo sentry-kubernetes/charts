@@ -3239,17 +3239,16 @@ externalKafka:
     nodeSelector: {}
     tolerations: []
 
+# CloudPirates Redis (oci://registry-1.docker.io/cloudpirates/redis).
+# replication + replicaCount 2 is one master and one replica. The master Service
+# is <release>-sentry-redis-master. A single instance is architecture: standalone
+# (no -master Service). Keep auth.enabled false unless you also set a password:
+# the subchart default turns auth on and generates one.
+# https://github.com/CloudPirates-io/helm-charts/tree/main/charts/redis
 redis:
   enabled: true
-  image:
-    repository: bitnamilegacy/redis
-  metrics:
-    image:
-      repository: bitnamilegacy/redis-exporter
-  replica:
-    replicaCount: 1
-    nodeSelector: {}
-    tolerations: []
+  architecture: replication
+  replicaCount: 2
   auth:
     enabled: false
     sentinel: false
@@ -3259,15 +3258,10 @@ redis:
     ## set existingSecretPasswordKey if key name inside existingSecret is different from redis-password'
     # existingSecretPasswordKey: secret-key-name
   nameOverride: sentry-redis
-  master:
-    persistence:
-      enabled: true
-    nodeSelector: {}
-    tolerations: []
-  ## Use this to enable an extra service account
-  # serviceAccount:
-  #   create: false
-  #   name: sentry-redis
+  persistence:
+    enabled: true
+  nodeSelector: {}
+  tolerations: []
 
 ## This value is only used when redis.enabled is set to false
 ##
@@ -3286,35 +3280,33 @@ externalRedis:
   ## Use ssl for the connection to Redis (True/False)
   # ssl: false
 
+# CloudPirates Postgres (oci://registry-1.docker.io/cloudpirates/postgres), aliased
+# to postgresql. Postgres 18.7. auth.username empty means the postgres superuser.
+# connMaxAge is read by this chart, not the subchart.
+# https://github.com/CloudPirates-io/helm-charts/tree/main/charts/postgres
 postgresql:
   enabled: true
-  image:
-    repository: bitnamilegacy/postgresql
   nameOverride: sentry-postgresql
   auth:
     database: sentry
-  replication:
-    enabled: false
-    readReplicas: 2
-    synchronousCommit: "on"
-    numSynchronousReplicas: 1
-    applicationName: sentry
-  ## Use this to enable an extra service account
-  # serviceAccount:
-  #   enabled: false
+    # username: postgres
+    # password:
+    # existingSecret: secret-name
+    # secretKeys:
+    #   adminPasswordKey: postgres-password
+  ## New volume name so an upgrade does not mount the Bitnami Postgres 15 PVC.
+  ## The old claim is data-<release>-sentry-postgresql-0.
+  persistence:
+    volumeName: pgdata
   ## Default connection max age is 0 (unlimited connections)
   ## Set to a higher number to close connections after a period of time in seconds
   connMaxAge: 0
-  ## If you are increasing the number of replicas, you need to increase max_connections
-  # primary:
-  #   extendedConfiguration: |
-  #     max_connections=100
-  #    nodeSelector: {}
-  #    tolerations: []
-  ## When increasing the number of exceptions, you need to increase persistence.size
-  # primary:
-  #   persistence:
-  #     size: 8Gi
+  ## Raise this when connection count grows. See the CloudPirates chart for the other postgresql keys.
+  # config:
+  #   postgresql:
+  #     max_connections: 100
+  # persistence:
+  #   size: 8Gi
 
 ## This value is only used when postgresql.enabled is set to false
 ## Set either externalPostgresql.password or externalPostgresql.existingSecret to configure password
