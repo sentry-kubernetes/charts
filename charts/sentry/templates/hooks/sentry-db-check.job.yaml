@@ -3,7 +3,6 @@
 {{- $clickhousePort := include "sentry.clickhouse.port" . -}}
 {{- $kafkaHost := include "sentry.kafka.host" . -}}
 {{- $kafkaPort := include "sentry.kafka.port" . -}}
-{{- $kafkaControllerPort := include "sentry.kafka.controller_port" . -}}
 apiVersion: batch/v1
 kind: Job
 metadata:
@@ -98,28 +97,16 @@ spec:
             while [ $KAFKA_STATUS -eq 0 ]; do
               KAFKA_STATUS=1
               {{- if .Values.kafka.enabled }}
-
-              {{- if .Values.kafka.kraft.enabled }}
-              KAFKA_REPLICAS={{ .Values.kafka.controller.replicaCount | default 3 }}
-              echo "Kafka Kraft is enabled, checking if Kraft controllers are up"
-              KRAFT_STATUS=0
-              while [ $KRAFT_STATUS -eq 0 ]; do
-                KRAFT_STATUS=1
-                i=0; while [ $i -lt $KAFKA_REPLICAS ]; do
-                  KRAFT_HOST={{ $kafkaHost }}-controller-$i.{{ $kafkaHost }}-controller-headless
-                  if ! nc -z "$KRAFT_HOST" {{ $kafkaControllerPort }}; then
-                    KRAFT_STATUS=0
-                    echo "$KRAFT_HOST is not available yet"
-                  fi
-                  i=$((i+1))
-                done
-                if [ "$KRAFT_STATUS" -eq 0 ]; then
-                  echo "Kraft controllers not ready. Sleeping for 10s before trying again"
-                  sleep 10;
+              KAFKA_REPLICAS={{ .Values.kafka.replicaCount | default 3 }}
+              echo "Checking Kafka nodes"
+              i=0; while [ $i -lt $KAFKA_REPLICAS ]; do
+                KAFKA_POD_HOST={{ $kafkaHost }}-$i.{{ $kafkaHost }}-headless
+                if ! nc -z "$KAFKA_POD_HOST" {{ $kafkaPort }}; then
+                  KAFKA_STATUS=0
+                  echo "$KAFKA_POD_HOST is not available yet"
                 fi
+                i=$((i+1))
               done
-              echo "Kraft controllers are up"
-              {{- end }}
               {{- else if (not (.Values.externalKafka.cluster)) }}
               KAFKA_HOST={{ .Values.externalKafka.host }}
               if ! nc -z "$KAFKA_HOST" {{ $kafkaPort }}; then

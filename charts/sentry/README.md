@@ -209,27 +209,17 @@ Note: this table is incomplete, so have a look at the values.yaml in case you mi
 | ingress.pathType | string | `"ImplementationSpecific"` |  |
 | ingress.regexPathStyle | string | `""` | Controller style for path rules (auto from ingressClassName if empty) |
 | ipv6 | bool | `false` |  |
-| kafka.controller.args | list | `["/opt/bitnami/kafka/config/server.properties"]` | Config file passed to `kafka-server-start.sh` (rendered there by the kafka chart's init container) |
-| kafka.controller.command | list | `["/opt/kafka/bin/kafka-server-start.sh"]` | Starts Kafka directly; the bitnami entrypoint does not exist on `apache/kafka` |
-| kafka.controller.extraEnvVars | list | `[{"name":"EXTRA_ARGS","value":"-name kafkaServer"}]` | Drops `-loggc` from `kafka-server-start.sh`, so no GC log is written to the `logs` emptyDir |
-| kafka.controller.extraVolumeMounts | string | (see `values.yaml`) | Mounts `kafka.log4j` / `kafka.existingLog4jConfigMap` at `/opt/kafka/config/log4j.properties`, the file `kafka-server-start.sh` reads |
-| kafka.controller.initContainers | list | (see `values.yaml`) | `kafka-kraft-format`: formats KRaft storage on first start (`--ignore-formatted` on later starts) |
-| kafka.controller.logPersistence.mountPath | string | `"/opt/kafka/logs"` | Kafka application log directory; must be writable because the root filesystem is read-only |
-| kafka.controller.nodeSelector | object | `{}` |  |
-| kafka.controller.replicaCount | int | `3` |  |
+| kafka.auth.client.enabled | bool | `false` | CloudPirates default is true; Sentry expects PLAINTEXT |
+| kafka.auth.controller.enabled | bool | `false` |  |
+| kafka.auth.interBroker.enabled | bool | `false` |  |
 | kafka.enabled | bool | `true` |  |
-| kafka.image.repository | string | `"apache/kafka"` | Kafka image (was `bitnamilegacy/kafka` before chart 36.0.0). With `apache/kafka`, SASL/TLS listeners and `kafka.broker.replicaCount > 0` are rejected at render time |
-| kafka.image.tag | string | `"3.9.2"` | Upgrading from 3.7.x keeps the KRaft `metadata.version` at 3.7, so rolling back stays possible |
-| kafka.kraft.enabled | bool | `true` |  |
-| kafka.listeners.client.protocol | string | `"PLAINTEXT"` | Security protocol for the Kafka client listener (PLAINTEXT, SASL_PLAINTEXT, SASL_SSL, SSL) |
-| kafka.listeners.controller.protocol | string | `"PLAINTEXT"` |  |
-| kafka.listeners.external.protocol | string | `"PLAINTEXT"` |  |
-| kafka.listeners.interbroker.protocol | string | `"PLAINTEXT"` |  |
-| kafka.log4j | string | (see `values.yaml`) | Console-only log4j config. The image's default writes hourly-rolled log files to the `logs` emptyDir, which fills the pod's ephemeral storage |
-| kafka.provisioning.args | list | (see `values.yaml`) | Runs `sentry.kafka.bundledProvisioningScript`: the kafka chart's provisioning script adapted to `apache/kafka` |
-| kafka.provisioning.command | list | `["/bin/bash"]` |  |
+| kafka.image.repository | string | `"apache/kafka"` | Image installed by CloudPirates Kafka 0.2.3 |
+| kafka.image.tag | string | `"4.4.0@sha256:833b867a9585a141da455dc2b57431c65cbccb27f11c91f694444cca9f777e0f"` | Matches the CloudPirates chart. Kafka 4.4 uses Log4j 2 |
+| kafka.persistence.dataDir | string | `"/var/lib/kafka/data"` | Same path as mountPath so the image VOLUME is the PVC |
+| kafka.persistence.mountPath | string | `"/var/lib/kafka/data"` |  |
 | kafka.provisioning.enabled | bool | `true` |  |
-| kafka.provisioning.initContainers | list | (see `values.yaml`) | `wait-for-available-kafka`: waits for the Kafka client port using bash `/dev/tcp` |
+| kafka.provisioning.replicationFactor | int | `3` |  |
+| kafka.replicaCount | int | `3` | Combined KRaft broker and controller nodes |
 | kafka.provisioning.topics[0].config."message.timestamp.type" | string | `"LogAppendTime"` |  |
 | kafka.provisioning.topics[0].name | string | `"events"` |  |
 | kafka.provisioning.topics[100].name | string | `"taskworker-buffer"` |  |
@@ -451,23 +441,20 @@ Note: this table is incomplete, so have a look at the values.yaml in case you mi
 | pgbouncer.updateStrategy.rollingUpdate.maxSurge | string | `"25%"` |  |
 | pgbouncer.updateStrategy.rollingUpdate.maxUnavailable | int | `1` |  |
 | pgbouncer.updateStrategy.type | string | `"RollingUpdate"` |  |
-| postgresql.auth.database | string | `"sentry"` |  |
+| postgresql.auth.database | string | `"sentry"` | Database created on first start and used by Sentry |
 | postgresql.connMaxAge | int | `0` |  |
 | postgresql.enabled | bool | `true` |  |
 | postgresql.nameOverride | string | `"sentry-postgresql"` |  |
-| postgresql.replication.applicationName | string | `"sentry"` |  |
-| postgresql.replication.enabled | bool | `false` |  |
-| postgresql.replication.numSynchronousReplicas | int | `1` |  |
-| postgresql.replication.readReplicas | int | `2` |  |
-| postgresql.replication.synchronousCommit | string | `"on"` |  |
+| postgresql.persistence.volumeName | string | `"pgdata"` | PVC prefix. Kept off the Bitnami claim name `data` |
+| redis.architecture | string | `"replication"` | `standalone` is a single instance. `replication` adds a `<fullname>-master` Service |
 | redis.auth.enabled | bool | `false` |  |
 | redis.auth.sentinel | bool | `false` |  |
 | redis.enabled | bool | `true` |  |
-| redis.master.nodeSelector | object | `{}` |  |
-| redis.master.persistence.enabled | bool | `true` |  |
 | redis.nameOverride | string | `"sentry-redis"` |  |
-| redis.replica.nodeSelector | object | `{}` |  |
-| redis.replica.replicaCount | int | `1` |  |
+| redis.nodeSelector | object | `{}` |  |
+| redis.persistence.enabled | bool | `true` |  |
+| redis.replicaCount | int | `2` | Total pods when `architecture=replication` (1 master + 1 replica) |
+| redis.tolerations | list | `[]` |  |
 | relay.affinity | object | `{}` |  |
 | relay.asHook | bool | `true` | Deploy relay as a Helm hook. Set to false for rolling updates instead of delete-and-recreate on upgrades |
 | relay.autoscaling.enabled | bool | `false` |  |

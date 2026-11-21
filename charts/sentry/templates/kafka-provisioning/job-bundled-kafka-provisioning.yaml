@@ -1,0 +1,85 @@
+{{- if and .Values.kafka.enabled .Values.kafka.provisioning.enabled }}
+{{- $image := printf "docker.io/%s:%s" .Values.kafka.image.repository .Values.kafka.image.tag }}
+{{- $bootstrap := include "sentry.kafka.bootstrap_servers_string" . }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ .Release.Name }}-kafka-provisioning
+  labels:
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    app.kubernetes.io/name: kafka
+    app.kubernetes.io/component: kafka-provisioning
+spec:
+  backoffLimit: 10
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/instance: {{ .Release.Name }}
+        app.kubernetes.io/managed-by: {{ .Release.Service }}
+        app.kubernetes.io/name: kafka
+        app.kubernetes.io/component: kafka-provisioning
+    spec:
+      restartPolicy: OnFailure
+      terminationGracePeriodSeconds: 0
+      securityContext:
+        fsGroup: 1000
+        seccompProfile:
+          type: RuntimeDefault
+      initContainers:
+        - name: wait-for-kafka
+          image: {{ $image }}
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            runAsUser: 1000
+            runAsGroup: 1000
+          command:
+            - /bin/bash
+            - -ec
+            - |
+              host='{{ include "sentry.kafka.host" . }}'
+              port='{{ include "sentry.kafka.port" . }}'
+              for i in $(seq 1 60); do
+                if (exec 3<>"/dev/tcp/${host}/${port}") 2>/dev/null; then
+                  echo "Kafka is available"
+                  exit 0
+                fi
+                echo "Waiting for ${host}:${port} ($i/60)..."
+                sleep 2
+              done
+              echo "Timed out waiting for ${host}:${port}"
+              exit 1
+      containers:
+        - name: provisioning
+          image: {{ $image }}
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            runAsUser: 1000
+            runAsGroup: 1000
+          env:
+            - name: KAFKA_SERVICE
+              value: {{ $bootstrap | quote }}
+          command:
+            - /bin/bash
+            - -efc
+            - |
+{{ include "sentry.kafka.bundledProvisioningScript" . | indent 14 }}
+          volumeMounts:
+            - name: tmp
+              mountPath: /tmp
+      volumes:
+        - name: tmp
+          emptyDir: {}
+{{- end }}

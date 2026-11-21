@@ -2,6 +2,41 @@
 
 The changelog below refers to the main `sentry` chart only.
 
+## Upgrading to Chart 36.2.0
+
+Chart `36.2.0` targets [Sentry 26.11.0](https://github.com/getsentry/self-hosted/releases/tag/26.11.0), the same application release as chart `36.1.0`.
+
+### Redis chart switch
+
+The bundled Redis dependency is now the CloudPirates chart (`oci://registry-1.docker.io/cloudpirates/redis` 0.40.0) instead of Bitnami. `externalRedis` is unchanged.
+
+- Remove overrides of `redis.image` and `redis.metrics.image`. Those pointed at `bitnamilegacy`. The chart uses the CloudPirates images (`redis`, `oliver006/redis_exporter`).
+- `redis.master.persistence.enabled` is now `redis.persistence.enabled`.
+- `redis.master.nodeSelector`, `redis.replica.nodeSelector`, and the matching tolerations are now `redis.nodeSelector` and `redis.tolerations`.
+- `redis.replica.replicaCount` is now `redis.replicaCount`, and the count includes the master. The old default of one replica is `architecture: replication` and `replicaCount: 2`. One instance is `architecture: standalone`.
+- `redis.auth.*` is unchanged and stays disabled. If an override replaces the whole `redis` map, set `auth.enabled: false` again, or set `auth.password` / `auth.existingSecret`. The CloudPirates default turns authentication on and generates a password Sentry will not have.
+
+Helm replaces the `<release>-sentry-redis-master` StatefulSet with `<release>-sentry-redis`. The new volume claim is `data-<release>-sentry-redis-0` (the Bitnami claim was `redis-data-<release>-sentry-redis-master-0`). This Redis is a cache, so the empty volume is safe. The old PVC is left behind until you delete it.
+
+### Postgres chart switch
+
+The bundled Postgres dependency is now the CloudPirates chart (`oci://registry-1.docker.io/cloudpirates/postgres` 0.22.1), aliased to `postgresql` so values stay under `postgresql`. It runs Postgres **18.7**. The previous Bitnami chart was Postgres **15.3**. `externalPostgresql` is unchanged.
+
+- Remove overrides of `postgresql.image`. That pointed at `bitnamilegacy/postgresql`.
+- Remove `postgresql.replication.*`. Bundled read replicas are gone. The CloudPirates `replication` block is a standby of an external primary, and it is off.
+- `postgresql.primary.extendedConfiguration` is now `postgresql.config.postgresql` (for example `max_connections`). `postgresql.primary.persistence.size` is now `postgresql.persistence.size`.
+- `postgresql.auth.database` stays `sentry`. Leave `postgresql.auth.username` empty to keep the `postgres` user. The password Secret is still `<release>-sentry-postgresql`, key `postgres-password`.
+
+This is not an in-place upgrade. Postgres 18 uses `PGDATA=/var/lib/postgresql/18/docker` and cannot open a Postgres 15 data directory. The new volume claim is `pgdata-<release>-sentry-postgresql-0`. The Bitnami claim `data-<release>-sentry-postgresql-0` is left behind. Dump and restore before upgrading (or keep using `externalPostgresql`). Do not point `postgresql.persistence.existingClaim` at the old claim.
+
+### Kafka chart switch
+
+The bundled Kafka dependency is now the CloudPirates chart (`oci://registry-1.docker.io/cloudpirates/kafka` 0.2.3) instead of Bitnami `29.3.14`. That chart installs **Kafka 4.4.0** (`apache/kafka:4.4.0`). The previous image was `apache/kafka:3.9.2`. `externalKafka` is unchanged.
+
+- `kafka.controller.replicaCount` is now `kafka.replicaCount`. Each node is a combined KRaft broker and controller. The old Bitnami controller command, args, init container, log4j mount, and `kafka.kraft` / `kafka.listeners` / `kafka.log4j` keys are gone.
+- Authentication stays off. The CloudPirates default turns SASL on for the client, inter-broker, and controller listeners. Keep `kafka.auth.client.enabled`, `kafka.auth.interBroker.enabled`, and `kafka.auth.controller.enabled` set to `false`, or Sentry will not be able to connect.
+- The data volume is mounted at `/var/lib/kafka/data`, which is the image `VOLUME`. The StatefulSet is `<release>-kafka` (the Bitnami one was `<release>-kafka-controller`). The new claim is `data-<release>-kafka-0`. A directory formatted by 4.4 cannot be opened by 3.9. Existing 3.9 data is not mounted by the new StatefulSet.
+
 ## Upgrading to Chart 36.1.0
 
 Chart `36.1.0` targets [Sentry 26.11.0](https://github.com/getsentry/self-hosted/releases/tag/26.11.0). No self-hosted hard stop lies between 26.10.1 and 26.11.0.

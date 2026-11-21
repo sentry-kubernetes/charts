@@ -8,6 +8,12 @@ libkafka.sh's two functions inlined and the kafka-topics.sh path fixed. Everythi
 SASL/TLS client-conf handling, pre/post scripts, parallel execution -- is unchanged.
 */}}
 {{- define "sentry.kafka.bundledProvisioningScript" -}}
+{{- $protocol := "PLAINTEXT" -}}
+{{- if ((.Values.kafka.listeners).client).protocol -}}
+{{- $protocol = .Values.kafka.listeners.client.protocol -}}
+{{- else if (((.Values.kafka.auth).client).enabled) -}}
+{{- $protocol = "SASL_PLAINTEXT" -}}
+{{- end -}}
 echo "Configuring environment"
 kafka_common_conf_set() {
     local file="${1:?missing file}"
@@ -22,75 +28,75 @@ export CLIENT_CONF="${CLIENT_CONF:-/tmp/client.properties}"
 if [ ! -f "$CLIENT_CONF" ]; then
   touch $CLIENT_CONF
 
-  kafka_common_conf_set "$CLIENT_CONF" security.protocol {{ .Values.listeners.client.protocol | quote }}
-  {{- if (regexFind "SSL" (upper .Values.listeners.client.protocol)) }}
-  kafka_common_conf_set "$CLIENT_CONF" ssl.keystore.type {{ upper .Values.provisioning.auth.tls.type | quote }}
-  kafka_common_conf_set "$CLIENT_CONF" ssl.truststore.type {{ upper .Values.provisioning.auth.tls.type | quote }}
+  kafka_common_conf_set "$CLIENT_CONF" security.protocol {{ $protocol | quote }}
+  {{- if (regexFind "SSL" (upper $protocol)) }}
+  kafka_common_conf_set "$CLIENT_CONF" ssl.keystore.type {{ upper .Values.kafka.provisioning.auth.tls.type | quote }}
+  kafka_common_conf_set "$CLIENT_CONF" ssl.truststore.type {{ upper .Values.kafka.provisioning.auth.tls.type | quote }}
   ! is_empty_value "$KAFKA_CLIENT_KEY_PASSWORD" && kafka_common_conf_set "$CLIENT_CONF" ssl.key.password "$KAFKA_CLIENT_KEY_PASSWORD"
-  {{- if eq (upper .Values.provisioning.auth.tls.type) "PEM" }}
-  {{- if .Values.provisioning.auth.tls.caCert }}
+  {{- if eq (upper .Values.kafka.provisioning.auth.tls.type) "PEM" }}
+  {{- if .Values.kafka.provisioning.auth.tls.caCert }}
   file_to_multiline_property() {
       awk 'NR > 1{print line" \\"}{line=$0;}END{print $0" "}' <"${1:?missing file}"
   }
-  kafka_common_conf_set "$CLIENT_CONF" ssl.keystore.key "$(file_to_multiline_property "/certs/{{ .Values.provisioning.auth.tls.key }}")"
-  kafka_common_conf_set "$CLIENT_CONF" ssl.keystore.certificate.chain "$(file_to_multiline_property "/certs/{{ .Values.provisioning.auth.tls.cert }}")"
-  kafka_common_conf_set "$CLIENT_CONF" ssl.truststore.certificates "$(file_to_multiline_property "/certs/{{ .Values.provisioning.auth.tls.caCert }}")"
+  kafka_common_conf_set "$CLIENT_CONF" ssl.keystore.key "$(file_to_multiline_property "/certs/{{ .Values.kafka.provisioning.auth.tls.key }}")"
+  kafka_common_conf_set "$CLIENT_CONF" ssl.keystore.certificate.chain "$(file_to_multiline_property "/certs/{{ .Values.kafka.provisioning.auth.tls.cert }}")"
+  kafka_common_conf_set "$CLIENT_CONF" ssl.truststore.certificates "$(file_to_multiline_property "/certs/{{ .Values.kafka.provisioning.auth.tls.caCert }}")"
   {{- else }}
-  kafka_common_conf_set "$CLIENT_CONF" ssl.keystore.location "/certs/{{ .Values.provisioning.auth.tls.keystore }}"
-  kafka_common_conf_set "$CLIENT_CONF" ssl.truststore.location "/certs/{{ .Values.provisioning.auth.tls.truststore }}"
+  kafka_common_conf_set "$CLIENT_CONF" ssl.keystore.location "/certs/{{ .Values.kafka.provisioning.auth.tls.keystore }}"
+  kafka_common_conf_set "$CLIENT_CONF" ssl.truststore.location "/certs/{{ .Values.kafka.provisioning.auth.tls.truststore }}"
   {{- end }}
-  {{- else if eq (upper .Values.provisioning.auth.tls.type) "JKS" }}
-  kafka_common_conf_set "$CLIENT_CONF" ssl.keystore.location "/certs/{{ .Values.provisioning.auth.tls.keystore }}"
-  kafka_common_conf_set "$CLIENT_CONF" ssl.truststore.location "/certs/{{ .Values.provisioning.auth.tls.truststore }}"
+  {{- else if eq (upper .Values.kafka.provisioning.auth.tls.type) "JKS" }}
+  kafka_common_conf_set "$CLIENT_CONF" ssl.keystore.location "/certs/{{ .Values.kafka.provisioning.auth.tls.keystore }}"
+  kafka_common_conf_set "$CLIENT_CONF" ssl.truststore.location "/certs/{{ .Values.kafka.provisioning.auth.tls.truststore }}"
   ! is_empty_value "$KAFKA_CLIENT_KEYSTORE_PASSWORD" && kafka_common_conf_set "$CLIENT_CONF" ssl.keystore.password "$KAFKA_CLIENT_KEYSTORE_PASSWORD"
   ! is_empty_value "$KAFKA_CLIENT_TRUSTSTORE_PASSWORD" && kafka_common_conf_set "$CLIENT_CONF" ssl.truststore.password "$KAFKA_CLIENT_TRUSTSTORE_PASSWORD"
   {{- end }}
   {{- end }}
-  {{- if regexFind "SASL" (upper .Values.listeners.client.protocol) }}
-  {{- if regexFind "PLAIN" ( upper .Values.sasl.enabledMechanisms) }}
+  {{- if regexFind "SASL" (upper $protocol) }}
+  {{- if regexFind "PLAIN" ( upper .Values.kafka.sasl.enabledMechanisms) }}
   kafka_common_conf_set "$CLIENT_CONF" sasl.mechanism PLAIN
   kafka_common_conf_set "$CLIENT_CONF" sasl.jaas.config "org.apache.kafka.common.security.plain.PlainLoginModule required username=\"$SASL_USERNAME\" password=\"$SASL_USER_PASSWORD\";"
-  {{- else if regexFind "SCRAM-SHA-256" ( upper .Values.sasl.enabledMechanisms) }}
+  {{- else if regexFind "SCRAM-SHA-256" ( upper .Values.kafka.sasl.enabledMechanisms) }}
   kafka_common_conf_set "$CLIENT_CONF" sasl.mechanism SCRAM-SHA-256
   kafka_common_conf_set "$CLIENT_CONF" sasl.jaas.config "org.apache.kafka.common.security.scram.ScramLoginModule required username=\"$SASL_USERNAME\" password=\"$SASL_USER_PASSWORD\";"
-  {{- else if regexFind "SCRAM-SHA-512" ( upper .Values.sasl.enabledMechanisms) }}
+  {{- else if regexFind "SCRAM-SHA-512" ( upper .Values.kafka.sasl.enabledMechanisms) }}
   kafka_common_conf_set "$CLIENT_CONF" sasl.mechanism SCRAM-SHA-512
   kafka_common_conf_set "$CLIENT_CONF" sasl.jaas.config "org.apache.kafka.common.security.scram.ScramLoginModule required username=\"$SASL_USERNAME\" password=\"$SASL_USER_PASSWORD\";"
-  {{- else if regexFind "OAUTHBEARER" ( upper .Values.sasl.enabledMechanisms) }}
+  {{- else if regexFind "OAUTHBEARER" ( upper .Values.kafka.sasl.enabledMechanisms) }}
   kafka_common_conf_set "$CLIENT_CONF" sasl.mechanism OAUTHBEARER
   kafka_common_conf_set "$CLIENT_CONF" sasl.jaas.config "org.apache.kafka.common.security.oauthbearer.OAuthBearerLoginModule required clientId=\"$SASL_CLIENT_ID\" password=\"$SASL_CLIENT_SECRET\";"
   kafka_common_conf_set "$CLIENT_CONF" sasl.login.callback.handler.class "org.apache.kafka.common.security.oauthbearer.secured.OAuthBearerLoginCallbackHandler"
-  kafka_common_conf_set "$CLIENT_CONF" sasl.oauthbearer.token.endpoint.url {{ .Values.sasl.oauthbearer.tokenEndpointUrl | quote }}
+  kafka_common_conf_set "$CLIENT_CONF" sasl.oauthbearer.token.endpoint.url {{ .Values.kafka.sasl.oauthbearer.tokenEndpointUrl | quote }}
   {{- end }}
   {{- end }}
 fi
 
 echo "Running pre-provisioning script if any given"
-{{ .Values.provisioning.preScript | nindent 0 }}
+{{ .Values.kafka.provisioning.preScript | default "" | nindent 0 }}
 
 kafka_provisioning_commands=(
-{{- range $topic := .Values.provisioning.topics }}
+{{- range $topic := .Values.kafka.provisioning.topics }}
   "/opt/kafka/bin/kafka-topics.sh \
       --create \
       --if-not-exists \
       --bootstrap-server ${KAFKA_SERVICE} \
-      --replication-factor {{ $topic.replicationFactor | default $.Values.provisioning.replicationFactor }} \
-      --partitions {{ $topic.partitions | default $.Values.provisioning.numPartitions }} \
+      --replication-factor {{ $topic.replicationFactor | default $.Values.kafka.provisioning.replicationFactor }} \
+      --partitions {{ $topic.partitions | default ($.Values.kafka.provisioning.numPartitions | default 1) }} \
       {{- range $name, $value := $topic.config }}
       --config {{ $name }}={{ $value }} \
       {{- end }}
       --command-config ${CLIENT_CONF} \
       --topic {{ $topic.name }}"
 {{- end }}
-{{- range $command := .Values.provisioning.extraProvisioningCommands }}
+{{- range $command := (.Values.kafka.provisioning.extraProvisioningCommands | default list) }}
   {{- $command | quote | nindent 2 }}
 {{- end }}
 )
 
 echo "Starting provisioning"
-for ((index=0; index < ${#kafka_provisioning_commands[@]}; index+={{ .Values.provisioning.parallel }}))
+for ((index=0; index < ${#kafka_provisioning_commands[@]}; index+={{ .Values.kafka.provisioning.parallel | default 1 }}))
 do
-  for j in $(seq ${index} $((${index}+{{ .Values.provisioning.parallel }}-1)))
+  for j in $(seq ${index} $((${index}+{{ .Values.kafka.provisioning.parallel | default 1 }}-1)))
   do
       ${kafka_provisioning_commands[j]} & # Async command
   done
@@ -98,7 +104,7 @@ do
 done
 
 echo "Running post-provisioning script if any given"
-{{ .Values.provisioning.postScript | nindent 0 }}
+{{ .Values.kafka.provisioning.postScript | default "" | nindent 0 }}
 
 echo "Provisioning succeeded"
 {{- end -}}
@@ -113,25 +119,13 @@ image is apache/kafka, so switching back to the bitnami image keeps these featur
 */}}
 {{- define "sentry.kafka.validateApacheImage" -}}
 {{- $kafka := .Values.kafka | default dict -}}
-{{- $repo := toString ((($kafka).image).repository) -}}
-{{- if and $kafka.enabled (regexMatch "(^|/)apache/kafka$" $repo) -}}
+{{- if $kafka.enabled -}}
   {{- $problems := list -}}
-  {{- if not (($kafka.kraft).enabled) -}}
-    {{- $problems = append $problems "kafka.kraft.enabled must be true (ZooKeeper mode is not supported)" -}}
-  {{- end -}}
-  {{- /* listeners also holds non-map subchart defaults (advertisedListeners, securityProtocolMap, ...) */ -}}
-  {{- range $name, $listener := ($kafka.listeners | default dict) -}}
-    {{- $protocol := "" -}}
-    {{- if kindIs "map" $listener -}}{{- $protocol = upper (toString (get $listener "protocol")) -}}{{- end -}}
-    {{- if regexFind "SASL|SSL" $protocol -}}
-      {{- $problems = append $problems (printf "kafka.listeners.%s.protocol=%s (SASL/TLS listeners are not supported yet)" $name $protocol) -}}
-    {{- end -}}
-  {{- end -}}
-  {{- if gt (int (default 0 (($kafka.broker).replicaCount))) 0 -}}
-    {{- $problems = append $problems "kafka.broker.replicaCount > 0 (broker-only nodes are not supported; use kafka.controller.replicaCount)" -}}
+  {{- if or (((.Values.kafka.auth).client).enabled) (((.Values.kafka.auth).interBroker).enabled) (((.Values.kafka.auth).controller).enabled) ((.Values.kafka.tls).enabled) -}}
+    {{- $problems = append $problems "kafka.auth.*.enabled or kafka.tls.enabled (Sentry clients are not wired for this chart's SASL/TLS yet; keep them false or use externalKafka)" -}}
   {{- end -}}
   {{- if $problems -}}
-    {{- fail (printf "\n\nThe bundled Kafka now uses the %s image, which does not support:\n  - %s\n\nEither change these settings, or keep the previous image by setting kafka.image.repository=bitnamilegacy/kafka, kafka.image.tag=3.7.1-debian-12-r4 and removing the kafka.controller.command/args/initContainers and kafka.provisioning.command/args overrides. See CHANGELOG.md, \"Upgrading to Chart 36.0.0\".\n" $repo (join "\n  - " $problems)) -}}
+    {{- fail (printf "\n\nThe bundled Kafka chart does not support:\n  - %s\n" (join "\n  - " $problems)) -}}
   {{- end -}}
 {{- end -}}
 {{- end -}}

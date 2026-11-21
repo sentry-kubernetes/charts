@@ -19,9 +19,9 @@ settings.py: |
 
   # Set partition counts for provisioning topics from kafka chart.
   TOPIC_PARTITION_COUNTS = {
-    {{- $numPartitions := .Values.kafka.provisioning.numPartitions -}}
+    {{- $numPartitions := .Values.kafka.provisioning.numPartitions | default 1 -}}
     {{- range .Values.kafka.provisioning.topics }}
-    {{ .name | quote }}: {{ default $numPartitions .partitions }},
+    {{ .name | quote }}: {{ .partitions | default $numPartitions }},
     {{- end }}
   }
   {{- end -}}

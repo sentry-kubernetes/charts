@@ -1,18 +1,18 @@
 dependencies:
 - name: memcached
   repository: oci://registry-1.docker.io/cloudpirates
-  version: 0.14.11
+  version: 0.14.14
 - name: redis
-  repository: oci://registry-1.docker.io/bitnamicharts
-  version: 17.11.3
+  repository: oci://registry-1.docker.io/cloudpirates
+  version: 0.40.0
 - name: kafka
-  repository: oci://registry-1.docker.io/bitnamicharts
-  version: 29.3.14
-- name: postgresql
-  repository: oci://registry-1.docker.io/bitnamicharts
-  version: 12.5.1
+  repository: oci://registry-1.docker.io/cloudpirates
+  version: 0.2.3
+- name: postgres
+  repository: oci://registry-1.docker.io/cloudpirates
+  version: 0.22.1
 - name: nginx
   repository: oci://registry-1.docker.io/cloudpirates
-  version: 0.16.10
-digest: sha256:92249a37dd8b3b970f1ba36125415cbdfe9b27e2ecde47a6767992242591c163
-generated: "2026-09-30T11:03:36.752611-04:00"
+  version: 0.16.18
+digest: sha256:7615c107320f0c0a114281b39c2ed9204814a81586827f4261224fc06827a767
+generated: "2026-11-21T10:50:13.261377-05:00"

@@ -293,7 +293,11 @@ Set postgres port
 */}}
 {{- define "sentry.postgresql.port" -}}
 {{- if .Values.postgresql.enabled -}}
-{{- default 5432 .Values.postgresql.primary.service.ports.postgresql }}
+{{- if (.Values.postgresql.service).port -}}
+{{- .Values.postgresql.service.port -}}
+{{- else -}}
+5432
+{{- end -}}
 {{- else -}}
 {{- required "A valid .Values.externalPostgresql.port is required" .Values.externalPostgresql.port -}}
 {{- end -}}
@@ -304,7 +308,7 @@ Set postgresql username
 */}}
 {{- define "sentry.postgresql.username" -}}
 {{- if .Values.postgresql.enabled -}}
-{{- default "postgres" .Values.postgresql.postgresqlUsername }}
+{{- default "postgres" ((.Values.postgresql.auth).username) }}
 {{- else -}}
 {{ required "A valid .Values.externalPostgresql.username is required" .Values.externalPostgresql.username }}
 {{- end -}}
@@ -315,7 +319,7 @@ Set postgresql database
 */}}
 {{- define "sentry.postgresql.database" -}}
 {{- if .Values.postgresql.enabled -}}
-{{- default "sentry" .Values.postgresql.postgresqlDatabase }}
+{{- default "sentry" ((.Values.postgresql.auth).database) }}
 {{- else -}}
 {{ required "A valid .Values.externalPostgresql.database is required" .Values.externalPostgresql.database }}
 {{- end -}}
@@ -326,7 +330,12 @@ Set redis host
 */}}
 {{- define "sentry.redis.host" -}}
 {{- if .Values.redis.enabled -}}
-{{- template "sentry.redis.fullname" . -}}-master
+{{- $fullname := include "sentry.redis.fullname" . -}}
+{{- if eq (default "replication" .Values.redis.architecture) "standalone" -}}
+{{- $fullname -}}
+{{- else -}}
+{{- printf "%s-master" $fullname -}}
+{{- end -}}
 {{- else -}}
 {{ required "A valid .Values.externalRedis.host is required" .Values.externalRedis.host }}
 {{- end -}}
@@ -336,7 +345,11 @@ Set redis port
 */}}
 {{- define "sentry.redis.port" -}}
 {{- if .Values.redis.enabled -}}
-{{- default 6379 .Values.redis.redisPort }}
+{{- if (.Values.redis.tls).enabled -}}
+{{- dig "tls" "port" 6380 .Values.redis }}
+{{- else -}}
+{{- dig "service" "port" 6379 .Values.redis }}
+{{- end -}}
 {{- else -}}
 {{ required "A valid .Values.externalRedis.port is required" .Values.externalRedis.port }}
 {{- end -}}
@@ -370,7 +383,11 @@ Set redis ssl
 */}}
 {{- define "sentry.redis.ssl" -}}
 {{- if .Values.redis.enabled -}}
-{{ default false .Values.redis.ssl }}
+{{- if or .Values.redis.ssl ((.Values.redis.tls).enabled) -}}
+true
+{{- else -}}
+false
+{{- end -}}
 {{- else -}}
 {{ default false .Values.externalRedis.ssl }}
 {{- end -}}
@@ -492,8 +509,8 @@ Set Kafka Confluent host
 Set Kafka Confluent port
 */}}
 {{- define "sentry.kafka.port" -}}
-{{- if and (.Values.kafka.enabled) (.Values.kafka.service.ports.client) -}}
-{{- .Values.kafka.service.ports.client }}
+{{- if .Values.kafka.enabled -}}
+{{- dig "service" "ports" "client" 9092 .Values.kafka }}
 {{- else if and (.Values.externalKafka) (not (.Values.externalKafka.cluster)) -}}
 {{ required "A valid .Values.externalKafka.port is required" .Values.externalKafka.port }}
 {{- end -}}
@@ -503,8 +520,8 @@ Set Kafka Confluent port
 Set Kafka Confluent Controller port
 */}}
 {{- define "sentry.kafka.controller_port" -}}
-{{- if and (.Values.kafka.enabled) (.Values.kafka.service.ports.controller ) -}}
-{{- .Values.kafka.service.ports.controller }}
+{{- if .Values.kafka.enabled -}}
+{{- dig "service" "ports" "controller" 9093 .Values.kafka }}
 {{- else if and (.Values.externalKafka) (not (.Values.externalKafka.cluster)) -}}
 {{ required "A valid .Values.externalKafka.port is required" .Values.externalKafka.port }}
 {{- end -}}
@@ -535,7 +552,11 @@ Set Kafka security protocol
 */}}
 {{- define "sentry.kafka.security_protocol" -}}
 {{- if .Values.kafka.enabled -}}
-{{ default "plaintext" .Values.kafka.listeners.client.protocol }}
+{{- if (((.Values.kafka.auth).client).enabled) -}}
+SASL_PLAINTEXT
+{{- else -}}
+PLAINTEXT
+{{- end -}}
 {{- else -}}
 {{ default "plaintext" .Values.externalKafka.security.protocol }}
 {{- end -}}
