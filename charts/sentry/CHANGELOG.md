@@ -1,5 +1,12 @@
 # Changelog
 
+## [36.2.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v36.1.0...sentry-v36.2.0) (2026-11-23)
+
+
+### Features
+
+* **sentry:** allow a postgres database per taskbroker ([#2333](https://github.com/sentry-kubernetes/charts/issues/2333)) ([947c530](https://github.com/sentry-kubernetes/charts/commit/947c5308769dc53dd8bc899b0ed0bbf778a81d4a))
+
 ## [36.1.0](https://github.com/sentry-kubernetes/charts/compare/sentry-v36.0.1...sentry-v36.1.0) (2026-11-18)
 
 
