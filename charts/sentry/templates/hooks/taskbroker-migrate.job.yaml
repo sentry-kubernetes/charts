@@ -1,19 +1,20 @@
 {{- if and .Values.sentry.taskBroker.enabled .Values.hooks.enabled (ne (include "sentry.taskbroker.skipMigrateJob" .) "true") }}
 {{- if eq (include "sentry.taskbroker.anyPostgres" .) "true" }}
 {{- $root := . }}
+{{- range $name := include "sentry.taskbroker.postgres.migrateBrokers" . | fromYamlArray }}
 {{- $migrateBroker := dict }}
-{{- $found := false }}
-{{- range $broker := .Values.sentry.taskBroker.brokers }}
-{{- if and (not $found) (eq (include "sentry.taskbroker.adapter" (dict "broker" $broker "root" $root)) "postgres") }}
+{{- range $broker := $root.Values.sentry.taskBroker.brokers }}
+{{- if eq $broker.name $name }}
 {{- $migrateBroker = $broker }}
-{{- $found = true }}
 {{- end }}
 {{- end }}
 {{- $ctx := dict "broker" $migrateBroker "root" $root }}
+{{- $migrateName := include "sentry.taskbroker.migrateName" $ctx }}
+{{- with $root }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ template "sentry.fullname" . }}-taskbroker-migrate
+  name: {{ $migrateName }}
   labels:
     app: sentry
     chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
@@ -32,7 +33,7 @@ data:
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: {{ template "sentry.fullname" . }}-taskbroker-migrate
+  name: {{ $migrateName }}
   labels:
     app: sentry
     chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
@@ -50,7 +51,7 @@ spec:
   {{- end }}
   template:
     metadata:
-      name: {{ template "sentry.fullname" . }}-taskbroker-migrate
+      name: {{ $migrateName }}
       annotations:
         checksum/taskbrokerMigrateConfig: {{ include "sentry.taskbroker.configYml" $ctx | sha256sum }}
         {{- if .Values.hooks.taskbrokerMigrate.podAnnotations }}
@@ -142,7 +143,7 @@ spec:
       volumes:
       - name: taskbroker-config
         configMap:
-          name: {{ template "sentry.fullname" . }}-taskbroker-migrate
+          name: {{ $migrateName }}
 {{- if .Values.hooks.taskbrokerMigrate.volumes }}
 {{ toYaml .Values.hooks.taskbrokerMigrate.volumes | indent 6 }}
 {{- end }}
@@ -152,5 +153,8 @@ spec:
       {{- if .Values.hooks.shareProcessNamespace }}
       shareProcessNamespace: {{ .Values.hooks.shareProcessNamespace }}
       {{- end }}
+---
+{{- end }}
+{{- end }}
 {{- end }}
 {{- end }}

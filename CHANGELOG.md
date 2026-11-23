@@ -2,6 +2,14 @@
 
 The changelog below refers to the main `sentry` chart only.
 
+## Upgrading to Chart 36.2.0
+
+- Each postgres taskbroker can use its own database through `brokers[].store.postgres` (see [Taskbroker store](charts/sentry/README.md#taskbroker-store)). The migrate hook now renders one Job and ConfigMap per distinct database, named `<fullname>-taskbroker-migrate-<broker>` instead of `<fullname>-taskbroker-migrate`. With `hooks.removeOnSuccess: false`, the old `<fullname>-taskbroker-migrate` Job and ConfigMap stay in the namespace after the upgrade. They are harmless; delete them by hand if you want:
+
+  ```bash
+  kubectl -n <namespace> delete job,configmap <fullname>-taskbroker-migrate
+  ```
+
 ## Upgrading to Chart 36.1.0
 
 Chart `36.1.0` targets [Sentry 26.11.0](https://github.com/getsentry/self-hosted/releases/tag/26.11.0). No self-hosted hard stop lies between 26.10.1 and 26.11.0.

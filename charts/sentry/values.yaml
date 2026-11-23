@@ -471,6 +471,7 @@ sentry:
       # When true, skip the Helm migrate Job. Required if hooks.enabled is false and any broker uses postgres.
       skipMigrateJob: false
     # brokers[].store.adapter -- Optional per-broker sqlite | postgres; empty inherits store.adapter.
+    # brokers[].store.postgres -- Optional per-broker postgres settings (e.g. database); merged over store.postgres, except credential keys (user, password, existingSecret*, ddl*), which are inherited only when the broker sets none of them. Each distinct host/port/database gets its own migrate Job.
     # brokers[].persistence.enabled -- Optional per-broker PVC flag; omit to inherit taskBroker.persistence.enabled.
     # brokers[].kafkaSessionTimeoutMs -- Kafka session.timeout.ms for this broker (self-hosted kafka_session_timeout_ms). Defaults to 60000 if omitted.
     # brokers[].resources -- Optional per-broker container resources; merged over taskBroker.resources (broker keys win).
