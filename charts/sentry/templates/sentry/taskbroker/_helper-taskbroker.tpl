@@ -65,12 +65,40 @@ defines — include rebinds $.
 {{/*
 Postgres settings for one broker as YAML: brokers[].store.postgres merged over
 sentry.taskBroker.store.postgres (broker keys win, empty broker values inherit).
+Credential keys are not merged: when a broker sets any of them, it inherits none
+of them, so a broker never pairs its own user or secret with global ones.
 Invoke as: include "sentry.taskbroker.postgres.values" (dict "broker" $broker "root" $root) | fromYaml
 */}}
 {{- define "sentry.taskbroker.postgres.values" -}}
-{{- $global := default dict ((default dict .root.Values.sentry.taskBroker.store).postgres) -}}
-{{- $own := default dict ((default dict (default dict .broker).store).postgres) -}}
-{{- toYaml (mergeOverwrite (deepCopy $global) (deepCopy $own)) -}}
+{{- $global := deepCopy (default dict ((default dict .root.Values.sentry.taskBroker.store).postgres)) -}}
+{{- $own := deepCopy (default dict ((default dict (default dict .broker).store).postgres)) -}}
+{{- $credentialKeys := list "user" "password" "existingSecret" "existingSecretKey" "ddlUser" "ddlExistingSecret" "ddlExistingSecretKey" -}}
+{{- $ownCredentials := false -}}
+{{- range $key := $credentialKeys -}}
+  {{- if ne (toString (get $own $key)) "" -}}
+    {{- $ownCredentials = true -}}
+  {{- end -}}
+{{- end -}}
+{{- if $ownCredentials -}}
+  {{- range $key := $credentialKeys -}}
+    {{- $_ := unset $global $key -}}
+  {{- end -}}
+{{- end -}}
+{{- toYaml (mergeOverwrite $global $own) -}}
+{{- end -}}
+
+{{/*
+Name of the migrate Job and ConfigMap for a broker. Kept within 63 characters
+(the Job's job-name label limit); longer names are truncated and get a hash
+suffix so they stay unique.
+Invoke as: include "sentry.taskbroker.migrateName" (dict "broker" $broker "root" $root)
+*/}}
+{{- define "sentry.taskbroker.migrateName" -}}
+{{- $name := printf "%s-taskbroker-migrate-%s" (include "sentry.fullname" .root) .broker.name -}}
+{{- if gt (len $name) 63 -}}
+  {{- $name = printf "%s-%s" ($name | trunc 54 | trimSuffix "-") ($name | sha256sum | trunc 8) -}}
+{{- end -}}
+{{- $name -}}
 {{- end -}}
 
 {{/*
@@ -192,7 +220,7 @@ defaults password to "password").
       name: {{ default (include "sentry.postgresql.fullname" $root) $root.Values.postgresql.auth.existingSecret }}
       key: {{ default "postgres-password" $root.Values.postgresql.auth.secretKeys.adminPasswordKey | quote }}
 {{- else }}
-{{- fail "sentry.taskBroker.store.postgres.password or existingSecret is required when using the postgres adapter" }}
+{{- fail (printf "taskbroker %s uses the postgres adapter: set password or existingSecret in sentry.taskBroker.store.postgres or brokers[%s].store.postgres" .broker.name .broker.name) }}
 {{- end }}
 {{- if $pg.ddlExistingSecret }}
 - name: TASKBROKER_STORE__PG__DDL_PASSWORD

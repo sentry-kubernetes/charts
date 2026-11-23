@@ -9,11 +9,12 @@
 {{- end }}
 {{- end }}
 {{- $ctx := dict "broker" $migrateBroker "root" $root }}
+{{- $migrateName := include "sentry.taskbroker.migrateName" $ctx }}
 {{- with $root }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ template "sentry.fullname" . }}-taskbroker-migrate-{{ $name }}
+  name: {{ $migrateName }}
   labels:
     app: sentry
     chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
@@ -32,7 +33,7 @@ data:
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: {{ template "sentry.fullname" . }}-taskbroker-migrate-{{ $name }}
+  name: {{ $migrateName }}
   labels:
     app: sentry
     chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
@@ -50,7 +51,7 @@ spec:
   {{- end }}
   template:
     metadata:
-      name: {{ template "sentry.fullname" . }}-taskbroker-migrate-{{ $name }}
+      name: {{ $migrateName }}
       annotations:
         checksum/taskbrokerMigrateConfig: {{ include "sentry.taskbroker.configYml" $ctx | sha256sum }}
         {{- if .Values.hooks.taskbrokerMigrate.podAnnotations }}
@@ -142,7 +143,7 @@ spec:
       volumes:
       - name: taskbroker-config
         configMap:
-          name: {{ template "sentry.fullname" . }}-taskbroker-migrate-{{ $name }}
+          name: {{ $migrateName }}
 {{- if .Values.hooks.taskbrokerMigrate.volumes }}
 {{ toYaml .Values.hooks.taskbrokerMigrate.volumes | indent 6 }}
 {{- end }}

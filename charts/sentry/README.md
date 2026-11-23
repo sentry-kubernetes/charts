@@ -1628,7 +1628,11 @@ Taskbroker uses SQLite by default. Switch a broker to PostgreSQL with `sentry.ta
 
 Use a dedicated `taskbroker` database and a real primary (`postgres-rw`). Do not use PgBouncer or a transaction-mode pooler, and do not reuse the Sentry or Snuba databases. With external Postgres, set `store.postgres.host` yourself — the chart will not take `externalPostgresql.host` (that is often a pooler).
 
-`store.postgres` applies to every postgres broker. Override any of its keys per broker with `brokers[].store.postgres`, for example to give each broker its own database. Brokers that share a database only claim tasks from their own topics, but tasks pending longer than `contention_drain_age_sec` (60s by default) can be claimed by any of them and count toward every broker's backpressure. The migrate Job runs once per distinct host, port and database.
+`store.postgres` applies to every postgres broker. Override any of its keys per broker with `brokers[].store.postgres`, for example to give each broker its own database. Brokers that share a database only claim tasks from their own topics, but tasks pending longer than `contention_drain_age_sec` (60s by default) can be claimed by any of them and count toward every broker's backpressure.
+
+Credentials are not merged key by key. If a broker sets any of `user`, `password`, `existingSecret`, `existingSecretKey`, `ddlUser`, `ddlExistingSecret` or `ddlExistingSecretKey`, it inherits none of them from `store.postgres`, so set the complete credentials on that broker (a `user` it leaves out falls back to the Sentry database user).
+
+The migrate Job runs once per distinct host, port and database, as `<fullname>-taskbroker-migrate-<broker>`, named after the first broker in `brokers` that uses that database (names over 63 characters are truncated and get a hash suffix). It runs with that broker's settings only, including its `user`, `ddlUser` and secrets, because all brokers share the same schema. When brokers share a database with different credentials, list first the one whose DDL user may create and alter the schema.
 
 Each postgres replica opens 128 connections (hardcoded), and each migrate Job opens 64 while it runs. Raise `max_connections` before enabling; CNPG's default (~100) is too low. Switching adapters does not migrate in-flight SQLite tasks.
 
