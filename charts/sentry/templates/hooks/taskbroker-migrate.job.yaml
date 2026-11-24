@@ -1,4 +1,4 @@
-{{- if and .Values.sentry.taskBroker.enabled .Values.hooks.enabled (ne (include "sentry.taskbroker.skipMigrateJob" .) "true") }}
+{{- if and .Values.sentry.taskBroker.enabled .Values.hooks.enabled .Values.hooks.taskbrokerMigrate.enabled }}
 {{- if eq (include "sentry.taskbroker.anyPostgres" .) "true" }}
 {{- $root := . }}
 {{- range $name := include "sentry.taskbroker.postgres.migrateBrokers" . | fromYamlArray }}
@@ -8,7 +8,7 @@
 {{- $migrateBroker = $broker }}
 {{- end }}
 {{- end }}
-{{- $ctx := dict "broker" $migrateBroker "root" $root }}
+{{- $ctx := dict "broker" $migrateBroker "root" $root "migrate" true }}
 {{- $migrateName := include "sentry.taskbroker.migrateName" $ctx }}
 {{- with $root }}
 apiVersion: v1
@@ -23,7 +23,7 @@ metadata:
     role: taskbroker-migrate
     {{- include "sentry.component.labels" (dict "component" "taskbroker-migrate" "ctx" .) | nindent 4 }}
   annotations:
-    "helm.sh/hook": "post-install,pre-upgrade"
+    "helm.sh/hook": "post-install,{{ if .Values.hooks.preUpgrade }}pre-upgrade{{ else }}post-upgrade{{ end }}"
     "helm.sh/hook-weight": "1"
     "helm.sh/hook-delete-policy": "{{ if .Values.hooks.removeOnSuccess }}hook-succeeded,{{ end }}before-hook-creation"
 data:
@@ -42,7 +42,7 @@ metadata:
     role: taskbroker-migrate
     {{- include "sentry.component.labels" (dict "component" "taskbroker-migrate" "ctx" .) | nindent 4 }}
   annotations:
-    "helm.sh/hook": "post-install,pre-upgrade"
+    "helm.sh/hook": "post-install,{{ if .Values.hooks.preUpgrade }}pre-upgrade{{ else }}post-upgrade{{ end }}"
     "helm.sh/hook-weight": "2"
     "helm.sh/hook-delete-policy": "{{ if .Values.hooks.removeOnSuccess }}hook-succeeded,{{ end }}before-hook-creation"
 spec:
